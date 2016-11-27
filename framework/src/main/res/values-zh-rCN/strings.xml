@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="toast_permission_denied">权限已被禁止，请前往设置解锁</string>
+    <string name="framework_text_dialog_confirm">确认</string>
+    <string name="framework_text_dialog_cancel">取消</string>
+</resources>

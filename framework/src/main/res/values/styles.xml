@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 应用基础样式 -->
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light">
+        <!-- 去除ActionBar -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <!-- 自定义Toolbar字体颜色 -->
+        <!--<item name="titleTextColor">@color/dark_gray</item>-->
+        <!--<item name="android:actionMenuTextColor">@color/dark_gray</item>-->
+        <item name="alertDialogTheme">@style/AppDialogTheme</item>
+    </style>
+
+    <!-- 应用对话框样式 注意此处的parent,这个parent保证了dialog默认为material design规范的大小 -->
+    <style name="AppDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert" >
+        <!-- 按钮文字颜色 -->
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!-- 主要文字颜色 -->
+        <!--<item name="android:textColorPrimary">@color/dark_text</item>-->
+        <!-- 对话框背景颜色 -->
+        <!--<item name="android:background">#4CAF50</item>-->
+
+    </style>
+
+
+
+    <style name="TopDialogActivityTheme" parent="Theme.AppCompat.Light">>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@style/TopDialogActivityAnimation</item>
+        <item name="android:windowExitAnimation">@null</item>
+        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
+    </style>
+
+    <style name="TopDialogActivityAnimation">
+        <item name="android:activityOpenEnterAnimation">@null</item>
+        <item name="android:activityOpenExitAnimation">@null</item>
+        <item name="android:activityCloseEnterAnimation">@null</item>
+        <item name="android:activityCloseExitAnimation">@null</item>
+        <item name="android:taskOpenEnterAnimation">@null</item>
+        <item name="android:taskOpenExitAnimation">@null</item>
+        <item name="android:taskCloseEnterAnimation">@null</item>
+        <item name="android:taskCloseExitAnimation">@null</item>
+        <item name="android:taskToFrontEnterAnimation">@null</item>
+        <item name="android:taskToFrontExitAnimation">@null</item>
+        <item name="android:taskToBackEnterAnimation">@null</item>
+        <item name="android:taskToBackExitAnimation">@null</item>
+    </style>
+
+</resources>
