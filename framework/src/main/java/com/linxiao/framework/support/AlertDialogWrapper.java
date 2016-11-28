@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 
 import com.linxiao.framework.dialog.TopDialogActivity;
 import com.linxiao.framework.event.ShowActivityDialogEvent;
@@ -35,14 +36,26 @@ public class AlertDialogWrapper {
 
     /**
      * 通过Activity承载Dialog的方式弹出顶级消息，一般用于异步回调提示
+     * <p>如果message为空则不会显示dialog</p>
      * */
     public static void showTopActivityDialog(Context context, String title, String message) {
+        if (TextUtils.isEmpty(message)) {
+            return;
+        }
         Intent intent = new Intent(context, TopDialogActivity.class);
         intent.putExtra(TopDialogActivity.KEY_DIALOG_TITLE, title);
         intent.putExtra(TopDialogActivity.KEY_DIALOG_MESSAGE, message);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         context.startActivity(intent);
 //        overridePendingTransition(R.anim.fade, R.anim.hold);
+    }
+
+    /**
+     * 通过Activity承载Dialog的方式弹出顶级消息，一般用于异步回调提示
+     * <p>如果message为空则不会显示dialog</p>
+     * */
+    public static void showTopActivityDialog(Context context, String message) {
+        showTopActivityDialog(context, null, message);
     }
 
     public static class AlertDialogBuilder {

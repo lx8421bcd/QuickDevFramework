@@ -6,17 +6,10 @@ package com.linxiao.framework.support;
  */
 public class NotificationWrapper {
 
+    public static void sendNotification() {
 
+    }
 
-
-
-
-
-
-
-
-
-
-
+    
 
 }

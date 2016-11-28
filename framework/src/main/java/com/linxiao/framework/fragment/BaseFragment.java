@@ -58,12 +58,4 @@ public abstract class BaseFragment extends Fragment {
         return (T) layoutView.findViewById(resId);
     }
 
-    public void showToast(CharSequence message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    public void showToast(CharSequence message, int time) {
-        Toast.makeText(getActivity(), message, time).show();
-    }
-
 }
