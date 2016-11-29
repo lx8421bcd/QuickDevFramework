@@ -41,4 +41,5 @@ public class ToastWrapper {
     public static void showToast(Context context, String message) {
         showToast(context, message, Toast.LENGTH_SHORT);
     }
+
 }

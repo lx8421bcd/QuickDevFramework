@@ -4,7 +4,7 @@ package com.linxiao.framework.net;
 import android.util.Log;
 
 import com.linxiao.framework.BaseApplication;
-import com.linxiao.framework.support.preferences.PreferenceWrapper;
+import com.linxiao.framework.support.PreferenceWrapper;
 
 /**
  * Session management
