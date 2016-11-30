@@ -9,15 +9,24 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".main.MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleInstance">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main.MainActivity" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".frameworkapi.DialogApiActivity" />
+        <activity android:name=".frameworkapi.NotificationApiActivity"
+            android:parentActivityName=".main.MainActivity"/>
+        <activity android:name=".frameworkapi.ToastApiActivity" />
     </application>
 
 </manifest>

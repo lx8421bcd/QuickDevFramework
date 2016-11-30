@@ -69,7 +69,7 @@ public class PermissionWrapper {
     /**
      * 检查是否需要RuntimePermission，即 System API >= API 23
      * */
-    private boolean checkHigherThanMarshallow() {
+    private boolean checkHigherThanMarshmallow() {
         return Build.VERSION.SDK_INT > Build.VERSION_CODES.M;
     }
 
@@ -93,7 +93,7 @@ public class PermissionWrapper {
      * @param activity 申请权限的Activity，Fragment申请权限请传入getActivity()
      * */
     public void requestSystemAlertWindowPermission(Activity activity) {
-        if (checkHigherThanMarshallow()) {
+        if (checkHigherThanMarshmallow()) {
             if (Settings.canDrawOverlays(activity)) {
                 return;
             }
@@ -108,7 +108,7 @@ public class PermissionWrapper {
      * @param activity 申请权限的Activity，Fragment申请权限请传入getActivity()
      * */
     public void requestWriteSystemSettingsPermission(Activity activity) {
-        if (checkHigherThanMarshallow()) {
+        if (checkHigherThanMarshmallow()) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
             intent.setData(Uri.parse("package:" + activity.getPackageName()));
             activity.startActivityForResult(intent, WRITE_SETTINGS_PERMISSION_REQUEST_CODE );
@@ -126,7 +126,7 @@ public class PermissionWrapper {
      * @param callback 申请权限回调
      * */
     public void performWithPermission(final Activity activity, String requestDesc, final String[] permissions, OnRequestPermissionCallback callback) {
-        if (!checkHigherThanMarshallow() || checkPermissionsGranted(activity, permissions)) {
+        if (!checkHigherThanMarshmallow() || checkPermissionsGranted(activity, permissions)) {
             callback.onPermissionGranted();
             return;
         }
@@ -188,7 +188,7 @@ public class PermissionWrapper {
      * <p><strong>请务必在申请权限操作所属的Activity中调用此方法</strong></p>
      * */
     public void onSysAlertPermissionResult(Activity activity, int requestCode) {
-        if (checkHigherThanMarshallow()) {
+        if (checkHigherThanMarshmallow()) {
             if (requestCode == SYSTEM_ALERT_PERMISSION_REQUEST_CODE) {
                 if (Settings.canDrawOverlays(activity)) {
                     Log.i(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW has been granted");
@@ -202,7 +202,7 @@ public class PermissionWrapper {
      * <p><strong>请务必在申请权限操作所属的Activity中调用此方法</strong></p>
      * */
     public void onWriteSysSettingsPermissionResult(Activity activity, int requestCode) {
-        if (checkHigherThanMarshallow()) {
+        if (checkHigherThanMarshmallow()) {
             if (requestCode == WRITE_SETTINGS_PERMISSION_REQUEST_CODE) {
                 if (Settings.System.canWrite(activity)) {
                     Log.i(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW has been granted");
