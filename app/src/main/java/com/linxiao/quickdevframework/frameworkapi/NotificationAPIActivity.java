@@ -11,6 +11,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
+import com.linxiao.framework.support.NotificationWrapper;
 import com.linxiao.quickdevframework.R;
 
 public class NotificationApiActivity extends BaseActivity {
@@ -23,9 +24,9 @@ public class NotificationApiActivity extends BaseActivity {
 
     public void onSendNotificationClick(View v) {
 //        NotificationWrapper.sendNotification(this, 1024, "fucking fuck");
-//        Intent resultIntent = new Intent(this, ToastApiActivity.class);
-//        NotificationWrapper.sendSimpleNotification(this, 1024, "click to test toast", resultIntent);
-        send();
+        Intent resultIntent = new Intent(this, ToastApiActivity.class);
+        NotificationWrapper.sendSimpleNotification(this, 1024, "click to test toast", resultIntent);
+//        send();
 
     }
 

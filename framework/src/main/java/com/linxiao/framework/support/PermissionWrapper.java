@@ -199,6 +199,10 @@ public class PermissionWrapper {
         }
     }
 
+    public void requestSystemAlertWindowPermission(Activity activity) {
+        requestSystemAlertWindowPermission(activity, null);
+    }
+
     /**
      * 检查 SYSTEM_ALERT_WINDOW 权限是否已被授予
      * <p><strong>请务必在申请权限操作所属的Activity中调用此方法</strong></p>
@@ -241,6 +245,10 @@ public class PermissionWrapper {
         if (callback != null) {
             callback.onGranted();
         }
+    }
+
+    public void requestWriteSystemSettingsPermission(Activity activity) {
+        requestWriteSystemSettingsPermission(activity, null);
     }
 
     /**
