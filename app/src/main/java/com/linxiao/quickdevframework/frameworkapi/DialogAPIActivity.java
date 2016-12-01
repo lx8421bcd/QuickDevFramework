@@ -19,7 +19,9 @@ public class DialogApiActivity extends BaseActivity {
         AlertDialogWrapper.showDialog("simple dialog messages");
     }
 
-
+    public void onShowTopDialogClick(View v) {
+        AlertDialogWrapper.showTopActivityDialog(this, "this is top dialog");
+    }
 
 
 }

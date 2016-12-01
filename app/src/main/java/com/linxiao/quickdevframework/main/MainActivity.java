@@ -14,6 +14,7 @@ import com.linxiao.framework.support.AlertDialogWrapper;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.frameworkapi.DialogApiActivity;
 import com.linxiao.quickdevframework.frameworkapi.NotificationApiActivity;
+import com.linxiao.quickdevframework.frameworkapi.PermissionApiActivity;
 import com.linxiao.quickdevframework.frameworkapi.ToastApiActivity;
 
 import java.util.ArrayList;
@@ -41,8 +42,6 @@ public class MainActivity extends BaseActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-//                AlertDialogWrapper.showTopActivityDialog(MainActivity.this, "message", "message");
-//                AlertDialogWrapper.showDialog("message");
             }
         });
         initApiSampleList();
@@ -53,6 +52,7 @@ public class MainActivity extends BaseActivity {
         apiSampleList.add(new ApiSampleObject("Dialog API", DialogApiActivity.class));
         apiSampleList.add(new ApiSampleObject("Notification API", NotificationApiActivity.class));
         apiSampleList.add(new ApiSampleObject("Toast API", ToastApiActivity.class));
+        apiSampleList.add(new ApiSampleObject("Permission API", PermissionApiActivity.class));
 
         ApiSampleListAdapter adapter = new ApiSampleListAdapter(this);
         adapter.setDataSource(apiSampleList);

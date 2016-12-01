@@ -42,11 +42,11 @@ public class PermissionWrapper {
         /**
          * 权限已被授予
          * */
-        void onPermissionGranted();
+        void onGranted();
         /**
          * 用户拒绝权限申请
          * */
-        void onPermissionRejected();
+        void onDenied();
     }
 
     private static final int PERMISSION_REQUEST_CODE = 1001;
@@ -56,6 +56,8 @@ public class PermissionWrapper {
     private static PermissionWrapper instance;
 
     private OnRequestPermissionCallback currCallback;
+    private OnRequestPermissionCallback reqSysAlertCallback;
+    private OnRequestPermissionCallback reqSysSettingsCallback;
 
     private PermissionWrapper() {}
 
@@ -88,34 +90,6 @@ public class PermissionWrapper {
     }
 
     /**
-     * 申请系统级Dialog权限
-     * <p>可用于Service弹出对话框，悬浮窗等功能，一般应用不建议申请</p>
-     * @param activity 申请权限的Activity，Fragment申请权限请传入getActivity()
-     * */
-    public void requestSystemAlertWindowPermission(Activity activity) {
-        if (checkHigherThanMarshmallow()) {
-            if (Settings.canDrawOverlays(activity)) {
-                return;
-            }
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-            intent.setData(Uri.parse("package:" + activity.getPackageName()));
-            activity.startActivityForResult(intent, SYSTEM_ALERT_PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    /**
-     * 申请修改系统设置的权限
-     * @param activity 申请权限的Activity，Fragment申请权限请传入getActivity()
-     * */
-    public void requestWriteSystemSettingsPermission(Activity activity) {
-        if (checkHigherThanMarshmallow()) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-            intent.setData(Uri.parse("package:" + activity.getPackageName()));
-            activity.startActivityForResult(intent, WRITE_SETTINGS_PERMISSION_REQUEST_CODE );
-        }
-    }
-
-    /**
      * 执行需要检查权限的代码
      * <p>将功能代码写在声明的onRequestPermissionCallback对象中，可以一次申请多个权限，
      * 如果描述了申请权限的理由，会弹出对话框告诉用户，然后弹出系统申请权限的dialog，
@@ -125,19 +99,10 @@ public class PermissionWrapper {
      * @param permissions 所需申请的权限
      * @param callback 申请权限回调
      * */
-    public void performWithPermission(final Activity activity, String requestDesc, final String[] permissions, OnRequestPermissionCallback callback) {
+    public void performWithPermission(final Activity activity, String requestDesc, final String[] permissions, final OnRequestPermissionCallback callback) {
         if (!checkHigherThanMarshmallow() || checkPermissionsGranted(activity, permissions)) {
-            callback.onPermissionGranted();
+            callback.onGranted();
             return;
-        }
-        for (String permission : permissions) {
-            if (ActivityCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
-                if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-                    String hintToast = getPermissionGroupName(activity, permission) + activity.getString(R.string.toast_permission_denied);
-                    ToastWrapper.showToast(activity, hintToast);
-                    return;
-                }
-            }
         }
         currCallback = callback;
         if (TextUtils.isEmpty(requestDesc)) {
@@ -157,6 +122,7 @@ public class PermissionWrapper {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+                    callback.onDenied();
                 }
             })
             .show();
@@ -168,19 +134,69 @@ public class PermissionWrapper {
      * <p>检查用户当前申请的权限是否被授予并执行相关的操作。
      * <strong>请务必在申请权限代码所属Activity的onRequestPermissionResult()中调用此方法</strong></p>
      * */
-    public void handleCallback(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (currCallback == null) {
+    public void handleCallback(final Activity activity, int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.i(TAG, "handleCallback: requestCode = " + requestCode);
+        if (currCallback == null || requestCode != PERMISSION_REQUEST_CODE) {
             return;
         }
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (verifyPermissionResult(grantResults)) {
-                currCallback.onPermissionGranted();
-            }
-            else {
-                currCallback.onPermissionRejected();
+        for (int i = 0; i < grantResults.length; i++) {
+            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                String permissionGroupName = getPermissionGroupName(activity, permissions[i]);
+                if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[i])) {
+                    currCallback.onDenied();
+                }
+                else  {
+                    String hintToast = permissionGroupName + activity.getString(R.string.toast_permission_denied);
+//                    ToastWrapper.showToast(activity, hintToast);
+                    AlertDialogWrapper.buildAlertDialog()
+                    .setMessage(hintToast)
+                    .setPositiveButton(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            jumpToApplicationDetail(activity);
+                        }
+                    })
+                    .setNegativeButton(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
+                }
+                return;
             }
         }
+        currCallback.onGranted();
         currCallback = null;
+    }
+
+    private void jumpToApplicationDetail(Context context) {
+        Intent localIntent = new Intent();
+        localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+        localIntent.setData(Uri.fromParts("package", context.getPackageName(), null));
+        context.startActivity(localIntent);
+    }
+
+    /**
+     * 申请系统级Dialog权限
+     * <p>可用于Service弹出Dialog，悬浮窗等功能，一般应用不建议申请</p>
+     * @param activity 申请权限的Activity，Fragment申请权限请传入getActivity()
+     * */
+    public void requestSystemAlertWindowPermission(Activity activity, OnRequestPermissionCallback callback) {
+        if (checkHigherThanMarshmallow()) {
+            if (!Settings.canDrawOverlays(activity)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.setData(Uri.parse("package:" + activity.getPackageName()));
+                activity.startActivityForResult(intent, SYSTEM_ALERT_PERMISSION_REQUEST_CODE);
+                reqSysAlertCallback = callback;
+                return;
+            }
+        }
+        if (callback != null) {
+            callback.onGranted();
+        }
     }
 
     /**
@@ -188,12 +204,42 @@ public class PermissionWrapper {
      * <p><strong>请务必在申请权限操作所属的Activity中调用此方法</strong></p>
      * */
     public void onSysAlertPermissionResult(Activity activity, int requestCode) {
+        if (requestCode != SYSTEM_ALERT_PERMISSION_REQUEST_CODE) {
+            return;
+        }
         if (checkHigherThanMarshmallow()) {
-            if (requestCode == SYSTEM_ALERT_PERMISSION_REQUEST_CODE) {
-                if (Settings.canDrawOverlays(activity)) {
-                    Log.i(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW has been granted");
+            if (Settings.canDrawOverlays(activity)) {
+                Log.i(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW granted");
+                if (reqSysAlertCallback != null) {
+                    reqSysAlertCallback.onGranted();
                 }
             }
+            else {
+                Log.i(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW denied");
+                if (reqSysAlertCallback != null) {
+                    reqSysAlertCallback.onDenied();
+                }
+            }
+            reqSysAlertCallback = null;
+        }
+    }
+
+    /**
+     * 申请修改系统设置的权限
+     * @param activity 申请权限的Activity，Fragment申请权限请传入getActivity()
+     * */
+    public void requestWriteSystemSettingsPermission(Activity activity, OnRequestPermissionCallback callback) {
+        if (checkHigherThanMarshmallow()) {
+            if (!Settings.System.canWrite(activity)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                intent.setData(Uri.parse("package:" + activity.getPackageName()));
+                activity.startActivityForResult(intent, WRITE_SETTINGS_PERMISSION_REQUEST_CODE );
+                reqSysSettingsCallback = callback;
+                return;
+            }
+        }
+        if (callback != null) {
+            callback.onGranted();
         }
     }
 
@@ -202,28 +248,23 @@ public class PermissionWrapper {
      * <p><strong>请务必在申请权限操作所属的Activity中调用此方法</strong></p>
      * */
     public void onWriteSysSettingsPermissionResult(Activity activity, int requestCode) {
+        if (requestCode != WRITE_SETTINGS_PERMISSION_REQUEST_CODE) {
+            return;
+        }
         if (checkHigherThanMarshmallow()) {
-            if (requestCode == WRITE_SETTINGS_PERMISSION_REQUEST_CODE) {
-                if (Settings.System.canWrite(activity)) {
-                    Log.i(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW has been granted");
+            if (Settings.System.canWrite(activity)) {
+                Log.i(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW granted");
+                if (reqSysSettingsCallback != null) {
+                    reqSysSettingsCallback.onGranted();
+                }
+            }
+            else {
+                Log.i(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW denied");
+                if (reqSysSettingsCallback != null) {
+                    reqSysSettingsCallback.onDenied();
                 }
             }
         }
-    }
-
-    /**
-     * 检查RuntimePermission 申请结果
-     * */
-    private boolean verifyPermissionResult(int[] grantResults) {
-        if (grantResults.length < 1) {
-            return false;
-        }
-        for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**

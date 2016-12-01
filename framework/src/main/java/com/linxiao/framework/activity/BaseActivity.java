@@ -47,7 +47,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        isResumed = false;
         super.onPause();
     }
 
@@ -80,12 +79,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         PermissionWrapper.getInstance().onSysAlertPermissionResult(this, requestCode);
+        PermissionWrapper.getInstance().onWriteSysSettingsPermissionResult(this, requestCode);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionWrapper.getInstance().handleCallback(requestCode, permissions, grantResults);
+        PermissionWrapper.getInstance().handleCallback(this, requestCode, permissions, grantResults);
     }
 
     /**

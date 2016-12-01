@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.linxiao.quickdevframework">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,13 +14,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".main.MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleInstance">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".main.MainActivity" />
-
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,9 +22,20 @@
             </intent-filter>
         </activity>
         <activity android:name=".frameworkapi.DialogApiActivity" />
-        <activity android:name=".frameworkapi.NotificationApiActivity"
-            android:parentActivityName=".main.MainActivity"/>
-        <activity android:name=".frameworkapi.ToastApiActivity" />
+
+        <activity
+            android:name=".frameworkapi.NotificationApiActivity"
+            android:parentActivityName=".main.MainActivity">
+        </activity>
+
+        <activity android:name=".frameworkapi.ToastApiActivity"
+            android:parentActivityName=".main.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main.MainActivity"/>
+        </activity>
+
+        <activity android:name=".frameworkapi.PermissionApiActivity" />
     </application>
 
 </manifest>

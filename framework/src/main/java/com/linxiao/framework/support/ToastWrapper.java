@@ -13,28 +13,32 @@ public class ToastWrapper {
 
     //用于连续Toast时的处理
     private static Toast mToast;
+    private static Handler mHandler = new Handler();
 
     public static void showToast(Context context, CharSequence message, int timeMills) {
+        int delay = timeMills;
+        if (timeMills == Toast.LENGTH_SHORT) {
+            delay = 2000;
+        }
+        if (timeMills == Toast.LENGTH_LONG) {
+            delay = 3000;
+        }
+
         if (mToast == null) {
             mToast = Toast.makeText(context, message, timeMills);
-            int delay = timeMills;
-            if (timeMills == Toast.LENGTH_SHORT) {
-                delay = 2000;
-            }
-            if (timeMills == Toast.LENGTH_LONG) {
-                delay = 3000;
-            }
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mToast = null;
-                }
-            }, delay);
         }
         else {
             mToast.setText(message);
             mToast.setDuration(timeMills);
         }
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mToast = null;
+            }
+        }, delay);
+
         mToast.show();
     }
 

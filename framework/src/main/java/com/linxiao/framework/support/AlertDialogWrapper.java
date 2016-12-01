@@ -23,21 +23,30 @@ public class AlertDialogWrapper {
 
     public static void showDialog(String message) {
         buildAlertDialog()
-        .setMessage(message)
-        .show();
+                .setMessage(message)
+                .show();
     }
 
     public static void showDialog(String message, DialogInterface.OnClickListener positiveListener) {
         buildAlertDialog()
-        .setMessage(message)
-        .setPositiveButton(positiveListener)
-        .show();
+                .setMessage(message)
+                .setPositiveButton(positiveListener)
+                .show();
+    }
+
+    public static void showDialog(String message, DialogInterface.OnClickListener positiveListener,
+                                  DialogInterface.OnClickListener negativeListener) {
+        buildAlertDialog()
+                .setMessage(message)
+                .setPositiveButton(positiveListener)
+                .setNegativeButton(negativeListener)
+                .show();
     }
 
     /**
      * 通过Activity承载Dialog的方式弹出顶级消息，一般用于异步回调提示
      * <p>如果message为空则不会显示dialog</p>
-     * */
+     */
     public static void showTopActivityDialog(Context context, String title, String message) {
         if (TextUtils.isEmpty(message)) {
             return;
@@ -47,13 +56,12 @@ public class AlertDialogWrapper {
         intent.putExtra(TopDialogActivity.KEY_DIALOG_MESSAGE, message);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         context.startActivity(intent);
-//        overridePendingTransition(R.anim.fade, R.anim.hold);
     }
 
     /**
      * 通过Activity承载Dialog的方式弹出顶级消息，一般用于异步回调提示
      * <p>如果message为空则不会显示dialog</p>
-     * */
+     */
     public static void showTopActivityDialog(Context context, String message) {
         showTopActivityDialog(context, null, message);
     }
