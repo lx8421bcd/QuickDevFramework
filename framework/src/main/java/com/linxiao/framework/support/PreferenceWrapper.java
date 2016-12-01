@@ -25,9 +25,9 @@ public class PreferenceWrapper {
      * 获取默认的SharedPreferences
      * <p>默认操作模式,代表该文件是私有数据,只能被应用本身访问,在该模式下,写入的内容会覆盖原文件的内容</p>
      * */
-    public static PreferenceOperateObject getDefault(Context context) {
+    public static PreferenceOperator getDefault(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return new PreferenceOperateObject(sharedPreferences);
+        return new PreferenceOperator(sharedPreferences);
     }
 
     /**
@@ -35,7 +35,7 @@ public class PreferenceWrapper {
      * <p>Private模式代表该文件是私有数据,只能被应用本身访问,在该模式下,写入的内容会覆盖原文件的内容</p>
      * */
     @Nullable
-    public static PreferenceOperateObject getPrivate(Context context, String name) {
+    public static PreferenceOperator getPrivate(Context context, String name) {
         return getPreferencesByMode(context, name, Context.MODE_PRIVATE);
     }
 
@@ -44,16 +44,16 @@ public class PreferenceWrapper {
      * <p>Append模式会检查文件是否存在,存在就往文件追加内容,否则就创建新文件.</p>
      * */
     @Nullable
-    public static PreferenceOperateObject getAppend(Context context, String name) {
+    public static PreferenceOperator getAppend(Context context, String name) {
         return getPreferencesByMode(context, name, Context.MODE_APPEND);
     }
 
 
     @Nullable
-    private static PreferenceOperateObject getPreferencesByMode(Context context, String name, int mode) {
+    private static PreferenceOperator getPreferencesByMode(Context context, String name, int mode) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(name, mode);
         if (sharedPreferences != null) {
-            return new PreferenceOperateObject(sharedPreferences);
+            return new PreferenceOperator(sharedPreferences);
         }
         return null;
     }
@@ -63,10 +63,10 @@ public class PreferenceWrapper {
      * <p>用于对SharedPreferences的常见操作进行封装，提供扩展功能</p>
      * Created by linxiao on 2014/08/21.
      */
-    public static class PreferenceOperateObject {
+    public static class PreferenceOperator {
         private SharedPreferences mPreferences;
 
-        public PreferenceOperateObject(SharedPreferences preferences) {
+        public PreferenceOperator(SharedPreferences preferences) {
             this.mPreferences = preferences;
         }
 

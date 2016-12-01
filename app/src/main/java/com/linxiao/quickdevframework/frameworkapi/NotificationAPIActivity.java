@@ -26,30 +26,8 @@ public class NotificationApiActivity extends BaseActivity {
 //        NotificationWrapper.sendNotification(this, 1024, "fucking fuck");
         Intent resultIntent = new Intent(this, ToastApiActivity.class);
         NotificationWrapper.sendSimpleNotification(this, 1024, "click to test toast", resultIntent);
-//        send();
 
     }
 
-    private void send() {
-        Intent resultIntent = new Intent(this, ToastApiActivity.class);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        // Adds the back stack
-//        stackBuilder.addParentStack(ToastApiActivity.class);
-        // Adds the Intent to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        // Gets a PendingIntent containing the entire back stack
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setDefaults(Notification.DEFAULT_ALL)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("title")
-                .setContentText("content")
-                .setAutoCancel(true);
-        builder.setContentIntent(resultPendingIntent);
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(1024, builder.build());
-    }
 
 }

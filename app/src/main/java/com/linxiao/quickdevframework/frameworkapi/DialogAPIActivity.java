@@ -21,6 +21,8 @@ public class DialogApiActivity extends BaseActivity {
 
     public void onShowTopDialogClick(View v) {
         AlertDialogWrapper.showTopActivityDialog(this, "this is top dialog");
+
+
     }
 
 
