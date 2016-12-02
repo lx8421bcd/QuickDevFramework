@@ -1,4 +1,4 @@
-package com.linxiao.framework.support;
+package com.linxiao.framework.support.notification;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.DrawableRes;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.linxiao.framework.BaseApplication;
@@ -23,23 +25,21 @@ public class NotificationWrapper {
 
     private static int defaultIconRes = R.drawable.ic_notify_default;
 
-    public static void setDefaultIcon(@DrawableRes int resId) {
+    public static void setDefaultIconRes(@DrawableRes int resId) {
         defaultIconRes = resId;
     }
 
-    public static void getDefaultNotificationBuilder(Context context) {
-        new NotificationCompat.Builder(context)
-                .setSmallIcon(defaultIconRes)
-                .setContentTitle(BaseApplication.getApplicationName());
-
+    @DrawableRes
+    public static int getDefaultIconRes() {
+        return defaultIconRes;
     }
 
     /**
      * 发送简单的通知消息，通知消息的重点在消息内容
      *
-     * @param context 上下文
-     * @param notifyId     消息ID
-     * @param message 消息内容
+     * @param context  上下文
+     * @param notifyId 消息ID
+     * @param message  消息内容
      */
     public static void sendSimpleNotification(Context context, int notifyId, String message, Intent resultIntent) {
         String className = resultIntent.getComponent().getClassName();
@@ -68,12 +68,12 @@ public class NotificationWrapper {
 
         mBuilder.setContentIntent(pendingIntent);
 
-        getNotificationManager(context).notify(notifyId, mBuilder.build());
+//        getNotificationManager(context).notify(notifyId, mBuilder.build());
+        NotificationManagerCompat.from(context).notify(notifyId, mBuilder.build());
     }
 
     public static NotificationManager getNotificationManager(Context context) {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
-
 
 }
