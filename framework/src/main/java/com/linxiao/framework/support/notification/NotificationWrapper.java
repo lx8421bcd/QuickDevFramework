@@ -3,11 +3,15 @@ package com.linxiao.framework.support.notification;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.DrawableRes;
+
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 
 import com.linxiao.framework.BaseApplication;
 import com.linxiao.framework.R;
@@ -30,7 +34,6 @@ public class NotificationWrapper {
         return defaultIconRes;
     }
 
-
     /**
      * 发送简单的通知消息，通知消息的重点在消息内容
      *
@@ -39,6 +42,13 @@ public class NotificationWrapper {
      * @param message  消息内容
      */
     public static void sendSimpleNotification(Context context, int notifyId, String message, Intent resultIntent) {
+        String className = resultIntent.getComponent().getClassName();
+        try {
+            Class<?> dest = Class.forName(className);
+            Log.d(TAG, "sendSimpleNotification: dest = " + dest.getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
         mBuilder.setSmallIcon(defaultIconRes)
                 .setDefaults(Notification.DEFAULT_VIBRATE)
@@ -51,18 +61,10 @@ public class NotificationWrapper {
 
 //        resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 
-//        Intent notificationIntent = new Intent(this, Main.class);
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        //关键两句
-        resultIntent.setAction("android.intent.action.MAIN");
-        resultIntent.addCategory("android.intent.category.LAUNCHER");
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
-//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-//        stackBuilder.addParentStack(context.getClass());
-//        stackBuilder.addNextIntent(resultIntent);
-//        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(context.getClass());
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
         mBuilder.setContentIntent(pendingIntent);
 
@@ -70,13 +72,8 @@ public class NotificationWrapper {
         NotificationManagerCompat.from(context).notify(notifyId, mBuilder.build());
     }
 
-
     public static NotificationManager getNotificationManager(Context context) {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-    }
-
-    public static SimpleNotificationBuilder buildSimpleNotification(Context context, String title, String message, Intent destIntent) {
-        return new SimpleNotificationBuilder(context, title, message, destIntent);
     }
 
 }
