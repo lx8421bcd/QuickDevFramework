@@ -31,6 +31,7 @@ public abstract class BaseNotificationBuilder {
                 .setContentText(message);
         this.destIntent = destIntent;
         stackBuilder = TaskStackBuilder.create(context);
+        mContext = context;
     }
 
     public BaseNotificationBuilder configureBuilder(BuilderConfigurator configurator) {
@@ -71,8 +72,8 @@ public abstract class BaseNotificationBuilder {
     public void send(int notifyId) {
         NotificationManager manager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         stackBuilder.addNextIntent(destIntent);
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
+//        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, destIntent, 0);
         mBuilder.setContentIntent(pendingIntent);
         manager.notify(notifyId, mBuilder.build());
     }

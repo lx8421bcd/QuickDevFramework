@@ -17,7 +17,7 @@ public class RetrofitAPIManager {
 
     private static final String TAG = RetrofitAPIManager.class.getSimpleName();
 
-    public RetrofitAPIBuilder buildClientAPI() {
+    public static RetrofitAPIBuilder buildClientAPI() {
         return new RetrofitAPIBuilder();
     }
 

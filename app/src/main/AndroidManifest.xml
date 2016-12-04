@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -22,20 +23,18 @@
             </intent-filter>
         </activity>
         <activity android:name=".frameworkapi.DialogApiActivity" />
-
         <activity
             android:name=".frameworkapi.NotificationApiActivity"
-            android:parentActivityName=".main.MainActivity">
-        </activity>
-
-        <activity android:name=".frameworkapi.ToastApiActivity"
+            android:parentActivityName=".main.MainActivity"></activity>
+        <activity
+            android:name=".frameworkapi.ToastApiActivity"
             android:parentActivityName=".main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".main.MainActivity"/>
+                android:value=".main.MainActivity" />
         </activity>
-
         <activity android:name=".frameworkapi.PermissionApiActivity" />
+        <activity android:name=".netapi.NetTestActivity"></activity>
     </application>
 
 </manifest>

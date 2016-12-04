@@ -2,6 +2,7 @@ package com.linxiao.quickdevframework.frameworkapi;
 
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.view.View;
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.support.notification.NotificationWrapper;
 import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.SampleApplication;
+import com.linxiao.quickdevframework.main.MainActivity;
 
 public class NotificationApiActivity extends BaseActivity {
 
@@ -26,7 +29,34 @@ public class NotificationApiActivity extends BaseActivity {
 //        Intent resultIntent = new Intent(this, ToastApiActivity.class);
 //        NotificationWrapper.sendSimpleNotification(this, 1024, "click to test toast", resultIntent);
 //        send();
-        bigPictureStyle();
+//        bigPictureStyle();
+//        NotificationWrapper.buildSimpleNotification(this, "title", "you have an message", resultIntent)
+//                .setResumeAppIfBackground()
+//                .addToParentStack()
+//                .send();
+        testBack();
+    }
+
+    void testBack() {
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setPriority(Notification.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("test back stack")
+                .setContentText("test back stack in app and app close");
+
+        Intent resultIntent = new Intent(this, ToastApiActivity.class);
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        //关键两句
+        resultIntent.setAction("android.intent.action.MAIN");
+        resultIntent.addCategory("android.intent.category.LAUNCHER");
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        mBuilder.setContentIntent(pendingIntent);
+        NotificationManagerCompat.from(this).notify(1024, mBuilder.build());
     }
 
     void send() {
