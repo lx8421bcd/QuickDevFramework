@@ -16,12 +16,12 @@
 
 ## Usage
 目前先将项目下载下来将framework模块导入你的app工程即可。  
-项目有以下分支：
+项目有以下分支：  
 retrofit-base: 基于Retrofit和基本框架实现的framework模块
 
 
 ## Project Documents
-* Retrofit基本版：[retrofit-base] (https://github.com/ShonLin/QuickDevFramework/blob/master/README.md)  
+* Retrofit基本版：[retrofit-base] (https://github.com/ShonLin/QuickDevFramework/blob/master/retrofit-base/README.md)  
 
 后面将陆续支持RxJava、MVP、MVVM等方案
 
