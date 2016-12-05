@@ -19,6 +19,8 @@ import com.linxiao.framework.R;
 public class NotificationWrapper {
     private static final String TAG = NotificationWrapper.class.getSimpleName();
 
+    public static final String KEY_DEST_ACTIVITY_NAME = "key_dest_name";
+
     private static int defaultIconRes = R.drawable.ic_notify_default;
 
     public static void setDefaultIconRes(@DrawableRes int resId) {

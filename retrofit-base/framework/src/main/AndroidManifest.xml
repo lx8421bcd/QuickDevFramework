@@ -8,6 +8,8 @@
             android:launchMode="singleTask"
             android:theme="@style/TopDialogActivityTheme"/>
 
+        <receiver android:name=".broadcast.NotificationReceiver" />
+
     </application>
 
 </manifest>
