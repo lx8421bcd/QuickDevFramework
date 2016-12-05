@@ -1,5 +1,6 @@
 # QuickDevFramework
-An android development library based on android basic architecture
+这个框架可以通过框架模块的形式导入，包含了两个部分：一部分是为App开发提供一个基础的分层和模块化框架；
+另一部分则是将常见问题的解决方案进行封装，成为一个基础支持库。
 
 
 ## Description
@@ -12,8 +13,15 @@ An android development library based on android basic architecture
 其中CommonDevLibrary是一个项目无关的公共代码库，我在Github上也有共享 
 [CommonDevLibrary](https://github.com/ShonLin/CommonDevLibrary)
 
-## Project Branches
-* 基于Retrofit实现网络模块基本版：[retrofit-base] (https://github.com/ShonLin/QuickDevFramework/tree/retrofit-base)  
+
+## Usage
+目前先将项目下载下来将framework模块导入你的app工程即可。  
+项目有以下分支：
+retrofit-base: 基于Retrofit和基本框架实现的framework模块
+
+
+## Project Documents
+* Retrofit基本版：[retrofit-base] (https://github.com/ShonLin/QuickDevFramework/blob/master/README.md)  
 
 后面将陆续支持RxJava、MVP、MVVM等方案
 
