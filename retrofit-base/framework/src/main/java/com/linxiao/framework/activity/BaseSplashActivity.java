@@ -14,9 +14,7 @@ import com.linxiao.framework.support.notification.NotificationWrapper;
  * </p>
  * Created by linxiao on 2016/12/5.
  */
-public class BaseSplashActivity extends BaseActivity {
-
-    public static String KEY_NOTIFICATION_EXTRA = "framework_notification_extra";
+public abstract class BaseSplashActivity extends BaseActivity {
 
     protected boolean isHandleNotification;
     private Bundle notificationExtra;
@@ -25,15 +23,18 @@ public class BaseSplashActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        notificationExtra = intent.getBundleExtra(KEY_NOTIFICATION_EXTRA);
+        notificationExtra = intent.getBundleExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA);
         isHandleNotification = notificationExtra != null;
 
     }
 
-    void startNotificationDestActivity() {
+    protected void handleNotification() {
+        if (!isHandleNotification) {
+            return;
+        }
         String destKey = notificationExtra.getString(NotificationWrapper.KEY_DEST_ACTIVITY_NAME);
         if (TextUtils.isEmpty(destKey)) {
-            Log.e(TAG, "startNotificationDestActivity: destKey is null !");
+            Log.e(TAG, "handleNotification: destKey is null !");
             return;
         }
         try {
@@ -43,7 +44,7 @@ public class BaseSplashActivity extends BaseActivity {
             startActivity(destIntent);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            Log.e(TAG, "startNotificationDestActivity: reflect to get activity class failed !");
+            Log.e(TAG, "handleNotification: reflect to get activity class failed !");
         }
     }
 

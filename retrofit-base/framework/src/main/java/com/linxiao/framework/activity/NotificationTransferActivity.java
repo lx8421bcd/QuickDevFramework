@@ -1,7 +1,7 @@
-package com.linxiao.framework.broadcast;
+package com.linxiao.framework.activity;
 
+import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,41 +14,35 @@ import com.linxiao.framework.support.notification.NotificationWrapper;
 import java.util.List;
 
 /**
- * 用于接收应用通知消息点击的事件并根据当前应用的状态做出处理
+ *
  * Created by LinXiao on 2016-12-05.
  */
-public class NotificationReceiver extends BroadcastReceiver {
-
-    private static final String TAG = NotificationReceiver.class.getSimpleName();
+public class NotificationTransferActivity extends Activity {
 
     @Override
-    public void onReceive(Context context, Intent intent) {
-
-//        System.out.println(context.getPackageName());
-        if (isAppAlive(context, context.getPackageName())) {  //
-            System.out.println("app running");
-            Bundle notificationExtra = intent.getBundleExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (isAppAlive(this, this.getPackageName())) {
+            Bundle notificationExtra = getIntent().getBundleExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA);
             String destKey = notificationExtra.getString(NotificationWrapper.KEY_DEST_ACTIVITY_NAME);
             if (TextUtils.isEmpty(destKey)) {
                 return;
             }
             try {
                 Class<?> destActivityClass = Class.forName(destKey);
-                Intent destIntent = new Intent(context, destActivityClass);
+                Intent destIntent = new Intent(this, destActivityClass);
                 destIntent.putExtras(notificationExtra);
-                destIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(destIntent);
+                this.startActivity(destIntent);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
         else {
-            System.out.println("app not running");
-            Bundle notificationExtra = intent.getBundleExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA);
-            Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(BaseApplication.getAppContext().getPackageName());
+            Bundle notificationExtra = getIntent().getBundleExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA);
+            Intent launchIntent = this.getPackageManager().getLaunchIntentForPackage(BaseApplication.getAppContext().getPackageName());
             launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             launchIntent.putExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA, notificationExtra);
-            context.startActivity(launchIntent);
+            this.startActivity(launchIntent);
         }
     }
 
@@ -60,18 +54,16 @@ public class NotificationReceiver extends BroadcastReceiver {
      */
     public static boolean isAppAlive(Context context, String packageName){
         ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
-
         List<ActivityManager.RunningAppProcessInfo> processInfo = activityManager.getRunningAppProcesses();
-        System.out.println(processInfo.toString());
         for(int i = 0; i < processInfo.size(); i++){
             if(processInfo.get(i).processName.equals(packageName)){
-                Log.i("NotificationLaunch", String.format("the %s is running, isAppAlive return true", packageName));
+                Log.i("NotificationLaunch",
+                        String.format("the %s is running, isAppAlive return true", packageName));
                 return true;
             }
         }
-        Log.i("NotificationLaunch", String.format("the %s is not running, isAppAlive return false", packageName));
+        Log.i("NotificationLaunch",
+                String.format("the %s is not running, isAppAlive return false", packageName));
         return false;
     }
-
-
 }

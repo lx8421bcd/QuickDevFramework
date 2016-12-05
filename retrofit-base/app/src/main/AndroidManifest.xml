@@ -13,19 +13,20 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".main.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".main.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".main.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".frameworkapi.DialogApiActivity" />
         <activity
             android:name=".frameworkapi.NotificationApiActivity"
-            android:parentActivityName=".main.MainActivity"></activity>
+            android:parentActivityName=".main.MainActivity" />
         <activity
             android:name=".frameworkapi.ToastApiActivity"
             android:parentActivityName=".main.MainActivity">
@@ -34,7 +35,8 @@
                 android:value=".main.MainActivity" />
         </activity>
         <activity android:name=".frameworkapi.PermissionApiActivity" />
-        <activity android:name=".netapi.NetTestActivity"></activity>
+        <activity android:name=".netapi.NetTestActivity" />
+
     </application>
 
 </manifest>

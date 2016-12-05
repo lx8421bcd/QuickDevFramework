@@ -11,6 +11,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
+import com.linxiao.framework.broadcast.NotificationReceiver;
 import com.linxiao.framework.support.notification.NotificationWrapper;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.SampleApplication;
@@ -47,12 +48,12 @@ public class NotificationApiActivity extends BaseActivity {
                 .setContentTitle("test back stack")
                 .setContentText("test back stack in app and app close");
 
-        Intent resultIntent = new Intent(this, ToastApiActivity.class);
-        resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        //关键两句
-        resultIntent.setAction("android.intent.action.MAIN");
-        resultIntent.addCategory("android.intent.category.LAUNCHER");
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(NotificationWrapper.KEY_DEST_ACTIVITY_NAME, ToastApiActivity.class.getName());
+        broadcastIntent.putExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA, bundle);
+        PendingIntent pendingIntent = PendingIntent.
+                getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
         mBuilder.setContentIntent(pendingIntent);
