@@ -1,4 +1,4 @@
-package com.linxiao.framework.dialog;
+package com.linxiao.framework.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,13 +10,14 @@ import android.view.KeyEvent;
 
 import com.linxiao.framework.R;
 import com.linxiao.framework.activity.BaseActivity;
+import com.linxiao.framework.dialog.AlertDialogFragment;
 
 /**
  * 用于显示顶级Dialog，比如Service弹出Dialog
  * 这里采用限制死的方案，是传入文本和图片信息，以及简易对象信息。
  * Created by LinXiao on 2016-11-25.
  */
-public class TopDialogActivity extends AppCompatActivity {
+public class TopDialogActivity extends BaseActivity {
 
     public static final String KEY_DIALOG_TITLE = "dialog_title";
     public static final String KEY_DIALOG_MESSAGE = "dialog_message";

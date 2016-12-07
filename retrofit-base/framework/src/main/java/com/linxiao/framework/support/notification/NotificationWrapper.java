@@ -78,8 +78,6 @@ public class NotificationWrapper {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-    public static SimpleNotificationBuilder buildSimpleNotification(Context context, String title, String message, Intent destIntent) {
-        return new SimpleNotificationBuilder(context, title, message, destIntent);
-    }
+
 
 }

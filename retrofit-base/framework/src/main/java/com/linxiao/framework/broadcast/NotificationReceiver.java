@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.linxiao.framework.BaseApplication;
+import com.linxiao.framework.activity.NotificationResumeActivity;
 import com.linxiao.framework.support.notification.NotificationWrapper;
 
 import java.util.List;
@@ -23,24 +24,26 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
-//        System.out.println(context.getPackageName());
         if (isAppAlive(context, context.getPackageName())) {  //
             System.out.println("app running");
             Bundle notificationExtra = intent.getBundleExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA);
             String destKey = notificationExtra.getString(NotificationWrapper.KEY_DEST_ACTIVITY_NAME);
+            Intent destIntent = new Intent();
             if (TextUtils.isEmpty(destKey)) {
-                return;
+                destIntent.setClass(context, NotificationResumeActivity.class);
             }
-            try {
-                Class<?> destActivityClass = Class.forName(destKey);
-                Intent destIntent = new Intent(context, destActivityClass);
-                destIntent.putExtras(notificationExtra);
-                destIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(destIntent);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            else {
+                try {
+                    Class<?> destActivityClass = Class.forName(destKey);
+                    destIntent.setClass(context, destActivityClass);
+                    destIntent.putExtras(notificationExtra);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                    destIntent.setClass(context, NotificationResumeActivity.class);
+                }
             }
+            destIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(destIntent);
         }
         else {
             System.out.println("app not running");

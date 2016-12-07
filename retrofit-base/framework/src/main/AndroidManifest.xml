@@ -4,9 +4,11 @@
     <application android:allowBackup="true" android:label="@string/app_name"
         android:supportsRtl="true">
 
-        <activity android:name=".dialog.TopDialogActivity"
+        <activity android:name=".activity.TopDialogActivity"
             android:launchMode="singleTask"
             android:theme="@style/TopDialogActivityTheme"/>
+
+        <activity android:name=".activity.NotificationResumeActivity" />
 
         <receiver android:name=".broadcast.NotificationReceiver"
             android:process=":notifyHandle" />

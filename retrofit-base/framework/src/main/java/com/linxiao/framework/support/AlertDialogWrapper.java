@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
-import com.linxiao.framework.dialog.TopDialogActivity;
+import com.linxiao.framework.activity.TopDialogActivity;
 import com.linxiao.framework.event.ShowActivityDialogEvent;
 
 import org.greenrobot.eventbus.EventBus;
