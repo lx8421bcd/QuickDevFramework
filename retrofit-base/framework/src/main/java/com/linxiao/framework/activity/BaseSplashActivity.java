@@ -28,6 +28,12 @@ public abstract class BaseSplashActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handleNotification();
+    }
+
     protected void handleNotification() {
         if (!isHandleNotification) {
             return;
@@ -46,6 +52,11 @@ public abstract class BaseSplashActivity extends BaseActivity {
             e.printStackTrace();
             Log.e(TAG, "handleNotification: reflect to get activity class failed !");
         }
+    }
+
+    @Override
+    public void startActivity(Intent intent) {
+        super.startActivity(intent);
     }
 
 }

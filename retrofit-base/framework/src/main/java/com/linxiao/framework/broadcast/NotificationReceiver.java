@@ -24,30 +24,28 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (isAppAlive(context, context.getPackageName())) {  //
-            System.out.println("app running");
-            Bundle notificationExtra = intent.getBundleExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA);
-            String destKey = notificationExtra.getString(NotificationWrapper.KEY_DEST_ACTIVITY_NAME);
+        Bundle notificationExtra = intent.getBundleExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA);
+        if (notificationExtra == null) {
+            return;
+        }
+        if (isAppAlive(context, context.getPackageName())) {
             Intent destIntent = new Intent();
+            String destKey = notificationExtra.getString(NotificationWrapper.KEY_DEST_ACTIVITY_NAME);
             if (TextUtils.isEmpty(destKey)) {
-                destIntent.setClass(context, NotificationResumeActivity.class);
+                destKey = NotificationResumeActivity.class.getName();
             }
-            else {
-                try {
-                    Class<?> destActivityClass = Class.forName(destKey);
-                    destIntent.setClass(context, destActivityClass);
-                    destIntent.putExtras(notificationExtra);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                    destIntent.setClass(context, NotificationResumeActivity.class);
-                }
+            try {
+                Class<?> destActivityClass = Class.forName(destKey);
+                destIntent.setClass(context, destActivityClass);
+                destIntent.putExtras(notificationExtra);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                destIntent.setClass(context, NotificationResumeActivity.class);
             }
             destIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(destIntent);
         }
         else {
-            System.out.println("app not running");
-            Bundle notificationExtra = intent.getBundleExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA);
             Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(BaseApplication.getAppContext().getPackageName());
             launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             launchIntent.putExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA, notificationExtra);
@@ -68,11 +66,11 @@ public class NotificationReceiver extends BroadcastReceiver {
         System.out.println(processInfo.toString());
         for(int i = 0; i < processInfo.size(); i++){
             if(processInfo.get(i).processName.equals(packageName)){
-                Log.i("NotificationLaunch", String.format("the %s is running, isAppAlive return true", packageName));
+                Log.i(TAG, String.format("the %s is running, isAppAlive return true", packageName));
                 return true;
             }
         }
-        Log.i("NotificationLaunch", String.format("the %s is not running, isAppAlive return false", packageName));
+        Log.i(TAG, String.format("the %s is not running, isAppAlive return false", packageName));
         return false;
     }
 

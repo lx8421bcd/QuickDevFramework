@@ -1,16 +1,18 @@
 package com.linxiao.framework.support.notification;
 
 import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.linxiao.framework.BaseApplication;
 import com.linxiao.framework.R;
+import com.linxiao.framework.broadcast.NotificationReceiver;
+
+import java.util.Random;
 
 /**
  * 通知消息包装器
@@ -33,51 +35,61 @@ public class NotificationWrapper {
         return defaultIconRes;
     }
 
+    public static SimpleNotificationBuilder createSimpleNotificationBuilder(Context context, String title, String contentText) {
+        return new SimpleNotificationBuilder(context, title, contentText);
+    }
+
+    public static SimpleNotificationBuilder createSimpleNotificationBuilder(Context context, int icon, String title, String contentText) {
+        return new SimpleNotificationBuilder(context, icon, title, contentText);
+    }
 
     /**
      * 发送简单的通知消息，通知消息的重点在消息内容
      *
-     * @param context  上下文
-     * @param notifyId 消息ID
-     * @param message  消息内容
+     * @param contentText  消息内容
+     * @param targetActivityIntent 设定跳转目标的Intent
      */
-    public static void sendSimpleNotification(Context context, int notifyId, String message, Intent resultIntent) {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
-        mBuilder.setSmallIcon(defaultIconRes)
-                .setDefaults(Notification.DEFAULT_VIBRATE)
-                .setWhen(System.currentTimeMillis())
-                .setPriority(Notification.PRIORITY_DEFAULT)
-                .setAutoCancel(true)
-                .setContentTitle(BaseApplication.getApplicationName())
-                .setTicker(message)
-                .setContentText(message);
-
-//        resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-
-//        Intent notificationIntent = new Intent(this, Main.class);
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        //关键两句
-        resultIntent.setAction("android.intent.action.MAIN");
-        resultIntent.addCategory("android.intent.category.LAUNCHER");
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
-//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-//        stackBuilder.addParentStack(context.getClass());
-//        stackBuilder.addNextIntent(resultIntent);
-//        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        mBuilder.setContentIntent(pendingIntent);
-
-//        getNotificationManager(context).notify(notifyId, mBuilder.build());
-        NotificationManagerCompat.from(context).notify(notifyId, mBuilder.build());
+    public static void sendSimpleNotification(String title, String contentText, Intent targetActivityIntent) {
+        SimpleNotificationBuilder builder = new SimpleNotificationBuilder(BaseApplication.getAppContext(), title, contentText);
+        builder.setTicker(contentText);
+        builder.setTargetActivityIntent(targetActivityIntent);
+        builder.configureNotificationAsDefault();
+        Notification simpleNotification = builder.build();
+        int notifyId = new Random().nextInt(65536);
+        sendNotification(BaseApplication.getAppContext(), notifyId, simpleNotification);
     }
 
 
-    public static NotificationManager getNotificationManager(Context context) {
-        return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    /**
+     * 将Notification的Intent转换成用广播传递的Intent
+     * <p>
+     * 主要用于自定义Notification时处理点击打开Activity的事件，使用此方法
+     * 将会在应用启动时直接打开目标Activity，应用未启动时先启动应用再打开Activity
+     * </p>
+     * */
+    public static Intent getBroadcastIntent(Context context, Intent targetActivityIntent) {
+        Intent broadcastIntent = new Intent(context, NotificationReceiver.class);
+        Bundle bundle = new Bundle();
+        bundle.putAll(targetActivityIntent.getExtras());
+        bundle.putString(NotificationWrapper.KEY_DEST_ACTIVITY_NAME, targetActivityIntent.getComponent().getClassName());
+        broadcastIntent.putExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA, bundle);
+        return broadcastIntent;
     }
 
 
+    public static void sendNotification(Context context, int notifyId, Notification notification) {
+        NotificationManagerCompat.from(context).notify(notifyId, notification);
+    }
+
+    public static void cancelNotification(Context context, int notifyId) {
+        NotificationManagerCompat.from(context).cancel(notifyId);
+    }
+
+    /**
+     * 检查用户是否屏蔽了通知显示。
+     * */
+    public static boolean checkNotificationEnabled() {
+        return NotificationManagerCompat.from(BaseApplication.getAppContext()).areNotificationsEnabled();
+    }
 
 }

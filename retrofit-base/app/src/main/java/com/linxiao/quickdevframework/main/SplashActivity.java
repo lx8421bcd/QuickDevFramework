@@ -19,7 +19,6 @@ public class SplashActivity extends BaseSplashActivity {
             public void run() {
                 Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                 startActivity(intent);
-                handleNotification();
                 finish();
             }
         }, 1000);
