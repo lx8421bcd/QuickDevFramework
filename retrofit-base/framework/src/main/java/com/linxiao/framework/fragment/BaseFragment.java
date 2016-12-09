@@ -3,12 +3,17 @@ package com.linxiao.framework.fragment;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+
+import com.linxiao.framework.manager.BaseDataManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * base Fragment of entire project
@@ -18,23 +23,43 @@ public abstract class BaseFragment extends Fragment {
 
     public static String TAG;
 
+    private List<BaseDataManager> listDataManagers;
+
     private View contentView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TAG = this.getClass().getSimpleName();
+
 //        this.setRetainInstance(true);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        listDataManagers = new ArrayList<>();
         if(contentView == null) {
             contentView = inflater.inflate(getInflateLayoutRes(), container, false);
             onInitContentView(contentView, inflater, container, savedInstanceState);
         }
         return contentView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        for (BaseDataManager dataManager : listDataManagers) {
+            dataManager.cancelAllCalls();
+        }
+    }
+
+    /**
+     * bind DataManager to fragment life cycle, all network request will be canceled
+     * when the fragment content view is destroyed
+     * */
+    protected void bindDataManagerToLifeCycle(@NonNull BaseDataManager dataManager) {
+        listDataManagers.add(dataManager);
     }
 
     /**

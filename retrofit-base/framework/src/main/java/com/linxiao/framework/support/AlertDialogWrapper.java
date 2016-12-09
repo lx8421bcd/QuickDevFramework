@@ -21,12 +21,19 @@ public class AlertDialogWrapper {
         return new AlertDialogBuilder();
     }
 
+    /**
+     * show an alert dialog with simple message and positive button
+     * */
     public static void showDialog(String message) {
         buildAlertDialog()
                 .setMessage(message)
                 .show();
     }
 
+    /**
+     * show alert dialog with simple message,
+     * click event of positive button is configurable
+     * */
     public static void showDialog(String message, DialogInterface.OnClickListener positiveListener) {
         buildAlertDialog()
                 .setMessage(message)
@@ -34,6 +41,10 @@ public class AlertDialogWrapper {
                 .show();
     }
 
+    /**
+     * show alert dialog with simple message,
+     * click event of positive button and negative button are configurable
+     * */
     public static void showDialog(String message, DialogInterface.OnClickListener positiveListener,
                                   DialogInterface.OnClickListener negativeListener) {
         buildAlertDialog()

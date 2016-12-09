@@ -15,11 +15,15 @@ import com.linxiao.framework.R;
 import com.linxiao.framework.dialog.AlertDialogFragment;
 import com.linxiao.framework.event.ExitAppEvent;
 import com.linxiao.framework.event.ShowActivityDialogEvent;
+import com.linxiao.framework.manager.BaseDataManager;
 import com.linxiao.framework.support.PermissionWrapper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -30,6 +34,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected static String TAG;
 
+    private List<BaseDataManager> listDataManagers;
+
     private boolean isResumed = false;
 
     @Override
@@ -37,6 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         TAG = this.getClass().getSimpleName();
         EventBus.getDefault().register(this);
+        listDataManagers = new ArrayList<>();
     }
 
     @Override
@@ -72,8 +79,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        for (BaseDataManager dataManager : listDataManagers) {
+            dataManager.cancelAllCalls();
+        }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -86,6 +95,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionWrapper.getInstance().handleCallback(this, requestCode, permissions, grantResults);
+    }
+
+    /**
+     * bind DataManager to Activity life cycle, all network request will be canceled
+     * when the activity is destroyed
+     * */
+    protected void bindDataManagerToLifeCycle(@NonNull BaseDataManager dataManager) {
+        listDataManagers.add(dataManager);
     }
 
     /**
