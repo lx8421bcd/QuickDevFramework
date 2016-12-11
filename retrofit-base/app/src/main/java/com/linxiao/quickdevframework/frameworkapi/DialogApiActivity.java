@@ -1,5 +1,6 @@
 package com.linxiao.quickdevframework.frameworkapi;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -20,10 +21,14 @@ public class DialogApiActivity extends BaseActivity {
     }
 
     public void onShowTopDialogClick(View v) {
-        AlertDialogWrapper.showTopActivityDialog(this, "this is top dialog");
-
-
+        Intent backServiceIntent = new Intent(this, BackgroundService.class);
+        startService(backServiceIntent);
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        Intent backServiceIntent = new Intent(this, BackgroundService.class);
+//        stopService(backServiceIntent);
+    }
 }

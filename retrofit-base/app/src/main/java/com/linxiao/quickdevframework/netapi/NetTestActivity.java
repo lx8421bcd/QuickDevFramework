@@ -5,7 +5,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
-import com.linxiao.framework.net.RetrofitAPIManager;
+import com.linxiao.framework.net.RetrofitApiManager;
 import com.linxiao.quickdevframework.R;
 
 
@@ -25,7 +25,7 @@ public class NetTestActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_net_test);
-        clientApi = RetrofitAPIManager.buildClientAPI()
+        clientApi = RetrofitApiManager.buildClientAPI()
                 .setServerUrl("http://www.weather.com.cn/")
                 .addConvertFactory(GsonConverterFactory.create())
                 .build(ClientApi.class);

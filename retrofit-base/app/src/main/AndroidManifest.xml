@@ -36,6 +36,8 @@
         <activity android:name=".frameworkapi.PermissionApiActivity" />
         <activity android:name=".netapi.NetTestActivity" />
 
+        <service android:name=".frameworkapi.BackgroundService" />
+
     </application>
 
 </manifest>

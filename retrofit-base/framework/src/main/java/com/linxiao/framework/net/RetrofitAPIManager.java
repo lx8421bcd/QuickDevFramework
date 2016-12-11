@@ -22,15 +22,14 @@ import okhttp3.OkHttpClient;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
-import retrofit2.http.GET;
 
 /**
  *
  * Created by LinXiao on 2016-11-27.
  */
-public class RetrofitAPIManager {
+public class RetrofitApiManager {
 
-    private static final String TAG = RetrofitAPIManager.class.getSimpleName();
+    private static final String TAG = RetrofitApiManager.class.getSimpleName();
 
     public static RetrofitAPIBuilder buildClientAPI() {
         return new RetrofitAPIBuilder();
