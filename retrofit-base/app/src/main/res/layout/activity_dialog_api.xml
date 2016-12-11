@@ -19,5 +19,11 @@
         android:onClick="onShowTopDialogClick"
         android:text="show top dialog"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onShowBottomDialogClick"
+        android:text="show bottom dialog"/>
+
 
 </LinearLayout>

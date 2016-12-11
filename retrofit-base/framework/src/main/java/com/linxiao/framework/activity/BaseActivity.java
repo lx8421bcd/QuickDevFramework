@@ -80,6 +80,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         for (BaseDataManager dataManager : listDataManagers) {
+            if ( dataManager == null) {
+                continue;
+            }
             dataManager.cancelAllCalls();
         }
     }

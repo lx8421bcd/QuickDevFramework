@@ -3,7 +3,7 @@ package com.linxiao.quickdevframework.frameworkapi;
 import android.app.IntentService;
 import android.content.Intent;
 
-import com.linxiao.framework.support.AlertDialogWrapper;
+import com.linxiao.framework.support.dialog.AlertDialogWrapper;
 
 /**
  * 用于测试全局ActivityDialog的使用
@@ -18,6 +18,6 @@ public class BackgroundService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        AlertDialogWrapper.showTopActivityDialog(this, "this is top dialog from service");
+        AlertDialogWrapper.showTopAlertDialog(this, "this is top dialog from service");
     }
 }

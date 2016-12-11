@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.linxiao.framework.R;
+import com.linxiao.framework.support.dialog.AlertDialogWrapper;
 
 /**
  * 权限管理类
@@ -109,7 +110,7 @@ public class PermissionWrapper {
             ActivityCompat.requestPermissions(activity, permissions, PERMISSION_REQUEST_CODE);
         }
         else {
-            AlertDialogWrapper.buildAlertDialog()
+            AlertDialogWrapper.createAlertDialogBuilder()
             .setMessage(requestDesc)
             .setPositiveButton(new DialogInterface.OnClickListener() {
                 @Override
@@ -125,6 +126,7 @@ public class PermissionWrapper {
                     callback.onDenied();
                 }
             })
+            .build()
             .show();
         }
     }
@@ -148,7 +150,7 @@ public class PermissionWrapper {
                 else  {
                     String hintToast = permissionGroupName + activity.getString(R.string.toast_permission_denied);
 //                    ToastWrapper.showToast(activity, hintToast);
-                    AlertDialogWrapper.buildAlertDialog()
+                    AlertDialogWrapper.createAlertDialogBuilder()
                     .setMessage(hintToast)
                     .setPositiveButton(new DialogInterface.OnClickListener() {
                         @Override
@@ -162,6 +164,7 @@ public class PermissionWrapper {
                             dialog.dismiss();
                         }
                     })
+                    .build()
                     .show();
                 }
                 return;

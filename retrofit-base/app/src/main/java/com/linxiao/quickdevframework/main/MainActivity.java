@@ -10,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
-import com.linxiao.framework.support.AlertDialogWrapper;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.frameworkapi.DialogApiActivity;
 import com.linxiao.quickdevframework.frameworkapi.NotificationApiActivity;

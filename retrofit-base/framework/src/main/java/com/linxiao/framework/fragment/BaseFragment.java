@@ -50,6 +50,9 @@ public abstract class BaseFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         for (BaseDataManager dataManager : listDataManagers) {
+            if ( dataManager == null) {
+                continue;
+            }
             dataManager.cancelAllCalls();
         }
     }
@@ -70,7 +73,7 @@ public abstract class BaseFragment extends Fragment {
 
     /**
      * execute on method onCreateView(), put your code here which you want to do in onCreateView()<br>
-     * <strong>do not override onCreateView() or this method and getInflateLayoutRes() will be invalidated</strong>
+     * <strong>do not override onCreateView() or this method and configureContentViewRes() will be invalidated</strong>
      * */
     protected abstract void onInitContentView(View contentView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
 

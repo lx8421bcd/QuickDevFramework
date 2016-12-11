@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
-import com.linxiao.framework.support.AlertDialogWrapper;
+import com.linxiao.framework.support.dialog.AlertDialogWrapper;
 import com.linxiao.quickdevframework.R;
 
 public class DialogApiActivity extends BaseActivity {
@@ -17,12 +17,17 @@ public class DialogApiActivity extends BaseActivity {
     }
 
     public void onSimpleDialogClick(View v) {
-        AlertDialogWrapper.showDialog("simple dialog messages");
+        AlertDialogWrapper.showAlertDialog("simple dialog messages");
     }
 
     public void onShowTopDialogClick(View v) {
         Intent backServiceIntent = new Intent(this, BackgroundService.class);
         startService(backServiceIntent);
+    }
+
+    public void onShowBottomDialogClick(View v) {
+        SampleBottomDialogFragment dialogFragment = new SampleBottomDialogFragment();
+        dialogFragment.show(getSupportFragmentManager(), "SampleDialog");
     }
 
     @Override

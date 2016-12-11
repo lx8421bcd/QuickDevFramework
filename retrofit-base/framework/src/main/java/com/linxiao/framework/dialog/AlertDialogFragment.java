@@ -103,7 +103,7 @@ public class AlertDialogFragment extends BaseDialogFragment {
     @Override
     public void show(FragmentManager manager, String tag) {
         manager.beginTransaction().add(this, tag).commitAllowingStateLoss();
-//        super.show(manager, tag);
+//        super.build(manager, tag);
     }
 
 }
