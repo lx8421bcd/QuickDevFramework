@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.linxiao.framework.BaseApplication;
@@ -51,12 +50,11 @@ public class NotificationWrapper {
      */
     public static void sendSimpleNotification(String title, String contentText, Intent targetActivityIntent) {
         SimpleNotificationBuilder builder = new SimpleNotificationBuilder(BaseApplication.getAppContext(), title, contentText);
-        builder.setTicker(contentText);
-        builder.setTargetActivityIntent(targetActivityIntent);
-        builder.configureNotificationAsDefault();
-        Notification simpleNotification = builder.build();
-        int notifyId = new Random().nextInt(65536);
-        sendNotification(BaseApplication.getAppContext(), notifyId, simpleNotification);
+        builder.setTicker(contentText)
+        .setTargetActivityIntent(targetActivityIntent)
+        .configureNotificationAsDefault()
+        .build(new Random().nextInt(65536))
+        .send();
     }
 
 

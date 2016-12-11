@@ -239,19 +239,24 @@ public class SimpleNotificationBuilder {
     }
 
 
-    public Notification build() {
+    public NotificationOperator build() {
+       return build(0);
+    }
+
+    public NotificationOperator build(int notifyId) {
         if (mPendingIntent == null) {
             Intent destIntent = new Intent(mContext, NotificationReceiver.class);
             mPendingIntent = PendingIntent.getBroadcast(mContext, 0, destIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
         mBuilder.setContentIntent(mPendingIntent);
 
-        return mBuilder.build();
+        return new NotificationOperator(notifyId, mBuilder.build());
     }
 
     public Context getBuilderContext() {
         return mContext;
     }
+
 
     /*-----以下为代理NotificationCompat.Builder的常用方法，方便快速配置Notification-----*/
 

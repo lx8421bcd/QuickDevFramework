@@ -36,9 +36,9 @@ public class NotificationApiActivity extends BaseActivity {
         SimpleNotificationBuilder builder = NotificationWrapper.createSimpleNotificationBuilder(this, "bigText", "一条bigText");
         builder.setBigText("big text title", bigText)
                 .configureNotificationAsDefault()
-                .setTargetActivityIntent(new Intent(this, ToastApiActivity.class));
-        Notification bigTextNotification = builder.build();
-        NotificationWrapper.sendNotification(this, 1024, bigTextNotification);
+                .setTargetActivityIntent(new Intent(this, ToastApiActivity.class))
+                .build(1024)
+                .send();
     }
 
 
