@@ -25,10 +25,10 @@ public class NetTestActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_net_test);
-        clientApi = RetrofitApiManager.buildClientAPI()
-                .setServerUrl("http://www.weather.com.cn/")
-                .addConvertFactory(GsonConverterFactory.create())
-                .build(ClientApi.class);
+//        clientApi = RetrofitApiManager.buildClientAPI()
+//                .setServerUrl("http://www.weather.com.cn/")
+//                .addConvertFactory(GsonConverterFactory.create())
+//                .build(ClientApi.class);
 
 
     }

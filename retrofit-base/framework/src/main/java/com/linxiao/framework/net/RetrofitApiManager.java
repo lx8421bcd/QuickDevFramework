@@ -1,6 +1,6 @@
 package com.linxiao.framework.net;
 
-import android.content.Context;
+import com.linxiao.framework.BaseApplication;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,11 +35,7 @@ public class RetrofitApiManager {
         return new RetrofitAPIBuilder();
     }
 
-    protected static SSLSocketFactory getSSLSocketFactory(Context context, int[] certificates) {
-        if (context == null) {
-            throw new NullPointerException("context == null");
-        }
-
+    protected static SSLSocketFactory getSSLSocketFactory(int[] certificates) {
         CertificateFactory certificateFactory;
         try {
             certificateFactory = CertificateFactory.getInstance("X.509");
@@ -47,7 +43,7 @@ public class RetrofitApiManager {
             keyStore.load(null, null);
 
             for (int i = 0; i < certificates.length; i++) {
-                InputStream certificate = context.getResources().openRawResource(certificates[i]);
+                InputStream certificate = BaseApplication.getAppContext().getResources().openRawResource(certificates[i]);
                 keyStore.setCertificateEntry(String.valueOf(i), certificateFactory.generateCertificate(certificate));
 
                 if (certificate != null) {
@@ -59,7 +55,7 @@ public class RetrofitApiManager {
             trustManagerFactory.init(keyStore);
             sslContext.init(null, trustManagerFactory.getTrustManagers(), new SecureRandom());
             return sslContext.getSocketFactory();
-        } catch (IOException | CertificateException | KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

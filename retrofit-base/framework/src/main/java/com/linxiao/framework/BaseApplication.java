@@ -1,5 +1,6 @@
 package com.linxiao.framework;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -9,12 +10,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import com.linxiao.framework.event.ExitAppEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * 应用Application基类
@@ -123,5 +126,23 @@ public abstract class BaseApplication extends Application {
         return null;
     }
 
+    /**
+     * 检查应用主进程是否正在运行
+     * */
+    public static boolean isMainProcessRunning() {
+        Context mContext = getAppContext();
+        String packageName = mContext.getPackageName();
+        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> processInfo = activityManager.getRunningAppProcesses();
+        System.out.println(processInfo.toString());
+        for(int i = 0; i < processInfo.size(); i++){
+            if(processInfo.get(i).processName.equals(packageName)){
+                Log.i(TAG, String.format("the %s is running", packageName));
+                return true;
+            }
+        }
+        Log.i(TAG, String.format("the %s is not running", packageName));
+        return false;
+    }
 
 }
