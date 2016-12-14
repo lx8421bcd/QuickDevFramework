@@ -65,6 +65,7 @@ public class AlertDialogWrapper {
         intent.putExtra(TopDialogActivity.KEY_DIALOG_TITLE, title);
         intent.putExtra(TopDialogActivity.KEY_DIALOG_MESSAGE, message);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 

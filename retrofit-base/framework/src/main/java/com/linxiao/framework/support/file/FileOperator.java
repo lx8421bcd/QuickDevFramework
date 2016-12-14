@@ -1,4 +1,4 @@
-package com.linxiao.framework.support;
+package com.linxiao.framework.support.file;
 
 /**
  * 文件管理封装
