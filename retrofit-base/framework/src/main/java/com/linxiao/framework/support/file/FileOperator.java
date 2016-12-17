@@ -22,6 +22,7 @@ public class FileOperator {
     String mPath;
     boolean hasPermission;
 
+
     public FileOperator() {
         Context mContext = BaseApplication.getAppContext();
         //检查在Android 6.0以上是否拥有SD卡读写权限，避免异常
