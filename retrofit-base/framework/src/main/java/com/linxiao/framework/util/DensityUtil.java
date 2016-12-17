@@ -1,7 +1,6 @@
 package com.linxiao.framework.util;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.DisplayMetrics;
 
 import com.linxiao.framework.BaseApplication;
