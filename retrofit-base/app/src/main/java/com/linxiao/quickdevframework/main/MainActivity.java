@@ -12,6 +12,7 @@ import android.view.View;
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.frameworkapi.DialogApiActivity;
+import com.linxiao.quickdevframework.frameworkapi.FileApiActivity;
 import com.linxiao.quickdevframework.frameworkapi.NotificationApiActivity;
 import com.linxiao.quickdevframework.frameworkapi.PermissionApiActivity;
 import com.linxiao.quickdevframework.frameworkapi.ToastApiActivity;
@@ -53,6 +54,7 @@ public class MainActivity extends BaseActivity {
         apiSampleList.add(new ApiSampleObject("Notification API", NotificationApiActivity.class));
         apiSampleList.add(new ApiSampleObject("Toast API", ToastApiActivity.class));
         apiSampleList.add(new ApiSampleObject("Permission API", PermissionApiActivity.class));
+        apiSampleList.add(new ApiSampleObject("File API", FileApiActivity.class));
         apiSampleList.add(new ApiSampleObject("Network API", NetTestActivity.class));
 
         ApiSampleListAdapter adapter = new ApiSampleListAdapter(this);

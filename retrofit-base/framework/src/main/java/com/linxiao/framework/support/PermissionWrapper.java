@@ -100,7 +100,7 @@ public class PermissionWrapper {
      * @param permissions 所需申请的权限
      * @param callback 申请权限回调
      * */
-    public void performWithPermission(final Activity activity, String requestDesc, final String[] permissions, final OnRequestPermissionCallback callback) {
+    public void performWithPermission(final Activity activity, String requestDesc, final OnRequestPermissionCallback callback, final String... permissions) {
         if (!checkHigherThanMarshmallow() || checkPermissionsGranted(activity, permissions)) {
             callback.onGranted();
             return;

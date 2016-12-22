@@ -19,17 +19,18 @@ public class PermissionApiActivity extends BaseActivity {
 
     public void onRequestPermissionClick(View v) {
         PermissionWrapper.getInstance().performWithPermission(this, "请授予相机权限",
-                new String[]{Manifest.permission.CAMERA}, new PermissionWrapper.OnRequestPermissionCallback() {
-                    @Override
-                    public void onGranted() {
-                        AlertDialogWrapper.showAlertDialog("权限已授予");
-                    }
+            new PermissionWrapper.OnRequestPermissionCallback() {
+                @Override
+                public void onGranted() {
+                    AlertDialogWrapper.showAlertDialog("权限已授予");
+                }
 
-                    @Override
-                    public void onDenied() {
-                        AlertDialogWrapper.showAlertDialog("未授予权限");
-                    }
-                });
+                @Override
+                public void onDenied() {
+                    AlertDialogWrapper.showAlertDialog("未授予权限");
+                }
+            },
+            Manifest.permission.CAMERA);
     }
 
     public void onReqSysAlertClick(View v) {
