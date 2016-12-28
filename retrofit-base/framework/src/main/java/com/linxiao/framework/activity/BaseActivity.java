@@ -3,7 +3,6 @@ package com.linxiao.framework.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +13,7 @@ import android.view.View;
 import com.linxiao.framework.R;
 import com.linxiao.framework.dialog.AlertDialogFragment;
 import com.linxiao.framework.event.ExitAppEvent;
-import com.linxiao.framework.event.ShowActivityDialogEvent;
+import com.linxiao.framework.event.ShowAlertDialogEvent;
 import com.linxiao.framework.manager.BaseDataManager;
 import com.linxiao.framework.support.PermissionWrapper;
 
@@ -137,7 +136,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onActivityDialogEvent(ShowActivityDialogEvent event) {
+    public void onActivityDialogEvent(ShowAlertDialogEvent event) {
         if (!isResumed) {
            return;
         }
@@ -170,6 +169,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                 negativeText = getString(R.string.framework_text_dialog_cancel);
             }
             dialogFragment.setNegativeButton(negativeText, event.getNegativeListener());
+        }
+        if (!event.isCancelable()) {
+            dialogFragment.setCancelable(false);
         }
         dialogFragment.show(getSupportFragmentManager(), "AlertDialogFragment");
     }

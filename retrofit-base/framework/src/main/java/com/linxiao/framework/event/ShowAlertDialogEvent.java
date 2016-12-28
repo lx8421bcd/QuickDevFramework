@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable;
  * 用于发送广播通知处于Foreground状态的Activity显示AlertDialog
  * Created by LinXiao on 2016-11-25.
  */
-public class ShowActivityDialogEvent {
+public class ShowAlertDialogEvent {
 
     private String title = "";
     private String message = "";
@@ -17,7 +17,9 @@ public class ShowActivityDialogEvent {
     private DialogInterface.OnClickListener positiveListener = null;
     private DialogInterface.OnClickListener negativeListener = null;
 
-    public ShowActivityDialogEvent(String message) {
+    private boolean cancelable;
+
+    public ShowAlertDialogEvent(String message) {
         this.message = message;
     }
 
@@ -77,9 +79,17 @@ public class ShowActivityDialogEvent {
         return negativeListener;
     }
 
+    public boolean isCancelable() {
+        return cancelable;
+    }
+
+    public void setCancelable(boolean cancelable) {
+        this.cancelable = cancelable;
+    }
+
     @Override
     public String toString() {
-        return "ShowActivityDialogEvent{" +
+        return "ShowAlertDialogEvent{" +
                 "title='" + title + '\'' +
                 ", message='" + message + '\'' +
                 '}';

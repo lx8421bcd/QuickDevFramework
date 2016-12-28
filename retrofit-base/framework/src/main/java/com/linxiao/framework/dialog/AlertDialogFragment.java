@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 
+import com.linxiao.framework.support.dialog.AlertDialogBuilder;
+
 /**
  * 提示对话框
  * Created by LinXiao on 2016-08-07.
@@ -24,6 +26,7 @@ public class AlertDialogFragment extends BaseDialogFragment {
     private DialogInterface.OnKeyListener keyListener;
     private String positiveBtnText;
     private String negativeBtnText;
+    private boolean cancelable = true;
 
     public static AlertDialogFragment newInstance() {
 
@@ -65,6 +68,11 @@ public class AlertDialogFragment extends BaseDialogFragment {
         return this;
     }
 
+    public AlertDialogFragment setDialogCancelable(boolean cancelable) {
+        this.cancelable = cancelable;
+        return this;
+    }
+
     public AlertDialogFragment setOnKeyListener(DialogInterface.OnKeyListener keyListener) {
         this.keyListener = keyListener;
         return this;
@@ -97,6 +105,7 @@ public class AlertDialogFragment extends BaseDialogFragment {
         }
         AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(cancelable);
         return dialog;
     }
 
