@@ -32,8 +32,7 @@ public class SessionManager {
 
     /**
      * 判断Session是否过期
-     * <p>计算当前时间与上次API调用时间之差,根据服务端配置的过期时间判断是否过期,
-     * 只是理论上过期,而很多情况下Session仍然可用</p>
+     * <p>计算当前时间与上次API调用时间之差,根据服务端配置的过期时间判断是否过期</p>
      * */
     public static boolean isSessionAvailable() {
         if(SESSION == null) {

@@ -147,32 +147,32 @@ public class FileWrapper {
     /**
      * 移动文件
      * */
-    public static void move(String srcPath, String targetPath, String... files) {
+    public static void move(String src, String target, String... files) {
         if (!hasFileOperatePermission()) {
             return;
         }
-        if (!FileWrapper.checkIsAvailablePathString(targetPath)) {
-            Log.i(TAG, "illegal target path: " + targetPath);
+        if (!FileWrapper.checkIsAvailablePathString(target)) {
+            Log.i(TAG, "illegal target path: " + target);
             return;
         }
-        File target = new File(targetPath);
-        if (!target.exists()) {
+        File targetFile = new File(target);
+        if (!targetFile.exists()) {
             return;
         }
-        if (TextUtils.isEmpty(targetPath))
-            for (String fileName : files) {
-                File file = new File(srcPath, fileName);
-                if (!file.exists()) {
-                    Log.i(TAG, String.format("no such file or directory: %s in directory %s", fileName, srcPath));
-                }
-                if (file.isFile()) {
-                    moveFile(file, targetPath);
-                    continue;
-                }
-                if (file.isDirectory()) {
-                    moveDirectory(file, targetPath);
-                }
+        for (String fileName : files) {
+            File file = new File(src, fileName);
+            if (!file.exists()) {
+                Log.i(TAG, String.format("no such file or directory: %s in directory %s", fileName, src));
             }
+            if (file.isFile()) {
+                moveFile(file, target);
+                continue;
+            }
+            if (file.isDirectory()) {
+                moveDirectory(file, target);
+            }
+        }
+
     }
 
     private static void moveFile(File src, String targetDir) {
@@ -207,6 +207,24 @@ public class FileWrapper {
                 moveDirectory(sourceFile, target + File.separator + sourceFile.getName());
         }
         src.delete();
+    }
+
+    public static void copy(String src, String target) {
+        if (!hasFileOperatePermission()) {
+            return;
+        }
+        if (!FileWrapper.checkIsAvailablePathString(target)) {
+            Log.i(TAG, "illegal target path: " + target);
+            return;
+        }
+        File targetFile = new File(target);
+        if (!targetFile.exists()) {
+            return;
+        }
+        if (!targetFile.isDirectory()) {
+            Log.i(TAG, "illegal target path, not a directory : " + target);
+        }
+
     }
 
 
