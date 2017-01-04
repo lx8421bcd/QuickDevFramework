@@ -6,6 +6,6 @@ package com.linxiao.framework.net;
  */
 public class FrameworkNetConstants {
 
-    public static final String SET_COOKIE = "Set-Cookie";
+    public static final String ADD_COOKIE = "Add-Cookie";
 
 }

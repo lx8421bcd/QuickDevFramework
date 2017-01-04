@@ -55,7 +55,7 @@ public class NotificationApiActivity extends BaseActivity {
 
         Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
         Bundle bundle = new Bundle();
-        bundle.putString(NotificationWrapper.KEY_DEST_ACTIVITY_NAME, ToastApiActivity.class.getName());
+        bundle.putString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME, ToastApiActivity.class.getName());
         broadcastIntent.putExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA, bundle);
         PendingIntent pendingIntent = PendingIntent.
                 getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);

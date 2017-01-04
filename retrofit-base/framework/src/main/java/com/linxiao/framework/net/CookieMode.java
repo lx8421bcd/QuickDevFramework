@@ -13,7 +13,7 @@ public enum CookieMode {
     /**
      * 根据注解添加Cookie
      * */
-    ADD_BY_ANNOATION,
+    ADD_BY_ANNOTATION,
 
     /**
      * 所有请求全部添加Cookie;

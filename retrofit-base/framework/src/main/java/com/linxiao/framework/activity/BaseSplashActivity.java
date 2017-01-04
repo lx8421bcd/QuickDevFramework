@@ -38,13 +38,13 @@ public abstract class BaseSplashActivity extends BaseActivity {
         if (!isHandleNotification) {
             return;
         }
-        String destKey = notificationExtra.getString(NotificationWrapper.KEY_DEST_ACTIVITY_NAME);
-        if (TextUtils.isEmpty(destKey)) {
-            Log.e(TAG, "handleNotification: destKey is null !");
+        String targetKey = notificationExtra.getString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME);
+        if (TextUtils.isEmpty(targetKey)) {
+            Log.e(TAG, "handleNotification: target key is null !");
             return;
         }
         try {
-            Class<?> destActivityClass = Class.forName(destKey);
+            Class<?> destActivityClass = Class.forName(targetKey);
             Intent destIntent = new Intent(this, destActivityClass);
             destIntent.putExtras(notificationExtra);
             startActivity(destIntent);

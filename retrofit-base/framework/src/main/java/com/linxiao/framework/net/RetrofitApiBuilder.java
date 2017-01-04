@@ -18,6 +18,8 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.linxiao.framework.net.FrameworkNetConstants.ADD_COOKIE;
+
 /**
  * Retrofit构建类
  * Created by LinXiao on 2016-12-31.
@@ -76,8 +78,7 @@ public class RetrofitApiBuilder {
     /**
      * 添加 CallAdapterFactory
      * */
-    @NonNull
-    public RetrofitApiBuilder addCallAdapterFactory(CallAdapter.Factory factory) {
+    public RetrofitApiBuilder addCallAdapterFactory(@NonNull CallAdapter.Factory factory) {
         mRetrofitBuilder.addCallAdapterFactory(factory);
         return this;
     }
@@ -85,10 +86,17 @@ public class RetrofitApiBuilder {
     /**
      * 添加 ConvertFactory;
      * */
-    @NonNull
-    public RetrofitApiBuilder addConvertFactory(Converter.Factory factory) {
+    public RetrofitApiBuilder addConvertFactory(@NonNull Converter.Factory factory) {
         mRetrofitBuilder.addConverterFactory(factory);
         hasDefaultConvertFactory = false;
+        return this;
+    }
+
+    /**
+     * 给Retrofit的OkHttpClient添加其他拦截器
+     * */
+    public RetrofitApiBuilder addCustomInterceptor(@NonNull Interceptor interceptor) {
+        okHttpClientBuilder.addInterceptor(interceptor);
         return this;
     }
 
@@ -108,9 +116,9 @@ public class RetrofitApiBuilder {
                 switch (cookieMode) {
                 case NO_COOKIE:
                     break;
-                case ADD_BY_ANNOATION:
-                    if (chain.request().headers().get("Set-Cookie") != null) {
-                        builder.removeHeader("Set-Cookie");
+                case ADD_BY_ANNOTATION:
+                    if (chain.request().headers().get(ADD_COOKIE) != null) {
+                        builder.removeHeader(ADD_COOKIE);
                         if (!TextUtils.isEmpty(SessionManager.getSession())) {
                             builder.header("Set-Cookie", SessionManager.getSession());
                         }

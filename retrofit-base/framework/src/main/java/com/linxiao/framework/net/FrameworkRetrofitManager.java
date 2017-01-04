@@ -1,11 +1,7 @@
 package com.linxiao.framework.net;
 
-import android.support.annotation.NonNull;
-import android.util.Log;
-
 import com.linxiao.framework.BaseApplication;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -16,10 +12,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
-
-import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  *
@@ -45,6 +37,7 @@ public class FrameworkRetrofitManager {
         //如何比较自由的配置OKHttpClient，而不将其与Retrofit高度绑定
         //这里需要传入
     }
+
 
 
     protected static SSLSocketFactory getSSLSocketFactory(int[] certificates) {

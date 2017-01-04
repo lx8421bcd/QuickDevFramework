@@ -195,7 +195,7 @@ public class SimpleNotificationBuilder {
         if (targetActivityIntent.getExtras() != null) {
             bundle.putAll(targetActivityIntent.getExtras());
         }
-        bundle.putString(NotificationWrapper.KEY_DEST_ACTIVITY_NAME, targetActivityIntent.getComponent().getClassName());
+        bundle.putString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME, targetActivityIntent.getComponent().getClassName());
         broadcastIntent.putExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA, bundle);
         mPendingIntent = PendingIntent.getBroadcast(mContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         return this;

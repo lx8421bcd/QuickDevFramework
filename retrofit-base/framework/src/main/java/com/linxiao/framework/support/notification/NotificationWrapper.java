@@ -21,7 +21,7 @@ public class NotificationWrapper {
     private static final String TAG = NotificationWrapper.class.getSimpleName();
 
     public static String KEY_NOTIFICATION_EXTRA = "framework_notification_extra";
-    public static final String KEY_DEST_ACTIVITY_NAME = "key_dest_name";
+    public static final String KEY_TARGET_ACTIVITY_NAME = "key_dest_name";
 
     private static int defaultIconRes = R.drawable.ic_notify_default;
 
@@ -69,7 +69,7 @@ public class NotificationWrapper {
         Intent broadcastIntent = new Intent(context, NotificationReceiver.class);
         Bundle bundle = new Bundle();
         bundle.putAll(targetActivityIntent.getExtras());
-        bundle.putString(NotificationWrapper.KEY_DEST_ACTIVITY_NAME, targetActivityIntent.getComponent().getClassName());
+        bundle.putString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME, targetActivityIntent.getComponent().getClassName());
         broadcastIntent.putExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA, bundle);
         return broadcastIntent;
     }

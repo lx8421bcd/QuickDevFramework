@@ -26,7 +26,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         }
         if (BaseApplication.isMainProcessRunning()) {
             Intent destIntent = new Intent();
-            String destKey = notificationExtra.getString(NotificationWrapper.KEY_DEST_ACTIVITY_NAME);
+            String destKey = notificationExtra.getString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME);
             if (TextUtils.isEmpty(destKey)) {
                 destKey = NotificationResumeActivity.class.getName();
             }
