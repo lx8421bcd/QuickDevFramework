@@ -6,13 +6,13 @@ package com.linxiao.framework.support.log;
  */
 public interface LogInterface {
 
-    void v(String log);
+    void v(String tag, String log);
 
-    void d(String log);
+    void d(String tag, String log);
 
-    void i(String log);
+    void i(String tag, String log);
 
-    void w(String log);
+    void w(String tag, String log);
 
-    void e(String log);
+    void e(String tag, String log);
 }
