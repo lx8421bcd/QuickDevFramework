@@ -13,6 +13,8 @@ import okhttp3.Response;
  */
 public class HttpLogInterceptor implements Interceptor {
 
+    HttpInfoCatchListener httpInfoCatchListener;
+
     @Override
     public Response intercept(Chain chain) throws IOException {
 
@@ -29,4 +31,11 @@ public class HttpLogInterceptor implements Interceptor {
         return null;
     }
 
+    public HttpInfoCatchListener getHttpInfoCatchListener() {
+        return httpInfoCatchListener;
+    }
+
+    public void setHttpInfoCatchListener(HttpInfoCatchListener httpInfoCatchListener) {
+        this.httpInfoCatchListener = httpInfoCatchListener;
+    }
 }
