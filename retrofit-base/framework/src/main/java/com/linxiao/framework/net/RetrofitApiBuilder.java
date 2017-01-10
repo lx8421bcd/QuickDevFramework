@@ -1,13 +1,22 @@
 package com.linxiao.framework.net;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.RawRes;
 import android.support.v4.BuildConfig;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.linxiao.framework.support.log.LogManager;
+
 import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Map;
+
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -67,11 +76,9 @@ public class RetrofitApiBuilder {
 
     /**
      * 添加Https支持
-     * TODO: 确定Https支持的必须参数
      * */
-    public RetrofitApiBuilder addHttpsSupport(int[] certificates, String[] hostUrls) {
-//            okHttpClientBuilder.socketFactory(getSSLSocketFactory(certificates));
-//            okHttpClientBuilder.hostnameVerifier(getHostnameVerifier(hostUrls));
+    public RetrofitApiBuilder setSSLSocketFactory(@NonNull SSLSocketFactory factory, X509TrustManager trustManager) {
+        okHttpClientBuilder.sslSocketFactory(factory, trustManager);
         return this;
     }
 
@@ -101,7 +108,7 @@ public class RetrofitApiBuilder {
     }
 
 
-    public <T> T build(Class<T> clazzClientApi) {
+    public <T> T build(final Class<T> clazzClientApi) {
         //基础拦截器，
         Interceptor configInterceptor = new Interceptor() {
             @Override
@@ -135,9 +142,7 @@ public class RetrofitApiBuilder {
 
                 Request request = builder.build();
 
-                if (BuildConfig.DEBUG) {
-                    Log.d("TAG", "request url : " + request.url());
-                }
+                LogManager.d(clazzClientApi.getSimpleName(), "request url : " + request.url());
                 return chain.proceed(request);
             }
         };

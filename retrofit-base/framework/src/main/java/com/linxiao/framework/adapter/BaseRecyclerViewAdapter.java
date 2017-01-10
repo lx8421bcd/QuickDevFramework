@@ -63,22 +63,33 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     public void setDataSource(List<T> dataSource) {
         this.mDataSource.clear();
         this.mDataSource.addAll(dataSource);
+        this.notifyDataSetChanged();
     }
 
     public void addToDataSource(T data) {
         this.mDataSource.add(data);
+        this.notifyItemInserted(mDataSource.size());
     }
 
     public void addToDataSource(List<T> data) {
         this.mDataSource.addAll(data);
+        this.notifyItemRangeInserted(mDataSource.size() - data.size(), data.size());
     }
 
     public void insertIntoDataSource(int position, T data) {
-        if (position < 0 || position >= mDataSource.size()) {
+        if (position < 0 || position >= mDataSource.size() || data == null) {
             return;
         }
         this.mDataSource.add(position, data);
         this.notifyItemInserted(position);
+    }
+
+    public void insertIntoDataSource(int position, List<T> data) {
+        if (position < 0 || position >= mDataSource.size() || data == null || data.size() == 0) {
+            return;
+        }
+        this.mDataSource.addAll(position, data);
+        this.notifyItemRangeInserted(position, data.size());
     }
 
     public void removeFromDataSource(int position) {
@@ -89,6 +100,31 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         this.notifyItemRemoved(position);
     }
 
+    public void removeFromDataSource(T data) {
+        if (data == null) {
+            return;
+        }
+        int position = mDataSource.indexOf(data);
+        mDataSource.remove(data);
+        this.notifyItemRemoved(position);
+    }
+
+    public void removeFromDataSource(List<T> data) {
+        if (data == null || data.size() == 0) {
+            return;
+        }
+        for (T t : data) {
+            int position = mDataSource.indexOf(t);
+            mDataSource.remove(t);
+            this.notifyItemRemoved(position);
+        }
+    }
+
+    public void removeAll() {
+        int count = mDataSource.size();
+        this.mDataSource.clear();
+        this.notifyItemRangeRemoved(0, count);
+    }
 
     public List<T> getDataSource() {
         return mDataSource;

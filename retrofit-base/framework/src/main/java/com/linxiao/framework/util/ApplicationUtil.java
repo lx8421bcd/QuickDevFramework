@@ -4,6 +4,8 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.util.Log;
 
+import com.linxiao.framework.support.log.LogManager;
+
 import java.util.List;
 
 /**
@@ -25,14 +27,13 @@ public class ApplicationUtil {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 
         List<ActivityManager.RunningAppProcessInfo> processInfo = activityManager.getRunningAppProcesses();
-        System.out.println(processInfo.toString());
         for (int i = 0; i < processInfo.size(); i++) {
             if (processInfo.get(i).processName.equals(packageName)) {
-                Log.i(TAG, String.format("the %s is running", packageName));
+                LogManager.d(TAG, String.format("the %s is running", packageName));
                 return true;
             }
         }
-        Log.i(TAG, String.format("the %s is not running", packageName));
+        LogManager.d(TAG, String.format("the %s is not running", packageName));
         return false;
     }
 }

@@ -4,6 +4,7 @@ package com.linxiao.framework.net;
 import android.util.Log;
 
 import com.linxiao.framework.BaseApplication;
+import com.linxiao.framework.support.log.LogManager;
 import com.linxiao.framework.support.preferences.PreferenceWrapper;
 
 /**
@@ -27,7 +28,7 @@ public class SessionManager {
     public static void init() {
         SESSION = PreferenceWrapper.getDefault().getString("session_cache", null);
         lastApiCallTime = PreferenceWrapper.getDefault().getLong("lastApiCallTime", 0L);
-        Log.d("SessionManager", "SessionManager init, session = " + SESSION);
+        LogManager.d("SessionManager", "SessionManager init, session = " + SESSION);
     }
 
     /**

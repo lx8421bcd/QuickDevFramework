@@ -17,6 +17,7 @@ import android.util.Log;
 
 import com.linxiao.framework.R;
 import com.linxiao.framework.support.dialog.AlertDialogWrapper;
+import com.linxiao.framework.support.log.LogManager;
 
 /**
  * 权限管理类
@@ -137,7 +138,7 @@ public class PermissionWrapper {
      * <strong>请务必在申请权限代码所属Activity的onRequestPermissionResult()中调用此方法</strong></p>
      * */
     public void handleCallback(final Activity activity, int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.i(TAG, "handleCallback: requestCode = " + requestCode);
+        LogManager.d(TAG, "handleCallback: requestCode = " + requestCode);
         if (currCallback == null || requestCode != PERMISSION_REQUEST_CODE) {
             return;
         }
@@ -216,13 +217,13 @@ public class PermissionWrapper {
         }
         if (checkHigherThanMarshmallow()) {
             if (Settings.canDrawOverlays(activity)) {
-                Log.i(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW granted");
+                LogManager.d(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW granted");
                 if (reqSysAlertCallback != null) {
                     reqSysAlertCallback.onGranted();
                 }
             }
             else {
-                Log.i(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW denied");
+                LogManager.d(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW denied");
                 if (reqSysAlertCallback != null) {
                     reqSysAlertCallback.onDenied();
                 }
@@ -264,13 +265,13 @@ public class PermissionWrapper {
         }
         if (checkHigherThanMarshmallow()) {
             if (Settings.System.canWrite(activity)) {
-                Log.i(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW granted");
+                LogManager.d(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW granted");
                 if (reqSysSettingsCallback != null) {
                     reqSysSettingsCallback.onGranted();
                 }
             }
             else {
-                Log.i(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW denied");
+                LogManager.d(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW denied");
                 if (reqSysSettingsCallback != null) {
                     reqSysSettingsCallback.onDenied();
                 }

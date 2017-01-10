@@ -73,10 +73,16 @@ public abstract class BaseBottomDialogFragment extends BaseDialogFragment {
         }
     }
 
+    /**
+     * 设置底部Dialog高度
+     * */
     public void setDialogHeight(int height) {
         mDialogHeight = height;
     }
 
+    /**
+     * 如果不需要使用框架默认样式，可以在这里自定义样式
+     * */
     public void setCustomStyle(@StyleRes int styleRes) {
         mThemeRes = styleRes;
     }

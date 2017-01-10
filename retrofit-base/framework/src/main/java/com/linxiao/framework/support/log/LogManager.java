@@ -47,20 +47,24 @@ public class LogManager {
         LogManager.logImpl = logImpl;
     }
 
+    public static LogPrinter createLogPrinter(int logType) {
+        return new LogPrinter(logType);
+    }
+
     public static void v(String tag, String message) {
-        if (logLevel >= VERBOSE && logEnabled) {
+        if (logLevel <= VERBOSE && logEnabled) {
             logImpl.v(tag, message);
         }
     }
 
     public static void d(String tag, String message) {
-        if (logLevel >= DEBUG && logEnabled) {
+        if (logLevel <= DEBUG && logEnabled) {
             logImpl.d(tag, message);
         }
     }
 
     public static void i(String tag, String message) {
-        if (logLevel >= INFO && logEnabled) {
+        if (logLevel <= INFO && logEnabled) {
             logImpl.i(tag, message);
         }
     }
@@ -72,8 +76,63 @@ public class LogManager {
     }
 
     public static void e(String tag, String message) {
-        if (logLevel >= ERROR && logEnabled) {
+        if (logLevel <= ERROR && logEnabled) {
             logImpl.e(tag, message);
+        }
+    }
+
+    public static void e(String tag, Throwable e) {
+        if (logLevel <= ERROR && logEnabled) {
+            logImpl.e(tag, e);
+        }
+    }
+
+    public static class LogPrinter {
+        StringBuilder logStrBuilder;
+        int logType;
+        String tag;
+
+        public LogPrinter(int logType) {
+            this.logType = logType;
+            logStrBuilder = new StringBuilder();
+        }
+
+        public LogPrinter Tag(String tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        public LogPrinter append(String message) {
+            logStrBuilder.append(message).append('\n');
+            return this;
+        }
+
+        public LogPrinter append(String formatStr, Object... params) {
+            logStrBuilder.append(String.format(formatStr, params)).append('\n');
+            return this;
+        }
+
+        public void print() {
+            String message = logStrBuilder.toString();
+            switch (logType) {
+            case VERBOSE:
+                LogManager.v(tag, message);
+                break;
+            case DEBUG :
+                LogManager.d(tag, message);
+                break;
+            case INFO :
+                LogManager.i(tag, message);
+                break;
+            case WARNING:
+                LogManager.w(tag, message);
+                break;
+            case ERROR :
+                LogManager.e(tag, message);
+                break;
+            default:
+                break;
+            }
         }
     }
 

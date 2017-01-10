@@ -27,6 +27,9 @@ public class HttpLogInterceptor implements Interceptor {
         response = chain.proceed(request);
 
         long tookMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs);
+        if (httpInfoCatchListener != null) {
+
+        }
 
         return null;
     }

@@ -4,9 +4,11 @@ import android.Manifest;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.support.PermissionWrapper;
 import com.linxiao.framework.support.dialog.AlertDialogWrapper;
 import com.linxiao.framework.support.file.FileWrapper;
+import com.linxiao.framework.support.log.LogManager;
 import com.linxiao.quickdevframework.R;
 
 import java.io.BufferedOutputStream;
@@ -15,7 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class FileApiActivity extends AppCompatActivity {
+public class FileApiActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +27,8 @@ public class FileApiActivity extends AppCompatActivity {
         new PermissionWrapper.OnRequestPermissionCallback() {
             @Override
             public void onGranted() {
-                System.out.println(FileWrapper.getExternalStorageRoot());
+                LogManager.d(TAG, FileWrapper.getExternalStorageRoot());
+                LogManager.e(TAG, new IOException("sss"));
                 System.out.println(FileWrapper.getInternalStorageRoot());
 
                 System.out.println(FileWrapper.checkIsAvailablePathString("/storage/emulated/0"));
@@ -41,10 +44,9 @@ public class FileApiActivity extends AppCompatActivity {
                     bufferedOutputStream.write(buff, 0, 1024);
                     bufferedOutputStream.close();
                     outputStream.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LogManager.e(TAG, e);
+//                    e.printStackTrace();
                 }
             }
 
