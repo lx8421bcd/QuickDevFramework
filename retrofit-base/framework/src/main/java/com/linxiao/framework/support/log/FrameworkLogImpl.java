@@ -65,8 +65,8 @@ public class FrameworkLogImpl implements LogInterface {
 
         int lineStart = 0;
         int lineEnd = 0;
-        for (int i = 0; i < log.length(); i++) {
-            if (log.charAt(i) == '\n' || lineEnd >= MAX_LINE_LENGTH || i == log.length() - 1) {
+        for (int i = 0; i <= log.length(); i++) {
+            if (i == log.length() || lineEnd >= MAX_LINE_LENGTH || log.charAt(i) == '\n') {
                 printLog(logType, log.substring(lineStart, i));
                 lineStart = i;
                 lineEnd = 0;

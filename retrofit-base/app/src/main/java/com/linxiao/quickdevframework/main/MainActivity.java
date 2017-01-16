@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.adaptertest.EmptyViewTestActivity;
 import com.linxiao.quickdevframework.frameworkapi.DialogApiActivity;
 import com.linxiao.quickdevframework.frameworkapi.FileApiActivity;
 import com.linxiao.quickdevframework.frameworkapi.NotificationApiActivity;
@@ -56,6 +57,7 @@ public class MainActivity extends BaseActivity {
         apiSampleList.add(new ApiSampleObject("Permission API", PermissionApiActivity.class));
         apiSampleList.add(new ApiSampleObject("File API", FileApiActivity.class));
         apiSampleList.add(new ApiSampleObject("Network API", NetTestActivity.class));
+        apiSampleList.add(new ApiSampleObject("Adapter API", EmptyViewTestActivity.class));
 
         ApiSampleListAdapter adapter = new ApiSampleListAdapter(this);
         adapter.setDataSource(apiSampleList);

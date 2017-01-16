@@ -38,7 +38,8 @@
 
         <service android:name=".frameworkapi.BackgroundService" />
 
-        <activity android:name=".frameworkapi.FileApiActivity"></activity>
+        <activity android:name=".frameworkapi.FileApiActivity" />
+        <activity android:name=".adaptertest.EmptyViewTestActivity"></activity>
     </application>
 
 </manifest>

@@ -41,7 +41,7 @@ public abstract class BaseFragment extends Fragment {
         listDataManagers = new ArrayList<>();
         if(contentView == null) {
             contentView = inflater.inflate(getInflateLayoutRes(), container, false);
-            onInitContentView(contentView, inflater, container, savedInstanceState);
+            onCreateContentView(contentView, inflater, container, savedInstanceState);
         }
         return contentView;
     }
@@ -75,7 +75,7 @@ public abstract class BaseFragment extends Fragment {
      * execute on method onCreateView(), put your code here which you want to do in onCreateView()<br>
      * <strong>do not override onCreateView() or this method and configureContentViewRes() will be invalidated</strong>
      * */
-    protected abstract void onInitContentView(View contentView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
+    protected abstract void onCreateContentView(View contentView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
 
     /**
      * use this method instead of findViewById() to simplify view initialization <br>

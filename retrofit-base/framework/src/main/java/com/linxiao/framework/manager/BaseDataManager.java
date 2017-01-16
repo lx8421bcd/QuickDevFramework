@@ -48,7 +48,7 @@ public abstract class BaseDataManager {
      * 解除Retrofit的Call与DataManager的绑定
      * @param call 需要解除绑定的call
      * */
-    protected void unBindCall(Call call) {
+    protected void unbindCall(Call call) {
         listApiCalls.remove(call);
     }
 }

@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.linxiao.framework.support.log.LogManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,27 +90,30 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         return (VH) new BaseRecyclerViewHolder(itemView);
     }
 
+    protected View inflateItemView(@LayoutRes int layoutRes, @Nullable ViewGroup parent) {
+        return LayoutInflater.from(mContext).inflate(layoutRes, parent, false);
+    }
+
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
+        LogManager.d(TAG, "viewType = " + viewType);
         switch (viewType) {
         case HEADER_VIEW :
-            createEmptyViewHolder(mHeaderView);
-            break;
+            return createEmptyViewHolder(mHeaderView);
         case EMPTY_VIEW :
-            createEmptyViewHolder(mEmptyView);
-            break;
+            return createEmptyViewHolder(mEmptyView);
         case FOOTER_VIEW:
-            createEmptyViewHolder(mFooterView);
-            break;
+            return createEmptyViewHolder(mFooterView);
+        case LOADING_VIEW:
+            return createEmptyViewHolder(mLoadingView);
         default:
-            break;
+            return onCreateDataViewHolder(parent, viewType);
         }
-        return onCreateDataViewHolder(parent, viewType);
     }
 
     @Override
     public void onBindViewHolder(VH holder, int position) {
-        int realPosition = mHeaderView != null ? position - 1 : position;
+        int dataPosition = mHeaderView != null ? position - 1 : position;
         int itemViewType = holder.getItemViewType();
         switch (itemViewType) {
         case HEADER_VIEW:
@@ -117,8 +122,10 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             break;
         case EMPTY_VIEW:
             break;
+        case LOADING_VIEW:
+            break;
         default:
-            setData(holder, mDataSource.get(realPosition));
+            setData(holder, mDataSource.get(dataPosition));
             break;
         }
     }
@@ -167,12 +174,12 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         return useEmptyView && mEmptyView != null && mDataSource.size() == 0;
     }
 
-    private boolean hasHeaderView() {
-        return useHeaderView && mHeaderView != null;
-    }
-
     private boolean hasLoadingView() {
         return useLoadingView && mLoadingView != null;
+    }
+
+    private boolean hasHeaderView() {
+        return useHeaderView && mHeaderView != null;
     }
 
     private boolean hasFooterView() {
@@ -204,18 +211,28 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     /**
      * 显示加载视图
      * */
-    public void showLoadingView() {
-        useEmptyView = false;
-        useLoadingView = true;
+    public void showLoadingView(boolean isShow) {
+        useLoadingView = isShow;
+        if (isShow) {
+            useEmptyView = false;
+            if (mDataSource.size() > 0) {
+                mDataSource.clear();
+            }
+        }
         this.notifyDataSetChanged();
     }
 
     /**
      * 显示空视图
      * */
-    public void showEmptyView() {
-        useEmptyView = true;
-        useLoadingView = false;
+    public void showEmptyView(boolean isShow) {
+        useEmptyView = isShow;
+        if (isShow) {
+            useLoadingView = false;
+            if (mDataSource.size() > 0) {
+                mDataSource.clear();
+            }
+        }
         this.notifyDataSetChanged();
     }
 
@@ -243,10 +260,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
 
     public View getEmptyView() {
         return mEmptyView;
-    }
-
-    protected View inflateItemView(@LayoutRes int layoutRes, @Nullable ViewGroup parent) {
-        return LayoutInflater.from(mContext).inflate(layoutRes, parent, false);
     }
 
     public void setDataSource(List<T> dataSource) {
