@@ -5,6 +5,10 @@ import android.util.Log;
 
 import com.linxiao.framework.BaseApplication;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * 框架下Log实现
  * Created by LinXiao on 2017-01-05.
@@ -57,6 +61,7 @@ public class FrameworkLogImpl implements LogInterface {
             return;
         }
         printLog(logType, SEPARATE);
+        printLog(logType, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS", Locale.getDefault()).format(new Date(System.currentTimeMillis())));
         printLog(logType, String.format("Application: %s | Thread: %s | Tag: %s",
                 BaseApplication.getApplicationName(),
                 Thread.currentThread().getName(),

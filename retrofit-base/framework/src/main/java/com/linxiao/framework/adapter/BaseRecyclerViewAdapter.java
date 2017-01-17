@@ -8,11 +8,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.linxiao.framework.support.log.LogManager;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * RecyclerView 基类
@@ -49,18 +54,24 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     private static final int HEADER_VIEW = 101;
     private static final int EMPTY_VIEW = 102;
     private static final int FOOTER_VIEW = 103;
-    private static final int LOADING_VIEW = 104;
 
     private static String TAG;
 
     private List<T> mDataSource;
     private Context mContext;
-    private View mHeaderView;
-    private View mFooterView;
+    //在这里使用ViewGroup存储Header、Footer和Empty，因为View是被存储在ViewHolder中的，
+    //如果在RecyclerView 构建完毕后修改View引用，不会重新构建ViewHolder也没有办法替换View
+    //因此这里让Holden存储ViewGroup，然后需要替换ContentView的时候修改ViewGroup即可
+    private LinearLayout mHeaderContainer;
+    private LinearLayout mFooterContainer;
+    private FrameLayout mNoDataViewContainer;
+
+
     private View mEmptyView;
+    private View mErrorView;
     private View mLoadingView;
 
-    private boolean useEmptyView = false;
+    private boolean useNoDataView = false;
     private boolean useHeaderView = false;
     private boolean useFooterView = false;
     private boolean useLoadingView = false;
@@ -99,13 +110,11 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         LogManager.d(TAG, "viewType = " + viewType);
         switch (viewType) {
         case HEADER_VIEW :
-            return createEmptyViewHolder(mHeaderView);
+            return createEmptyViewHolder(mHeaderContainer);
         case EMPTY_VIEW :
-            return createEmptyViewHolder(mEmptyView);
+            return createEmptyViewHolder(mNoDataViewContainer);
         case FOOTER_VIEW:
-            return createEmptyViewHolder(mFooterView);
-        case LOADING_VIEW:
-            return createEmptyViewHolder(mLoadingView);
+            return createEmptyViewHolder(mFooterContainer);
         default:
             return onCreateDataViewHolder(parent, viewType);
         }
@@ -113,7 +122,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
 
     @Override
     public void onBindViewHolder(VH holder, int position) {
-        int dataPosition = mHeaderView != null ? position - 1 : position;
+        int dataPosition = mHeaderContainer != null ? position - 1 : position;
         int itemViewType = holder.getItemViewType();
         switch (itemViewType) {
         case HEADER_VIEW:
@@ -121,8 +130,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         case FOOTER_VIEW:
             break;
         case EMPTY_VIEW:
-            break;
-        case LOADING_VIEW:
             break;
         default:
             setData(holder, mDataSource.get(dataPosition));
@@ -132,13 +139,13 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     @Override
     public int getItemCount() {
         int count = mDataSource.size();
-        if (mHeaderView != null) {
+        if (mHeaderContainer != null) {
             count++;
         }
         if (hasEmptyView()) {
             count++;
         }
-        if (mFooterView != null) {
+        if (mFooterContainer != null) {
             count++;
         }
         return count;
@@ -165,40 +172,65 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             } else if (mDataSource.size() > 0) {
                 return realPosition < mDataSource.size() ? super.getItemViewType(position) : FOOTER_VIEW;
             } else {
-                return (hasLoadingView() && realPosition == 0) ? LOADING_VIEW : FOOTER_VIEW;
+                return FOOTER_VIEW; //TODO 此处逻辑需重写
             }
         }
     }
 
     private boolean hasEmptyView() {
-        return useEmptyView && mEmptyView != null && mDataSource.size() == 0;
-    }
-
-    private boolean hasLoadingView() {
-        return useLoadingView && mLoadingView != null;
+        return useNoDataView && mNoDataViewContainer != null && mDataSource.size() == 0;
     }
 
     private boolean hasHeaderView() {
-        return useHeaderView && mHeaderView != null;
+        return useHeaderView && mHeaderContainer != null && mHeaderContainer.getChildCount() > 0;
     }
 
     private boolean hasFooterView() {
-        return useFooterView && mFooterView != null;
+        return useFooterView && mFooterContainer != null && mFooterContainer.getChildCount() > 0;
     }
 
-    public void setHeaderView(@NonNull View v) {
-        mHeaderView = v;
-        useHeaderView = true;
-        notifyItemInserted(0);
+    private int getHeaderPosition() {
+        if (mHeaderContainer != null) {
+            return 0;
+        }
+        return -1;
     }
 
-    public void setLoadingView(@NonNull View v) {
-        mLoadingView = v;
+    private int getFooterPosition() {
+        if (mFooterContainer == null) {
+            return -1;
+        }
+        return getItemCount();
     }
 
-    public void setFooterView(@NonNull View v) {
-        mFooterView = v;
-        useFooterView = true;
+    public void setHeaderView(@NonNull View v, int position) {
+        if (mHeaderContainer == null) {
+            mHeaderContainer = new LinearLayout(mContext);
+
+            mHeaderContainer.setOrientation(LinearLayout.VERTICAL);
+            mHeaderContainer.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+        }
+        if (position < mHeaderContainer.getChildCount()) {
+            mHeaderContainer.addView(v, position);
+        } else {
+            mHeaderContainer.addView(v);
+        }
+        notifyItemInserted(getHeaderPosition());
+    }
+
+    public void setFooterView(@NonNull View v,  int position) {
+        if (mHeaderContainer == null) {
+            mHeaderContainer = new LinearLayout(mContext);
+
+            mHeaderContainer.setOrientation(LinearLayout.VERTICAL);
+            mHeaderContainer.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+        }
+        if (position < mHeaderContainer.getChildCount()) {
+            mHeaderContainer.addView(v, position);
+        } else {
+            mHeaderContainer.addView(v);
+        }
+        notifyItemInserted(getFooterPosition());
     }
 
     /**
@@ -206,52 +238,107 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
      * */
     public void setEmptyView(@NonNull View v) {
         mEmptyView = v;
+        useNoDataView = true;
+    }
+
+    public void setLoadingView(@NonNull View v) {
+        mLoadingView = v;
+        useNoDataView = true;
+    }
+
+    public void setErrorView(@NonNull View v) {
+        mErrorView = v;
+        useNoDataView = true;
     }
 
     /**
      * 显示加载视图
      * */
     public void showLoadingView(boolean isShow) {
-        useLoadingView = isShow;
-        if (isShow) {
-            useEmptyView = false;
-            if (mDataSource.size() > 0) {
-                mDataSource.clear();
-            }
+        if (!isShow) {
+            clearNoDataView();
         }
-        this.notifyDataSetChanged();
+        showNoDataView(mLoadingView);
     }
 
     /**
      * 显示空视图
      * */
     public void showEmptyView(boolean isShow) {
-        useEmptyView = isShow;
-        if (isShow) {
-            useLoadingView = false;
-            if (mDataSource.size() > 0) {
-                mDataSource.clear();
-            }
+        if (!isShow) {
+            clearNoDataView();
         }
-        this.notifyDataSetChanged();
+        showNoDataView(mEmptyView);
+    }
+
+    /**
+     * 显示加载错误视图
+     * */
+    public void showErrorView(boolean isShow) {
+        if (!isShow) {
+            clearNoDataView();
+        }
+        showNoDataView(mErrorView);
+    }
+
+    /**
+     * 没有数据时显示的View
+     * <p>主要是操作EmptyContainer用于切换在Empty、Loading、Error下显示的View</p>
+     * */
+    private void showNoDataView(View noDataView) {
+        if (noDataView == null) {
+            return;
+        }
+        if (mDataSource.size() > 0) {
+            mDataSource.clear();
+        }
+        boolean isInsert = false;
+        if (mNoDataViewContainer == null) {
+            mNoDataViewContainer = new FrameLayout(mContext);
+            final RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(
+                    RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT);
+            final ViewGroup.LayoutParams lp = noDataView.getLayoutParams();
+            if (lp != null) {
+                layoutParams.width = lp.width;
+                layoutParams.height = lp.height;
+            }
+            mNoDataViewContainer.setLayoutParams(layoutParams);
+            isInsert = true;
+        }
+        if (noDataView.getParent() != null) {
+            ((ViewGroup) noDataView.getParent()).removeView(noDataView);
+        }
+        mNoDataViewContainer.removeAllViews();
+        mNoDataViewContainer.addView(noDataView);
+        if (isInsert) {
+            int position = getHeaderPosition() + 1;
+            notifyItemInserted(position);
+        }
+    }
+
+    private void clearNoDataView() {
+        if (mNoDataViewContainer != null) {
+            mNoDataViewContainer.removeAllViews();
+        }
+        notifyDataSetChanged();
     }
 
     public void removeHeaderView() {
-        mHeaderView = null;
+        mHeaderContainer = null;
         useHeaderView = false;
     }
 
     public void removeFooterView() {
-        mFooterView = null;
+        mFooterContainer = null;
         useFooterView = false;
     }
 
     public View getHeaderView() {
-        return mHeaderView;
+        return mHeaderContainer;
     }
 
     public View getFooterView() {
-        return mFooterView;
+        return mFooterContainer;
     }
 
     public View getLoadingView() {

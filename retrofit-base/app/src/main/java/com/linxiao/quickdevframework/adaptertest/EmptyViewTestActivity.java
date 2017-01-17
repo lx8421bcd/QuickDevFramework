@@ -6,6 +6,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.quickdevframework.R;
@@ -35,13 +36,14 @@ public class EmptyViewTestActivity extends BaseActivity {
         rcvEmptySimple.setItemAnimator(new DefaultItemAnimator());
         rcvEmptySimple.setLayoutManager(new LinearLayoutManager(this));
 
-        emptyView = getLayoutInflater().inflate(R.layout.empty_view, rcvEmptySimple, false);
+        emptyView = getLayoutInflater().inflate(R.layout.empty_view, null);
         mAdapter.setEmptyView(emptyView);
 
-        View loadingView = getLayoutInflater().inflate(R.layout.loading_view, rcvEmptySimple, false);
+        View loadingView = getLayoutInflater().inflate(R.layout.loading_view, null);
         mAdapter.setLoadingView(loadingView);
 
-        errorView = getLayoutInflater().inflate(R.layout.error_view, rcvEmptySimple, false);
+        errorView = getLayoutInflater().inflate(R.layout.error_view, null);
+        mAdapter.setErrorView(errorView);
         errorView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,29 +72,24 @@ public class EmptyViewTestActivity extends BaseActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                mAdapter.showLoadingView(false);
                 if (showEmpty) {
                     showError = true;
                     showEmpty = false;
                     showData = false;
-
-                    mAdapter.setEmptyView(emptyView);
                     mAdapter.showEmptyView(true);
                 }
                 else if (showError) {
                     showData = true;
                     showEmpty = false;
                     showError = false;
-
-                    mAdapter.setEmptyView(errorView);
-                    mAdapter.showEmptyView(true);
+                    mAdapter.showErrorView(true);
                 }
                 else if (showData) {
                     showEmpty = true;
                     showData = false;
                     showError = false;
-
                     mAdapter.addToDataSource(Arrays.asList("1","1","1","1","1","1","1","1","1","1","1"));
-                    mAdapter.showEmptyView(false);
                 }
             }
         }, 1000);
