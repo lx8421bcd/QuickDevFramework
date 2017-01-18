@@ -68,27 +68,27 @@ public class EmptyViewTestActivity extends BaseActivity {
     }
 
     private void refreshData() {
-        mAdapter.showLoadingView(true);
+        mAdapter.showLoadingView();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                mAdapter.showLoadingView(false);
                 if (showEmpty) {
                     showError = true;
                     showEmpty = false;
                     showData = false;
-                    mAdapter.showEmptyView(true);
+                    mAdapter.showEmptyView();
                 }
                 else if (showError) {
                     showData = true;
                     showEmpty = false;
                     showError = false;
-                    mAdapter.showErrorView(true);
+                    mAdapter.showErrorView();
                 }
                 else if (showData) {
                     showEmpty = true;
                     showData = false;
                     showError = false;
+                    mAdapter.hideNoDataView();
                     mAdapter.addToDataSource(Arrays.asList("1","1","1","1","1","1","1","1","1","1","1"));
                 }
             }

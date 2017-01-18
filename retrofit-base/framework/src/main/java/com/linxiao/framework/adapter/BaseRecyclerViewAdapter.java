@@ -21,8 +21,8 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * RecyclerView 基类
- * TODO：添加Header和Footer支持， Header、Footer控制
  * TODO：复杂数据基类，混合数据基类
+ * TODO：自动分页加载逻辑
  * Created by linxiao on 2017/1/4.
  */
 public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHolder> extends RecyclerView.Adapter<VH> {
@@ -71,10 +71,9 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     private View mErrorView;
     private View mLoadingView;
 
-    private boolean useNoDataView = false;
-    private boolean useHeaderView = false;
-    private boolean useFooterView = false;
-    private boolean useLoadingView = false;
+    private boolean showNoDataView = false;
+    private boolean showHeaderView = false;
+    private boolean showFooterView = false;
 
     public BaseRecyclerViewAdapter(Context context) {
         TAG = this.getClass().getSimpleName();
@@ -88,7 +87,8 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     protected abstract void setData(VH holder, T data);
 
     /**
-     *
+     * create ViewHolder which used to handle data
+     * <p>called on On</p>
      * */
     protected abstract VH onCreateDataViewHolder(ViewGroup parent, int viewType);
 
@@ -139,13 +139,13 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     @Override
     public int getItemCount() {
         int count = mDataSource.size();
-        if (mHeaderContainer != null) {
+        if (hasHeaderView() && showHeaderView) {
             count++;
         }
-        if (hasEmptyView()) {
+        if (hasNoDataView() && showNoDataView) {
             count++;
         }
-        if (mFooterContainer != null) {
+        if (hasFooterView() && showFooterView) {
             count++;
         }
         return count;
@@ -153,40 +153,40 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
 
     @Override
     public int getItemViewType(int position) {
-        boolean hasHeaderView = hasHeaderView();
-        if (hasEmptyView()) {
+        boolean showHeader = hasHeaderView() && showHeaderView;
+        if (hasNoDataView() && showNoDataView) {
             switch (position) {
             case 0 :
-                return hasHeaderView ? HEADER_VIEW : EMPTY_VIEW;
+                return showHeader ? HEADER_VIEW : EMPTY_VIEW;
             case 1 :
-                return hasHeaderView ? EMPTY_VIEW : FOOTER_VIEW;
+                return showHeader ? EMPTY_VIEW : FOOTER_VIEW;
             case 2 :
                 return FOOTER_VIEW;
             default :
                 return super.getItemViewType(position);
             }
         } else {
-            int realPosition = hasHeaderView ? position - 1 : position;
+            int realPosition = showHeader ? position - 1 : position;
             if (realPosition < 0) {
                 return HEADER_VIEW;
             } else if (mDataSource.size() > 0) {
-                return realPosition < mDataSource.size() ? super.getItemViewType(position) : FOOTER_VIEW;
+                return realPosition < mDataSource.size() ? super.getItemViewType(realPosition) : FOOTER_VIEW;
             } else {
-                return FOOTER_VIEW; //TODO 此处逻辑需重写
+                return hasFooterView() && showFooterView ? FOOTER_VIEW : super.getItemViewType(realPosition);
             }
         }
     }
 
-    private boolean hasEmptyView() {
-        return useNoDataView && mNoDataViewContainer != null && mDataSource.size() == 0;
+    private boolean hasNoDataView() {
+        return mNoDataViewContainer != null && mDataSource.size() == 0;
     }
 
     private boolean hasHeaderView() {
-        return useHeaderView && mHeaderContainer != null && mHeaderContainer.getChildCount() > 0;
+        return mHeaderContainer != null && mHeaderContainer.getChildCount() > 0;
     }
 
     private boolean hasFooterView() {
-        return useFooterView && mFooterContainer != null && mFooterContainer.getChildCount() > 0;
+        return mFooterContainer != null && mFooterContainer.getChildCount() > 0;
     }
 
     private int getHeaderPosition() {
@@ -238,47 +238,58 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
      * */
     public void setEmptyView(@NonNull View v) {
         mEmptyView = v;
-        useNoDataView = true;
+        showNoDataView = true;
     }
 
     public void setLoadingView(@NonNull View v) {
         mLoadingView = v;
-        useNoDataView = true;
+        showNoDataView = true;
     }
 
     public void setErrorView(@NonNull View v) {
         mErrorView = v;
-        useNoDataView = true;
+        showNoDataView = true;
     }
 
     /**
      * 显示加载视图
      * */
-    public void showLoadingView(boolean isShow) {
-        if (!isShow) {
-            clearNoDataView();
-        }
+    public void showLoadingView() {
         showNoDataView(mLoadingView);
     }
 
     /**
      * 显示空视图
      * */
-    public void showEmptyView(boolean isShow) {
-        if (!isShow) {
-            clearNoDataView();
-        }
+    public void showEmptyView() {
         showNoDataView(mEmptyView);
     }
 
     /**
      * 显示加载错误视图
      * */
-    public void showErrorView(boolean isShow) {
-        if (!isShow) {
-            clearNoDataView();
-        }
+    public void showErrorView() {
         showNoDataView(mErrorView);
+    }
+
+    /**
+     * 是否显示Header
+     * */
+    public void setHeaderVisible(boolean visible) {
+        showHeaderView = visible;
+        if (hasHeaderView()) {
+            notifyItemChanged(getHeaderPosition());
+        }
+    }
+
+    /**
+     * 是否显示Footer
+     * */
+    public void setFooterVisible(boolean visible) {
+        showFooterView = visible;
+        if (hasFooterView()) {
+            notifyItemChanged(getFooterPosition());
+        }
     }
 
     /**
@@ -314,9 +325,12 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             int position = getHeaderPosition() + 1;
             notifyItemInserted(position);
         }
+        else {
+            notifyDataSetChanged();
+        }
     }
 
-    private void clearNoDataView() {
+    public void hideNoDataView() {
         if (mNoDataViewContainer != null) {
             mNoDataViewContainer.removeAllViews();
         }
@@ -325,12 +339,12 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
 
     public void removeHeaderView() {
         mHeaderContainer = null;
-        useHeaderView = false;
+        showHeaderView = false;
     }
 
     public void removeFooterView() {
         mFooterContainer = null;
-        useFooterView = false;
+        showFooterView = false;
     }
 
     public View getHeaderView() {
