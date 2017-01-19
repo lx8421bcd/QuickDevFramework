@@ -9,8 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 
-import com.linxiao.framework.support.dialog.AlertDialogBuilder;
-
 /**
  * 提示对话框
  * Created by LinXiao on 2016-08-07.

@@ -23,9 +23,6 @@ public class EmptyViewTestActivity extends BaseActivity {
     private boolean showData = false;
     private boolean showError = false;
 
-    private View errorView;
-    private View emptyView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,13 +33,13 @@ public class EmptyViewTestActivity extends BaseActivity {
         rcvEmptySimple.setItemAnimator(new DefaultItemAnimator());
         rcvEmptySimple.setLayoutManager(new LinearLayoutManager(this));
 
-        emptyView = getLayoutInflater().inflate(R.layout.empty_view, null);
+        View emptyView = getLayoutInflater().inflate(R.layout.empty_view, null);
         mAdapter.setEmptyView(emptyView);
 
         View loadingView = getLayoutInflater().inflate(R.layout.loading_view, null);
         mAdapter.setLoadingView(loadingView);
 
-        errorView = getLayoutInflater().inflate(R.layout.error_view, null);
+        View errorView = getLayoutInflater().inflate(R.layout.error_view, null);
         mAdapter.setErrorView(errorView);
         errorView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +55,8 @@ public class EmptyViewTestActivity extends BaseActivity {
         });
         refreshData();
 
+        View headerView = getLayoutInflater().inflate(R.layout.item_simple_header, null);
+        mAdapter.addHeaderView(headerView);
     }
 
     public void onBtnRefreshClick(View v) {
@@ -88,7 +87,6 @@ public class EmptyViewTestActivity extends BaseActivity {
                     showEmpty = true;
                     showData = false;
                     showError = false;
-                    mAdapter.hideNoDataView();
                     mAdapter.addToDataSource(Arrays.asList("1","1","1","1","1","1","1","1","1","1","1"));
                 }
             }

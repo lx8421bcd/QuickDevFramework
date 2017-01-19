@@ -5,6 +5,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.LinearLayout;
 import com.linxiao.framework.support.log.LogManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -43,14 +45,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         void onItemLongClick(BaseRecyclerViewAdapter adapter, View itemView, int position);
     }
 
-    /**
-     * used for default page load
-     * */
-    public interface LoadMoreListener {
-
-        void onLoadMore();
-    }
-
     private static final int HEADER_VIEW = 101;
     private static final int EMPTY_VIEW = 102;
     private static final int FOOTER_VIEW = 103;
@@ -72,8 +66,8 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     private View mLoadingView;
 
     private boolean showNoDataView = false;
-    private boolean showHeaderView = false;
-    private boolean showFooterView = false;
+    private boolean showHeaderView = true;
+    private boolean showFooterView = true;
 
     public BaseRecyclerViewAdapter(Context context) {
         TAG = this.getClass().getSimpleName();
@@ -122,7 +116,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
 
     @Override
     public void onBindViewHolder(VH holder, int position) {
-        int dataPosition = mHeaderContainer != null ? position - 1 : position;
+        int dataPosition = hasHeaderView() && showHeaderView ? position - 1 : position;
         int itemViewType = holder.getItemViewType();
         switch (itemViewType) {
         case HEADER_VIEW:
@@ -178,7 +172,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     }
 
     private boolean hasNoDataView() {
-        return mNoDataViewContainer != null && mDataSource.size() == 0;
+        return mNoDataViewContainer != null && mNoDataViewContainer.getChildCount() > 0 && mDataSource.size() == 0;
     }
 
     private boolean hasHeaderView() {
@@ -203,7 +197,11 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         return getItemCount();
     }
 
-    public void setHeaderView(@NonNull View v, int position) {
+    public void addHeaderView(@NonNull View v) {
+        addHeaderView(v, -1);
+    }
+
+    public void addHeaderView(@NonNull View v, int position) {
         if (mHeaderContainer == null) {
             mHeaderContainer = new LinearLayout(mContext);
 
@@ -218,17 +216,21 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         notifyItemInserted(getHeaderPosition());
     }
 
-    public void setFooterView(@NonNull View v,  int position) {
-        if (mHeaderContainer == null) {
-            mHeaderContainer = new LinearLayout(mContext);
+    public void addFooterView(@NonNull View v) {
+        addFooterView(v, -1);
+    }
 
-            mHeaderContainer.setOrientation(LinearLayout.VERTICAL);
-            mHeaderContainer.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+    public void addFooterView(@NonNull View v, int position) {
+        if (mFooterContainer == null) {
+            mFooterContainer = new LinearLayout(mContext);
+
+            mFooterContainer.setOrientation(LinearLayout.VERTICAL);
+            mFooterContainer.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         }
         if (position < mHeaderContainer.getChildCount()) {
-            mHeaderContainer.addView(v, position);
+            mFooterContainer.addView(v, position);
         } else {
-            mHeaderContainer.addView(v);
+            mFooterContainer.addView(v);
         }
         notifyItemInserted(getFooterPosition());
     }
@@ -293,6 +295,17 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     }
 
     /**
+     * 隐藏没有数据时显示的View
+     * */
+    private void hideNoDataView() {
+        if (hasNoDataView()) {
+            mNoDataViewContainer.removeAllViews();
+        }
+//        notifyDataSetChanged();
+        notifyItemRemoved(hasHeaderView() ? 1 : 0);
+    }
+
+    /**
      * 没有数据时显示的View
      * <p>主要是操作EmptyContainer用于切换在Empty、Loading、Error下显示的View</p>
      * */
@@ -330,67 +343,83 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
     }
 
-    public void hideNoDataView() {
-        if (mNoDataViewContainer != null) {
-            mNoDataViewContainer.removeAllViews();
+    @Override
+    public void onViewAttachedToWindow(VH holder) {
+        super.onViewAttachedToWindow(holder);
+        int type = holder.getItemViewType();
+        if (type == EMPTY_VIEW || type == HEADER_VIEW || type == FOOTER_VIEW) {
+            if (holder.itemView.getLayoutParams() instanceof StaggeredGridLayoutManager.LayoutParams) {
+                StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
+                params.setFullSpan(true);
+            }
         }
-        notifyDataSetChanged();
     }
 
-    public void removeHeaderView() {
-        mHeaderContainer = null;
-        showHeaderView = false;
+    public void removeHeaderView(View v) {
+        if (mHeaderContainer != null) {
+            mHeaderContainer.removeView(v);
+            notifyItemChanged(getHeaderPosition());
+        }
     }
 
-    public void removeFooterView() {
-        mFooterContainer = null;
-        showFooterView = false;
+    public void removeHeaderView(int position) {
+        if (mHeaderContainer != null) {
+            View v = mHeaderContainer.getChildAt(position);
+            if (v != null) {
+                removeHeaderView(v);
+            }
+        }
     }
 
-    public View getHeaderView() {
-        return mHeaderContainer;
+    public void removeFooterView(View v) {
+        if (mFooterContainer != null) {
+            mFooterContainer.removeView(v);
+            notifyItemChanged(getFooterPosition());
+        }
     }
 
-    public View getFooterView() {
-        return mFooterContainer;
+    public void removeFooterView(int position) {
+        if (mFooterContainer != null) {
+            View v = mFooterContainer.getChildAt(position);
+            if (v != null) {
+                removeFooterView(v);
+            }
+        }
     }
 
-    public View getLoadingView() {
-        return mLoadingView;
-    }
-
-    public View getEmptyView() {
-        return mEmptyView;
-    }
-
-    public void setDataSource(List<T> dataSource) {
+    public void setDataSource(@NonNull List<T> dataSource) {
         this.mDataSource.clear();
-        this.mDataSource.addAll(dataSource);
+        this.mDataSource = dataSource;
         this.notifyDataSetChanged();
     }
 
-    public void addToDataSource(T data) {
+    public void addToDataSource(@NonNull T data) {
+        hideNoDataView();
         this.mDataSource.add(data);
         this.notifyItemInserted(mDataSource.size());
     }
 
-    public void addToDataSource(List<T> data) {
+    public void addToDataSource(@NonNull List<T> data) {
+        hideNoDataView();
         this.mDataSource.addAll(data);
         this.notifyItemRangeInserted(mDataSource.size() - data.size(), data.size());
+        notifyDataSetChanged();
     }
 
-    public void insertIntoDataSource(int position, T data) {
-        if (position < 0 || position >= mDataSource.size() || data == null) {
+    public void addToDataSource(int position, @NonNull T data) {
+        if (position < 0 || position > mDataSource.size()) {
             return;
         }
+        hideNoDataView();
         this.mDataSource.add(position, data);
         this.notifyItemInserted(position);
     }
 
-    public void insertIntoDataSource(int position, List<T> data) {
-        if (position < 0 || position >= mDataSource.size() || data == null || data.size() == 0) {
+    public void addToDataSource(int position, @NonNull List<T> data) {
+        if (position < 0 || position >= mDataSource.size() || data.size() == 0) {
             return;
         }
+        hideNoDataView();
         this.mDataSource.addAll(position, data);
         this.notifyItemRangeInserted(position, data.size());
     }
@@ -410,6 +439,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         int position = mDataSource.indexOf(data);
         mDataSource.remove(data);
         this.notifyItemRemoved(position);
+
     }
 
     public void removeFromDataSource(List<T> data) {
@@ -435,6 +465,22 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
 
     protected Context getContext() {
         return mContext;
+    }
+
+    public View getHeaderView() {
+        return mHeaderContainer;
+    }
+
+    public View getFooterView() {
+        return mFooterContainer;
+    }
+
+    public View getLoadingView() {
+        return mLoadingView;
+    }
+
+    public View getEmptyView() {
+        return mEmptyView;
     }
 
 }
