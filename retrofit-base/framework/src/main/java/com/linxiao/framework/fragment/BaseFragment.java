@@ -61,7 +61,7 @@ public abstract class BaseFragment extends Fragment {
      * bind DataManager to fragment life cycle, all network request will be canceled
      * when the fragment content view is destroyed
      * */
-    protected void bindDataManagerToLifeCycle(@NonNull BaseDataManager dataManager) {
+    protected void bindDataManager(@NonNull BaseDataManager dataManager) {
         listDataManagers.add(dataManager);
     }
 

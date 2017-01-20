@@ -42,7 +42,7 @@ public class HttpInfoCatchInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        if (catchEnabled) {
+        if (!catchEnabled || httpInfoCatchListener == null) {
             return chain.proceed(request);
         }
         HttpInfoEntity entity = new HttpInfoEntity();

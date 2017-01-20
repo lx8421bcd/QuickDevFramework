@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- *
+ * 文件管理封装，提供常见文件管理功能
  * Created by linxiao on 2016/12/14.
  */
 public class FileWrapper {
@@ -32,6 +32,9 @@ public class FileWrapper {
         return instance;
     }
 
+    /**
+     * 检查是否为有效的路径字符串
+     * */
     public static boolean checkIsAvailablePathString(String path) {
         if (TextUtils.isEmpty(path)) {
             return false;
@@ -103,7 +106,7 @@ public class FileWrapper {
     /**
      * 新建文件夹
      * */
-    public boolean mkdir(String path) {
+    public static boolean mkdir(String path) {
         if (!hasFileOperatePermission()) {
             return false;
         }

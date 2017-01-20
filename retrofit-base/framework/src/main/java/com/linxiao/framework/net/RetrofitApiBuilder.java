@@ -4,8 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 
-import com.linxiao.framework.support.log.Logger;
-
 import java.io.IOException;
 import java.util.Map;
 
@@ -34,7 +32,7 @@ public class RetrofitApiBuilder {
     private Map<String, String> universalHeaders;
 
     private CookieMode cookieMode;
-    private boolean hasDefaultConvertFactory;
+    private boolean hasNoConvertFactory = true;
 
     public RetrofitApiBuilder() {
         mRetrofitBuilder = new Retrofit.Builder();
@@ -89,7 +87,7 @@ public class RetrofitApiBuilder {
      * */
     public RetrofitApiBuilder addConvertFactory(@NonNull Converter.Factory factory) {
         mRetrofitBuilder.addConverterFactory(factory);
-        hasDefaultConvertFactory = false;
+        hasNoConvertFactory = false;
         return this;
     }
 
@@ -155,7 +153,7 @@ public class RetrofitApiBuilder {
         okHttpClientBuilder.addInterceptor(responseInterceptor);
         mRetrofitBuilder.client(okHttpClientBuilder.build());
 
-        if (!hasDefaultConvertFactory) {
+        if (hasNoConvertFactory) {
             mRetrofitBuilder.addConverterFactory(GsonConverterFactory.create());
         }
         return mRetrofitBuilder.build().create(clazzClientApi);

@@ -103,7 +103,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * bind DataManager to Activity life cycle, all network request will be canceled
      * when the activity is destroyed
      * */
-    protected void bindDataManagerToLifeCycle(@NonNull BaseDataManager dataManager) {
+    protected void bindDataManager(@NonNull BaseDataManager dataManager) {
         listDataManagers.add(dataManager);
     }
 

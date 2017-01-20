@@ -40,7 +40,7 @@ public abstract class BaseDataManager {
     /**
      * 将Retrofit的Call绑定到DataManager上，在UI层调用Cancel时，取消请求
      * */
-    protected void bindCallToManager(Call call) {
+    protected void bindCall(Call call) {
         listApiCalls.add(call);
     }
 
