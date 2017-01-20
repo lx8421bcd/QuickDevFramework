@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
  * 框架Log管理类
  * Created by LinXiao on 2017-01-05.
  */
-public class LogManager {
+public class Logger {
 
     public static final int VERBOSE = 0;
     public static final int DEBUG = 1;
@@ -24,7 +24,7 @@ public class LogManager {
      * @param logEnabled 是否打开Log
      * */
     public static void setLogEnabled(boolean logEnabled) {
-        LogManager.logEnabled = logEnabled;
+        Logger.logEnabled = logEnabled;
     }
 
     /**
@@ -35,7 +35,7 @@ public class LogManager {
      * */
     public static void setLogLevel(int logLevel) {
         if (logLevel >= VERBOSE && logLevel <= ERROR) {
-            LogManager.logLevel = logLevel;
+            Logger.logLevel = logLevel;
         }
     }
 
@@ -44,9 +44,13 @@ public class LogManager {
      * @param logImpl LogInterface接口实现类对象
      * */
     public static void setLogInterface(@NonNull LogInterface logImpl) {
-        LogManager.logImpl = logImpl;
+        Logger.logImpl = logImpl;
     }
 
+    /**
+     * 创建一个logPrinter
+     * <p>在需要多行log集合在一起输出时使用</p>
+     * */
     public static LogPrinter createLogPrinter(int logType) {
         return new LogPrinter(logType);
     }
@@ -97,17 +101,17 @@ public class LogManager {
             logStrBuilder = new StringBuilder();
         }
 
-        public LogPrinter Tag(String tag) {
+        public LogPrinter tag(String tag) {
             this.tag = tag;
             return this;
         }
 
-        public LogPrinter append(String message) {
+        public LogPrinter appendLine(String message) {
             logStrBuilder.append(message).append('\n');
             return this;
         }
 
-        public LogPrinter append(String formatStr, Object... params) {
+        public LogPrinter appendLine(String formatStr, Object... params) {
             logStrBuilder.append(String.format(formatStr, params)).append('\n');
             return this;
         }
@@ -116,19 +120,19 @@ public class LogManager {
             String message = logStrBuilder.toString();
             switch (logType) {
             case VERBOSE:
-                LogManager.v(tag, message);
+                Logger.v(tag, message);
                 break;
             case DEBUG :
-                LogManager.d(tag, message);
+                Logger.d(tag, message);
                 break;
             case INFO :
-                LogManager.i(tag, message);
+                Logger.i(tag, message);
                 break;
             case WARNING:
-                LogManager.w(tag, message);
+                Logger.w(tag, message);
                 break;
             case ERROR :
-                LogManager.e(tag, message);
+                Logger.e(tag, message);
                 break;
             default:
                 break;

@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.linxiao.framework.BaseApplication;
 import com.linxiao.framework.support.PermissionWrapper;
-import com.linxiao.framework.support.log.LogManager;
+import com.linxiao.framework.support.log.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class FileWrapper {
 //        if (path.indexOf("/") == 0) {
 //            return true;
 //        }
-        LogManager.i(TAG, "unknown path string : " + path);
+        Logger.i(TAG, "unknown path string : " + path);
         return false;
     }
 
@@ -74,7 +74,7 @@ public class FileWrapper {
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
-            LogManager.e(TAG, "can't operate files, permission denied");
+            Logger.e(TAG, "can't operate files, permission denied");
         }
         return hasPermission;
     }
@@ -153,7 +153,7 @@ public class FileWrapper {
             return;
         }
         if (!FileWrapper.checkIsAvailablePathString(target)) {
-            LogManager.i(TAG, "illegal target path: " + target);
+            Logger.i(TAG, "illegal target path: " + target);
             return;
         }
         File targetFile = new File(target);
@@ -163,7 +163,7 @@ public class FileWrapper {
         for (String fileName : files) {
             File file = new File(src, fileName);
             if (!file.exists()) {
-                LogManager.i(TAG, String.format("no such file or directory: %s in directory %s", fileName, src));
+                Logger.i(TAG, String.format("no such file or directory: %s in directory %s", fileName, src));
             }
             if (file.isFile()) {
                 moveFile(file, target);
@@ -180,13 +180,13 @@ public class FileWrapper {
         File target = new File(targetDir);
         if (!target.exists()) {
             if (!target.mkdirs()) {
-                LogManager.e(TAG, String.format("move file failed: %s ! can't create directory: %s", src.getName(), targetDir));
+                Logger.e(TAG, String.format("move file failed: %s ! can't create directory: %s", src.getName(), targetDir));
                 return;
             }
         }
         File newPath = new File(targetDir + File.separator + src.getName());
         if (!src.renameTo(newPath)) {
-            LogManager.e(TAG, String.format("move file failed: %s ! target path: %s", src.getName(), newPath));
+            Logger.e(TAG, String.format("move file failed: %s ! target path: %s", src.getName(), newPath));
         }
     }
 
@@ -194,7 +194,7 @@ public class FileWrapper {
         File target = new File(targetDir);
         if (!target.exists()) {
             if (!target.mkdirs()) {
-                LogManager.e(TAG, String.format("move file failed: %s ! can't create directory: %s", src.getName(), targetDir));
+                Logger.e(TAG, String.format("move file failed: %s ! can't create directory: %s", src.getName(), targetDir));
                 return;
             }
         }
@@ -215,7 +215,7 @@ public class FileWrapper {
             return;
         }
         if (!FileWrapper.checkIsAvailablePathString(target)) {
-            LogManager.i(TAG, "illegal target path: " + target);
+            Logger.i(TAG, "illegal target path: " + target);
             return;
         }
         File targetFile = new File(target);
@@ -223,7 +223,7 @@ public class FileWrapper {
             return;
         }
         if (!targetFile.isDirectory()) {
-            LogManager.i(TAG, "illegal target path, not a directory : " + target);
+            Logger.i(TAG, "illegal target path, not a directory : " + target);
         }
 
     }

@@ -7,17 +7,13 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.util.Log;
 
 import com.linxiao.framework.event.ExitAppEvent;
-import com.linxiao.framework.support.log.LogManager;
+import com.linxiao.framework.support.log.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -137,11 +133,11 @@ public abstract class BaseApplication extends Application {
         List<ActivityManager.RunningAppProcessInfo> processInfo = activityManager.getRunningAppProcesses();
         for(int i = 0; i < processInfo.size(); i++){
             if(processInfo.get(i).processName.equals(packageName)){
-                LogManager.i(TAG, String.format("the %s is running", packageName));
+                Logger.i(TAG, String.format("the %s is running", packageName));
                 return true;
             }
         }
-        LogManager.i(TAG, String.format("the %s is not running", packageName));
+        Logger.i(TAG, String.format("the %s is not running", packageName));
         return false;
     }
 

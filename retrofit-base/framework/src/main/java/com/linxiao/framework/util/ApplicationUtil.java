@@ -2,9 +2,8 @@ package com.linxiao.framework.util;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.util.Log;
 
-import com.linxiao.framework.support.log.LogManager;
+import com.linxiao.framework.support.log.Logger;
 
 import java.util.List;
 
@@ -29,11 +28,11 @@ public class ApplicationUtil {
         List<ActivityManager.RunningAppProcessInfo> processInfo = activityManager.getRunningAppProcesses();
         for (int i = 0; i < processInfo.size(); i++) {
             if (processInfo.get(i).processName.equals(packageName)) {
-                LogManager.d(TAG, String.format("the %s is running", packageName));
+                Logger.d(TAG, String.format("the %s is running", packageName));
                 return true;
             }
         }
-        LogManager.d(TAG, String.format("the %s is not running", packageName));
+        Logger.d(TAG, String.format("the %s is not running", packageName));
         return false;
     }
 }

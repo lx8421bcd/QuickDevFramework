@@ -1,21 +1,15 @@
 package com.linxiao.framework.net;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.RawRes;
-import android.support.v4.BuildConfig;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
-import android.util.Log;
 
-import com.linxiao.framework.support.log.LogManager;
+import com.linxiao.framework.support.log.Logger;
 
 import java.io.IOException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Map;
 
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Interceptor;
@@ -139,10 +133,7 @@ public class RetrofitApiBuilder {
                 default:
                     break;
                 }
-
                 Request request = builder.build();
-
-                LogManager.d(clazzClientApi.getSimpleName(), "request url : " + request.url());
                 return chain.proceed(request);
             }
         };
@@ -167,7 +158,6 @@ public class RetrofitApiBuilder {
         if (!hasDefaultConvertFactory) {
             mRetrofitBuilder.addConverterFactory(GsonConverterFactory.create());
         }
-
         return mRetrofitBuilder.build().create(clazzClientApi);
     }
 

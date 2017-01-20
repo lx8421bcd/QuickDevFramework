@@ -62,7 +62,7 @@ public class FrameworkLogImpl implements LogInterface {
         }
         printLog(logType, SEPARATE);
         printLog(logType, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS", Locale.getDefault()).format(new Date(System.currentTimeMillis())));
-        printLog(logType, String.format("Application: %s | Thread: %s | Tag: %s",
+        printLog(logType, String.format("Application: %s | Thread: %s | tag: %s",
                 BaseApplication.getApplicationName(),
                 Thread.currentThread().getName(),
                 tag));

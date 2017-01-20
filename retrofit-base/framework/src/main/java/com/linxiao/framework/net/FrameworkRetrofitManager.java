@@ -2,10 +2,9 @@ package com.linxiao.framework.net;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.RawRes;
 
 import com.linxiao.framework.BaseApplication;
-import com.linxiao.framework.support.log.LogManager;
+import com.linxiao.framework.support.log.Logger;
 
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -58,7 +57,7 @@ public class FrameworkRetrofitManager {
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
 
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            LogManager.e(TAG, e);
+            Logger.e(TAG, e);
             return null;
         }
         // Create an ssl socket factory with our all-trusting manager
@@ -76,11 +75,11 @@ public class FrameworkRetrofitManager {
         SSLSocketFactory sslSocketFactory = getSSLSocketFactory(BaseApplication.getAppContext(), certificates);
         X509TrustManager trustManager = Platform.get().trustManager(sslSocketFactory);
         if (sslSocketFactory == null) {
-            LogManager.e(TAG, "sslSocketFactory is null");
+            Logger.e(TAG, "sslSocketFactory is null");
             return null;
         }
         if (trustManager == null) {
-            LogManager.e(TAG, "trustManager is null");
+            Logger.e(TAG, "trustManager is null");
             return null;
         }
         return new RetrofitApiBuilder()
@@ -165,7 +164,7 @@ public class FrameworkRetrofitManager {
             sslContext.init(null, trustManagerFactory.getTrustManagers(), new SecureRandom());
             return sslContext.getSocketFactory();
         } catch (Exception e) {
-            LogManager.e(TAG, e);
+            Logger.e(TAG, e);
         }
         return null;
     }

@@ -4,9 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
-import com.linxiao.framework.support.log.LogManager;
+import com.linxiao.framework.support.log.Logger;
 import com.linxiao.framework.support.notification.NotificationWrapper;
 
 /**
@@ -41,7 +40,7 @@ public abstract class BaseSplashActivity extends BaseActivity {
         }
         String targetKey = notificationExtra.getString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME);
         if (TextUtils.isEmpty(targetKey)) {
-            LogManager.e(TAG, "handleNotification: target key is null !");
+            Logger.e(TAG, "handleNotification: target key is null !");
             return;
         }
         try {
@@ -51,7 +50,7 @@ public abstract class BaseSplashActivity extends BaseActivity {
             startActivity(destIntent);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            LogManager.e(TAG, "handleNotification: reflect to get activity class failed !");
+            Logger.e(TAG, "handleNotification: reflect to get activity class failed !");
         }
     }
 

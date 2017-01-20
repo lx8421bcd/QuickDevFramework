@@ -12,10 +12,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import com.linxiao.framework.support.log.LogManager;
+import com.linxiao.framework.support.log.Logger;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -101,7 +100,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
 
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        LogManager.d(TAG, "viewType = " + viewType);
+        Logger.d(TAG, "viewType = " + viewType);
         switch (viewType) {
         case HEADER_VIEW :
             return createEmptyViewHolder(mHeaderContainer);
@@ -284,6 +283,10 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
     }
 
+    public boolean isHeaderVisible() {
+        return hasHeaderView() && showHeaderView;
+    }
+
     /**
      * 是否显示Footer
      * */
@@ -292,6 +295,10 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         if (hasFooterView()) {
             notifyItemChanged(getFooterPosition());
         }
+    }
+
+    public boolean isFooterVisible() {
+        return hasFooterView() && showFooterView;
     }
 
     /**
@@ -334,6 +341,16 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
         mNoDataViewContainer.removeAllViews();
         mNoDataViewContainer.addView(noDataView);
+
+//        if (hasHeaderView() && showHeaderView) {
+//            Logger.createLogPrinter(Logger.DEBUG)
+//                    .tag(TAG)
+//                    .appendLine("lpHeader.height = " + mHeaderContainer.getHeight())
+//                    .appendLine("empty.height = " +  mNoDataViewContainer.getHeight())
+//                    .print();
+//            mNoDataViewContainer.getLayoutParams().height = mNoDataViewContainer.getHeight() - mHeaderContainer.getHeight();
+//        }
+
         if (isInsert) {
             int position = getHeaderPosition() + 1;
             notifyItemInserted(position);
@@ -467,20 +484,16 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         return mContext;
     }
 
-    public View getHeaderView() {
+    public LinearLayout getHeaderContainer() {
         return mHeaderContainer;
     }
 
-    public View getFooterView() {
+    public LinearLayout getFooterContainer() {
         return mFooterContainer;
     }
 
-    public View getLoadingView() {
-        return mLoadingView;
-    }
-
-    public View getEmptyView() {
-        return mEmptyView;
+    public FrameLayout getNoDataContainer() {
+        return mNoDataViewContainer;
     }
 
 }

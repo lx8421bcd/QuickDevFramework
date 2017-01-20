@@ -1,8 +1,6 @@
 package com.linxiao.framework.util;
 
-import android.util.Log;
-
-import com.linxiao.framework.support.log.LogManager;
+import com.linxiao.framework.support.log.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -29,7 +27,7 @@ public class MD5Util {
             messageDigest.reset();
             messageDigest.update(str.getBytes("UTF-8"));
         } catch (NoSuchAlgorithmException e) {
-            LogManager.e("MD5Util", "NoSuchAlgorithmException caught!");
+            Logger.e("MD5Util", "NoSuchAlgorithmException caught!");
             System.exit(-1);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

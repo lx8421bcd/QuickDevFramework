@@ -6,5 +6,5 @@ package com.linxiao.framework.net;
  */
 public interface HttpInfoCatchListener {
 
-    void onMeasureTimeUse(String url, int timeMills);
+    void onInfoCaught(HttpInfoEntity entity);
 }
