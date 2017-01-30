@@ -1,5 +1,6 @@
 package com.linxiao.framework;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.linxiao.framework.event.ExitAppEvent;
@@ -15,19 +17,32 @@ import com.linxiao.framework.support.log.Logger;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 应用Application基类
- * <p>用于提供Framewrok模块下Application相关的基础功能，以及为Framework层提供Application Context</p>
+ * <p>用于提供Framework模块下Application相关的基础功能，以及为Framework层提供Application Context</p>
  * Created by LinXiao on 2016-11-24.
  */
 public abstract class BaseApplication extends Application {
     protected static String TAG;
 
+    /**
+     * 用于判断一个app是否处于前台
+     */
+    private static int mForegroundCount = 0;
+
+    /**
+     * 应用内Activity的数量，如果数量为0，则可以判断当前应用未启动
+     * <p>如果有什么一像素Activity等东西存在请另改值</p>
+     * */
+    private static int mActivityCount = 0;
+
     @Override
     public void onCreate() {
         super.onCreate();
         TAG = getClass().getSimpleName();
+        this.registerActivityLifecycleCallbacks(new FrameworkActivityLifeCycleCallback());
 
     }
 
@@ -126,19 +141,60 @@ public abstract class BaseApplication extends Application {
     /**
      * 检查应用主进程是否正在运行
      * */
-    public static boolean isMainProcessRunning() {
+    public static boolean isAppRunning() {
         Context mContext = getAppContext();
         String packageName = mContext.getPackageName();
         ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> processInfo = activityManager.getRunningAppProcesses();
         for(int i = 0; i < processInfo.size(); i++){
             if(processInfo.get(i).processName.equals(packageName)){
-                Logger.i(TAG, String.format("the %s is running", packageName));
-                return true;
+                Logger.i(TAG, String.format(Locale.getDefault(),
+                        "process %s is running, activity count = %d", packageName, mActivityCount));
+                //如果有没被销毁的Activity，则App至少处于后台正在运行，否则App应处于未运行状态
+                return mActivityCount > 0;
             }
         }
         Logger.i(TAG, String.format("the %s is not running", packageName));
         return false;
+    }
+
+    /**
+     * 检查App是否处于前台
+     * */
+    public static boolean isAppForeground() {
+        return isAppRunning() && mForegroundCount > 0;
+    }
+
+    private class FrameworkActivityLifeCycleCallback implements ActivityLifecycleCallbacks {
+
+        @Override
+        public void onActivityCreated(Activity activity, Bundle bundle) {
+            mActivityCount++;
+        }
+
+        @Override
+        public void onActivityStarted(Activity activity) {
+            mForegroundCount++;
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {}
+
+        @Override
+        public void onActivityPaused(Activity activity) {}
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+            mForegroundCount--;
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {}
+
+        @Override
+        public void onActivityDestroyed(Activity activity) {
+            mActivityCount--;
+        }
     }
 
 }

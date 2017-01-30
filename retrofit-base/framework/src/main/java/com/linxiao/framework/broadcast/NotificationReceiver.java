@@ -30,7 +30,7 @@ public class NotificationReceiver extends BroadcastReceiver {
             logPrinter.print();
             return;
         }
-        if (BaseApplication.isMainProcessRunning()) {
+        if (BaseApplication.isAppRunning()) {
             logPrinter.appendLine("application state: running");
             Intent targetIntent = new Intent();
             String targetKey = notificationExtra.getString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME);
@@ -51,7 +51,8 @@ public class NotificationReceiver extends BroadcastReceiver {
         }
         else {
             logPrinter.appendLine("application state: not running");
-            Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(BaseApplication.getAppContext().getPackageName());
+            Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(
+                    BaseApplication.getAppContext().getPackageName());
             launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             launchIntent.putExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA, notificationExtra);
             context.startActivity(launchIntent);

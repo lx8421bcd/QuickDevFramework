@@ -25,6 +25,7 @@ public class Logger {
      * */
     public static void setLogEnabled(boolean logEnabled) {
         Logger.logEnabled = logEnabled;
+
     }
 
     /**
@@ -45,6 +46,7 @@ public class Logger {
      * */
     public static void setLogInterface(@NonNull LogInterface logImpl) {
         Logger.logImpl = logImpl;
+
     }
 
     /**

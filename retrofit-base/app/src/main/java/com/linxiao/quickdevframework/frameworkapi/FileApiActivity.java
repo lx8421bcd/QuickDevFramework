@@ -29,7 +29,7 @@ public class FileApiActivity extends BaseActivity {
                 Logger.e(TAG, new IOException("sss"));
                 System.out.println(FileWrapper.getInternalStorageRoot());
 
-                System.out.println(FileWrapper.checkIsAvailablePathString("/storage/emulated/0"));
+//                System.out.println(FileWrapper.checkIsAvailablePathString("/storage/emulated/0"));
 
                 try {
                     new File(FileWrapper.getExternalStorageRoot() + File.separator + "QuickDevFramework" + File.separator + "text.txt").createNewFile();

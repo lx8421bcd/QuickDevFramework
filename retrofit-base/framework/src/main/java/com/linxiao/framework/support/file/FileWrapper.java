@@ -2,6 +2,7 @@ package com.linxiao.framework.support.file;
 
 import android.Manifest;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -10,7 +11,13 @@ import com.linxiao.framework.support.PermissionWrapper;
 import com.linxiao.framework.support.log.Logger;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
 /**
  * 文件管理封装，提供常见文件管理功能
@@ -19,17 +26,25 @@ import java.io.IOException;
 public class FileWrapper {
     private static final String TAG = FileWrapper.class.getSimpleName();
 
-    private static FileWrapper instance;
-
-    private FileWrapper() {
-
+    /**
+     * 是否挂载sd卡
+     * @return true 挂载; false 未挂载
+     */
+    public static boolean existExternalStorage() {
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 
-    public static FileWrapper getInstance() {
-        if (instance == null) {
-            instance = new FileWrapper();
+    /**
+     * 检查是否有文件操作权限
+     * */
+    public static boolean hasFileOperatePermission() {
+        boolean hasPermission = PermissionWrapper.getInstance().checkPermissionsGranted(BaseApplication.getAppContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (!hasPermission) {
+            Logger.e(TAG, "can't operate files, permission denied");
         }
-        return instance;
+        return hasPermission;
     }
 
     /**
@@ -62,29 +77,9 @@ public class FileWrapper {
     }
 
     /**
-     * 是否挂载sd卡
-     * @return true 挂载; false 未挂载
-     */
-    public static boolean existExternalStorage() {
-        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
-    }
-
-    /**
-     * 检查是否有文件操作权限
-     * */
-    public static boolean hasFileOperatePermission() {
-        boolean hasPermission = PermissionWrapper.getInstance().checkPermissionsGranted(BaseApplication.getAppContext(),
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (!hasPermission) {
-            Logger.e(TAG, "can't operate files, permission denied");
-        }
-        return hasPermission;
-    }
-
-    /**
      * 获取当前SD卡的根路径
      * */
+    @NonNull
     public static String getExternalStorageRoot() {
         return Environment.getExternalStorageDirectory().getPath();
     }
@@ -92,8 +87,24 @@ public class FileWrapper {
     /**
      * 获取内部存储路径
      * */
+    @NonNull
     public static String getInternalStorageRoot() {
         return BaseApplication.getAppContext().getFilesDir().getPath();
+    }
+
+    /**
+     * 通过路径字符串生成String对象，包含安全检查
+     *
+     * */
+    public static File pathStringToFile(String path) {
+        if (!hasFileOperatePermission()) {
+            return null;
+        }
+        if (checkIsAvailablePathString(path)) {
+            return new File(path);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -101,6 +112,21 @@ public class FileWrapper {
      * */
     public static boolean isExist(String dir) {
         return hasFileOperatePermission() && new File(dir).exists();
+    }
+
+    /**
+     * 重命名文件或文件夹
+     * */
+    public static boolean rename(String filePath, String oldName, String newName) {
+        if (!hasFileOperatePermission()) {
+            return false;
+        }
+        File renameFile = new File(filePath + File.separator + newName);
+        if (renameFile.exists()) {
+            Logger.e(TAG, "rename failed, new name");
+            return false;
+        }
+        return renameFile.renameTo(new File(filePath + newName));
     }
 
     /**
@@ -115,137 +141,100 @@ public class FileWrapper {
     }
 
     /**
-     * 新建文件
+     * 复制文件
      * */
-    public static boolean createFile(String path, String fileName) {
-        if (!hasFileOperatePermission()) {
-            return false;
-        }
-        File file = new File(path, fileName);
-        if (!file.exists()) {
-            try {
-                return file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+    private static boolean copyFile(File src, File target) {
+        InputStream input;
+        OutputStream output;
+        boolean result;
+        try {
+            input = new FileInputStream(src);
+            output = new FileOutputStream(target);
+            byte[] buf = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = input.read(buf)) > 0) {
+                output.write(buf, 0, bytesRead);
             }
+
+            input.close();
+            output.close();
+            result = true;
+        } catch (IOException e) {
+            Logger.e(TAG, e);
+            result = false;
         }
-        return false;
+        return result;
     }
 
-    /**
-     * 重命名文件或文件夹
-     * */
-    public static void rename(String filePath, String oldName, String newName) {
-        if (!hasFileOperatePermission()) {
-            return;
-        }
-        File renameFile = new File(filePath + oldName);
-        if (!renameFile.exists()) {
-            return;
-        }
-        if (!renameFile.renameTo(new File(filePath + newName))) {
-            Log.e(TAG, String.format("rename failed: %s ! directory: %s", oldName, filePath));
-        }
-    }
-
-    /**
-     * 移动文件
-     * */
-    public static void move(String src, String target, String... files) {
-        if (!hasFileOperatePermission()) {
-            return;
-        }
-        if (!FileWrapper.checkIsAvailablePathString(target)) {
-            Logger.i(TAG, "illegal target path: " + target);
-            return;
-        }
-        File targetFile = new File(target);
-        if (!targetFile.exists()) {
-            return;
-        }
-        for (String fileName : files) {
-            File file = new File(src, fileName);
-            if (!file.exists()) {
-                Logger.i(TAG, String.format("no such file or directory: %s in directory %s", fileName, src));
-            }
-            if (file.isFile()) {
-                moveFile(file, target);
-                continue;
-            }
-            if (file.isDirectory()) {
-                moveDirectory(file, target);
-            }
-        }
-
-    }
-
-    private static void moveFile(File src, String targetDir) {
-        File target = new File(targetDir);
+    private static boolean copyDirectory(File src, File target) {
         if (!target.exists()) {
             if (!target.mkdirs()) {
-                Logger.e(TAG, String.format("move file failed: %s ! can't create directory: %s", src.getName(), targetDir));
-                return;
-            }
-        }
-        File newPath = new File(targetDir + File.separator + src.getName());
-        if (!src.renameTo(newPath)) {
-            Logger.e(TAG, String.format("move file failed: %s ! target path: %s", src.getName(), newPath));
-        }
-    }
-
-    private static void moveDirectory(File src, String targetDir) {
-        File target = new File(targetDir);
-        if (!target.exists()) {
-            if (!target.mkdirs()) {
-                Logger.e(TAG, String.format("move file failed: %s ! can't create directory: %s", src.getName(), targetDir));
-                return;
+                return false;
             }
         }
         File[] srcFiles = src.listFiles();
         for (File sourceFile : srcFiles) {
             if (sourceFile.isFile()) {
-                moveFile(sourceFile, target.getAbsolutePath());
+                copyFile(sourceFile, target);
+            }
+            else if (sourceFile.isDirectory()) {
+                copyDirectory(sourceFile, new File(target, sourceFile.getName()));
             }
 
-            else if (sourceFile.isDirectory())
-                moveDirectory(sourceFile, target + File.separator + sourceFile.getName());
         }
-        src.delete();
+        return true;
     }
 
-    public static void copy(String src, String target) {
-        if (!hasFileOperatePermission()) {
-            return;
+    public static boolean copy(File src, File target) {
+        if (!src.exists()) {
+           return false;
         }
-        if (!FileWrapper.checkIsAvailablePathString(target)) {
-            Logger.i(TAG, "illegal target path: " + target);
-            return;
+        if (src.isDirectory()) {
+            return copyDirectory(src, target);
         }
-        File targetFile = new File(target);
-        if (!targetFile.exists()) {
-            return;
+        else {
+            return copyFile(src, target);
         }
-        if (!targetFile.isDirectory()) {
-            Logger.i(TAG, "illegal target path, not a directory : " + target);
-        }
-
     }
 
-
-
-
-    /**
-     * 删除文件
-     * */
-    public void delete(String path, String... files) {
-        for (String fileName : files) {
-            File file = new File(path, fileName);
-            if (!file.exists()) {
-                Log.i(TAG, String.format("file %s not exist in directory %s", fileName, path));
-            }
-            if (!file.delete()) {
-                Log.e(TAG, String.format("delete failed: %s ! directory: %s", fileName, path));
+    private static boolean moveFile(File src, File target) {
+        if (!target.exists()) {
+            if (!target.mkdirs()) {
+                return false;
             }
         }
+        File newPath = new File(target, src.getName());
+        return src.renameTo(newPath);
     }
+
+    private static boolean moveDirectory(File src, File target) {
+        if (!target.exists()) {
+            if (!target.mkdirs()) {
+                return false;
+            }
+        }
+        File[] srcFiles = src.listFiles();
+        for (File sourceFile : srcFiles) {
+            if (sourceFile.isFile()) {
+                moveFile(sourceFile, target);
+            }
+            else if (sourceFile.isDirectory()) {
+                moveDirectory(sourceFile, new File(target, sourceFile.getName()));
+            }
+        }
+        return true;
+    }
+
+    private static boolean move(File src, File target) {
+        if (!src.exists()) {
+            return false;
+        }
+        if (src.isDirectory()) {
+            return moveDirectory(src, target);
+        }
+        else {
+            return moveFile(src, target);
+        }
+    }
+
 }
