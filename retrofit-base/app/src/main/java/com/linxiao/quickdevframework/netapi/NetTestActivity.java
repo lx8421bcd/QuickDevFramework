@@ -5,6 +5,11 @@ import android.util.Log;
 import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
+import com.linxiao.framework.net.CookieMode;
+import com.linxiao.framework.net.FrameworkRetrofitManager;
+import com.linxiao.framework.net.HttpInfoCatchInterceptor;
+import com.linxiao.framework.net.HttpInfoCatchListener;
+import com.linxiao.framework.net.HttpInfoEntity;
 import com.linxiao.quickdevframework.R;
 
 
@@ -23,10 +28,17 @@ public class NetTestActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_net_test);
-//        clientApi = FrameworkRetrofitManager.buildClientAPI()
-//                .setServerUrl("http://www.weather.com.cn/")
-//                .addConvertFactory(GsonConverterFactory.create())
-//                .build(ClientApi.class);
+        HttpInfoCatchInterceptor infoCatchInterceptor = new HttpInfoCatchInterceptor();
+        infoCatchInterceptor.setCatchEnabled(true);
+        infoCatchInterceptor.setHttpInfoCatchListener(new HttpInfoCatchListener() {
+            @Override
+            public void onInfoCaught(HttpInfoEntity entity) {
+                //do something......
+            }
+        });
+        ClientApi clientApi = FrameworkRetrofitManager.createRetrofitBuilder("http://www.weather.com.cn/")
+                .addCustomInterceptor(infoCatchInterceptor)
+                .build(ClientApi.class);
 
 
     }

@@ -38,7 +38,7 @@ public class FrameworkRetrofitManager {
     /**
      * 提供Http请求的ApiBuilder
      * */
-    public static RetrofitApiBuilder createHttpRetrofitBuilder(String serverUrl) {
+    public static RetrofitApiBuilder createRetrofitBuilder(String serverUrl) {
         return new RetrofitApiBuilder()
                 .setServerUrl(serverUrl);
     }
@@ -47,7 +47,7 @@ public class FrameworkRetrofitManager {
      * 提供Https请求的ApiBuilder
      * <p>此方法为本地不存放证书时使用</p>
      * */
-    public static RetrofitApiBuilder createHttpsRetrofitBuilder(String publicKey, String serverUrl) {
+    public static RetrofitApiBuilder createRetrofitBuilder(String publicKey, String serverUrl) {
         X509TrustManager trustManager = getDefaultTrustManager(publicKey);
         final TrustManager[] trustAllCerts = new TrustManager[]{trustManager};
         // Install the all-trusting trust manager
@@ -71,7 +71,7 @@ public class FrameworkRetrofitManager {
      * 提供Https请求的ApiBuilder
      * <p>此方法为本地存放证书时使用</p>
      * */
-    public static RetrofitApiBuilder createHttpsRetrofitBuilder(int[] certificates, String serverUrl) {
+    public static RetrofitApiBuilder createRetrofitBuilder(int[] certificates, String serverUrl) {
         SSLSocketFactory sslSocketFactory = getSSLSocketFactory(BaseApplication.getAppContext(), certificates);
         X509TrustManager trustManager = Platform.get().trustManager(sslSocketFactory);
         if (sslSocketFactory == null) {
