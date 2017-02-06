@@ -9,6 +9,6 @@
         android:paddingTop="64dp"
         android:paddingBottom="64dp"
         android:gravity="center"
-        android:text="this is a custom bottom view"/>
+        android:text="@string/sample_bottom_dialog_desc"/>
 
 </LinearLayout>

@@ -12,10 +12,12 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
+import com.linxiao.framework.support.ToastWrapper;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.adaptertest.EmptyViewTestFragment;
 import com.linxiao.quickdevframework.frameworkapi.DialogApiFragment;
@@ -24,6 +26,8 @@ import com.linxiao.quickdevframework.frameworkapi.NotificationApiFragment;
 import com.linxiao.quickdevframework.frameworkapi.PermissionApiFragment;
 import com.linxiao.quickdevframework.frameworkapi.ToastApiFragment;
 import com.linxiao.quickdevframework.netapi.NetTestFragment;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +54,8 @@ public class MainActivity extends BaseActivity {
     private FragmentManager mFragmentManager;
 
     private String currentTag;
+
+    private long exitTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,8 +104,6 @@ public class MainActivity extends BaseActivity {
         rcvApiSampleList.setLayoutManager(new LinearLayoutManager(this));
         rcvApiSampleList.setItemAnimator(new DefaultItemAnimator());
         rcvApiSampleList.setAdapter(adapter);
-
-
     }
 
     private void initFragments() {
@@ -181,5 +185,20 @@ public class MainActivity extends BaseActivity {
         outState.putStringArrayList(KEY_CLASS_NAMES, fragmentClassNames);
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //2秒内按两次退出
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            if ((System.currentTimeMillis() - exitTime) > 2000) {
+                ToastWrapper.showToast(this, getString(R.string.press_again_exit), 2000);
+                exitTime = System.currentTimeMillis();
+            } else {
+                finish();
+                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
 }

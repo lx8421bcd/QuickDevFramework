@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">QuickDevFramework</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="press_again_exit">press again to exit</string>
+    <string name="sample_bottom_dialog_desc">this is a custom bottom view \n click to dismiss</string>
+    <string name="sample_dialog_message">simple dialog messages</string>
+    <string name="sample_dialog_title">title</string>
+    <string name="sample_positive">cus positive</string>
+    <string name="positive_click">positive clicked</string>
+    <string name="sample_negative">cus negative</string>
+    <string name="negative_click">negative click</string>
 </resources>

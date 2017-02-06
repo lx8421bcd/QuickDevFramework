@@ -24,8 +24,9 @@
             android:name=".main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-
         <service android:name=".frameworkapi.BackgroundService" />
+
+        <activity android:name=".frameworkapi.NotificationTargetActivity"></activity>
     </application>
 
 </manifest>

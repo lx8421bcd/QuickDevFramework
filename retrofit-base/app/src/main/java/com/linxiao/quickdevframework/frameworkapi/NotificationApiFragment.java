@@ -38,33 +38,39 @@ public class NotificationApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnSendSimple)
     public void onSendNotificationClick(View v) {
-        NotificationWrapper.sendSimpleNotification("简单通知", "这是一条简单的通知", new Intent(getActivity(), ToastApiFragment.class));
+        NotificationWrapper.sendSimpleNotification("简单通知", "这是一条简单的通知", new Intent(getActivity(), NotificationTargetActivity.class));
     }
 
     @OnClick(R.id.btnSendBigText)
     public void onSendBigTextClick(View v) {
         String bigText = "这条通知很长";
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 50; i++) {
             bigText += "很长";
         }
-        SimpleNotificationBuilder builder = NotificationWrapper.createSimpleNotificationBuilder(getContext(), "bigText", "一条bigText");
-        builder.setBigText("big text title", bigText)
+        NotificationWrapper.createSimpleNotificationBuilder(getContext(), "bigText", "一条bigText")
+        .setBigText("big text title", bigText)
         .configureNotificationAsDefault()
-        .setTargetActivityIntent(new Intent(getActivity(), ToastApiFragment.class))
+        .setTargetActivityIntent(new Intent(getActivity(), NotificationTargetActivity.class))
         .build(1024)
         .send();
+    }
 
-        SimpleNotificationBuilder builder1 = NotificationWrapper.createSimpleNotificationBuilder(getContext(), "bigPicture", "一条bigPicture");
-        builder1.setBigPicture("big picture title", BitmapFactory.decodeResource(getResources(), R.drawable.ic_notify))
+    @OnClick(R.id.btnSendBigPicture)
+    public void onSendBigPictureClick(View v) {
+        NotificationWrapper.createSimpleNotificationBuilder(getContext(), "bigPicture", "一条bigPicture")
+        .setBigPicture("big picture title", BitmapFactory.decodeResource(getResources(), R.drawable.ic_notify))
         .configureNotificationAsDefault()
-        .setTargetActivityIntent(new Intent(getActivity(), ToastApiFragment.class))
+        .setTargetActivityIntent(new Intent(getActivity(), NotificationTargetActivity.class))
         .build(1025)
         .send();
+    }
 
-        SimpleNotificationBuilder builder2 = NotificationWrapper.createSimpleNotificationBuilder(getContext(), "inbox", "一条inbox");
-        builder2.setInboxMessages("inbox title", Arrays.asList("这是一行内容","这是一行内容","这是一行内容","这是一行内容"))
+    @OnClick(R.id.btnSendBigPicture)
+    public void onSendInboxClick(View v) {
+        NotificationWrapper.createSimpleNotificationBuilder(getContext(), "inbox", "一条inbox")
+        .setInboxMessages("inbox title", Arrays.asList("这是一行内容","这是一行内容","这是一行内容","这是一行内容"))
         .configureNotificationAsDefault()
-        .setTargetActivityIntent(new Intent(getActivity(), ToastApiFragment.class))
+        .setTargetActivityIntent(new Intent(getActivity(), NotificationTargetActivity.class))
         .build(1026)
         .send();
     }
@@ -77,7 +83,7 @@ public class NotificationApiFragment extends BaseFragment {
         builder.setDefaults(NotificationCompat.DEFAULT_ALL);
         builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_notify));
-        Intent intent = new Intent(BaseApplication.getAppContext(), ToastApiFragment.class);
+        Intent intent = new Intent(BaseApplication.getAppContext(), NotificationTargetActivity.class);
         PendingIntent pIntent = PendingIntent.getActivity(getActivity(), 1, intent, 0);
         builder.setContentIntent(pIntent);
         //这句是重点

@@ -23,4 +23,16 @@
         android:layout_height="wrap_content"
         android:text="send big text notification"/>
 
+    <Button
+        android:id="@+id/btnSendBigPicture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="send big picture notification"/>
+
+    <Button
+        android:id="@+id/btnSendInbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="send in box notification"/>
+
 </LinearLayout>

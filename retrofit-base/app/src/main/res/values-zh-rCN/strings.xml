@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="press_again_exit">再按一次退出</string>
+    <string name="sample_bottom_dialog_desc">底部弹出自定义View Dialog示例 \n 点击退出</string>
+    <string name="sample_dialog_message">演示AlertDialog信息</string>
+    <string name="sample_dialog_title">标题</string>
+    <string name="sample_positive">自定义Positive</string>
+    <string name="positive_click">positive clicked</string>
+    <string name="sample_negative">自定义Negative</string>
+    <string name="negative_click">negative click</string>
+</resources>
