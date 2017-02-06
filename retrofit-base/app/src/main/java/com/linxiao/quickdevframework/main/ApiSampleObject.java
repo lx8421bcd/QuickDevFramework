@@ -7,11 +7,11 @@ package com.linxiao.quickdevframework.main;
 public class ApiSampleObject {
 
     private String apiName;
-    private Class<?> destActivity;
+    private String target;
 
-    public ApiSampleObject(String apiName, Class<?> destActivity) {
+    public ApiSampleObject(String apiName, String target) {
         this.apiName = apiName;
-        this.destActivity = destActivity;
+        this.target = target;
     }
 
     public String getApiName() {
@@ -22,11 +22,11 @@ public class ApiSampleObject {
         this.apiName = apiName;
     }
 
-    public Class<?> getDestActivity() {
-        return destActivity;
+    public String getTarget() {
+        return target;
     }
 
-    public void setDestActivity(Class<?> destActivity) {
-        this.destActivity = destActivity;
+    public void setTarget(String target) {
+        this.target = target;
     }
 }

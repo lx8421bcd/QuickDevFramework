@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_notification_api"
+    android:id="@+id/activity_permission_api"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.linxiao.quickdevframework.frameworkapi.NotificationApiActivity">
+    android:orientation="vertical"
+    tools:context="com.linxiao.quickdevframework.frameworkapi.PermissionApiFragment">
 
     <Button
+        android:id="@+id/btnRequestSample"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="onSendNotificationClick"
-        android:text="send simple"/>
+        android:text="request sample"/>
 
     <Button
+        android:id="@+id/btnRequestAlertWindow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="onSendBigTextClick"
-        android:text="send big text notification"/>
+        android:text="request SYSTEM_ALERT_WINDOW" />
+
+    <Button
+        android:id="@+id/btnRequestWriteSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="request WRITE_SETTINGS"/>
 
 </LinearLayout>

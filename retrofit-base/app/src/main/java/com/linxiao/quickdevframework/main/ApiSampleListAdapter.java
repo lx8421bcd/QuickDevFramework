@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
+import com.linxiao.framework.adapter.BaseRecyclerViewHolder;
 import com.linxiao.quickdevframework.R;
 
 import java.util.List;
@@ -16,39 +18,23 @@ import java.util.List;
  *
  * Created by linxiao on 2016/11/30.
  */
-public class ApiSampleListAdapter extends RecyclerView.Adapter<ApiSampleListAdapter.ApiSampleHolder> {
+public class ApiSampleListAdapter extends BaseRecyclerViewAdapter<ApiSampleObject, ApiSampleListAdapter.ApiSampleHolder> {
 
-    private List<ApiSampleObject> dataSource;
-    private Context mContext;
-
-    public ApiSampleListAdapter(Context mContext) {
-        this.mContext = mContext;
-    }
-
-    public List<ApiSampleObject> getDataSource() {
-        return dataSource;
-    }
-
-    public void setDataSource(List<ApiSampleObject> dataSource) {
-        this.dataSource = dataSource;
+    public ApiSampleListAdapter(Context context) {
+        super(context);
     }
 
     @Override
-    public ApiSampleHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ApiSampleHolder(LayoutInflater.from(mContext).inflate(R.layout.item_api_sample, parent, false));
+    protected void setData(ApiSampleHolder holder, ApiSampleObject data) {
+        holder.textView.setText(data.getApiName());
     }
 
     @Override
-    public void onBindViewHolder(ApiSampleHolder holder, int position) {
-        holder.setData(dataSource.get(position));
+    protected ApiSampleHolder onCreateDataViewHolder(ViewGroup parent, int viewType) {
+        return new ApiSampleHolder(inflateItemView(R.layout.item_api_sample, parent));
     }
 
-    @Override
-    public int getItemCount() {
-        return dataSource.size();
-    }
-
-    class ApiSampleHolder extends RecyclerView.ViewHolder {
+    class ApiSampleHolder extends BaseRecyclerViewHolder {
 
         TextView textView;
 
@@ -57,14 +43,5 @@ public class ApiSampleListAdapter extends RecyclerView.Adapter<ApiSampleListAdap
             textView = (TextView) itemView.findViewById(R.id.tvApiSample);
         }
 
-        public void setData(final ApiSampleObject object) {
-            textView.setText(object.getApiName());
-            textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mContext.startActivity(new Intent(mContext, object.getDestActivity()));
-                }
-            });
-        }
     }
 }

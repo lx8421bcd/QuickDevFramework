@@ -68,6 +68,26 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     private boolean showHeaderView = true;
     private boolean showFooterView = true;
 
+    private OnItemClickListener mOnItemClickListener;
+    private OnItemLongClickListener mOnItemLongClickListener;
+
+    private View.OnClickListener itemClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int position = (int) v.getTag();
+            mOnItemClickListener.onItemClick(BaseRecyclerViewAdapter.this, v, position);
+        }
+    };
+
+    private View.OnLongClickListener itemLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            int position = (int) v.getTag();
+            mOnItemLongClickListener.onItemLongClick(BaseRecyclerViewAdapter.this, v, position);
+            return true;
+        }
+    };
+
     public BaseRecyclerViewAdapter(Context context) {
         TAG = this.getClass().getSimpleName();
         mContext = context;
@@ -126,6 +146,13 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             break;
         default:
             setData(holder, mDataSource.get(dataPosition));
+            holder.itemView.setTag(position);
+            if (mOnItemClickListener != null) {
+                holder.itemView.setOnClickListener(itemClickListener);
+            }
+            if (mOnItemLongClickListener != null) {
+                holder.itemView.setOnLongClickListener(itemLongClickListener);
+            }
             break;
         }
     }
@@ -496,4 +523,11 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         return mNoDataViewContainer;
     }
 
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.mOnItemClickListener = listener;
+    }
+
+    public void setmOnIteLongClickListener(OnItemLongClickListener listener) {
+        this.mOnItemLongClickListener = listener;
+    }
 }

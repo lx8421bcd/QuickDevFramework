@@ -4,7 +4,7 @@
     android:id="@+id/activity_empty_view_test"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.linxiao.quickdevframework.adaptertest.EmptyViewTestActivity">
+    tools:context="com.linxiao.quickdevframework.adaptertest.EmptyViewTestFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rcvEmptySimple"
@@ -17,7 +17,6 @@
         android:id="@+id/btnRefresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="onBtnRefreshClick"
         android:layout_alignParentBottom="true"
         android:text="Refresh"/>
 

@@ -23,24 +23,9 @@
         <activity
             android:name=".main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".frameworkapi.DialogApiActivity" />
-        <activity
-            android:name=".frameworkapi.NotificationApiActivity"
-            android:parentActivityName=".main.MainActivity" />
-        <activity
-            android:name=".frameworkapi.ToastApiActivity"
-            android:parentActivityName=".main.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".main.MainActivity" />
-        </activity>
-        <activity android:name=".frameworkapi.PermissionApiActivity" />
-        <activity android:name=".netapi.NetTestActivity" />
+
 
         <service android:name=".frameworkapi.BackgroundService" />
-
-        <activity android:name=".frameworkapi.FileApiActivity" />
-        <activity android:name=".adaptertest.EmptyViewTestActivity"></activity>
     </application>
 
 </manifest>

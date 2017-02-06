@@ -1,8 +1,13 @@
 package com.linxiao.quickdevframework.main;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,14 +15,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
+import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
 import com.linxiao.quickdevframework.R;
-import com.linxiao.quickdevframework.adaptertest.EmptyViewTestActivity;
-import com.linxiao.quickdevframework.frameworkapi.DialogApiActivity;
-import com.linxiao.quickdevframework.frameworkapi.FileApiActivity;
-import com.linxiao.quickdevframework.frameworkapi.NotificationApiActivity;
-import com.linxiao.quickdevframework.frameworkapi.PermissionApiActivity;
-import com.linxiao.quickdevframework.frameworkapi.ToastApiActivity;
-import com.linxiao.quickdevframework.netapi.NetTestActivity;
+import com.linxiao.quickdevframework.adaptertest.EmptyViewTestFragment;
+import com.linxiao.quickdevframework.frameworkapi.DialogApiFragment;
+import com.linxiao.quickdevframework.frameworkapi.FileApiFragment;
+import com.linxiao.quickdevframework.frameworkapi.NotificationApiFragment;
+import com.linxiao.quickdevframework.frameworkapi.PermissionApiFragment;
+import com.linxiao.quickdevframework.frameworkapi.ToastApiFragment;
+import com.linxiao.quickdevframework.netapi.NetTestFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +33,23 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity {
 
+    private static final String KEY_CURRENT_TAG = "CurrentTag";
+    private static final String KEY_TAGS = "FragmentTags";
+    private static final String KEY_CLASS_NAMES = "FragmentClassNames";
+
+    @BindView(R.id.drawer_main)
+    DrawerLayout mDrawerLayout;
+
     @BindView(R.id.rcvApiSampleList)
     RecyclerView rcvApiSampleList;
+
+    private ArrayList<String> fragmentTags = new ArrayList<>();
+    private ArrayList<String> fragmentClassNames = new ArrayList<>();
+    private ArrayList<Fragment> fragments = new ArrayList<>();
+
+    private FragmentManager mFragmentManager;
+
+    private String currentTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,35 +58,127 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        mFragmentManager = getSupportFragmentManager();
+        if (savedInstanceState != null) {
+            restoreFragments(savedInstanceState);
+        }
+        else {
+            initFragments();
+        }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_main);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.app_name, R.string.app_name);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
         initApiSampleList();
     }
 
     private void initApiSampleList() {
         List<ApiSampleObject> apiSampleList = new ArrayList<>();
-        apiSampleList.add(new ApiSampleObject("Dialog API", DialogApiActivity.class));
-        apiSampleList.add(new ApiSampleObject("Notification API", NotificationApiActivity.class));
-        apiSampleList.add(new ApiSampleObject("Toast API", ToastApiActivity.class));
-        apiSampleList.add(new ApiSampleObject("Permission API", PermissionApiActivity.class));
-        apiSampleList.add(new ApiSampleObject("File API", FileApiActivity.class));
-        apiSampleList.add(new ApiSampleObject("Network API", NetTestActivity.class));
-        apiSampleList.add(new ApiSampleObject("Adapter API", EmptyViewTestActivity.class));
+        apiSampleList.add(new ApiSampleObject("Dialog API", "DialogApiFragment"));
+        apiSampleList.add(new ApiSampleObject("Notification API", "NotificationApiFragment"));
+        apiSampleList.add(new ApiSampleObject("Toast API", "ToastApiFragment"));
+        apiSampleList.add(new ApiSampleObject("Permission API", "PermissionApiFragment"));
+        apiSampleList.add(new ApiSampleObject("File API", "FileApiFragment"));
+        apiSampleList.add(new ApiSampleObject("Network API", "NetTestFragment"));
+        apiSampleList.add(new ApiSampleObject("Adapter API", "EmptyViewTestFragment"));
 
         ApiSampleListAdapter adapter = new ApiSampleListAdapter(this);
         adapter.setDataSource(apiSampleList);
-
+        adapter.setOnItemClickListener(new BaseRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseRecyclerViewAdapter adapter, View itemView, int position) {
+                ApiSampleObject object = (ApiSampleObject) adapter.getDataSource().get(position);
+                switchFragment(object.getTarget());
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            }
+        });
         rcvApiSampleList.setLayoutManager(new LinearLayoutManager(this));
         rcvApiSampleList.setItemAnimator(new DefaultItemAnimator());
         rcvApiSampleList.setAdapter(adapter);
 
+
+    }
+
+    private void initFragments() {
+        addFragment(new DialogApiFragment(), "DialogApiFragment");
+        addFragment(new NotificationApiFragment(), "NotificationApiFragment");
+        addFragment(new ToastApiFragment(), "ToastApiFragment");
+        addFragment(new PermissionApiFragment(), "PermissionApiFragment");
+        addFragment(new FileApiFragment(), "FileApiFragment");
+        addFragment(new NetTestFragment(), "NetTestFragment");
+        addFragment(new EmptyViewTestFragment(), "EmptyViewTestFragment");
+
+        currentTag = "DialogApiFragment";
+        switchFragment("DialogApiFragment");
+    }
+
+    private void restoreFragments(@NonNull Bundle savedInstanceState) {
+        currentTag = savedInstanceState.getString(KEY_CURRENT_TAG, "");
+        fragmentTags.clear();
+        fragmentTags.addAll(savedInstanceState.getStringArrayList(KEY_TAGS));
+        for(int i = 0; i < fragmentTags.size(); i++) {
+            Fragment fragment = mFragmentManager.findFragmentByTag(fragmentTags.get(i));
+            if (fragment == null) {
+                try {
+                    Class<?> fragmentClass = Class.forName(fragmentClassNames.get(i));
+                    Object obj = fragmentClass.newInstance();
+                    if (obj instanceof Fragment) {
+                        fragment = (Fragment) obj;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fragment != null) {
+                addFragment(fragment, fragmentTags.get(i));
+            }
+            if(fragments.get(i).isAdded()) {
+                mFragmentManager.beginTransaction()
+                .hide(fragments.get(i))
+                .commitAllowingStateLoss();
+            }
+        }
+        switchFragment(currentTag);
+    }
+
+    private void switchFragment(String tag) {
+        /* Fragment 切换 */
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        if (fragmentTags.indexOf(tag) < 0) {
+            return;
+        }
+        Fragment showFragment = fragments.get(fragmentTags.indexOf(tag));
+        Fragment currentFragment = mFragmentManager.findFragmentByTag(currentTag);
+        if (currentFragment != null) {
+            transaction.hide(currentFragment);
+        }
+        if (showFragment.isAdded()) {
+            transaction.show(showFragment);
+        }
+        else {
+            transaction.add(R.id.content_frame, showFragment, tag);
+            transaction.show(showFragment);
+        }
+        transaction.setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        transaction.commitAllowingStateLoss();
+        currentTag = tag;
+    }
+
+    protected void addFragment(@NonNull Fragment fragment, @NonNull String tag) {
+        fragments.add(fragment);
+        fragmentTags.add(tag);
+        fragmentClassNames.add(fragment.getClass().getName());
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(KEY_CURRENT_TAG, currentTag);
+        outState.putStringArrayList(KEY_TAGS, fragmentTags);
+        outState.putStringArrayList(KEY_CLASS_NAMES, fragmentClassNames);
     }
 
 
