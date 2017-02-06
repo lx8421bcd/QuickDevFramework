@@ -16,6 +16,8 @@ import com.linxiao.framework.support.notification.NotificationWrapper;
 import com.linxiao.framework.support.notification.SimpleNotificationBuilder;
 import com.linxiao.quickdevframework.R;
 
+import java.util.Arrays;
+
 public class NotificationApiActivity extends BaseActivity {
 
     @Override
@@ -35,52 +37,27 @@ public class NotificationApiActivity extends BaseActivity {
         }
         SimpleNotificationBuilder builder = NotificationWrapper.createSimpleNotificationBuilder(this, "bigText", "一条bigText");
         builder.setBigText("big text title", bigText)
-                .configureNotificationAsDefault()
-                .setTargetActivityIntent(new Intent(this, ToastApiActivity.class))
-                .build(1024)
-                .send();
+        .configureNotificationAsDefault()
+        .setTargetActivityIntent(new Intent(this, ToastApiActivity.class))
+        .build(1024)
+        .send();
+
+        SimpleNotificationBuilder builder1 = NotificationWrapper.createSimpleNotificationBuilder(this, "bigPicture", "一条bigPicture");
+        builder1.setBigPicture("big picture title", BitmapFactory.decodeResource(getResources(), R.drawable.ic_notify))
+        .configureNotificationAsDefault()
+        .setTargetActivityIntent(new Intent(this, ToastApiActivity.class))
+        .build(1025)
+        .send();
+
+        SimpleNotificationBuilder builder2 = NotificationWrapper.createSimpleNotificationBuilder(this, "inbox", "一条inbox");
+        builder2.setInboxMessages("inbox title", Arrays.asList("这是一行内容","这是一行内容","这是一行内容","这是一行内容"))
+        .configureNotificationAsDefault()
+        .setTargetActivityIntent(new Intent(this, ToastApiActivity.class))
+        .build(1026)
+        .send();
     }
 
-
-    void testBack() {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setWhen(System.currentTimeMillis())
-                .setPriority(Notification.PRIORITY_DEFAULT)
-                .setAutoCancel(true)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_notify))
-                .setContentTitle("test back stack")
-                .setContentText("test back stack in app and app close");
-
-        Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
-        Bundle bundle = new Bundle();
-        bundle.putString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME, ToastApiActivity.class.getName());
-        broadcastIntent.putExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA, bundle);
-        PendingIntent pendingIntent = PendingIntent.
-                getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
-        mBuilder.setContentIntent(pendingIntent);
-        NotificationManagerCompat.from(this).notify(1024, mBuilder.build());
-    }
-
-    void send() {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Event tracker")
-                .setContentText("Events received");
-        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        String[] events = new String[6];
-        inboxStyle.setBigContentTitle("Event tracker details:");
-        for (String event : events) {
-
-            inboxStyle.addLine(event + "text");
-        }
-        mBuilder.setStyle(inboxStyle);
-        NotificationManagerCompat.from(this).notify(45645, mBuilder.build());
-    }
-
+    /*FIXME:目前横幅通知的处理方式其实是类似于电话的处理，有的系统显示横幅，有的则直接执行目标Intent在不同版本的系统上表现形式不同，并不完全是横幅，不推荐使用*/
     void hangup() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(BaseApplication.getAppContext());
         builder.setContentTitle("横幅通知");

@@ -134,14 +134,11 @@ public class SimpleNotificationBuilder {
 
     /**
      * 为通知设置多行消息内容
-     * <p>
-     * 注意内容过长时并不会自动换行，在低版本上并不会显示该样式
-     * </p>
      * @param title 展开内容标题
      * @param summaryText 概要内容
      * @param lines 多行文本
      * */
-    public SimpleNotificationBuilder setInboxMessages(String title, String summaryText, String... lines) {
+    public SimpleNotificationBuilder setInboxMessages(String title, String summaryText, List<String> lines) {
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         inboxStyle.setBigContentTitle(title);
         if (!TextUtils.isEmpty(summaryText)) {
@@ -151,27 +148,6 @@ public class SimpleNotificationBuilder {
             inboxStyle.addLine(line);
         }
         setStyle(inboxStyle);
-        return this;
-    }
-    /**
-     * 为通知设置多行消息内容
-     * @param title 展开内容标题
-     * @param lines 多行文本
-     * */
-    public SimpleNotificationBuilder setInboxMessages(String title, String... lines) {
-        setInboxMessages(title, null, lines);
-        return this;
-    }
-    /**
-     * 为通知设置多行消息内容
-     * @param title 展开内容标题
-     * @param summaryText 概要内容
-     * @param lines 多行文本
-     * */
-    public SimpleNotificationBuilder setInboxMessages(String title, String summaryText, List<String> lines) {
-        if (lines != null) {
-            setInboxMessages(title, summaryText, lines.toArray(new String[]{}));
-        }
         return this;
     }
     /**
