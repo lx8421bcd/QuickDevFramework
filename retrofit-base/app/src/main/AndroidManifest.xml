@@ -26,7 +26,9 @@
 
         <service android:name=".frameworkapi.BackgroundService" />
 
-        <activity android:name=".frameworkapi.NotificationTargetActivity"></activity>
+        <activity android:name=".frameworkapi.NotificationTargetActivity" />
+        <activity android:name=".adaptertest.EmptyTestActivity" />
+        <activity android:name=".adaptertest.HeaderFooterActivity"></activity>
     </application>
 
 </manifest>

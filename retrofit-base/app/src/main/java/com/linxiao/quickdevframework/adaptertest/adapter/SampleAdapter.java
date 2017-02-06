@@ -11,10 +11,10 @@ import com.linxiao.quickdevframework.R;
  *
  * Created by linxiao on 2017/1/16.
  */
-public class EmptySimpleAdapter extends BaseRecyclerViewAdapter<String, BaseRecyclerViewHolder> {
+public class SampleAdapter extends BaseRecyclerViewAdapter<String, BaseRecyclerViewHolder> {
 
 
-    public EmptySimpleAdapter(Context context) {
+    public SampleAdapter(Context context) {
         super(context);
     }
 

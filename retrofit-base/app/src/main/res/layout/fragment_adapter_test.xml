@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_empty_view_test"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.linxiao.quickdevframework.adaptertest.AdapterTestFragment">
+
+    <Button
+        android:id="@+id/btnTestEmptyView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_test_empty_view"/>
+
+    <Button
+        android:id="@+id/btnHeaderFooter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_header_footer"/>
+
+</LinearLayout>

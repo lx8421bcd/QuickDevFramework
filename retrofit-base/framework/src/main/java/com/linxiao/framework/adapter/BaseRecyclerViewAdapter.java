@@ -234,12 +234,12 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             mHeaderContainer.setOrientation(LinearLayout.VERTICAL);
             mHeaderContainer.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         }
-        if (position < mHeaderContainer.getChildCount()) {
+        if (position > 0 && position < mHeaderContainer.getChildCount()) {
             mHeaderContainer.addView(v, position);
         } else {
             mHeaderContainer.addView(v);
         }
-        notifyItemInserted(getHeaderPosition());
+        notifyDataSetChanged();
     }
 
     public void addFooterView(@NonNull View v) {
@@ -253,12 +253,73 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             mFooterContainer.setOrientation(LinearLayout.VERTICAL);
             mFooterContainer.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         }
-        if (position < mHeaderContainer.getChildCount()) {
+        if (position > 0 && position < mHeaderContainer.getChildCount()) {
             mFooterContainer.addView(v, position);
         } else {
             mFooterContainer.addView(v);
         }
-        notifyItemInserted(getFooterPosition());
+        notifyDataSetChanged();
+
+    }
+
+    public void removeHeaderView(View v) {
+        if (mHeaderContainer != null) {
+            mHeaderContainer.removeView(v);
+            notifyDataSetChanged();
+        }
+    }
+
+    public void removeHeaderView(int position) {
+        if (mHeaderContainer != null) {
+            View v = mHeaderContainer.getChildAt(position);
+            if (v != null) {
+                removeHeaderView(v);
+            }
+        }
+    }
+
+    public void removeFooterView(View v) {
+        if (mFooterContainer != null) {
+            mFooterContainer.removeView(v);
+            notifyDataSetChanged();
+        }
+    }
+
+    public void removeFooterView(int position) {
+        if (mFooterContainer != null) {
+            View v = mFooterContainer.getChildAt(position);
+            if (v != null) {
+                removeFooterView(v);
+            }
+        }
+    }
+
+    /**
+     * 是否显示Header
+     * */
+    public void setHeaderVisible(boolean visible) {
+        showHeaderView = visible;
+        if (hasHeaderView()) {
+            notifyItemChanged(getHeaderPosition());
+        }
+    }
+
+    public boolean isHeaderVisible() {
+        return hasHeaderView() && showHeaderView;
+    }
+
+    /**
+     * 是否显示Footer
+     * */
+    public void setFooterVisible(boolean visible) {
+        showFooterView = visible;
+        if (hasFooterView()) {
+            notifyItemChanged(getFooterPosition());
+        }
+    }
+
+    public boolean isFooterVisible() {
+        return hasFooterView() && showFooterView;
     }
 
     /**
@@ -298,34 +359,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
      * */
     public void showErrorView() {
         showNoDataView(mErrorView);
-    }
-
-    /**
-     * 是否显示Header
-     * */
-    public void setHeaderVisible(boolean visible) {
-        showHeaderView = visible;
-        if (hasHeaderView()) {
-            notifyItemChanged(getHeaderPosition());
-        }
-    }
-
-    public boolean isHeaderVisible() {
-        return hasHeaderView() && showHeaderView;
-    }
-
-    /**
-     * 是否显示Footer
-     * */
-    public void setFooterVisible(boolean visible) {
-        showFooterView = visible;
-        if (hasFooterView()) {
-            notifyItemChanged(getFooterPosition());
-        }
-    }
-
-    public boolean isFooterVisible() {
-        return hasFooterView() && showFooterView;
     }
 
     /**
@@ -395,38 +428,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             if (holder.itemView.getLayoutParams() instanceof StaggeredGridLayoutManager.LayoutParams) {
                 StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
                 params.setFullSpan(true);
-            }
-        }
-    }
-
-    public void removeHeaderView(View v) {
-        if (mHeaderContainer != null) {
-            mHeaderContainer.removeView(v);
-            notifyItemChanged(getHeaderPosition());
-        }
-    }
-
-    public void removeHeaderView(int position) {
-        if (mHeaderContainer != null) {
-            View v = mHeaderContainer.getChildAt(position);
-            if (v != null) {
-                removeHeaderView(v);
-            }
-        }
-    }
-
-    public void removeFooterView(View v) {
-        if (mFooterContainer != null) {
-            mFooterContainer.removeView(v);
-            notifyItemChanged(getFooterPosition());
-        }
-    }
-
-    public void removeFooterView(int position) {
-        if (mFooterContainer != null) {
-            View v = mFooterContainer.getChildAt(position);
-            if (v != null) {
-                removeFooterView(v);
             }
         }
     }
@@ -501,6 +502,13 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         int count = mDataSource.size();
         this.mDataSource.clear();
         this.notifyItemRangeRemoved(0, count);
+    }
+
+    public T getFromDataSource(int position) {
+        if (position > 0 && position < mDataSource.size()) {
+            return mDataSource.get(position);
+        }
+        return null;
     }
 
     public List<T> getDataSource() {

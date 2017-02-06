@@ -19,15 +19,13 @@ import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
 import com.linxiao.framework.support.ToastWrapper;
 import com.linxiao.quickdevframework.R;
-import com.linxiao.quickdevframework.adaptertest.EmptyViewTestFragment;
+import com.linxiao.quickdevframework.adaptertest.AdapterTestFragment;
 import com.linxiao.quickdevframework.frameworkapi.DialogApiFragment;
 import com.linxiao.quickdevframework.frameworkapi.FileApiFragment;
 import com.linxiao.quickdevframework.frameworkapi.NotificationApiFragment;
 import com.linxiao.quickdevframework.frameworkapi.PermissionApiFragment;
 import com.linxiao.quickdevframework.frameworkapi.ToastApiFragment;
 import com.linxiao.quickdevframework.netapi.NetTestFragment;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,14 +87,14 @@ public class MainActivity extends BaseActivity {
         apiSampleList.add(new ApiSampleObject("Permission API", "PermissionApiFragment"));
         apiSampleList.add(new ApiSampleObject("File API", "FileApiFragment"));
         apiSampleList.add(new ApiSampleObject("Network API", "NetTestFragment"));
-        apiSampleList.add(new ApiSampleObject("Adapter API", "EmptyViewTestFragment"));
+        apiSampleList.add(new ApiSampleObject("Adapter API", "AdapterTestFragment"));
 
         ApiSampleListAdapter adapter = new ApiSampleListAdapter(this);
         adapter.setDataSource(apiSampleList);
         adapter.setOnItemClickListener(new BaseRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseRecyclerViewAdapter adapter, View itemView, int position) {
-                ApiSampleObject object = (ApiSampleObject) adapter.getDataSource().get(position);
+                ApiSampleObject object = (ApiSampleObject) adapter.getFromDataSource(position);
                 switchFragment(object.getTarget());
                 mDrawerLayout.closeDrawer(GravityCompat.START);
             }
@@ -113,7 +111,7 @@ public class MainActivity extends BaseActivity {
         addFragment(new PermissionApiFragment(), "PermissionApiFragment");
         addFragment(new FileApiFragment(), "FileApiFragment");
         addFragment(new NetTestFragment(), "NetTestFragment");
-        addFragment(new EmptyViewTestFragment(), "EmptyViewTestFragment");
+        addFragment(new AdapterTestFragment(), "AdapterTestFragment");
 
         currentTag = "DialogApiFragment";
         switchFragment("DialogApiFragment");

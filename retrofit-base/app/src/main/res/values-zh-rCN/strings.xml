@@ -8,4 +8,8 @@
     <string name="positive_click">positive clicked</string>
     <string name="sample_negative">自定义Negative</string>
     <string name="negative_click">negative click</string>
+    <string name="button_test_empty_view">test empty view</string>
+    <string name="btn_header_footer">header and footer</string>
+    <string name="default_header">default header</string>
+    <string name="default_footer">default footer</string>
 </resources>

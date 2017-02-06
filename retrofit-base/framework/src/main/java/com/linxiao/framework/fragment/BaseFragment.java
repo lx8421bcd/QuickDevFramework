@@ -75,7 +75,7 @@ public abstract class BaseFragment extends Fragment {
      * execute on method onCreateView(), put your code here which you want to do in onCreateView()<br>
      * <strong>do not override onCreateView() or this method and configureContentViewRes() will be invalidated</strong>
      * */
-    protected abstract void onCreateContentView(View contentView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
+    protected abstract void onCreateContentView(View contentView, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
 
     /**
      * use this method instead of findViewById() to simplify view initialization <br>
