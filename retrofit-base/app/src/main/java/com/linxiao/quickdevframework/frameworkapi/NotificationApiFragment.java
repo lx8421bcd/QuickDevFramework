@@ -65,7 +65,7 @@ public class NotificationApiFragment extends BaseFragment {
         .send();
     }
 
-    @OnClick(R.id.btnSendBigPicture)
+    @OnClick(R.id.btnSendInbox)
     public void onSendInboxClick(View v) {
         NotificationWrapper.createSimpleNotificationBuilder(getContext(), "inbox", "一条inbox")
         .setInboxMessages("inbox title", Arrays.asList("这是一行内容","这是一行内容","这是一行内容","这是一行内容"))

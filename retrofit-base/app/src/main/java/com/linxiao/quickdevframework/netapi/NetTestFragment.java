@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.linxiao.framework.fragment.BaseFragment;
+import com.linxiao.framework.net.CookieMode;
 import com.linxiao.framework.net.FrameworkRetrofitManager;
 import com.linxiao.framework.net.HttpInfoCatchInterceptor;
 import com.linxiao.framework.net.HttpInfoCatchListener;
@@ -41,12 +42,14 @@ public class NetTestFragment extends BaseFragment {
         infoCatchInterceptor.setHttpInfoCatchListener(new HttpInfoCatchListener() {
             @Override
             public void onInfoCaught(HttpInfoEntity entity) {
+                entity.logOut();
                 //do something......
             }
         });
-        ClientApi clientApi = FrameworkRetrofitManager.createRetrofitBuilder("http://www.weather.com.cn/")
-                .addCustomInterceptor(infoCatchInterceptor)
-                .build(ClientApi.class);
+        clientApi = FrameworkRetrofitManager.createRetrofitBuilder("http://www.weather.com.cn/")
+        .setCookieMode(CookieMode.ADD_BY_ANNOTATION)
+        .addCustomInterceptor(infoCatchInterceptor)
+        .build(ClientApi.class);
     }
 
     @OnClick(R.id.btnRequestNet)

@@ -2,6 +2,8 @@ package com.linxiao.framework.net;
 
 import android.support.annotation.NonNull;
 
+import com.linxiao.framework.support.log.Logger;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -91,14 +93,14 @@ public class HttpInfoCatchInterceptor implements Interceptor {
                 try {
                     charset = contentType.charset(UTF8);
                 } catch (UnsupportedCharsetException e) {
-                    entity.responseBody = "unreadable";
+                    entity.responseBody = "unreadable, charset error";
                 }
             }
-            if (isPlaintext(buffer) && responseBody.contentLength() > 0) {
+            if (isPlaintext(buffer) && responseBody.contentLength() != 0) {
                 entity.responseBody = buffer.clone().readString(charset);
             }
             else {
-                entity.responseBody = "unreadable";
+                entity.responseBody = "unreadable, not text";
             }
         }
         httpInfoCatchListener.onInfoCaught(entity);

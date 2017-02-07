@@ -38,6 +38,7 @@ public class RetrofitApiBuilder {
         mRetrofitBuilder = new Retrofit.Builder();
         okHttpClientBuilder = new OkHttpClient.Builder();
         universalHeaders = new ArrayMap<>();
+        cookieMode = CookieMode.ADD_TO_ALL;
     }
 
     /**

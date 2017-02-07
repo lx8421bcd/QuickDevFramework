@@ -120,7 +120,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
 
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        Logger.d(TAG, "viewType = " + viewType);
         switch (viewType) {
         case HEADER_VIEW :
             return createEmptyViewHolder(mHeaderContainer);
@@ -505,7 +504,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     }
 
     public T getFromDataSource(int position) {
-        if (position > 0 && position < mDataSource.size()) {
+        if (position >= 0 && position < mDataSource.size()) {
             return mDataSource.get(position);
         }
         return null;
