@@ -4,20 +4,17 @@ import android.Manifest;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.linxiao.framework.BaseApplication;
-import com.linxiao.framework.support.PermissionWrapper;
+import com.linxiao.framework.support.permission.PermissionWrapper;
 import com.linxiao.framework.support.log.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 
 /**
  * 文件管理封装，提供常见文件管理功能
@@ -38,7 +35,7 @@ public class FileWrapper {
      * 检查是否有文件操作权限
      * */
     public static boolean hasFileOperatePermission() {
-        boolean hasPermission = PermissionWrapper.getInstance().checkPermissionsGranted(BaseApplication.getAppContext(),
+        boolean hasPermission = PermissionWrapper.checkPermissionsGranted(BaseApplication.getAppContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {

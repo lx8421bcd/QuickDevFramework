@@ -15,7 +15,7 @@ import com.linxiao.framework.dialog.AlertDialogFragment;
 import com.linxiao.framework.event.ExitAppEvent;
 import com.linxiao.framework.event.ShowAlertDialogEvent;
 import com.linxiao.framework.manager.BaseDataManager;
-import com.linxiao.framework.support.PermissionWrapper;
+import com.linxiao.framework.support.permission.PermissionWrapper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -89,14 +89,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        PermissionWrapper.getInstance().onSysAlertPermissionResult(this, requestCode);
-        PermissionWrapper.getInstance().onWriteSysSettingsPermissionResult(this, requestCode);
+        PermissionWrapper.onSysAlertPermissionResult(this, requestCode);
+        PermissionWrapper.onWriteSysSettingsPermissionResult(this, requestCode);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionWrapper.getInstance().handleCallback(this, requestCode, permissions, grantResults);
+        PermissionWrapper.handleCallback(this, requestCode, permissions, grantResults);
     }
 
     /**

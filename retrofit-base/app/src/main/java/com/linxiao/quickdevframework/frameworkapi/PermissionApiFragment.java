@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.framework.support.dialog.AlertDialogWrapper;
-import com.linxiao.framework.support.PermissionWrapper;
+import com.linxiao.framework.support.permission.PermissionProhibitedListener;
+import com.linxiao.framework.support.permission.PermissionWrapper;
+import com.linxiao.framework.support.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;
 
 import butterknife.ButterKnife;
@@ -29,28 +31,34 @@ public class PermissionApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnRequestSample)
     public void onRequestPermissionClick(View v) {
-        PermissionWrapper.getInstance().performWithPermission(getActivity(), "请授予相机权限",
-            new PermissionWrapper.OnRequestPermissionCallback() {
-                @Override
-                public void onGranted() {
-                    AlertDialogWrapper.showAlertDialog("权限已授予");
-                }
+        PermissionWrapper.performWithPermission(Manifest.permission.CAMERA)
+        .showRationaleBeforeRequest("请授予相机权限")
+        .doOnProhibited(new PermissionProhibitedListener() {
+            @Override
+            public void onProhibited(String permission) {
+                PermissionWrapper.showPermissionProhibitedDialog(getActivity(), permission);
+            }
+        })
+        .perform(getActivity(),new RequestPermissionCallback() {
+            @Override
+            public void onGranted() {
+                AlertDialogWrapper.showAlertDialog("权限已授予");
+            }
 
-                @Override
-                public void onDenied() {
-                    AlertDialogWrapper.showAlertDialog("未授予权限");
-                }
-            },
-            Manifest.permission.CAMERA);
+            @Override
+            public void onDenied() {
+                AlertDialogWrapper.showAlertDialog("未授予权限");
+            }
+        });
     }
 
     @OnClick(R.id.btnRequestAlertWindow)
     public void onReqSysAlertClick(View v) {
-        PermissionWrapper.getInstance().requestSystemAlertWindowPermission(getActivity());
+        PermissionWrapper.requestSystemAlertWindowPermission(getActivity());
     }
 
     @OnClick(R.id.btnRequestWriteSettings)
     public void onReqWriteSettingsClick(View v) {
-        PermissionWrapper.getInstance().requestWriteSystemSettingsPermission(getActivity());
+        PermissionWrapper.requestWriteSystemSettingsPermission(getActivity());
     }
 }

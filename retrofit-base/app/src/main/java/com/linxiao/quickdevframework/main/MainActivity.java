@@ -123,6 +123,11 @@ public class MainActivity extends BaseActivity {
         currentTag = savedInstanceState.getString(KEY_CURRENT_TAG, "");
         fragmentTags.clear();
         fragmentTags.addAll(savedInstanceState.getStringArrayList(KEY_TAGS));
+        fragmentClassNames.clear();
+        fragmentClassNames.addAll(savedInstanceState.getStringArrayList(KEY_CLASS_NAMES));
+        Logger.d(TAG, fragmentTags.toString());
+        Logger.d(TAG, fragmentClassNames.toString());
+        Logger.d(TAG, "CurrentTag = " + currentTag);
         for(int i = 0; i < fragmentTags.size(); i++) {
             Fragment fragment = mFragmentManager.findFragmentByTag(fragmentTags.get(i));
             if (fragment == null) {
@@ -137,12 +142,12 @@ public class MainActivity extends BaseActivity {
                 }
             }
             if (fragment != null) {
-                addFragment(fragment, fragmentTags.get(i));
-            }
-            if(fragments.get(i).isAdded()) {
-                mFragmentManager.beginTransaction()
-                .hide(fragments.get(i))
-                .commitAllowingStateLoss();
+                fragments.add(fragment);
+                if(fragment.isAdded()) {
+                    mFragmentManager.beginTransaction()
+                    .hide(fragment)
+                    .commitAllowingStateLoss();
+                }
             }
         }
         switchFragment(currentTag);
