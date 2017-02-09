@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import com.linxiao.framework.BaseApplication;
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.framework.support.ToastWrapper;
 import com.linxiao.framework.support.dialog.AlertDialogBuilder;
@@ -108,6 +110,12 @@ public class DialogApiFragment extends BaseFragment {
     @OnClick(R.id.btnShowSimpleDialog)
     public void onSimpleDialogClick(View v) {
         AlertDialogWrapper.showAlertDialog(getString(R.string.sample_dialog_message));
+    }
+
+    @OnClick(R.id.btnShowOnStartActivity)
+    public void onShowStartActivityClick(View v) {
+        startActivity(new Intent(getActivity(), NotificationTargetActivity.class));
+        AlertDialogWrapper.showTopAlertDialog(getActivity(), "dialog after start activity");
     }
 
     @OnClick(R.id.btnShowTopDialog)

@@ -48,7 +48,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     private static final int EMPTY_VIEW = 102;
     private static final int FOOTER_VIEW = 103;
 
-    private static String TAG;
+    protected String TAG;
 
     private List<T> mDataSource;
     private Context mContext;

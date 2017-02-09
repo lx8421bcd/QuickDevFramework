@@ -98,6 +98,9 @@ public class MainActivity extends BaseActivity {
             public void onItemClick(BaseRecyclerViewAdapter adapter, View itemView, int position) {
                 ApiSampleObject object = (ApiSampleObject) adapter.getFromDataSource(position);
                 switchFragment(object.getTarget());
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle(object.getApiName());
+                }
                 mDrawerLayout.closeDrawer(GravityCompat.START);
             }
         });

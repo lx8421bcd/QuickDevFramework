@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.linxiao.framework.R;
@@ -30,53 +31,61 @@ import java.util.List;
  * <p>template for activities in the project, used to define common methods of activity </p>
  * */
 public abstract class BaseActivity extends AppCompatActivity {
-
-    protected static String TAG;
+    protected String TAG;
 
     private List<BaseDataManager> listDataManagers;
 
-    private boolean isResumed = false;
+    private boolean canShowDialog = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        canShowDialog = true;
+        Log.d(TAG, "onCreate");
         TAG = this.getClass().getSimpleName();
         EventBus.getDefault().register(this);
         listDataManagers = new ArrayList<>();
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart");
+        canShowDialog = true;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        isResumed = true;
+        Log.d(TAG, "onResume");
+        canShowDialog = true;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d(TAG, "onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        isResumed = false;
+        Log.d(TAG, "onStop");
+        canShowDialog = false;
     }
 
     @Override
-    public void startActivity(Intent intent) {
-        super.startActivity(intent);
-        isResumed = false;
-    }
-
-    @Override
-    public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) {
-        super.startActivityForResult(intent, requestCode, options);
-        isResumed = false;
+    protected void onRestart() {
+        super.onRestart();
+        canShowDialog = true;
+        Log.d(TAG, "onRestart");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy");
+        canShowDialog = false;
         EventBus.getDefault().unregister(this);
         for (BaseDataManager dataManager : listDataManagers) {
             if ( dataManager == null) {
@@ -87,7 +96,39 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    public void startActivity(Intent intent) {
+        Log.d(TAG, "startActivity");
+        super.startActivity(intent);
+        canShowDialog = false;
+    }
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) {
+        super.startActivityForResult(intent, requestCode, options);
+        canShowDialog = false;
+    }
+
+    @Override
+    public void startActivity(Intent intent, Bundle options) {
+        super.startActivity(intent, options);
+        canShowDialog = false;
+    }
+
+    @Override
+    public void startActivities(Intent[] intents) {
+        super.startActivities(intents);
+        canShowDialog = false;
+    }
+
+    @Override
+    public void startActivities(Intent[] intents, Bundle options) {
+        super.startActivities(intents, options);
+        canShowDialog = false;
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        canShowDialog = true;
         super.onActivityResult(requestCode, resultCode, data);
         PermissionWrapper.onSysAlertPermissionResult(this, requestCode);
         PermissionWrapper.onWriteSysSettingsPermissionResult(this, requestCode);
@@ -137,8 +178,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onActivityDialogEvent(ShowAlertDialogEvent event) {
-        if (!isResumed) {
-           return;
+        if (!canShowDialog) {
+            return;
         }
         AlertDialogFragment dialogFragment = AlertDialogFragment.newInstance();
         dialogFragment.setMessage(event.getMessage());

@@ -12,4 +12,7 @@
     <string name="btn_header_footer">header and footer</string>
     <string name="default_header">default header</string>
     <string name="default_footer">default footer</string>
+    <string name="request_sample">简单申请示例</string>
+    <string name="rationale_before_request">在申请前显示权限说明</string>
+    <string name="action_on_prohibited">权限被完全禁止时的操作</string>
 </resources>

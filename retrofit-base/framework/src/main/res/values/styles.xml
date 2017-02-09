@@ -27,7 +27,7 @@
 
 
 
-    <style name="TopDialogActivityTheme" parent="Theme.AppCompat.Light">>
+    <style name="TopDialogActivityTheme" parent="Theme.AppCompat.Light">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">true</item>

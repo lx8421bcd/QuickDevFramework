@@ -15,7 +15,19 @@
         android:id="@+id/btnRequestSample"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="request sample"/>
+        android:text="@string/request_sample"/>
+
+    <Button
+        android:id="@+id/btnRequestWithRationale"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/rationale_before_request"/>
+
+    <Button
+        android:id="@+id/btnDoOnProhibited"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/action_on_prohibited"/>
 
     <Button
         android:id="@+id/btnRequestAlertWindow"

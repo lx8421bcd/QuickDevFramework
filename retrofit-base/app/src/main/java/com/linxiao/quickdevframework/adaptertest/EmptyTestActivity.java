@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.adaptertest.adapter.SampleAdapter;
 
@@ -17,7 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class EmptyTestActivity extends AppCompatActivity {
+public class EmptyTestActivity extends BaseActivity {
 
     @BindView(R.id.rcvEmptySimple)
     RecyclerView rcvEmptySimple;

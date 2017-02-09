@@ -13,4 +13,7 @@
     <string name="btn_header_footer">header and footer</string>
     <string name="default_header">default header</string>
     <string name="default_footer">default footer</string>
+    <string name="request_sample">request sample</string>
+    <string name="rationale_before_request">rationale before request</string>
+    <string name="action_on_prohibited">set action on prohibited</string>
 </resources>

@@ -211,6 +211,7 @@ public class PermissionWrapper {
                 }
             }
         }
+        reqSysSettingsCallback = null;
     }
 
     /**
@@ -270,7 +271,6 @@ public class PermissionWrapper {
 
 
     public static class PermissionOperator {
-
 
         private String[] requestPermissions;
         private RequestPermissionCallback currCallback;

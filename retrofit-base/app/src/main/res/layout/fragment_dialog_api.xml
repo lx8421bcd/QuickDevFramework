@@ -65,6 +65,12 @@
         android:text="show simple alert dialog" />
 
     <Button
+        android:id="@+id/btnShowOnStartActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="show alert dialog on startActivity" />
+
+    <Button
         android:id="@+id/btnShowTopDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

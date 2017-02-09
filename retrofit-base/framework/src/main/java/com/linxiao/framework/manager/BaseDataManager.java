@@ -11,7 +11,7 @@ import retrofit2.Call;
  */
 public abstract class BaseDataManager {
 
-    protected static String TAG;
+    protected String TAG;
 
     /**
      * Retrofit Calls的缓存容器

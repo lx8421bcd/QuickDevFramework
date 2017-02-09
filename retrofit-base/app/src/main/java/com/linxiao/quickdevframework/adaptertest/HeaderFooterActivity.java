@@ -7,13 +7,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.adaptertest.adapter.SampleAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HeaderFooterActivity extends AppCompatActivity {
+public class HeaderFooterActivity extends BaseActivity {
 
     @BindView(R.id.rcvHeaderFooter)
     RecyclerView rcvHeaderFooter;

@@ -21,7 +21,7 @@ import java.util.List;
  * */
 public abstract class BaseFragment extends Fragment {
 
-    public static String TAG;
+    protected String TAG;
 
     private List<BaseDataManager> listDataManagers;
 
