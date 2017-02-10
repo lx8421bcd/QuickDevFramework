@@ -1,19 +1,23 @@
-package com.linxiao.framework.dialog;
+package com.linxiao.framework.support.dialog;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.view.WindowManager;
+
+import com.linxiao.framework.dialog.BaseDialogFragment;
 
 /**
  * 提示对话框
  * Created by LinXiao on 2016-08-07.
  */
-public class AlertDialogFragment extends BaseDialogFragment {
+public class AlertDialogFragment extends DialogFragment {
     public static final String KEY_TITLE = "title";
     public static final String KEY_MESSAGE = "message";
 
@@ -110,7 +114,7 @@ public class AlertDialogFragment extends BaseDialogFragment {
     @Override
     public void show(FragmentManager manager, String tag) {
         manager.beginTransaction().add(this, tag).commitAllowingStateLoss();
-//        super.build(manager, tag);
+//        super.show(manager, tag);
     }
 
 }

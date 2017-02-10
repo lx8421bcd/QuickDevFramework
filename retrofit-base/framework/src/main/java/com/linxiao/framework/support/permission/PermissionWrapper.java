@@ -234,7 +234,6 @@ public class PermissionWrapper {
                 dialog.dismiss();
             }
         })
-        .build()
         .show();
     }
 
@@ -335,7 +334,6 @@ public class PermissionWrapper {
                         callback.onDenied();
                     }
                 })
-                .build()
                 .show();
             }
         }
