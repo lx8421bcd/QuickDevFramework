@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_header_footer"
+    android:id="@+id/activity_view_pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".sample.adapter.HeaderFooterActivity">
+    tools:context="com.linxiao.quickdevframework.sample.widget.ViewPagerActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rcvHeaderFooter"
+    <com.linxiao.framework.widget.CusViewPager
+        android:id="@+id/vpRoot"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

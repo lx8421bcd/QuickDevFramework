@@ -1,4 +1,4 @@
-package com.linxiao.quickdevframework.frameworkapi;
+package com.linxiao.quickdevframework.sample.frameworkapi;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -13,10 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.linxiao.framework.BaseApplication;
-import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.framework.support.notification.NotificationWrapper;
-import com.linxiao.framework.support.notification.SimpleNotificationBuilder;
 import com.linxiao.quickdevframework.R;
 
 import java.util.Arrays;
@@ -27,13 +25,13 @@ import butterknife.OnClick;
 public class NotificationApiFragment extends BaseFragment {
 
     @Override
-    protected int getInflateLayoutRes() {
+    protected int rootViewResId() {
         return R.layout.fragment_notification_api;
     }
 
     @Override
-    protected void onCreateContentView(View contentView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ButterKnife.bind(this, contentView);
+    protected void onCreateContentView(View rootView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        ButterKnife.bind(this, rootView);
     }
 
     @OnClick(R.id.btnSendSimple)

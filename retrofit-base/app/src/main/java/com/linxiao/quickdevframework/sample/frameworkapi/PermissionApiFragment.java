@@ -1,4 +1,4 @@
-package com.linxiao.quickdevframework.frameworkapi;
+package com.linxiao.quickdevframework.sample.frameworkapi;
 
 import android.Manifest;
 import android.os.Bundle;
@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.framework.support.dialog.AlertDialogWrapper;
-import com.linxiao.framework.support.log.Logger;
 import com.linxiao.framework.support.permission.PermissionProhibitedListener;
 import com.linxiao.framework.support.permission.PermissionWrapper;
 import com.linxiao.framework.support.permission.RequestPermissionCallback;
@@ -21,13 +20,13 @@ import butterknife.OnClick;
 public class PermissionApiFragment extends BaseFragment {
 
     @Override
-    protected int getInflateLayoutRes() {
+    protected int rootViewResId() {
         return R.layout.fragment_permission_api;
     }
 
     @Override
-    protected void onCreateContentView(View contentView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ButterKnife.bind(this, contentView);
+    protected void onCreateContentView(View rootView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        ButterKnife.bind(this, rootView);
     }
 
     @OnClick(R.id.btnRequestSample)

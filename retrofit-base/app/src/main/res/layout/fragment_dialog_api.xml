@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.linxiao.quickdevframework.frameworkapi.DialogApiFragment">
+    tools:context=".sample.frameworkapi.DialogApiFragment">
 
     <LinearLayout
         android:id="@+id/llSimpleAlert"
@@ -74,7 +74,7 @@
         android:id="@+id/btnShowTopDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="show top dialog" />
+        android:text="show dialog from service" />
 
     <Button
         android:id="@+id/btnShowBottomDialog"

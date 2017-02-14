@@ -1,7 +1,6 @@
-package com.linxiao.quickdevframework.adaptertest;
+package com.linxiao.quickdevframework.sample.adapter;
 
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,7 +9,6 @@ import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.quickdevframework.R;
-import com.linxiao.quickdevframework.adaptertest.adapter.SampleAdapter;
 
 import java.util.Arrays;
 

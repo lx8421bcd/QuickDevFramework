@@ -1,4 +1,4 @@
-package com.linxiao.quickdevframework.adaptertest;
+package com.linxiao.quickdevframework.sample.adapter;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,13 +15,13 @@ import butterknife.OnClick;
 public class AdapterTestFragment extends BaseFragment {
 
     @Override
-    protected int getInflateLayoutRes() {
+    protected int rootViewResId() {
         return R.layout.fragment_adapter_test;
     }
 
     @Override
-    protected void onCreateContentView(View contentView, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ButterKnife.bind(this, contentView);
+    protected void onCreateContentView(View rootView, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ButterKnife.bind(this, rootView);
     }
 
     @OnClick(R.id.btnTestEmptyView)

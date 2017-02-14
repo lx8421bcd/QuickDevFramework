@@ -1,4 +1,4 @@
-package com.linxiao.quickdevframework.frameworkapi;
+package com.linxiao.quickdevframework.sample.frameworkapi;
 
 import android.app.Dialog;
 import android.view.View;

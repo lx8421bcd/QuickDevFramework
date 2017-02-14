@@ -1,4 +1,4 @@
-package com.linxiao.quickdevframework.netapi;
+package com.linxiao.quickdevframework.sample.netapi;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -30,13 +30,13 @@ public class NetTestFragment extends BaseFragment {
     private ClientApi clientApi;
 
     @Override
-    protected int getInflateLayoutRes() {
+    protected int rootViewResId() {
         return R.layout.fragment_net_test;
     }
 
     @Override
-    protected void onCreateContentView(View contentView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ButterKnife.bind(this, contentView);
+    protected void onCreateContentView(View rootView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        ButterKnife.bind(this, rootView);
         HttpInfoCatchInterceptor infoCatchInterceptor = new HttpInfoCatchInterceptor();
         infoCatchInterceptor.setCatchEnabled(true);
         infoCatchInterceptor.setHttpInfoCatchListener(new HttpInfoCatchListener() {

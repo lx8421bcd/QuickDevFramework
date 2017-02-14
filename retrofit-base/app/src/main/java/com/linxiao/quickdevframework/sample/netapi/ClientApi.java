@@ -1,4 +1,4 @@
-package com.linxiao.quickdevframework.netapi;
+package com.linxiao.quickdevframework.sample.netapi;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;

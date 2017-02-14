@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -21,13 +20,14 @@ import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
 import com.linxiao.framework.support.ToastWrapper;
 import com.linxiao.framework.support.log.Logger;
 import com.linxiao.quickdevframework.R;
-import com.linxiao.quickdevframework.adaptertest.AdapterTestFragment;
-import com.linxiao.quickdevframework.frameworkapi.DialogApiFragment;
-import com.linxiao.quickdevframework.frameworkapi.FileApiFragment;
-import com.linxiao.quickdevframework.frameworkapi.NotificationApiFragment;
-import com.linxiao.quickdevframework.frameworkapi.PermissionApiFragment;
-import com.linxiao.quickdevframework.frameworkapi.ToastApiFragment;
-import com.linxiao.quickdevframework.netapi.NetTestFragment;
+import com.linxiao.quickdevframework.sample.adapter.AdapterTestFragment;
+import com.linxiao.quickdevframework.sample.frameworkapi.DialogApiFragment;
+import com.linxiao.quickdevframework.sample.frameworkapi.FileApiFragment;
+import com.linxiao.quickdevframework.sample.frameworkapi.NotificationApiFragment;
+import com.linxiao.quickdevframework.sample.frameworkapi.PermissionApiFragment;
+import com.linxiao.quickdevframework.sample.frameworkapi.ToastApiFragment;
+import com.linxiao.quickdevframework.sample.netapi.NetTestFragment;
+import com.linxiao.quickdevframework.sample.widget.WidgetsGuideFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,6 +90,7 @@ public class MainActivity extends BaseActivity {
         apiSampleList.add(new ApiSampleObject("File API", "FileApiFragment"));
         apiSampleList.add(new ApiSampleObject("Network API", "NetTestFragment"));
         apiSampleList.add(new ApiSampleObject("Adapter API", "AdapterTestFragment"));
+        apiSampleList.add(new ApiSampleObject("Widgets", "WidgetsGuideFragment"));
 
         ApiSampleListAdapter adapter = new ApiSampleListAdapter(this);
         adapter.setDataSource(apiSampleList);
@@ -117,6 +118,7 @@ public class MainActivity extends BaseActivity {
         addFragment(new FileApiFragment(), "FileApiFragment");
         addFragment(new NetTestFragment(), "NetTestFragment");
         addFragment(new AdapterTestFragment(), "AdapterTestFragment");
+        addFragment(new WidgetsGuideFragment(), "WidgetsGuideFragment");
 
         currentTag = "DialogApiFragment";
         switchFragment("DialogApiFragment");

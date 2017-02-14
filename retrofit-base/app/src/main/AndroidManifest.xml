@@ -27,11 +27,12 @@
             android:name=".main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <service android:name=".frameworkapi.BackgroundService" />
+        <service android:name=".sample.frameworkapi.BackgroundService" />
 
-        <activity android:name=".frameworkapi.NotificationTargetActivity" />
-        <activity android:name=".adaptertest.EmptyTestActivity" />
-        <activity android:name=".adaptertest.HeaderFooterActivity" />
+        <activity android:name=".sample.frameworkapi.NotificationTargetActivity" />
+        <activity android:name=".sample.adapter.EmptyTestActivity" />
+        <activity android:name=".sample.adapter.HeaderFooterActivity" />
+        <activity android:name=".sample.widget.ViewPagerActivity"></activity>
     </application>
 
 </manifest>

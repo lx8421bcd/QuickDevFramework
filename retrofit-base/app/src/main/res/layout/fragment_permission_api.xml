@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.linxiao.quickdevframework.frameworkapi.PermissionApiFragment">
+    tools:context=".sample.frameworkapi.PermissionApiFragment">
 
     <Button
         android:id="@+id/btnRequestSample"

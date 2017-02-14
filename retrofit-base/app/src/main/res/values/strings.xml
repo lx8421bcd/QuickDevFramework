@@ -16,4 +16,7 @@
     <string name="request_sample">request sample</string>
     <string name="rationale_before_request">rationale before request</string>
     <string name="action_on_prohibited">set action on prohibited</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

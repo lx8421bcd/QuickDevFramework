@@ -1,4 +1,4 @@
-package com.linxiao.quickdevframework.adaptertest.adapter;
+package com.linxiao.quickdevframework.sample.adapter;
 
 import android.content.Context;
 import android.view.ViewGroup;

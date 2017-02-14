@@ -1,4 +1,4 @@
-package com.linxiao.quickdevframework.frameworkapi;
+package com.linxiao.quickdevframework.sample.frameworkapi;
 
 import android.Manifest;
 import android.os.Bundle;
@@ -25,13 +25,13 @@ import butterknife.ButterKnife;
 public class FileApiFragment extends BaseFragment {
 
     @Override
-    protected int getInflateLayoutRes() {
+    protected int rootViewResId() {
         return R.layout.fragment_file_api;
     }
 
     @Override
-    protected void onCreateContentView(View contentView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ButterKnife.bind(this, contentView);
+    protected void onCreateContentView(View rootView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        ButterKnife.bind(this, rootView);
         PermissionWrapper.performWithPermission(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE)

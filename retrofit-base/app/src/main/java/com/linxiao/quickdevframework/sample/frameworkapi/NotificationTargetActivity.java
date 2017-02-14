@@ -1,4 +1,4 @@
-package com.linxiao.quickdevframework.frameworkapi;
+package com.linxiao.quickdevframework.sample.frameworkapi;
 
 import android.os.Bundle;
 import android.view.View;
