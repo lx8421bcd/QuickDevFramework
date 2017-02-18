@@ -19,4 +19,12 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="exit_application">exit application</string>
+    <string name="get_application_name">get application name</string>
+    <string name="get_application_version">get application version</string>
+    <string name="get_application_signature">get application signature</string>
+    <string name="get_application_icon_drawable">get application icon drawable</string>
+    <string name="other_api">other api</string>
+    <string name="is_app_running">is app running</string>
+    <string name="is_app_foreground">is app foreground</string>
 </resources>

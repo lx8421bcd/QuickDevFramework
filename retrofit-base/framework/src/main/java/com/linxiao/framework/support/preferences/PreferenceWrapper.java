@@ -15,6 +15,8 @@ import com.linxiao.framework.BaseApplication;
  * */
 public class PreferenceWrapper {
 
+    private PreferenceWrapper() {}
+
     /**
      * 获取默认的SharedPreferences
      * <p>默认操作模式,代表该文件是私有数据,只能被应用本身访问,在该模式下,写入的内容会覆盖原文件的内容</p>

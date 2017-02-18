@@ -17,6 +17,8 @@ public class ApplicationUtil {
 
     private static final String TAG = ApplicationUtil.class.getSimpleName();
 
+    private ApplicationUtil() {}
+
     /**
      * 判断应用是否已经启动
      *
@@ -40,7 +42,7 @@ public class ApplicationUtil {
 
     /**
      * 跳转至应用详情
-     * <p>用于在用户完全禁止动态权限弹出后跳转至应用详情页面提示用户打开权限</p>
+     * <p>可用于在用户完全禁止动态权限弹出后跳转至应用详情页面提示用户打开权限</p>
      *
      * @param context     一个context
      * */

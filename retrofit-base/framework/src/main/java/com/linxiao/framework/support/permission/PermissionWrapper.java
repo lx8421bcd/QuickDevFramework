@@ -13,6 +13,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.linxiao.framework.R;
 import com.linxiao.framework.support.dialog.AlertDialogWrapper;
@@ -305,7 +306,7 @@ public class PermissionWrapper {
          * @param activity 执行代码的Activity，局部变量，用于执行申请权限方法
          * @param callback 权限检查/申请后的回调监听
          * */
-        public void perform(final Activity activity, final RequestPermissionCallback callback) {
+        public void perform(final Activity activity, RequestPermissionCallback callback) {
             if (requestPermissions == null || requestPermissions.length <= 0) {
                 return;
             }
@@ -330,8 +331,9 @@ public class PermissionWrapper {
                 .setNegativeButton(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "onClick: on permission denied");
                         dialog.dismiss();
-                        callback.onDenied();
+                        currCallback.onDenied();
                     }
                 })
                 .show();

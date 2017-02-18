@@ -19,6 +19,8 @@ public class Logger {
 
     private static LogInterface logImpl = new FrameworkLogImpl();
 
+    private Logger() {}
+
     /**
      * 设置是否输出Log信息
      * @param logEnabled 是否打开Log

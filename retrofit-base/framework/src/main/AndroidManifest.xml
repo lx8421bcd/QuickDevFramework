@@ -7,10 +7,9 @@
         android:supportsRtl="true">
 
         <activity android:name=".support.dialog.TopDialogActivity"
-            android:launchMode="singleTask"
             android:theme="@style/TopDialogActivityTheme"/>
 
-        <activity android:name=".activity.NotificationResumeActivity" />
+        <activity android:name=".support.notification.NotificationResumeActivity" />
 
         <!--<receiver android:name=".broadcast.NotificationReceiver"-->
             <!--android:process=":notifyHandle" />-->

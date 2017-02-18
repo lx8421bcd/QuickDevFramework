@@ -11,6 +11,8 @@ import com.linxiao.framework.BaseApplication;
  */
 public class AlertDialogWrapper {
 
+    private AlertDialogWrapper() {}
+
     public static AlertDialogBuilder createAlertDialogBuilder() {
         return createAlertDialogBuilder(BaseApplication.getAppContext());
     }

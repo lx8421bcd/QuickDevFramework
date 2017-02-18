@@ -4,18 +4,23 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.linxiao.framework.event.ExitAppEvent;
+import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.support.log.Logger;
 
-import org.greenrobot.eventbus.EventBus;
 
+import java.io.ByteArrayInputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,7 +55,9 @@ public abstract class BaseApplication extends Application {
      * 通过广播的形式退出应用
      */
     public static void exitApplication() {
-        EventBus.getDefault().post(new ExitAppEvent());
+        Intent exitIntent = new Intent();
+        exitIntent.setAction(BaseActivity.ACTION_EXIT_APPLICATION);
+        BaseApplication.getAppContext().sendBroadcast(exitIntent);
     }
 
     /**
@@ -108,7 +115,7 @@ public abstract class BaseApplication extends Application {
      * 获取应用版本号
      * */
     @Nullable
-    public static String getApplicatinVersion() {
+    public static String getApplicationVersion() {
         PackageManager packageManager;
         PackageInfo packageInfo;
         try {
@@ -130,9 +137,20 @@ public abstract class BaseApplication extends Application {
         PackageInfo packageInfo;
         try {
             packageManager = getAppContext().getPackageManager();
-            packageInfo = packageManager.getPackageInfo(getAppContext().getPackageName(), 0);
-            return packageInfo.signatures[0].toCharsString();
+            packageInfo = packageManager.getPackageInfo(getAppContext().getPackageName(), PackageManager.GET_SIGNATURES);
+            Signature signature  = packageInfo.signatures[0];
+
+            CertificateFactory certFactory = CertificateFactory
+                    .getInstance("X.509");
+            X509Certificate cert = (X509Certificate) certFactory
+                    .generateCertificate(new ByteArrayInputStream(signature.toByteArray()));
+            String pubKey = cert.getPublicKey().toString();
+            String signNumber = cert.getSerialNumber().toString();
+            return pubKey + "|" + signNumber;
         } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            Logger.d(TAG, "package name not found");
+        } catch (CertificateException e) {
             e.printStackTrace();
         }
         return null;

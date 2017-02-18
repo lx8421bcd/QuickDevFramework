@@ -16,6 +16,8 @@ public class MD5Util {
     public static final int MD5_UPPER_CASE = 0;
     public static final int MD5_LOWER_CASE = 1;
 
+    private MD5Util() {}
+
     /**
      * MD5加密
      */

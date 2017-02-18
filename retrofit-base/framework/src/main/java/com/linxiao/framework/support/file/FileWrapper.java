@@ -23,6 +23,8 @@ import java.io.OutputStream;
 public class FileWrapper {
     private static final String TAG = FileWrapper.class.getSimpleName();
 
+    private FileWrapper() {}
+
     /**
      * 是否挂载sd卡
      * @return true 挂载; false 未挂载

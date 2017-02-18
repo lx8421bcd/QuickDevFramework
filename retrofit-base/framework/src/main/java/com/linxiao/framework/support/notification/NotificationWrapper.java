@@ -25,6 +25,8 @@ public class NotificationWrapper {
 
     private static int defaultIconRes = R.drawable.ic_notify_default;
 
+    private NotificationWrapper() {}
+
     public static void setDefaultIconRes(@DrawableRes int resId) {
         defaultIconRes = resId;
     }

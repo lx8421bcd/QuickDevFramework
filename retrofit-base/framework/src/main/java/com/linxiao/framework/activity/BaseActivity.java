@@ -1,6 +1,9 @@
 package com.linxiao.framework.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -9,13 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.linxiao.framework.event.ExitAppEvent;
+import com.linxiao.framework.BaseApplication;
 import com.linxiao.framework.manager.BaseDataManager;
 import com.linxiao.framework.support.permission.PermissionWrapper;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +25,14 @@ import java.util.List;
  * <p>template for activities in the project, used to define common methods of activity </p>
  * */
 public abstract class BaseActivity extends AppCompatActivity {
+
+    public static final String ACTION_EXIT_APPLICATION = "exit_application";
+
     protected String TAG;
 
     private List<BaseDataManager> listDataManagers;
-
     private boolean printLifeCycle = false;
+    private ActivityBaseReceiver mReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,7 +41,11 @@ public abstract class BaseActivity extends AppCompatActivity {
             Log.d(TAG, "onCreate");
         }
         TAG = this.getClass().getSimpleName();
-        EventBus.getDefault().register(this);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_EXIT_APPLICATION);
+        mReceiver = new ActivityBaseReceiver();
+        registerReceiver(mReceiver, filter);
+
         listDataManagers = new ArrayList<>();
     }
 
@@ -89,7 +95,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (printLifeCycle) {
             Log.d(TAG, "onDestroy");
         }
-        EventBus.getDefault().unregister(this);
+        unregisterReceiver(mReceiver);
         for (BaseDataManager dataManager : listDataManagers) {
             if ( dataManager == null) {
                 continue;
@@ -138,18 +144,23 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * get broadcast from EventBus, finish self to achieve close application
-     * */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onExitAppEvent(ExitAppEvent event) {
-        finish();
-    }
-
-    /**
      * set is print activity life cycle
      * <p>if true, activity will log out life cycle</p>
      * */
     public void setPrintLifeCycle(boolean printLifeCycle) {
         this.printLifeCycle = printLifeCycle;
+    }
+
+    /**
+     * 基础类Activity的BroadcastReceiver
+     */
+    protected class ActivityBaseReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ACTION_EXIT_APPLICATION)) {
+                finish();
+            }
+        }
     }
 }

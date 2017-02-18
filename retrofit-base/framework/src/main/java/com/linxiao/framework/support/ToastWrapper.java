@@ -15,6 +15,8 @@ public class ToastWrapper {
     private static Toast mToast;
     private static Handler mHandler = new Handler();
 
+    private ToastWrapper() {}
+
     public static void showToast(Context context, CharSequence message, int timeMills) {
         int delay = timeMills;
         if (timeMills == Toast.LENGTH_SHORT) {

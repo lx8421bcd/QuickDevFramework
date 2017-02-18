@@ -3,7 +3,6 @@ package com.linxiao.quickdevframework.sample.widget;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.util.Log;
 
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.widget.CusViewPager;

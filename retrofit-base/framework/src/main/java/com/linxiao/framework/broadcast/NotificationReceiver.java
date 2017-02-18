@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.linxiao.framework.BaseApplication;
-import com.linxiao.framework.activity.NotificationResumeActivity;
+import com.linxiao.framework.support.notification.NotificationResumeActivity;
 import com.linxiao.framework.support.log.Logger;
 import com.linxiao.framework.support.notification.NotificationWrapper;
 

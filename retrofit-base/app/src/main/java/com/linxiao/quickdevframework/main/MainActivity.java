@@ -21,6 +21,7 @@ import com.linxiao.framework.support.ToastWrapper;
 import com.linxiao.framework.support.log.Logger;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.sample.adapter.AdapterTestFragment;
+import com.linxiao.quickdevframework.sample.frameworkapi.ApplicationApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.DialogApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.FileApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.NotificationApiFragment;
@@ -83,6 +84,7 @@ public class MainActivity extends BaseActivity {
 
     private void initApiSampleList() {
         List<ApiSampleObject> apiSampleList = new ArrayList<>();
+        apiSampleList.add(new ApiSampleObject("Application API", "ApplicationApiFragment"));
         apiSampleList.add(new ApiSampleObject("Dialog API", "DialogApiFragment"));
         apiSampleList.add(new ApiSampleObject("Notification API", "NotificationApiFragment"));
         apiSampleList.add(new ApiSampleObject("Toast API", "ToastApiFragment"));
@@ -111,6 +113,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initFragments() {
+        addFragment(new ApplicationApiFragment(), "ApplicationApiFragment");
         addFragment(new DialogApiFragment(), "DialogApiFragment");
         addFragment(new NotificationApiFragment(), "NotificationApiFragment");
         addFragment(new ToastApiFragment(), "ToastApiFragment");
@@ -121,7 +124,7 @@ public class MainActivity extends BaseActivity {
         addFragment(new WidgetsGuideFragment(), "WidgetsGuideFragment");
 
         currentTag = "DialogApiFragment";
-        switchFragment("DialogApiFragment");
+        switchFragment("ApplicationApiFragment");
     }
 
     private void restoreFragments(@NonNull Bundle savedInstanceState) {
