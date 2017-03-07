@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.framework.net.CookieMode;
@@ -15,9 +16,9 @@ import com.linxiao.framework.net.HttpInfoCatchListener;
 import com.linxiao.framework.net.HttpInfoEntity;
 import com.linxiao.quickdevframework.R;
 
-
 import java.io.IOException;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import okhttp3.ResponseBody;
@@ -26,6 +27,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class NetTestFragment extends BaseFragment {
+
+
+    @BindView(R.id.tvResponse)
+    TextView tvResponse;
 
     private ClientApi clientApi;
 
@@ -47,9 +52,9 @@ public class NetTestFragment extends BaseFragment {
             }
         });
         clientApi = FrameworkRetrofitManager.createRetrofitBuilder("http://www.weather.com.cn/")
-        .setCookieMode(CookieMode.ADD_BY_ANNOTATION)
-        .addCustomInterceptor(infoCatchInterceptor)
-        .build(ClientApi.class);
+                .setCookieMode(CookieMode.ADD_BY_ANNOTATION)
+                .addCustomInterceptor(infoCatchInterceptor)
+                .build(ClientApi.class);
     }
 
     @OnClick(R.id.btnRequestNet)
@@ -58,12 +63,12 @@ public class NetTestFragment extends BaseFragment {
     }
 
     public void requestApi() {
-        Call<ResponseBody> call =  clientApi.getWeather("101010100");
+        Call<ResponseBody> call = clientApi.getWeather("101010100");
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
-                    Log.d(TAG, "onResponse: " + response.body().string());
+                    tvResponse.setText("Response:\n " + response.body().string());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -75,4 +80,5 @@ public class NetTestFragment extends BaseFragment {
             }
         });
     }
+
 }
