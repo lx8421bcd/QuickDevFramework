@@ -6,7 +6,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.Path;
 
-import static com.linxiao.framework.net.FrameworkNetConstants.ADD_COOKIE;
+import static com.linxiao.framework.net.FrameworkNetConstants.ADD_COOKIE_HEADER_STRING;
 
 /**
  *
@@ -14,7 +14,7 @@ import static com.linxiao.framework.net.FrameworkNetConstants.ADD_COOKIE;
  */
 public interface ClientApi {
 
-    @Headers(ADD_COOKIE)
+    @Headers(ADD_COOKIE_HEADER_STRING)
     @GET("adat/sk/{cityId}.html")
     Call<ResponseBody> getWeather(@Path("cityId") String cityId);
 }

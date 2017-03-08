@@ -27,4 +27,6 @@
     <string name="other_api">other api</string>
     <string name="is_app_running">is app running</string>
     <string name="is_app_foreground">is app foreground</string>
+    <string name="is_exist_sd_card">is exist sd card</string>
+    <string name="has_file_permission">has file permission</string>
 </resources>
