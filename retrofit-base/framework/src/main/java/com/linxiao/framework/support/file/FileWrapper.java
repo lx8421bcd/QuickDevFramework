@@ -1,13 +1,14 @@
 package com.linxiao.framework.support.file;
 
 import android.Manifest;
+import android.content.Context;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.linxiao.framework.BaseApplication;
-import com.linxiao.framework.support.permission.PermissionWrapper;
 import com.linxiao.framework.support.log.Logger;
+import com.linxiao.framework.support.permission.PermissionWrapper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +25,27 @@ public class FileWrapper {
     private static final String TAG = FileWrapper.class.getSimpleName();
 
     private FileWrapper() {}
+
+    /**
+     * 复制文件操作
+     * @param src 源文件
+     * @param targetPath 目标路径
+     * @param context
+     * @return
+     */
+    public static FileCopyTask copyFileOperate(File src, String targetPath, Context context) {
+        return new FileCopyTask(context).addSrc(src).setTargetPath(targetPath);
+    }
+
+    /**
+     * 删除文件操作
+     * @param src 源文件
+     * @param context
+     * @return
+     */
+    public static FileDeleteTask deleteFileOperate(File src, Context context) {
+        return new FileDeleteTask(context).addSrc(src);
+    }
 
     /**
      * 是否挂载sd卡
@@ -92,7 +114,7 @@ public class FileWrapper {
     }
 
     /**
-     * 通过路径字符串生成String对象，包含安全检查
+     * 通过路径字符串生成File对象，包含安全检查
      *
      * */
     public static File pathStringToFile(String path) {
