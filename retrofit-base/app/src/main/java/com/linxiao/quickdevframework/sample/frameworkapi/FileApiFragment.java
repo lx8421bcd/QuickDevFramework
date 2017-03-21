@@ -40,6 +40,11 @@ public class FileApiFragment extends BaseFragment {
     @BindView(R.id.tvCurrentSum)
     TextView tvCurrentSum;
 
+    @BindView(R.id.tvHasSDCard)
+    TextView tvHasSDCard;
+    @BindView(R.id.tvHasPermission)
+    TextView tvHasPermission;
+
     @Override
     protected int rootViewResId() {
         return R.layout.fragment_file_api;
@@ -214,5 +219,8 @@ public class FileApiFragment extends BaseFragment {
                 ToastWrapper.showToast(getContext(), failMsg);
             }
         }).execute();
+        tvHasSDCard.setText(getString(R.string.is_exist_sd_card) + ": " + FileWrapper.existExternalStorage());
+        tvHasPermission.setText(getString(R.string.has_file_permission) + ": " + FileWrapper.hasFileOperatePermission());
     }
+
 }

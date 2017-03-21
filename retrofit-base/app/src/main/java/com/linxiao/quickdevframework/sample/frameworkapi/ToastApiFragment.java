@@ -29,7 +29,8 @@ public class ToastApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnShowToast)
     public void onShowToastClick(View v) {
-        ToastWrapper.showToast(getContext(), "toast " + toastNum++);
+//        ToastWrapper.showToast(getContext(), "toast " + toastNum++);
+        ToastWrapper.showToast(getContext(), "toast ", 10000);
     }
 
 }

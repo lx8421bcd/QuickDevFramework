@@ -22,8 +22,15 @@ public class ToastWrapper {
         if (timeMills == Toast.LENGTH_SHORT) {
             delay = 2000;
         }
-        if (timeMills == Toast.LENGTH_LONG) {
+        else if (timeMills == Toast.LENGTH_LONG) {
             delay = 3000;
+        }
+        //Toast默认只有短长两种时间，暂时还未有自定义时间的处理
+        else if (timeMills >= 3000) {
+            delay = 3000;
+        }
+        else {
+            delay = 2000;
         }
 
         if (mToast == null) {

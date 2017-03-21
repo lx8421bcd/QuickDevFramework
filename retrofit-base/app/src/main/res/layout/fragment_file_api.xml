@@ -69,5 +69,16 @@
             android:text="currentSum:"/>
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvHasSDCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/is_exist_sd_card"/>
+
+    <TextView
+        android:id="@+id/tvHasPermission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/has_file_permission"/>
 
 </LinearLayout>

@@ -32,7 +32,7 @@
         <activity android:name=".sample.frameworkapi.NotificationTargetActivity" />
         <activity android:name=".sample.adapter.EmptyTestActivity" />
         <activity android:name=".sample.adapter.HeaderFooterActivity" />
-        <activity android:name=".sample.widget.ViewPagerActivity"></activity>
+        <activity android:name=".sample.widget.ViewPagerActivity" />
     </application>
 
 </manifest>
