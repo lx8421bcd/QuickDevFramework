@@ -8,8 +8,66 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
-    tools:context=".sample.frameworkapi.FileApiFragment">
+    tools:context=".sample.frameworkapi.FileApiFragment"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btnCopyFileSimple"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="copy File simple"/>
+
+    <Button
+        android:id="@+id/btnCopyFolderSimple"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="copy folder simple "/>
+
+    <Button
+        android:id="@+id/btnDeleteFolderSimple"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="delete folder simple "/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvTotalSize"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="totalSize:"/>
+        <TextView
+            android:id="@+id/tvCurrentSize"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="currentSize:"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvTotalSum"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="totalSum:"/>
+        <TextView
+            android:id="@+id/tvCurrentSum"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="currentSum:"/>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvHasSDCard"
@@ -22,7 +80,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/has_file_permission"/>
-
-
 
 </LinearLayout>
