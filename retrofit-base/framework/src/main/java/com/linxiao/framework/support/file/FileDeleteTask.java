@@ -17,7 +17,7 @@ import java.util.List;
 public class FileDeleteTask extends AsyncTask<Void, Long, String> {
     private Context context;
     private List<File> srcFiles = new LinkedList<>();
-    private FileSumListener fileSumListener;
+    private FileCountListener fileCountListener;
     private long sum;
     private long curSum = 0;
 
@@ -39,8 +39,8 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
         return this;
     }
 
-    public FileDeleteTask setFileSumListener(FileSumListener fileSumListener) {
-        this.fileSumListener = fileSumListener;
+    public FileDeleteTask setFileCountListener(FileCountListener fileCountListener) {
+        this.fileCountListener = fileCountListener;
         return this;
     }
 
@@ -49,28 +49,28 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
         super.onPreExecute();
         if (!FileWrapper.existExternalStorage()) {
             ToastWrapper.showToast(context, "未找到SD卡");
-            if (fileSumListener != null) {
-                fileSumListener.onFail("未找到SD卡");
+            if (fileCountListener != null) {
+                fileCountListener.onFail("未找到SD卡");
             }
         }
         if (!FileWrapper.hasFileOperatePermission()) {
             ToastWrapper.showToast(context, "请授予文件管理权限");
-            if (fileSumListener != null) {
-                fileSumListener.onFail("请授予文件管理权限");
+            if (fileCountListener != null) {
+                fileCountListener.onFail("请授予文件管理权限");
             }
         }
-        if (fileSumListener != null) {
+        if (fileCountListener != null) {
             for (File src : srcFiles) {
                 sum += FileSizeUtil.getFilesSum(src);
             }
-            fileSumListener.onStart();
+            fileCountListener.onStart();
         }
     }
 
     @Override
     protected String doInBackground(Void... params) {
         String result = "";
-        if (fileSumListener != null){
+        if (fileCountListener != null){
             publishProgress((long)0);
         }
         for (File src : srcFiles) {
@@ -85,11 +85,11 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        if (fileSumListener != null) {
+        if (fileCountListener != null) {
             if (result.equals("")) {
-                fileSumListener.onSuccess();
+                fileCountListener.onSuccess();
             } else {
-                fileSumListener.onFail(result);
+                fileCountListener.onFail(result);
             }
         }
     }
@@ -106,7 +106,7 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
         if (src.exists()) {
             if (src.delete()){
                 curSum++;
-                if (fileSumListener != null) {
+                if (fileCountListener != null) {
                     publishProgress(curSum);
                 }
                 return null;
@@ -130,7 +130,7 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
         if (src.isFile()) {
             if (src.delete()) {
                 curSum++;
-                if (fileSumListener != null) {
+                if (fileCountListener != null) {
                     publishProgress(curSum);
                 }
                 return null;
@@ -156,6 +156,6 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
     @Override
     protected void onProgressUpdate(Long... values) {
         super.onProgressUpdate(values);
-        fileSumListener.onProgressUpdate(sum, values[0]);
+        fileCountListener.onProgressUpdate(sum, values[0]);
     }
 }

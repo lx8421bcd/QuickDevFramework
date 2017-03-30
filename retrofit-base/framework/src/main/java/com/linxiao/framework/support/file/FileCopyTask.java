@@ -1,9 +1,6 @@
 package com.linxiao.framework.support.file;
 
-import android.content.Context;
 import android.os.AsyncTask;
-
-import com.linxiao.framework.support.ToastWrapper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,19 +18,18 @@ import java.util.List;
 public class FileCopyTask extends AsyncTask<Void, Double, String> {
     private static final double SIZE_FLAG = 1.00;
     private static final double SUM_FLAG = 2.00;
-    private Context context;
     private List<File> srcFiles = new LinkedList<>();
     private String targetPath;
     private FileSizeListener fileSizeListener;
-    private FileSumListener fileSumListener;
+    private FileCountListener fileCountListener;
 
     private double size;
     private long sum;
     private long curSum = 0;
     private long curSize = 0;
 
-    public FileCopyTask(Context context) {
-        this.context = context;
+    public FileCopyTask() {
+
     }
 
 
@@ -62,8 +58,8 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
         return this;
     }
 
-    public FileCopyTask setFileSumListener(FileSumListener fileSumListener) {
-        this.fileSumListener = fileSumListener;
+    public FileCopyTask setFileCountListener(FileCountListener fileCountListener) {
+        this.fileCountListener = fileCountListener;
         return this;
     }
 
@@ -71,21 +67,19 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
     protected void onPreExecute() {
         super.onPreExecute();
         if (!FileWrapper.existExternalStorage()) {
-            ToastWrapper.showToast(context, "未找到SD卡");
             if (fileSizeListener != null) {
                 fileSizeListener.onFail("未找到SD卡");
             }
-            if (fileSumListener != null) {
-                fileSumListener.onFail("未找到SD卡");
+            if (fileCountListener != null) {
+                fileCountListener.onFail("未找到SD卡");
             }
         }
         if (!FileWrapper.hasFileOperatePermission()) {
-            ToastWrapper.showToast(context, "请授予文件管理权限");
             if (fileSizeListener != null) {
                 fileSizeListener.onFail("请授予文件管理权限");
             }
-            if (fileSumListener != null) {
-                fileSumListener.onFail("请授予文件管理权限");
+            if (fileCountListener != null) {
+                fileCountListener.onFail("请授予文件管理权限");
             }
         }
         if (fileSizeListener != null) {
@@ -94,22 +88,22 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
             }
             fileSizeListener.onStart();
         }
-        if (fileSumListener != null) {
+        if (fileCountListener != null) {
             for (File src : srcFiles) {
                 sum += FileSizeUtil.getFilesSum(src);
             }
-            fileSumListener.onStart();
+            fileCountListener.onStart();
         }
     }
 
     @Override
     protected String doInBackground(Void... params) {
         String result = "";
-        if (fileSumListener != null){
+        if (fileCountListener != null){
             publishProgress(SUM_FLAG, (double)0);
         }
         for (File src : srcFiles) {
-            String strSrc = copyFile(src);
+            String strSrc = copy(src, new File(targetPath));
             if (strSrc != null) {
                 result = strSrc;
             }
@@ -120,11 +114,11 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        if (fileSumListener != null) {
+        if (fileCountListener != null) {
             if (result.equals("")) {
-                fileSumListener.onSuccess();
+                fileCountListener.onSuccess();
             } else {
-                fileSumListener.onFail(result);
+                fileCountListener.onFail(result);
             }
         }
         if (fileSizeListener != null) {
@@ -136,21 +130,28 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
         }
     }
 
+    @Override
+    protected void onProgressUpdate(Double... values) {
+        super.onProgressUpdate(values);
+        if (values[0] == SIZE_FLAG) {
+            fileSizeListener.onProgressUpdate(size, values[1]);
+        }
+        if (values[0] == SUM_FLAG) {
+            fileCountListener.onProgressUpdate(Math.round(sum), Math.round(values[1]));
+        }
+    }
+
     /**
      * 复制文件
      * @param src
      * @return 失败返回文件名 成功返回null
      */
-    private String copyFile(File src) {
-        if (src.isDirectory()) {
-            new File(targetPath, src.getName()).mkdirs();
-            return copyDirectory(src, new File(targetPath, src.getName()));
-        }
+    private String copyFile(File src, File target) {
         InputStream input;
         OutputStream output;
         try {
             input = new FileInputStream(src);
-            output = new FileOutputStream(new File(targetPath, src.getName()));
+            output = new FileOutputStream(new File(target, src.getName()));
             byte[] buf = new byte[1024];
             int bytesRead;
             while ((bytesRead = input.read(buf)) > 0) {
@@ -166,8 +167,8 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
             return e.getMessage();
         }
         curSum++;
-        if (fileSumListener != null) {
-            publishProgress(SUM_FLAG, (double)curSum);
+        if (fileCountListener != null) {
+            publishProgress(SUM_FLAG, (double) curSum);
         }
         return null;
     }
@@ -182,48 +183,27 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
         File[] srcFiles = src.listFiles();
         for (File srcFile : srcFiles) {
             if (srcFile.isFile()) {
-                InputStream input;
-                OutputStream output;
-                try {
-                    input = new FileInputStream(srcFile);
-                    output = new FileOutputStream(new File(target, srcFile.getName()));
-                    byte[] buf = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = input.read(buf)) > 0) {
-                        output.write(buf, 0, bytesRead);
-                        curSize += bytesRead;
-                        if (fileSizeListener != null) {
-                            publishProgress(SIZE_FLAG, FileSizeUtil.formatFileSize(curSize, 2));
-                        }
-                    }
-                    input.close();
-                    output.close();
-                    curSum++;
-                    if (fileSumListener != null) {
-                        publishProgress(SUM_FLAG, (double)curSum);
-                    }
-                } catch (IOException e) {
-                    return e.getMessage();
-                }
+                copyFile(srcFile, target);
             }
             else if (srcFile.isDirectory()) {
-                new File(target, srcFile.getName()).mkdirs();
-                copyDirectory(srcFile, new File(target, srcFile.getName()));
+                File targetDir = new File(target, srcFile.getName());
+                if (!targetDir.exists()) {
+                    if (!targetDir.mkdirs()) {
+                        return "false";
+                    }
+                }
+                copyDirectory(srcFile, targetDir);
             }
         }
         return null;
     }
 
-
-    @Override
-    protected void onProgressUpdate(Double... values) {
-        super.onProgressUpdate(values);
-        if (values[0] == SIZE_FLAG) {
-            fileSizeListener.onProgressUpdate(size, values[1]);
+    private String copy(File src, File target) {
+        if (src.isDirectory()) {
+            return copyDirectory(src, target);
         }
-        if (values[0] == SUM_FLAG) {
-            fileSumListener.onProgressUpdate(Math.round(sum), Math.round(values[1]));
+        else {
+            return copyFile(src, target);
         }
     }
-
 }

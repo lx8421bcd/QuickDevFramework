@@ -5,7 +5,7 @@ package com.linxiao.framework.support.file;
  * Created by lbc on 2017/3/11.
  */
 
-public interface FileSumListener {
+public interface FileCountListener {
     void onStart();
 
     void onProgressUpdate(long count, long current);

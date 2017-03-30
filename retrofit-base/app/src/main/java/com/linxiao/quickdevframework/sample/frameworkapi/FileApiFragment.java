@@ -12,7 +12,7 @@ import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.framework.support.ToastWrapper;
 import com.linxiao.framework.support.dialog.AlertDialogWrapper;
 import com.linxiao.framework.support.file.FileSizeListener;
-import com.linxiao.framework.support.file.FileSumListener;
+import com.linxiao.framework.support.file.FileCountListener;
 import com.linxiao.framework.support.file.FileWrapper;
 import com.linxiao.framework.support.log.Logger;
 import com.linxiao.framework.support.permission.PermissionWrapper;
@@ -54,36 +54,36 @@ public class FileApiFragment extends BaseFragment {
     protected void onCreateContentView(View rootView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, rootView);
         PermissionWrapper.performWithPermission(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                .perform(getActivity(), new RequestPermissionCallback() {
-                    @Override
-                    public void onGranted() {
-                        Logger.d(TAG, FileWrapper.getExternalStorageRoot());
-                        Logger.d(TAG, FileWrapper.getInternalStorageRoot());
-                        try {
-                            FileWrapper.pathStringToFile(totalFilePath).mkdir();
-                            File txtFile = FileWrapper.pathStringToFile(totalFilePath + File.separator + "text.txt");
-                            txtFile.createNewFile();
-                            FileOutputStream outputStream = new FileOutputStream(txtFile);
-                            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-                            byte[] buff = new byte[1024000];
-                            for (int i = 0; i < 1024000; i++) {
-                                buff[i] = 1;
-                            }
-                            bufferedOutputStream.write(buff, 0, 1024000);
-                            bufferedOutputStream.close();
-                            outputStream.close();
-                        } catch (IOException e) {
-                            Logger.e(TAG, e);
-                        }
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE)
+        .perform(getActivity(), new RequestPermissionCallback() {
+            @Override
+            public void onGranted() {
+                Logger.d(TAG, FileWrapper.getExternalStorageRoot());
+                Logger.d(TAG, FileWrapper.getInternalStorageRoot());
+                try {
+                    FileWrapper.pathStringToFile(totalFilePath).mkdir();
+                    File txtFile = FileWrapper.pathStringToFile(totalFilePath + File.separator + "text.txt");
+                    txtFile.createNewFile();
+                    FileOutputStream outputStream = new FileOutputStream(txtFile);
+                    BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
+                    byte[] buff = new byte[1024000];
+                    for (int i = 0; i < 1024000; i++) {
+                        buff[i] = 1;
                     }
+                    bufferedOutputStream.write(buff, 0, 1024000);
+                    bufferedOutputStream.close();
+                    outputStream.close();
+                } catch (IOException e) {
+                    Logger.e(TAG, e);
+                }
+            }
 
-                    @Override
-                    public void onDenied() {
-                        AlertDialogWrapper.showAlertDialog("请授予文件管理权限");
-                    }
-                });
+            @Override
+            public void onDenied() {
+                AlertDialogWrapper.showAlertDialog("请授予文件管理权限");
+            }
+        });
     }
 
     @OnClick(R.id.btnCopyFileSimple)
@@ -107,7 +107,7 @@ public class FileApiFragment extends BaseFragment {
 
             @Override
             public void onFail(String failMsg) {}
-        }).setFileSumListener(new FileSumListener() {
+        }).setFileCountListener(new FileCountListener() {
             @Override
             public void onStart() {}
 
@@ -177,7 +177,7 @@ public class FileApiFragment extends BaseFragment {
 
             @Override
             public void onFail(String failMsg) {}
-        }).setFileSumListener(new FileSumListener() {
+        }).setFileCountListener(new FileCountListener() {
             @Override
             public void onStart() {}
 
@@ -199,7 +199,7 @@ public class FileApiFragment extends BaseFragment {
     @OnClick(R.id.btnDeleteFolderSimple)
     public void OnDeleteFolderSimple() {
         FileWrapper.deleteFileOperate(FileWrapper.pathStringToFile(totalFilePath + File.separator +
-                "FolderExample"), getContext()).setFileSumListener(new FileSumListener() {
+                "FolderExample"), getContext()).setFileCountListener(new FileCountListener() {
             @Override
             public void onStart() {}
 

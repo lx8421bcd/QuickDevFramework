@@ -34,7 +34,7 @@ public class FileWrapper {
      * @return
      */
     public static FileCopyTask copyFileOperate(File src, String targetPath, Context context) {
-        return new FileCopyTask(context).addSrc(src).setTargetPath(targetPath);
+        return new FileCopyTask().addSrc(src).setTargetPath(targetPath);
     }
 
     /**
