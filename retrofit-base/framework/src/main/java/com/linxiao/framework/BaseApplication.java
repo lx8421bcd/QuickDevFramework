@@ -110,7 +110,7 @@ public abstract class BaseApplication extends Application {
      * 获取应用版本
      * */
     @Nullable
-    public static String getApplicationVersion() {
+    public static String getApplicationVersionName() {
         PackageManager packageManager;
         PackageInfo packageInfo;
         try {

@@ -6,13 +6,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-
-import com.linxiao.framework.support.log.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +21,6 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * RecyclerView 基类
- * TODO：复杂数据基类，混合数据基类
- * TODO：自动分页加载逻辑
  * Created by linxiao on 2017/1/4.
  */
 public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHolder> extends RecyclerView.Adapter<VH> {
@@ -54,7 +51,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     private Context mContext;
     //在这里使用ViewGroup存储Header、Footer和Empty，因为View是被存储在ViewHolder中的，
     //如果在RecyclerView 构建完毕后修改View引用，不会重新构建ViewHolder也没有办法替换View
-    //因此这里让Holden存储ViewGroup，然后需要替换ContentView的时候修改ViewGroup即可
+    //因此这里让Holder存储ViewGroup，然后需要替换ContentView的时候修改ViewGroup即可
     private LinearLayout mHeaderContainer;
     private LinearLayout mFooterContainer;
     private FrameLayout mNoDataViewContainer;
@@ -97,7 +94,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     /**
      * 向Holder设置数据
      * */
-    protected abstract void setData(VH holder, T data);
+    protected abstract void setData(VH holder, int position, T data);
 
     /**
      * create ViewHolder which used to handle data
@@ -144,8 +141,8 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         case EMPTY_VIEW:
             break;
         default:
-            setData(holder, mDataSource.get(dataPosition));
-            holder.itemView.setTag(position);
+            setData(holder, dataPosition, mDataSource.get(dataPosition));
+            holder.itemView.setTag(dataPosition);
             if (mOnItemClickListener != null) {
                 holder.itemView.setOnClickListener(itemClickListener);
             }
@@ -473,7 +470,8 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             return;
         }
         this.mDataSource.remove(position);
-        this.notifyItemRemoved(position);
+//        this.notifyItemRemoved(position);
+        this.notifyDataSetChanged();
     }
 
     public void removeFromDataSource(T data) {
@@ -482,7 +480,8 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
         int position = mDataSource.indexOf(data);
         mDataSource.remove(data);
-        this.notifyItemRemoved(position);
+        this.notifyDataSetChanged();
+//        this.notifyItemRemoved(position);
 
     }
 
@@ -534,7 +533,15 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         this.mOnItemClickListener = listener;
     }
 
-    public void setmOnIteLongClickListener(OnItemLongClickListener listener) {
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
         this.mOnItemLongClickListener = listener;
+    }
+
+    public OnItemClickListener getOnItemClickListener() {
+        return mOnItemClickListener;
+    }
+
+    public OnItemLongClickListener getOnItemLongClickListener() {
+        return mOnItemLongClickListener;
     }
 }

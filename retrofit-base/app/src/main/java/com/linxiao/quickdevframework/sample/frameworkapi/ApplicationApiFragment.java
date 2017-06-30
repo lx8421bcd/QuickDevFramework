@@ -44,7 +44,7 @@ public class ApplicationApiFragment extends BaseFragment {
         ButterKnife.bind(this, rootView);
 
         ivAppIcon.setImageDrawable(SampleApplication.getApplicationIcon());
-        tvIsAppRunning.setText(getString(R.string.is_app_running) + ": " + SampleApplication.isAppRunning());
+        tvIsAppRunning.setText(getString(R.string.is_app_running) + ": " + SampleApplication.isAppForeground());
         tvIsAppForeground.setText(getString(R.string.is_app_foreground) + ": " + SampleApplication.isAppForeground());
     }
 
@@ -55,7 +55,7 @@ public class ApplicationApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnGetAppVersion)
     public void onGetAppVersionClick(View v) {
-        tvAppVersion.setText(SampleApplication.getApplicationVersion());
+        tvAppVersion.setText(SampleApplication.getApplicationVersionName());
     }
 
     @OnClick(R.id.btnGetAppSignature)
