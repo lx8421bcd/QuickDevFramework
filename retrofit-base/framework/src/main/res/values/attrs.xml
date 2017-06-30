@@ -29,7 +29,10 @@
 
     <declare-styleable name="BadgeView">
         <attr name="badge_color" format="color"/>
-        <attr name="badge_default_size" format="dimension"/>
+        <attr name="badge_defaultSize" format="dimension"/>
+        <attr name="badge_hideOnZero" format="boolean" />
+        <attr name="badge_numberEllipsis" format="string|reference" />
+        <attr name="badge_ellipsisDigit" format="integer" />
     </declare-styleable>
 
     <declare-styleable name="HorizontalNumberPicker">

@@ -33,11 +33,6 @@ public abstract class BaseApplication extends Application {
     protected static String TAG;
 
     /**
-     * 用于判断一个app是否处于前台
-     */
-    private static int mForegroundCount = 0;
-
-    /**
      * 应用内Activity的数量，如果数量为0，则可以判断当前应用未启动
      * <p>如果有什么一像素Activity等东西存在请另改值</p>
      * */
@@ -112,7 +107,7 @@ public abstract class BaseApplication extends Application {
     }
 
     /**
-     * 获取应用版本号
+     * 获取应用版本
      * */
     @Nullable
     public static String getApplicationVersion() {
@@ -126,6 +121,22 @@ public abstract class BaseApplication extends Application {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    /**
+     * 获取应用版本代号
+     * */
+    public static int getApplicationVersionCode() {
+        PackageManager packageManager;
+        PackageInfo packageInfo;
+        try {
+            packageManager = getAppContext().getPackageManager();
+            packageInfo = packageManager.getPackageInfo(getAppContext().getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     /**
@@ -157,30 +168,36 @@ public abstract class BaseApplication extends Application {
     }
 
     /**
-     * 检查应用主进程是否正在运行
-     * */
-    public static boolean isAppRunning() {
-        Context mContext = getAppContext();
-        String packageName = mContext.getPackageName();
-        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> processInfo = activityManager.getRunningAppProcesses();
-        for(int i = 0; i < processInfo.size(); i++){
-            if(processInfo.get(i).processName.equals(packageName)){
-                Logger.i(TAG, String.format(Locale.getDefault(),
-                        "process %s is running, activity count = %d", packageName, mActivityCount));
-                //如果有没被销毁的Activity，则App至少处于后台正在运行，否则App应处于未运行状态
-                return mActivityCount > 0;
-            }
-        }
-        Logger.i(TAG, String.format("the %s is not running", packageName));
-        return false;
-    }
-
-    /**
      * 检查App是否处于前台
      * */
     public static boolean isAppForeground() {
-        return isAppRunning() && mForegroundCount > 0;
+        Context context = getAppContext();
+        if (context == null) {
+            return false;
+        }
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+        if (appProcesses == null) {
+            return false;
+        }
+        final String packageName = context.getPackageName();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (!appProcess.processName.equals(packageName)) {
+                continue;
+            }
+            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * 获取正在运行的Activity的数量
+     * */
+    public static int getRunningActivityCount() {
+        
+        return mActivityCount;
     }
 
     private class FrameworkActivityLifeCycleCallback implements ActivityLifecycleCallbacks {
@@ -191,9 +208,7 @@ public abstract class BaseApplication extends Application {
         }
 
         @Override
-        public void onActivityStarted(Activity activity) {
-            mForegroundCount++;
-        }
+        public void onActivityStarted(Activity activity) {}
 
         @Override
         public void onActivityResumed(Activity activity) {}
@@ -202,9 +217,7 @@ public abstract class BaseApplication extends Application {
         public void onActivityPaused(Activity activity) {}
 
         @Override
-        public void onActivityStopped(Activity activity) {
-            mForegroundCount--;
-        }
+        public void onActivityStopped(Activity activity) {}
 
         @Override
         public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {}

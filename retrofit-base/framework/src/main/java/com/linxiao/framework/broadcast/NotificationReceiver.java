@@ -30,7 +30,7 @@ public class NotificationReceiver extends BroadcastReceiver {
             logPrinter.print();
             return;
         }
-        if (BaseApplication.isAppRunning()) {
+        if (BaseApplication.isAppForeground()) {
             logPrinter.appendLine("application state: running");
             Intent targetIntent = new Intent();
             String targetKey = notificationExtra.getString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME);

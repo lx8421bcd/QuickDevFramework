@@ -82,17 +82,17 @@ public class CusSwipeRefreshLayout extends SwipeRefreshLayout {
         }
 
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mPrevX = MotionEvent.obtain(event).getX();
-                break;
+        case MotionEvent.ACTION_DOWN:
+            mPrevX = MotionEvent.obtain(event).getX();
+            break;
 
-            case MotionEvent.ACTION_MOVE:
-                final float eventX = event.getX();
-                float xDiff = Math.abs(eventX - mPrevX);
+        case MotionEvent.ACTION_MOVE:
+            final float eventX = event.getX();
+            float xDiff = Math.abs(eventX - mPrevX);
 
-                if (xDiff > mTouchSlop) {
-                    return false;
-                }
+            if (xDiff > mTouchSlop) {
+                return false;
+            }
         }
 
         return super.onInterceptTouchEvent(event);

@@ -3,10 +3,13 @@ package com.linxiao.framework.util;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 
 import com.linxiao.framework.support.log.Logger;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -52,5 +55,39 @@ public class ApplicationUtil {
         localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
         localIntent.setData(Uri.fromParts("package", context.getPackageName(), null));
         context.startActivity(localIntent);
+    }
+    
+    /**
+     * 检查应用是否安装
+     * */
+    public static boolean isAppInstalled(Context context, String packageName) {
+        PackageInfo packageInfo;
+        try {
+            packageInfo = context.getPackageManager().getPackageInfo(packageName, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            packageInfo = null;
+        }
+        return packageInfo != null;
+    }
+
+    /**
+     * 安装应用
+     *
+     * */
+    public static void installApk(Context context, String apkPath) {
+        File installFile = new File(apkPath);
+        if (!installFile.exists()) {
+            Logger.e(TAG, "cannot found apk file, path = " + apkPath);
+            return;
+        }
+        if (!apkPath.endsWith(".apk")) {
+            Logger.e(TAG, "illegal file : " + apkPath);
+            return;
+        }
+        Uri installPackageUri = Uri.parse("file://" + installFile);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(installPackageUri, "application/vnd.android.package-archive");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 }

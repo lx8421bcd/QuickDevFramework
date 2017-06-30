@@ -75,14 +75,14 @@ public class FileWrapper {
         if (TextUtils.isEmpty(path)) {
             return false;
         }
-        String ext = getExternalStorageRoot();
+        String ext = getExternalStorageRootString();
         if (ext.length() > path.length()) {
             return false;
         }
         if (path.substring(0, ext.length()).equals(ext)) {
             return true;
         }
-        String intern = getInternalStorageRoot();
+        String intern = getInternalStorageRootString();
         if (intern.length() > path.length()) {
             return false;
         }
@@ -101,16 +101,32 @@ public class FileWrapper {
      * 获取当前SD卡的根路径
      * */
     @NonNull
-    public static String getExternalStorageRoot() {
+    public static String getExternalStorageRootString() {
         return Environment.getExternalStorageDirectory().getPath();
+    }
+
+    /**
+     * 获取当前SD卡的根路径
+     * */
+    @NonNull
+    public static File getExternalStorageRoot() {
+        return Environment.getExternalStorageDirectory();
     }
 
     /**
      * 获取内部存储路径
      * */
     @NonNull
-    public static String getInternalStorageRoot() {
+    public static String getInternalStorageRootString() {
         return BaseApplication.getAppContext().getFilesDir().getPath();
+    }
+
+    /**
+     * 获取内部存储路径
+     * */
+    @NonNull
+    public static File getInternalStorageRoot() {
+        return BaseApplication.getAppContext().getFilesDir();
     }
 
     /**

@@ -7,15 +7,16 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.linxiao.framework.R;
+
 
 /**
  * 小红点控件
@@ -27,15 +28,19 @@ import com.linxiao.framework.R;
  * @author linxiao
  * @version 1.0
  */
-public class BadgeView extends TextView {
+public class BadgeView extends android.support.v7.widget.AppCompatTextView {
 
     private static final String TAG = BadgeView.class.getSimpleName();
 
     private int badgeColor = Color.RED;
 
-    private int defaultSize;
+    private int defaultSize = dip2Px(8);
     private float radius;
+    private boolean hideOnZero = false;
 
+    //省略标识
+    private String ellipsis = "99+";
+    private int ellipsisDigit = 2;
 
     public BadgeView(Context context) {
         super(context);
@@ -55,12 +60,31 @@ public class BadgeView extends TextView {
     private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BadgeView);
+
             badgeColor = typedArray.getColor(R.styleable.BadgeView_badge_color, Color.RED);
-            defaultSize = typedArray.getDimensionPixelSize(R.styleable.BadgeView_badge_default_size, dip2Px(8));
+            defaultSize = typedArray.getDimensionPixelSize(R.styleable.BadgeView_badge_defaultSize, dip2Px(8));
+            hideOnZero = typedArray.getBoolean(R.styleable.BadgeView_badge_hideOnZero, false);
+            ellipsis = typedArray.getString(R.styleable.BadgeView_badge_numberEllipsis);
+            ellipsisDigit = typedArray.getInt(R.styleable.BadgeView_badge_ellipsisDigit, 2);
             typedArray.recycle();
+        }
+        if (TextUtils.isEmpty(ellipsis)) {
+            countEllipsisString();
+        }
+        //在自定义属性初始化后重新setText
+        if (!TextUtils.isEmpty(getText())) {
+            setText(getText());
         }
         setTextColor(Color.WHITE);
         setGravity(Gravity.CENTER);
+    }
+
+    private void countEllipsisString() {
+        ellipsis = "";
+        for (int i = 0; i < ellipsisDigit; i++) {
+            ellipsis += "9";
+        }
+        ellipsis += "+";
     }
 
     /**
@@ -68,15 +92,28 @@ public class BadgeView extends TextView {
      */
     @Override
     public void setText(CharSequence text, BufferType type) {
+        if (text == null) {
+            return;
+        }
+        if (ellipsisDigit == 0) { //此时为TextView基类调用setText，不作任何判断直接执行基类操作
+            super.setText(text, type);
+            return;
+        }
         if (text.toString().matches("^\\d+$")) {
-            if (text.length() > 2) {
-                text = "99+";
+            int number = Integer.parseInt(text.toString());
+            if (number == 0 && hideOnZero) {
+                hide();
+            }
+            else {
+                show();
+            }
+            if (text.length() > ellipsisDigit) {
+                text = ellipsis;
             }
         } else if (text.length() > 5) {
             text = text.subSequence(0, 4) + "...";
-        } else if (text.length() > 5) {
-            text = text.subSequence(0, 4) + "...";
         }
+
         super.setText(text, type);
         requestLayout();
     }
@@ -106,6 +143,14 @@ public class BadgeView extends TextView {
      * @param target the view to attach the BadgeView
      */
     public void setTargetView(View target) {
+        setTargetView(target, Gravity.END, 0, 0, 0, 0);
+    }
+
+    public void setTargetView(View target, int badgeGravity) {
+        setTargetView(target, badgeGravity, 0, 0, 0, 0);
+    }
+
+    public void setTargetView(View target, int badgeGravity, int marginLeft, int marginRight, int marginTop, int marginBottom) {
         if (getParent() != null) {
             ((ViewGroup) getParent()).removeView(this);
         }
@@ -132,36 +177,34 @@ public class BadgeView extends TextView {
             badgeContainer.addView(target);
 
             badgeContainer.addView(this);
+            FrameLayout.LayoutParams badgeLayoutParam = (FrameLayout.LayoutParams) this.getLayoutParams();
+            badgeLayoutParam.gravity = badgeGravity;
+            badgeLayoutParam.setMargins(marginLeft, marginTop, marginRight, marginBottom);
         } else if (target.getParent() == null) {
             Log.e(getClass().getSimpleName(), "ParentView is needed");
         }
-
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int textLength = this.getText().length();
-        int mode = MeasureSpec.getMode(widthMeasureSpec);
-        if (mode != MeasureSpec.EXACTLY) {
+//        int mode = MeasureSpec.getMode(widthMeasureSpec);
+        if (textLength == 0) {
+            //在无字符时设置控件为8 * 8 dp的小红点
+            setPadding(0, 0, 0, 0);
+            setMeasuredDimension(defaultSize, defaultSize);
+        } else if (textLength == 1) {
+            //在为单个字符时,计算根据上面计算的字体宽高,设置合适的内边距使得控件为正方形
             int width = (int) (getPaint().measureText(getText().toString()));
             Paint.FontMetrics fm = getPaint().getFontMetrics();
             int height = (int) (Math.ceil(fm.descent - fm.top) + 2);
-            if (textLength == 0) {
-                //在无字符时设置控件为8 * 8 dp的小红点
-                setPadding(0, 0, 0, 0);
-                setMeasuredDimension(defaultSize, defaultSize);
-            } else if (textLength == 1) {
-                //在为单个字符时,计算根据上面计算的字体宽高,设置合适的内边距使得控件为正方形
-                height += getPaddingBottom() + getPaddingTop() + getCompoundPaddingBottom() + getCompoundPaddingTop();
-                int padding = (height - width) / 2;
-                setPadding(padding, 0, padding, 0);
-                super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            } else {
-                //在多个字符时设置合适的外边距
-                setPadding((int) getTextSize() / 2, dip2Px(1) / 2, (int) getTextSize() / 2, dip2Px(1) / 2);
-                super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            }
+            height += getPaddingBottom() + getPaddingTop() + getCompoundPaddingBottom() + getCompoundPaddingTop();
+            int padding = (height - width) / 2;
+            setPadding(padding, 0, padding, 0);
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         } else {
+            //在多个字符时设置合适的外边距
+            setPadding((int) getTextSize() / 2, dip2Px(1) / 2, (int) getTextSize() / 2, dip2Px(1) / 2);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
     }
@@ -193,6 +236,9 @@ public class BadgeView extends TextView {
         setBadgeBackground();
     }
 
+    public void setHideOnZero(boolean hideOnZero) {
+        this.hideOnZero = hideOnZero;
+    }
 
     private int dip2Px(float dip) {
         return (int) (dip * getContext().getResources().getDisplayMetrics().density + 0.5f);

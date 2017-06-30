@@ -59,8 +59,8 @@ public class FileApiFragment extends BaseFragment {
         .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
-                Logger.d(TAG, FileWrapper.getExternalStorageRoot());
-                Logger.d(TAG, FileWrapper.getInternalStorageRoot());
+                Logger.d(TAG, FileWrapper.getExternalStorageRootString());
+                Logger.d(TAG, FileWrapper.getInternalStorageRootString());
                 try {
                     FileWrapper.pathStringToFile(totalFilePath).mkdir();
                     File txtFile = FileWrapper.pathStringToFile(totalFilePath + File.separator + "text.txt");
