@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_empty_test"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".sample.adapter.EmptyTestActivity">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rcvEmptySimple"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btnRefresh"
+        />
+
+    <Button
+        android:id="@+id/btnRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Refresh"/>
+
+</RelativeLayout>
