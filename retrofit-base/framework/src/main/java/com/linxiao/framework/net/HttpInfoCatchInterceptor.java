@@ -2,8 +2,6 @@ package com.linxiao.framework.net;
 
 import android.support.annotation.NonNull;
 
-import com.linxiao.framework.support.log.Logger;
-
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.charset.Charset;

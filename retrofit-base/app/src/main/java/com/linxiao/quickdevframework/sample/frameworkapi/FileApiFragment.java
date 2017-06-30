@@ -8,15 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.linxiao.framework.dialog.AlertDialogWrapper;
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.support.ToastWrapper;
-import com.linxiao.framework.support.dialog.AlertDialogWrapper;
-import com.linxiao.framework.support.file.FileSizeListener;
-import com.linxiao.framework.support.file.FileCountListener;
-import com.linxiao.framework.support.file.FileWrapper;
-import com.linxiao.framework.support.log.Logger;
-import com.linxiao.framework.support.permission.PermissionWrapper;
-import com.linxiao.framework.support.permission.RequestPermissionCallback;
+import com.linxiao.framework.toast.ToastWrapper;
+import com.linxiao.framework.file.FileSizeListener;
+import com.linxiao.framework.file.FileCountListener;
+import com.linxiao.framework.file.FileWrapper;
+import com.linxiao.framework.log.Logger;
+import com.linxiao.framework.permission.PermissionWrapper;
+import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;
 
 import java.io.BufferedOutputStream;

@@ -1,6 +1,6 @@
 package com.linxiao.framework.util;
 
-import com.linxiao.framework.support.log.Logger;
+import com.linxiao.framework.log.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

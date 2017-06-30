@@ -1,6 +1,6 @@
 package com.linxiao.framework.util;
 
-import android.app.Activity;
+import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
 import com.linxiao.framework.BaseApplication;
@@ -32,12 +32,22 @@ public class DensityUtil {
     }
 
     /**
-     * 获取屏幕宽高
-     * @return int[0]: screenWidth;  int[1] : screenHeight
+     * 获取屏幕宽, 单位 px
+     * @return screenWidth;
      * */
-    public static int[] getScreenSize(Activity activity) {
-        DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        return new int[]{metrics.widthPixels, metrics.heightPixels};
+    public static int getScreenWidth() {
+        Resources resources = BaseApplication.getAppContext().getResources();
+        DisplayMetrics dm = resources.getDisplayMetrics();
+        return dm.widthPixels;
+    }
+    
+    /**
+     * 获取屏幕高， 单位 px
+     * @return screenHeight;
+     * */
+    public static int getScreenHeight() {
+        Resources resources = BaseApplication.getAppContext().getResources();
+        DisplayMetrics dm = resources.getDisplayMetrics();
+        return dm.heightPixels;
     }
 }

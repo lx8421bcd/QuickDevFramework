@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.linxiao.framework.BaseApplication;
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.support.notification.NotificationWrapper;
+import com.linxiao.framework.notification.NotificationWrapper;
 import com.linxiao.quickdevframework.R;
 
 import java.util.Arrays;

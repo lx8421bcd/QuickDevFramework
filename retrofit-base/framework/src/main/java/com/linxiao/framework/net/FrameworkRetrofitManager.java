@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.linxiao.framework.BaseApplication;
-import com.linxiao.framework.support.log.Logger;
+import com.linxiao.framework.log.Logger;
 
 import java.io.InputStream;
 import java.math.BigInteger;

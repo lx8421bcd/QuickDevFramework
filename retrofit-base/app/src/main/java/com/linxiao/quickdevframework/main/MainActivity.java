@@ -17,8 +17,8 @@ import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
-import com.linxiao.framework.support.ToastWrapper;
-import com.linxiao.framework.support.log.Logger;
+import com.linxiao.framework.toast.ToastWrapper;
+import com.linxiao.framework.log.Logger;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.sample.adapter.AdapterTestFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.ApplicationApiFragment;

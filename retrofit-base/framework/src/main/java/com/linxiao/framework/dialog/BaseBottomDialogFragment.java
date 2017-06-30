@@ -1,6 +1,7 @@
 package com.linxiao.framework.dialog;
 
 import android.app.Dialog;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -42,34 +43,26 @@ public abstract class BaseBottomDialogFragment extends BaseDialogFragment {
         View contentView = getActivity().getLayoutInflater().inflate(configureContentViewRes(), null);
         mDialog.setContentView(contentView);
         configureDialog(mDialog, contentView);
-        Window win = mDialog.getWindow();
-        if (win != null) {
-            win.getDecorView().setPadding(0, 0, 0, 0);
-            win.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL); //可设置dialog的位置
-        }
         return mDialog;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Dialog dialog = getDialog();
-        if (dialog == null) {
-            return;
-        }
-        Window win = dialog.getWindow();
+        Window win = getDialog().getWindow();
         if (win == null) {
             return;
         }
-        DisplayMetrics dm = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int[] screenSize = DensityUtil.getScreenSize(getActivity());
-        WindowManager.LayoutParams params =  win.getAttributes();
+        win.getDecorView().setPadding(0, 0, 0, 0);
+        win.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL); //可设置dialog的位置
+        Resources resources = getContext().getResources();
+        DisplayMetrics dm = resources.getDisplayMetrics();
+    
+        WindowManager.LayoutParams params = win.getAttributes();
         if (mDialogHeight > 0) {
-            win.setLayout(screenSize[0], mDialogHeight);
-        }
-        else {
-            win.setLayout(screenSize[0], params.height);
+            win.setLayout(dm.widthPixels, mDialogHeight);
+        } else {
+            win.setLayout(dm.widthPixels, params.height);
         }
     }
 

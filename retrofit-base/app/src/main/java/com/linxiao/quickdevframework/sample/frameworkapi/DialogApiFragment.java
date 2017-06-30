@@ -11,10 +11,10 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import com.linxiao.framework.dialog.AlertDialogBuilder;
+import com.linxiao.framework.dialog.AlertDialogWrapper;
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.support.ToastWrapper;
-import com.linxiao.framework.support.dialog.AlertDialogBuilder;
-import com.linxiao.framework.support.dialog.AlertDialogWrapper;
+import com.linxiao.framework.toast.ToastWrapper;
 import com.linxiao.quickdevframework.R;
 
 import butterknife.BindView;

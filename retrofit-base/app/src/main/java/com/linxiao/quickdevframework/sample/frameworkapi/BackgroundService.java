@@ -3,7 +3,8 @@ package com.linxiao.quickdevframework.sample.frameworkapi;
 import android.app.IntentService;
 import android.content.Intent;
 
-import com.linxiao.framework.support.dialog.AlertDialogWrapper;
+import com.linxiao.framework.dialog.AlertDialogWrapper;
+
 
 /**
  * 用于测试全局ActivityDialog的使用

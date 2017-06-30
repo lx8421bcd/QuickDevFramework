@@ -19,7 +19,7 @@ public class SampleAdapter extends BaseRecyclerViewAdapter<String, BaseRecyclerV
     }
 
     @Override
-    protected void setData(BaseRecyclerViewHolder holder, String data) {
+    protected void setData(BaseRecyclerViewHolder holder, int position, String data) {
         //NO IMPLEMENTATION
     }
 

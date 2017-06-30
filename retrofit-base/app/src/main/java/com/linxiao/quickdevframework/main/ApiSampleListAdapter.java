@@ -25,7 +25,7 @@ public class ApiSampleListAdapter extends BaseRecyclerViewAdapter<ApiSampleObjec
     }
 
     @Override
-    protected void setData(ApiSampleHolder holder, ApiSampleObject data) {
+    protected void setData(ApiSampleHolder holder, int position, ApiSampleObject data) {
         holder.textView.setText(data.getApiName());
     }
 

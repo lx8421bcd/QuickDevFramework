@@ -7,7 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 
-import com.linxiao.framework.support.log.Logger;
+import com.linxiao.framework.log.Logger;
 
 import java.io.File;
 import java.util.List;

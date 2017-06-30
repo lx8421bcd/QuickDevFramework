@@ -12,9 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.linxiao.framework.BaseApplication;
 import com.linxiao.framework.manager.BaseDataManager;
-import com.linxiao.framework.support.permission.PermissionWrapper;
+import com.linxiao.framework.permission.PermissionWrapper;
 
 import java.util.ArrayList;
 import java.util.List;

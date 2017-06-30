@@ -3,8 +3,8 @@ package com.linxiao.framework.net;
 
 import android.util.Log;
 
-import com.linxiao.framework.support.log.Logger;
-import com.linxiao.framework.support.preferences.PreferenceWrapper;
+import com.linxiao.framework.log.Logger;
+import com.linxiao.framework.preferences.PreferenceWrapper;
 
 /**
  * Session management

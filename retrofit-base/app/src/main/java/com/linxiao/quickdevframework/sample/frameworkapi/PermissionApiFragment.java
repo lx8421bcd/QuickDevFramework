@@ -7,11 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.linxiao.framework.dialog.AlertDialogWrapper;
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.support.dialog.AlertDialogWrapper;
-import com.linxiao.framework.support.permission.PermissionProhibitedListener;
-import com.linxiao.framework.support.permission.PermissionWrapper;
-import com.linxiao.framework.support.permission.RequestPermissionCallback;
+import com.linxiao.framework.permission.PermissionProhibitedListener;
+import com.linxiao.framework.permission.PermissionWrapper;
+import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;
 
 import butterknife.ButterKnife;

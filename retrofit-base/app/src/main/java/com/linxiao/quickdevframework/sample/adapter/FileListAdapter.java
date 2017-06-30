@@ -29,7 +29,7 @@ public class FileListAdapter extends BaseRecyclerViewAdapter<File, FileListAdapt
     }
 
     @Override
-    protected void setData(FileItemHolder holder, File data) {
+    protected void setData(FileItemHolder holder, int position, File data) {
         holder.tvFileName.setText(data.getName());
 
     }

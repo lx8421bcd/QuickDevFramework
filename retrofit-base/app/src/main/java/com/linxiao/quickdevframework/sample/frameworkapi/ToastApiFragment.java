@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.support.ToastWrapper;
+import com.linxiao.framework.toast.ToastWrapper;
 import com.linxiao.quickdevframework.R;
 
 import butterknife.ButterKnife;

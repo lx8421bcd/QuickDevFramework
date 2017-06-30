@@ -12,20 +12,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
+import com.linxiao.framework.dialog.AlertDialogWrapper;
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.support.dialog.AlertDialogWrapper;
-import com.linxiao.framework.support.file.FileWrapper;
-import com.linxiao.framework.support.permission.PermissionProhibitedListener;
-import com.linxiao.framework.support.permission.PermissionWrapper;
-import com.linxiao.framework.support.permission.RequestPermissionCallback;
-import com.linxiao.framework.util.DensityUtil;
+import com.linxiao.framework.file.FileWrapper;
+import com.linxiao.framework.permission.PermissionProhibitedListener;
+import com.linxiao.framework.permission.PermissionWrapper;
+import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.sample.adapter.FileListAdapter;
 import com.linxiao.quickdevframework.sample.divider.HorizontalDecoration;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.jar.Manifest;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.linxiao.framework.support.log.Logger;
-import com.linxiao.framework.support.notification.NotificationWrapper;
+import com.linxiao.framework.log.Logger;
+import com.linxiao.framework.notification.NotificationWrapper;
 
 /**
  * 启动Activity基类

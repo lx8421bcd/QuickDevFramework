@@ -14,7 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.linxiao.framework.activity.BaseActivity;
-import com.linxiao.framework.support.log.Logger;
+import com.linxiao.framework.log.Logger;
 
 
 import java.io.ByteArrayInputStream;
@@ -22,7 +22,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 应用Application基类
