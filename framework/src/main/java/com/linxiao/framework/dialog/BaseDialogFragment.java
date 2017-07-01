@@ -21,14 +21,11 @@ import java.util.List;
 public abstract class BaseDialogFragment extends AppCompatDialogFragment {
 
     public static String TAG;
-
-    private List<BaseDataManager> listDataManagers;
-
+    
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TAG = this.getClass().getSimpleName();
-        listDataManagers = new ArrayList<>();
     }
 
     @Override
@@ -39,22 +36,7 @@ public abstract class BaseDialogFragment extends AppCompatDialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        for (BaseDataManager dataManager : listDataManagers) {
-            if ( dataManager == null) {
-                continue;
-            }
-            dataManager.cancelAllCalls();
-        }
     }
-
-    /**
-     * bind DataManager to Activity life cycle, all network request will be canceled
-     * when the activity is destroyed
-     * */
-    protected void bindDataManagerToLifeCycle(@NonNull BaseDataManager dataManager) {
-        listDataManagers.add(dataManager);
-    }
-
 
     /**
      * use this method instead of findViewById() to simplify view initialization <br>

@@ -66,7 +66,7 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        if (!FileWrapper.existExternalStorage()) {
+        if (!FileManager.existExternalStorage()) {
             if (fileSizeListener != null) {
                 fileSizeListener.onFail("未找到SD卡");
             }
@@ -74,7 +74,7 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
                 fileCountListener.onFail("未找到SD卡");
             }
         }
-        if (!FileWrapper.hasFileOperatePermission()) {
+        if (!FileManager.hasFileOperatePermission()) {
             if (fileSizeListener != null) {
                 fileSizeListener.onFail("请授予文件管理权限");
             }

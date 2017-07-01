@@ -13,18 +13,16 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
+ *
  * Created by linxiao on 2017/2/12.
  */
 public class WidgetsGuideFragment extends BaseFragment {
+    
 
     @Override
-    protected int rootViewResId() {
-        return R.layout.fragment_widgets_guide;
-    }
-
-    @Override
-    protected void onCreateContentView(View rootView, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ButterKnife.bind(this, rootView);
+    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setContentView(R.layout.fragment_widgets_guide, container);
+        ButterKnife.bind(this, getContentView());
     }
 
     @OnClick(R.id.btnViewPager)

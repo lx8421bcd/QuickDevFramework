@@ -35,13 +35,9 @@ public class ApplicationApiFragment extends BaseFragment {
     TextView tvIsAppForeground;
 
     @Override
-    protected int rootViewResId() {
-        return R.layout.fragment_application_api;
-    }
-
-    @Override
-    protected void onCreateContentView(View rootView, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ButterKnife.bind(this, rootView);
+    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setContentView(R.layout.fragment_application_api, container);
+        ButterKnife.bind(this, getContentView());
 
         ivAppIcon.setImageDrawable(SampleApplication.getApplicationIcon());
         tvIsAppRunning.setText(getString(R.string.is_app_running) + ": " + SampleApplication.isAppForeground());

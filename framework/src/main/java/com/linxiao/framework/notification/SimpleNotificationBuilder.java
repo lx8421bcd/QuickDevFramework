@@ -36,7 +36,7 @@ public class SimpleNotificationBuilder {
      * <p>此处将Notification的icon设定为只用NotificationWrapper中所配置的默认icon</p>
      * */
     public SimpleNotificationBuilder(Context context, @NonNull String contentTitle, @NonNull String contentText) {
-        this(context, NotificationWrapper.getDefaultIconRes(), contentTitle, contentText);
+        this(context, NotificationManager.getDefaultIconRes(), contentTitle, contentText);
     }
 
     /**
@@ -169,8 +169,8 @@ public class SimpleNotificationBuilder {
         if (targetActivityIntent.getExtras() != null) {
             bundle.putAll(targetActivityIntent.getExtras());
         }
-        bundle.putString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME, targetActivityIntent.getComponent().getClassName());
-        broadcastIntent.putExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA, bundle);
+        bundle.putString(NotificationManager.KEY_TARGET_ACTIVITY_NAME, targetActivityIntent.getComponent().getClassName());
+        broadcastIntent.putExtra(NotificationManager.KEY_NOTIFICATION_EXTRA, bundle);
         mPendingIntent = PendingIntent.getBroadcast(mContext, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         return this;
     }

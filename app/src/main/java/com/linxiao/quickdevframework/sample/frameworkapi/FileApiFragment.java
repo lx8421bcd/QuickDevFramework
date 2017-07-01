@@ -8,14 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.linxiao.framework.dialog.AlertDialogWrapper;
+import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.framework.toast.ToastWrapper;
 import com.linxiao.framework.file.FileSizeListener;
 import com.linxiao.framework.file.FileCountListener;
-import com.linxiao.framework.file.FileWrapper;
+import com.linxiao.framework.file.FileManager;
 import com.linxiao.framework.log.Logger;
-import com.linxiao.framework.permission.PermissionWrapper;
+import com.linxiao.framework.permission.PermissionManager;
 import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;
 
@@ -29,7 +29,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class FileApiFragment extends BaseFragment {
-    private String totalFilePath = FileWrapper.getExternalStorageRoot() + File.separator + "QuickDevFramework";
+    private String totalFilePath = FileManager.getExternalStorageRoot() + File.separator + "QuickDevFramework";
 
     @BindView(R.id.tvTotalSize)
     TextView tvTotalSize;
@@ -46,24 +46,20 @@ public class FileApiFragment extends BaseFragment {
     TextView tvHasPermission;
 
     @Override
-    protected int rootViewResId() {
-        return R.layout.fragment_file_api;
-    }
-
-    @Override
-    protected void onCreateContentView(View rootView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ButterKnife.bind(this, rootView);
-        PermissionWrapper.performWithPermission(
+    protected void onCreateContentView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        setContentView(R.layout.fragment_file_api, container);
+        ButterKnife.bind(this, getContentView());
+        PermissionManager.performWithPermission(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE)
         .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
-                Logger.d(TAG, FileWrapper.getExternalStorageRootString());
-                Logger.d(TAG, FileWrapper.getInternalStorageRootString());
+                Logger.d(TAG, FileManager.getExternalStorageRootString());
+                Logger.d(TAG, FileManager.getInternalStorageRootString());
                 try {
-                    FileWrapper.pathStringToFile(totalFilePath).mkdir();
-                    File txtFile = FileWrapper.pathStringToFile(totalFilePath + File.separator + "text.txt");
+                    FileManager.pathStringToFile(totalFilePath).mkdir();
+                    File txtFile = FileManager.pathStringToFile(totalFilePath + File.separator + "text.txt");
                     txtFile.createNewFile();
                     FileOutputStream outputStream = new FileOutputStream(txtFile);
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
@@ -81,16 +77,16 @@ public class FileApiFragment extends BaseFragment {
 
             @Override
             public void onDenied() {
-                AlertDialogWrapper.showAlertDialog("请授予文件管理权限");
+                AlertDialogManager.showAlertDialog("请授予文件管理权限");
             }
         });
     }
 
     @OnClick(R.id.btnCopyFileSimple)
     public void OnCopyFileSimple() {
-        FileWrapper.pathStringToFile(totalFilePath + File.separator + "Copy").mkdir();
-        FileWrapper.copyFileOperate(FileWrapper.pathStringToFile(totalFilePath + File.separator + "text.txt"),
-                totalFilePath + File.separator + "Copy", getContext()).setFileSizeListener(new FileSizeListener() {
+        FileManager.pathStringToFile(totalFilePath + File.separator + "Copy").mkdir();
+        FileManager.copyFileOperate(FileManager.pathStringToFile(totalFilePath + File.separator + "text.txt"),
+                totalFilePath + File.separator + "Copy").setFileSizeListener(new FileSizeListener() {
             @Override
             public void onStart() {}
 
@@ -128,15 +124,15 @@ public class FileApiFragment extends BaseFragment {
     @OnClick(R.id.btnCopyFolderSimple)
     public void OnCopyFolderSimple() {
         try {
-            FileWrapper.pathStringToFile(totalFilePath + File.separator + "FolderExample").mkdir();
-            FileWrapper.pathStringToFile(totalFilePath + File.separator + "FolderExample"+ File.separator + "1").mkdir();
-            FileWrapper.pathStringToFile(totalFilePath + File.separator + "FolderExample"+ File.separator + "2").mkdir();
-            FileWrapper.pathStringToFile(totalFilePath + File.separator + "CopyFolder").mkdir();
-            FileWrapper.pathStringToFile(totalFilePath).mkdir();
+            FileManager.pathStringToFile(totalFilePath + File.separator + "FolderExample").mkdir();
+            FileManager.pathStringToFile(totalFilePath + File.separator + "FolderExample"+ File.separator + "1").mkdir();
+            FileManager.pathStringToFile(totalFilePath + File.separator + "FolderExample"+ File.separator + "2").mkdir();
+            FileManager.pathStringToFile(totalFilePath + File.separator + "CopyFolder").mkdir();
+            FileManager.pathStringToFile(totalFilePath).mkdir();
 
-            File txtFile = FileWrapper.pathStringToFile(totalFilePath + File.separator + "FolderExample"+
+            File txtFile = FileManager.pathStringToFile(totalFilePath + File.separator + "FolderExample"+
                     File.separator + "2" + File.separator + "text.txt");
-            File txtFile_ = FileWrapper.pathStringToFile(totalFilePath + File.separator + "FolderExample"+
+            File txtFile_ = FileManager.pathStringToFile(totalFilePath + File.separator + "FolderExample"+
                     File.separator + "text.txt");
             txtFile.createNewFile();
             txtFile.createNewFile();
@@ -158,8 +154,11 @@ public class FileApiFragment extends BaseFragment {
             Logger.e(TAG, e);
         }
 
-        FileWrapper.copyFileOperate(FileWrapper.pathStringToFile(totalFilePath + File.separator + "FolderExample"),
-                totalFilePath + File.separator + "CopyFolder", getContext()).setFileSizeListener(new FileSizeListener() {
+        FileManager.copyFileOperate(
+                FileManager.pathStringToFile(
+                    totalFilePath + File.separator + "FolderExample"),
+                    totalFilePath + File.separator + "CopyFolder"
+        ).setFileSizeListener(new FileSizeListener() {
             @Override
             public void onStart() {}
 
@@ -198,8 +197,8 @@ public class FileApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnDeleteFolderSimple)
     public void OnDeleteFolderSimple() {
-        FileWrapper.deleteFileOperate(FileWrapper.pathStringToFile(totalFilePath + File.separator +
-                "FolderExample"), getContext()).setFileCountListener(new FileCountListener() {
+        FileManager.deleteFileOperate(FileManager.pathStringToFile(totalFilePath + File.separator +
+                "FolderExample")).setFileCountListener(new FileCountListener() {
             @Override
             public void onStart() {}
 
@@ -219,8 +218,8 @@ public class FileApiFragment extends BaseFragment {
                 ToastWrapper.showToast(getContext(), failMsg);
             }
         }).execute();
-        tvHasSDCard.setText(getString(R.string.is_exist_sd_card) + ": " + FileWrapper.existExternalStorage());
-        tvHasPermission.setText(getString(R.string.has_file_permission) + ": " + FileWrapper.hasFileOperatePermission());
+        tvHasSDCard.setText(getString(R.string.is_exist_sd_card) + ": " + FileManager.existExternalStorage());
+        tvHasPermission.setText(getString(R.string.has_file_permission) + ": " + FileManager.hasFileOperatePermission());
     }
 
 }

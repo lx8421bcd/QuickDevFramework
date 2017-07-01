@@ -2,7 +2,6 @@ package com.linxiao.quickdevframework.sample.netapi;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,7 @@ import android.widget.TextView;
 
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.framework.net.CookieMode;
-import com.linxiao.framework.net.FrameworkRetrofitManager;
+import com.linxiao.framework.net.RetrofitManager;
 import com.linxiao.framework.net.HttpInfoCatchInterceptor;
 import com.linxiao.framework.net.HttpInfoCatchListener;
 import com.linxiao.framework.net.HttpInfoEntity;
@@ -35,13 +34,9 @@ public class NetTestFragment extends BaseFragment {
     private ClientApi clientApi;
 
     @Override
-    protected int rootViewResId() {
-        return R.layout.fragment_net_test;
-    }
-
-    @Override
-    protected void onCreateContentView(View rootView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ButterKnife.bind(this, rootView);
+    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setContentView(R.layout.fragment_net_test, container);
+        ButterKnife.bind(this, getContentView());
         HttpInfoCatchInterceptor infoCatchInterceptor = new HttpInfoCatchInterceptor();
         infoCatchInterceptor.setCatchEnabled(true);
         infoCatchInterceptor.setHttpInfoCatchListener(new HttpInfoCatchListener() {
@@ -51,7 +46,7 @@ public class NetTestFragment extends BaseFragment {
                 //do something......
             }
         });
-        clientApi = FrameworkRetrofitManager.createRetrofitBuilder("http://www.weather.com.cn/")
+        clientApi = RetrofitManager.createRetrofitBuilder("http://www.weather.com.cn/")
                 .setCookieMode(CookieMode.ADD_BY_ANNOTATION)
                 .addCustomInterceptor(infoCatchInterceptor)
                 .build(ClientApi.class);

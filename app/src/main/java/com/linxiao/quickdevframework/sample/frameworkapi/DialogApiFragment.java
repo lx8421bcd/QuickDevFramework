@@ -3,7 +3,6 @@ package com.linxiao.quickdevframework.sample.frameworkapi;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import com.linxiao.framework.dialog.AlertDialogBuilder;
-import com.linxiao.framework.dialog.AlertDialogWrapper;
+import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.framework.toast.ToastWrapper;
 import com.linxiao.quickdevframework.R;
@@ -38,15 +37,10 @@ public class DialogApiFragment extends BaseFragment {
     @BindView(R.id.cbSetCancelAble)
     CheckBox cbSetCancelAble;
 
-
     @Override
-    protected int rootViewResId() {
-        return R.layout.fragment_dialog_api;
-    }
-
-    @Override
-    protected void onCreateContentView(View rootView, LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ButterKnife.bind(this, rootView);
+    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setContentView(R.layout.fragment_dialog_api, container);
+        ButterKnife.bind(this, getContentView());
 
         cbShowIcon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -68,7 +62,7 @@ public class DialogApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnShowAlertDialog)
     public void onShowAlertDialogClick(View v) {
-        AlertDialogBuilder builder = AlertDialogWrapper.createAlertDialogBuilder();
+        AlertDialogBuilder builder = AlertDialogManager.createAlertDialogBuilder();
         builder.setMessage(getString(R.string.sample_dialog_message));
         if (cbShowTitle.isChecked()) {
             builder.setTitle(getString(R.string.sample_dialog_title));
@@ -107,13 +101,13 @@ public class DialogApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnShowSimpleDialog)
     public void onSimpleDialogClick(View v) {
-        AlertDialogWrapper.showAlertDialog(getString(R.string.sample_dialog_message));
+        AlertDialogManager.showAlertDialog(getString(R.string.sample_dialog_message));
     }
 
     @OnClick(R.id.btnShowOnStartActivity)
     public void onShowStartActivityClick(View v) {
         startActivity(new Intent(getActivity(), NotificationTargetActivity.class));
-        AlertDialogWrapper.showAlertDialog( "dialog after start activity");
+        AlertDialogManager.showAlertDialog( "dialog after start activity");
     }
 
     @OnClick(R.id.btnShowTopDialog)

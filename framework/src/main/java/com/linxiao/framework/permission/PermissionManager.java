@@ -16,7 +16,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.linxiao.framework.R;
-import com.linxiao.framework.dialog.AlertDialogWrapper;
+import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.log.Logger;
 import com.linxiao.framework.util.ApplicationUtil;
 
@@ -35,8 +35,8 @@ import com.linxiao.framework.util.ApplicationUtil;
  * </p>
  * Created by LinXiao on 2016-11-24.
  */
-public class PermissionWrapper {
-    private static final String TAG = PermissionWrapper.class.getSimpleName();
+public class PermissionManager {
+    private static final String TAG = PermissionManager.class.getSimpleName();
 
     private static final int PERMISSION_REQUEST_CODE = 1001;
     private static final int SYSTEM_ALERT_PERMISSION_REQUEST_CODE = 1002;
@@ -48,7 +48,7 @@ public class PermissionWrapper {
     private static RequestPermissionCallback reqSysAlertCallback;
     private static RequestPermissionCallback reqSysSettingsCallback;
 
-    private PermissionWrapper() {}
+    private PermissionManager() {}
 
     /**
      * 检查是否需要RuntimePermission，即 System API >= API 23
@@ -219,9 +219,9 @@ public class PermissionWrapper {
      * 当权限申请Dialog被用户禁止弹出时使用，引导用户前往应用权限页面开启权限
      * */
     public static void showPermissionProhibitedDialog(final Context context, String permission) {
-        String permissionGroupName = PermissionWrapper.getPermissionGroupName(context, permission);
+        String permissionGroupName = PermissionManager.getPermissionGroupName(context, permission);
         String message = permissionGroupName + context.getString(R.string.toast_permission_denied);
-        AlertDialogWrapper.createAlertDialogBuilder()
+        AlertDialogManager.createAlertDialogBuilder()
         .setMessage(message)
         .setPositiveButton(new DialogInterface.OnClickListener() {
             @Override
@@ -319,7 +319,7 @@ public class PermissionWrapper {
                 ActivityCompat.requestPermissions(activity, requestPermissions, PERMISSION_REQUEST_CODE);
             }
             else {
-                AlertDialogWrapper.createAlertDialogBuilder()
+                AlertDialogManager.createAlertDialogBuilder()
                 .setMessage(requestDesc)
                 .setPositiveButton(new DialogInterface.OnClickListener() {
                     @Override

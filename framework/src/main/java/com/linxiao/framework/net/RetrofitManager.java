@@ -31,9 +31,9 @@ import okhttp3.internal.platform.Platform;
  * 框架下Retrofit管理类
  * Created by LinXiao on 2016-11-27.
  */
-public class FrameworkRetrofitManager {
+public class RetrofitManager {
 
-    private static final String TAG = FrameworkRetrofitManager.class.getSimpleName();
+    private static final String TAG = RetrofitManager.class.getSimpleName();
 
     /**
      * 提供Http请求的ApiBuilder

@@ -3,83 +3,89 @@ package com.linxiao.framework.fragment;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.linxiao.framework.manager.BaseDataManager;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.linxiao.framework.log.Logger;
+import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment;
 
 /**
  * base Fragment of entire project
  * <p>template for Fragments in the project, used to define common methods </p>
  * */
-public abstract class BaseFragment extends Fragment {
-
+public abstract class BaseFragment extends RxAppCompatDialogFragment {
     protected String TAG;
-
-    private List<BaseDataManager> listDataManagers;
-
+    
     private View rootView;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TAG = this.getClass().getSimpleName();
-
 //        this.setRetainInstance(true);
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        listDataManagers = new ArrayList<>();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if(rootView == null) {
-            rootView = inflater.inflate(rootViewResId(), container, false);
-            onCreateContentView(rootView, inflater, container, savedInstanceState);
+            onCreateContentView(inflater, container, savedInstanceState);
         }
+        
         return rootView;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        for (BaseDataManager dataManager : listDataManagers) {
-            if ( dataManager == null) {
-                continue;
-            }
-            dataManager.cancelAllCalls();
+    }
+    
+    /**
+     * set the content view of this fragment by layout resource id
+     * <p>if the content view has been set before, this method will not work again</p>
+     * @param resId
+     * layout resource id of content view
+     * @param container
+     * parent ViewGroup of content view, get it in
+     * {@link #onCreateContentView(LayoutInflater, ViewGroup, Bundle)}
+     * */
+    protected void setContentView(@LayoutRes int resId, ViewGroup container) {
+        if (rootView != null) {
+            Logger.w(TAG, "contentView has set already");
+            return;
         }
+        rootView = LayoutInflater.from(getActivity()).inflate(resId, container, false);
+    }
+    
+    /**
+     * set the content view of this fragment by layout resource id
+     * <p>if the content view has been set before, this method will not work again</p>
+     *
+     * @param contentView content view of this fragment
+     * */
+    protected void setContentView(View contentView) {
+        if (rootView != null) {
+            Logger.w(TAG, "contentView has set already");
+            return;
+        }
+        rootView = contentView;
     }
 
-    /**
-     * bind DataManager to fragment life cycle, all network request will be canceled
-     * when the fragment content view is destroyed
-     * */
-    protected void bindDataManager(@NonNull BaseDataManager dataManager) {
-        listDataManagers.add(dataManager);
+    protected View getContentView() {
+        return rootView;
     }
-
-    /**
-     * return fragment content view id
-     * */
-    @LayoutRes
-    protected abstract int rootViewResId();
-
+    
     /**
      * execute on method onCreateView(), put your code here which you want to do in onCreateView()<br>
-     * <strong>do not override onCreateView() or this method and configureContentViewRes() will be invalidated</strong>
+     * <strong>execute {@link #setContentView(int, ViewGroup)} or {@link #setContentView(View)} to
+     * set the root view of this fragment like activity</strong>
      * */
-    protected abstract void onCreateContentView(View rootView, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
-
+    protected abstract void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
+    
+    
     /**
      * use this method instead of findViewById() to simplify view initialization <br>
-     * it's not unchecked because T extends View
+     * it's not unchecked because of T extends View
      * */
     @SuppressWarnings("unchecked")
     protected <T extends View> T findView(View layoutView, @IdRes int resId) {

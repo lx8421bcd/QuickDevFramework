@@ -9,9 +9,9 @@ import com.linxiao.framework.BaseApplication;
  * 应用内消息通知封装
  * Created by LinXiao on 2016-11-25.
  */
-public class AlertDialogWrapper {
+public class AlertDialogManager {
 
-    private AlertDialogWrapper() {}
+    private AlertDialogManager() {}
 
     public static AlertDialogBuilder createAlertDialogBuilder() {
         return createAlertDialogBuilder(BaseApplication.getAppContext());
