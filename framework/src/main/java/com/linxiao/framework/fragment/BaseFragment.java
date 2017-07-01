@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.linxiao.framework.manager.BaseDataManager;
+import com.trello.rxlifecycle2.components.RxFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
  * base Fragment of entire project
  * <p>template for Fragments in the project, used to define common methods </p>
  * */
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends RxFragment {
 
     protected String TAG;
 

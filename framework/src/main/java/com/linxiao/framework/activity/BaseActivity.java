@@ -14,6 +14,7 @@ import android.view.View;
 
 import com.linxiao.framework.manager.BaseDataManager;
 import com.linxiao.framework.permission.PermissionWrapper;
+import com.trello.rxlifecycle2.components.RxActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.List;
  * base activity class of entire project
  * <p>template for activities in the project, used to define common methods of activity </p>
  * */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends RxActivity {
 
     public static final String ACTION_EXIT_APPLICATION = "exit_application";
 
@@ -146,7 +147,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * set is print activity life cycle
      * <p>if true, activity will log out life cycle</p>
      * */
-    public void setPrintLifeCycle(boolean printLifeCycle) {
+    public void printLifeCycle(boolean printLifeCycle) {
         this.printLifeCycle = printLifeCycle;
     }
 
