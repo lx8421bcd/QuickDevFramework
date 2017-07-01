@@ -22,7 +22,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         Logger.LogPrinter logPrinter = Logger.createLogPrinter(Logger.DEBUG);
         logPrinter.tag(TAG);
         logPrinter.appendLine("Receive Notification Broadcast");
-        Bundle notificationExtra = intent.getBundleExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA);
+        Bundle notificationExtra = intent.getBundleExtra(NotificationManager.KEY_NOTIFICATION_EXTRA);
         if (notificationExtra == null) {
             logPrinter.appendLine("notification extra is null, can't guide to target page");
             logPrinter.print();
@@ -31,7 +31,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         if (BaseApplication.isAppForeground()) {
             logPrinter.appendLine("application state: running");
             Intent targetIntent = new Intent();
-            String targetKey = notificationExtra.getString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME);
+            String targetKey = notificationExtra.getString(NotificationManager.KEY_TARGET_ACTIVITY_NAME);
             if (TextUtils.isEmpty(targetKey)) {
                 targetKey = NotificationResumeActivity.class.getName();
                 logPrinter.appendLine("target key is empty, application will back to front as default");
@@ -52,7 +52,7 @@ public class NotificationReceiver extends BroadcastReceiver {
             Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(
                     BaseApplication.getAppContext().getPackageName());
             launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            launchIntent.putExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA, notificationExtra);
+            launchIntent.putExtra(NotificationManager.KEY_NOTIFICATION_EXTRA, notificationExtra);
             context.startActivity(launchIntent);
         }
         logPrinter.print();

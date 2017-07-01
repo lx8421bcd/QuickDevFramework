@@ -8,29 +8,24 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.linxiao.framework.manager.BaseDataManager;
-import com.linxiao.framework.permission.PermissionWrapper;
+import com.linxiao.framework.permission.PermissionManager;
 import com.trello.rxlifecycle2.components.RxActivity;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 
 /**
  * base activity class of entire project
  * <p>template for activities in the project, used to define common methods of activity </p>
  * */
-public abstract class BaseActivity extends RxActivity {
+public abstract class BaseActivity extends RxAppCompatActivity {
 
     public static final String ACTION_EXIT_APPLICATION = "exit_application";
 
     protected String TAG;
 
-    private List<BaseDataManager> listDataManagers;
     private boolean printLifeCycle = false;
     private ActivityBaseReceiver mReceiver;
 
@@ -46,7 +41,6 @@ public abstract class BaseActivity extends RxActivity {
         mReceiver = new ActivityBaseReceiver();
         registerReceiver(mReceiver, filter);
 
-        listDataManagers = new ArrayList<>();
     }
 
     @Override
@@ -96,34 +90,21 @@ public abstract class BaseActivity extends RxActivity {
             Log.d(TAG, "onDestroy");
         }
         unregisterReceiver(mReceiver);
-        for (BaseDataManager dataManager : listDataManagers) {
-            if ( dataManager == null) {
-                continue;
-            }
-            dataManager.cancelAllCalls();
-        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        PermissionWrapper.onSysAlertPermissionResult(this, requestCode);
-        PermissionWrapper.onWriteSysSettingsPermissionResult(this, requestCode);
+        PermissionManager.onSysAlertPermissionResult(this, requestCode);
+        PermissionManager.onWriteSysSettingsPermissionResult(this, requestCode);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionWrapper.handleCallback(this, requestCode, permissions, grantResults);
+        PermissionManager.handleCallback(this, requestCode, permissions, grantResults);
     }
-
-    /**
-     * bind DataManager to Activity life cycle, all network request will be canceled
-     * when the activity is destroyed
-     * */
-    protected void bindDataManager(@NonNull BaseDataManager dataManager) {
-        listDataManagers.add(dataManager);
-    }
+    
 
     /**
      * use this method instead of findViewById() to simplify view initialization <br>

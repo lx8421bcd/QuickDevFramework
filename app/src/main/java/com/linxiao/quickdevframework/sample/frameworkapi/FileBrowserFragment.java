@@ -12,11 +12,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
-import com.linxiao.framework.dialog.AlertDialogWrapper;
+import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.file.FileWrapper;
+import com.linxiao.framework.file.FileManager;
 import com.linxiao.framework.permission.PermissionProhibitedListener;
-import com.linxiao.framework.permission.PermissionWrapper;
+import com.linxiao.framework.permission.PermissionManager;
 import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.sample.adapter.FileListAdapter;
@@ -42,21 +42,15 @@ public class FileBrowserFragment extends BaseFragment {
 
     private FileListAdapter fileListAdapter;
 
-    Unbinder unbinder;
-
     private File currentPath;
 
     @Override
-    protected int rootViewResId() {
-        return R.layout.fragment_file_browser;
-    }
-
-    @Override
-    protected void onCreateContentView(View rootView, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        unbinder = ButterKnife.bind(this, rootView);
+    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setContentView(R.layout.fragment_file_browser, container);
+        ButterKnife.bind(this, getContentView());
         initView();
 
-        currentPath = FileWrapper.getExternalStorageRoot();
+        currentPath = FileManager.getExternalStorageRoot();
         loadPath(currentPath);
     }
 
@@ -65,7 +59,6 @@ public class FileBrowserFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        unbinder.unbind();
     }
 
     private void initView() {
@@ -88,13 +81,13 @@ public class FileBrowserFragment extends BaseFragment {
      * 加载文件路径，将文件夹下的列表
      * */
     private void loadPath(final File path) {
-        PermissionWrapper.performWithPermission(
+        PermissionManager.performWithPermission(
         android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
         android.Manifest.permission.READ_EXTERNAL_STORAGE)
         .doOnProhibited(new PermissionProhibitedListener() {
             @Override
             public void onProhibited(String permission) {
-                AlertDialogWrapper.showAlertDialog("请授予文件管理权限以查看演示效果");
+                AlertDialogManager.showAlertDialog("请授予文件管理权限以查看演示效果");
             }
         })
         .perform(getActivity(), new RequestPermissionCallback() {
@@ -108,7 +101,7 @@ public class FileBrowserFragment extends BaseFragment {
 
             @Override
             public void onDenied() {
-                AlertDialogWrapper.showAlertDialog("未授予权限");
+                AlertDialogManager.showAlertDialog("未授予权限");
             }
         });
     }

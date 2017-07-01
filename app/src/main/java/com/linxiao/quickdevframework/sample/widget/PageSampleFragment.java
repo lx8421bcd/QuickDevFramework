@@ -24,13 +24,9 @@ public class PageSampleFragment extends BaseFragment {
     String pageDesc;
 
     @Override
-    protected int rootViewResId() {
-        return R.layout.fragment_page_sample;
-    }
-
-    @Override
-    protected void onCreateContentView(View rootView, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ButterKnife.bind(this, rootView);
+    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setContentView(R.layout.fragment_page_sample, container);
+        ButterKnife.bind(this, getContentView());
         tvPageDesc.setText(pageDesc);
     }
 

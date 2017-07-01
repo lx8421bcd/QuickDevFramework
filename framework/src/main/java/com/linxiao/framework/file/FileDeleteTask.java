@@ -1,9 +1,6 @@
 package com.linxiao.framework.file;
 
-import android.content.Context;
 import android.os.AsyncTask;
-
-import com.linxiao.framework.toast.ToastWrapper;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -15,14 +12,13 @@ import java.util.List;
  */
 
 public class FileDeleteTask extends AsyncTask<Void, Long, String> {
-    private Context context;
     private List<File> srcFiles = new LinkedList<>();
     private FileCountListener fileCountListener;
     private long sum;
     private long curSum = 0;
 
-    public FileDeleteTask(Context context) {
-        this.context = context;
+    public FileDeleteTask() {
+        
     }
 
     public FileDeleteTask(File src) {
@@ -47,16 +43,14 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        if (!FileWrapper.existExternalStorage()) {
-            ToastWrapper.showToast(context, "未找到SD卡");
+        if (!FileManager.existExternalStorage()) {
             if (fileCountListener != null) {
-                fileCountListener.onFail("未找到SD卡");
+                fileCountListener.onFail("sd card not found");
             }
         }
-        if (!FileWrapper.hasFileOperatePermission()) {
-            ToastWrapper.showToast(context, "请授予文件管理权限");
+        if (!FileManager.hasFileOperatePermission()) {
             if (fileCountListener != null) {
-                fileCountListener.onFail("请授予文件管理权限");
+                fileCountListener.onFail("permission denied");
             }
         }
         if (fileCountListener != null) {
@@ -111,10 +105,10 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
                 }
                 return null;
             } else {
-                return "删除失败";
+                return "delete failed";
             }
         } else {
-            return "文件不存在";
+            return "no such file or directory";
         }
     }
 
@@ -142,6 +136,7 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
                 if (src.delete()) {
                     return null;
                 }
+                return "src is empty";
             }
             for (File srcFile : srcFiles) {
                 deleteDirectory(srcFile);

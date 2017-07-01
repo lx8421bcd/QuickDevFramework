@@ -15,13 +15,9 @@ import butterknife.OnClick;
 public class AdapterTestFragment extends BaseFragment {
 
     @Override
-    protected int rootViewResId() {
-        return R.layout.fragment_adapter_test;
-    }
-
-    @Override
-    protected void onCreateContentView(View rootView, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ButterKnife.bind(this, rootView);
+    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setContentView(R.layout.fragment_adapter_test, container);
+        ButterKnife.bind(this, getContentView());
     }
 
     @OnClick(R.id.btnTestEmptyView)

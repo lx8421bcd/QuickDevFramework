@@ -29,13 +29,9 @@ public class ChildPagerFragment extends BaseFragment {
     private int pagerIndex;
 
     @Override
-    protected int rootViewResId() {
-        return R.layout.fragment_child_pager;
-    }
-
-    @Override
-    protected void onCreateContentView(View rootView, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ButterKnife.bind(this, rootView);
+    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setContentView(R.layout.fragment_child_pager, container);
+        ButterKnife.bind(this, getContentView());
 
         vpChild.TAG = "ViewPager Child";
 
