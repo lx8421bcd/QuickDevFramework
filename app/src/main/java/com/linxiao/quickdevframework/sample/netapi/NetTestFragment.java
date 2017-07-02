@@ -1,7 +1,6 @@
 package com.linxiao.quickdevframework.sample.netapi;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,8 @@ import com.linxiao.framework.net.RetrofitManager;
 import com.linxiao.framework.net.HttpInfoCatchInterceptor;
 import com.linxiao.framework.net.HttpInfoCatchListener;
 import com.linxiao.framework.net.HttpInfoEntity;
+import com.linxiao.framework.rx.SampleSubscriber;
+import com.linxiao.framework.toast.ToastWrapper;
 import com.linxiao.quickdevframework.R;
 
 import java.io.IOException;
@@ -20,10 +21,14 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 public class NetTestFragment extends BaseFragment {
 
@@ -48,6 +53,7 @@ public class NetTestFragment extends BaseFragment {
         });
         clientApi = RetrofitManager.createRetrofitBuilder("http://www.weather.com.cn/")
                 .setCookieMode(CookieMode.ADD_BY_ANNOTATION)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addCustomInterceptor(infoCatchInterceptor)
                 .build(ClientApi.class);
     }
@@ -58,20 +64,30 @@ public class NetTestFragment extends BaseFragment {
     }
 
     public void requestApi() {
-        Call<ResponseBody> call = clientApi.getWeather("101010100");
-        call.enqueue(new Callback<ResponseBody>() {
+        clientApi.getWeather("101010100")
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void accept(@NonNull Disposable disposable) throws Exception {
+                ToastWrapper.showToast(getContext(), "正在请求");
+            }
+        })
+        .doOnNext(new Consumer<ResponseBody>() {
+            @Override
+            public void accept(@NonNull ResponseBody responseBody) throws Exception {
+
+            }
+        })
+        .subscribe(new SampleSubscriber<ResponseBody>(){
+    
+            @Override
+            public void onNext(@NonNull ResponseBody responseBody) {
                 try {
-                    tvResponse.setText("Response:\n " + response.body().string());
+                    tvResponse.setText("Response:\n " + responseBody.string());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                t.printStackTrace();
             }
         });
     }
