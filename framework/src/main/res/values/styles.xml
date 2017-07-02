@@ -68,4 +68,18 @@
         <item name="android:windowExitAnimation">@anim/push_bottom_out</item>
     </style>
 
+    <!-- 水平分隔线默认样式 -->
+    <style name="HorizontalDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:background">@color/default_divider_color</item>
+    </style>
+
+    <!-- 垂直分隔线默认样式 -->
+    <style name="VerticalDivider">
+        <item name="android:layout_width">1px</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/default_divider_color</item>
+    </style>
+
 </resources>

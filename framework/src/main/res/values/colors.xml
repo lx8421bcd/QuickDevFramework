@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#000000</color> <!-- #CACACA -->
     <color name="colorAccent">#f15352</color>
 
+    <color name="default_divider_color">#e1e1e1</color>
+
 </resources>
