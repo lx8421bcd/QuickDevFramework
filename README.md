@@ -21,7 +21,7 @@ retrofit-base: 基于Retrofit和基本框架实现的framework模块
 
 
 ## Project Documents
-* Retrofit基本版：[retrofit-base] (https://github.com/ShonLin/QuickDevFramework/blob/master/retrofit-base/README.md)  
+* Retrofit基本版：[retrofit-base] (https://github.com/ShonLin/QuickDevFramework/tree/retrofit-base)  
 
 后面将陆续支持RxJava、MVP、MVVM等方案
 
