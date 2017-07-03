@@ -12,6 +12,13 @@
         <item name="alertDialogTheme">@style/AppDialogTheme</item>
     </style>
 
+
+    <style name="SplashTheme" parent="AppTheme.Base">
+        <item name="android:windowFullscreen">true</item>
+        <!-- 将启动Activity的背景设置为应用主题颜色，可以让启动效果更好 -->
+        <!--<item name="android:windowBackground">@color/white</item>-->
+    </style>
+
     <!-- 应用对话框样式 注意此处的parent,这个parent保证了dialog默认为material design规范的大小 -->
     <style name="AppDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert" >
         <!-- 按钮文字颜色 -->
@@ -66,20 +73,6 @@
     <style name="FrameworkBottomDialogAnimation" parent="@android:style/Animation.Dialog">
         <item name="android:windowEnterAnimation">@anim/push_bottom_in</item>
         <item name="android:windowExitAnimation">@anim/push_bottom_out</item>
-    </style>
-
-    <!-- 水平分隔线默认样式 -->
-    <style name="HorizontalDivider">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1px</item>
-        <item name="android:background">@color/default_divider_color</item>
-    </style>
-
-    <!-- 垂直分隔线默认样式 -->
-    <style name="VerticalDivider">
-        <item name="android:layout_width">1px</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/default_divider_color</item>
     </style>
 
 </resources>

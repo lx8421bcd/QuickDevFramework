@@ -21,7 +21,6 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -76,7 +75,7 @@ public class NetTestFragment extends BaseFragment {
         .doOnNext(new Consumer<ResponseBody>() {
             @Override
             public void accept(@NonNull ResponseBody responseBody) throws Exception {
-
+                ToastWrapper.showToast(getContext(), "请求成功");
             }
         })
         .subscribe(new SampleSubscriber<ResponseBody>(){
