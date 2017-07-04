@@ -35,6 +35,16 @@ public class FileManager {
     public static FileCopyTask copyFileOperate(File src, String targetPath) {
         return new FileCopyTask().addSrc(src).setTargetPath(targetPath);
     }
+    
+    /**
+     * 移动文件操作
+     * @param src 源文件
+     * @param targetPath 目标路径
+     * @return
+     */
+    public static FileMoveTask moveFileOperate(File src, String targetPath) {
+        return new FileMoveTask().addSrc(src).setTargetPath(targetPath);
+    }
 
     /**
      * 删除文件操作
