@@ -12,6 +12,12 @@
         <item name="alertDialogTheme">@style/AppDialogTheme</item>
     </style>
 
+    <style name="SplashTheme" parent="AppTheme.Base">
+        <item name="android:windowFullscreen">true</item>
+        <!-- 将启动Activity的背景设置为应用主题颜色，可以让启动效果更好 -->
+        <!--<item name="android:windowBackground">@color/white</item>-->
+    </style>
+
     <!-- 应用对话框样式 注意此处的parent,这个parent保证了dialog默认为material design规范的大小 -->
     <style name="AppDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert" >
         <!-- 按钮文字颜色 -->

@@ -4,7 +4,7 @@ package com.linxiao.framework.net;
 import android.util.Log;
 
 import com.linxiao.framework.log.Logger;
-import com.linxiao.framework.preferences.PreferenceWrapper;
+import com.linxiao.framework.preferences.PreferenceManager;
 
 /**
  * Session management
@@ -25,8 +25,8 @@ public class SessionManager {
      * <p>从SharedPreferences读取缓存的Session和上一次Session调用时间</p>
      * */
     public static void init() {
-        SESSION = PreferenceWrapper.getDefault().getString("session_cache", null);
-        lastApiCallTime = PreferenceWrapper.getDefault().getLong("lastApiCallTime", 0L);
+        SESSION = PreferenceManager.getDefault().getString("session_cache", null);
+        lastApiCallTime = PreferenceManager.getDefault().getLong("lastApiCallTime", 0L);
         Logger.d("SessionManager", "SessionManager init, session = " + SESSION);
     }
 
@@ -51,7 +51,7 @@ public class SessionManager {
      * */
     public static void setLastApiCallTime(long time) {
         lastApiCallTime = time;
-        PreferenceWrapper.getDefault().put("lastApiCallTime", time);
+        PreferenceManager.getDefault().put("lastApiCallTime", time);
     }
     /**
      * 设置Session
@@ -59,7 +59,7 @@ public class SessionManager {
      * */
     public static void setSession(String session) {
         SESSION = session;
-        PreferenceWrapper.getDefault().put("session_cache", SESSION);
+        PreferenceManager.getDefault().put("session_cache", SESSION);
         Log.d(SessionManager.class.getSimpleName(), "Session = " + session);
     }
 
@@ -69,7 +69,7 @@ public class SessionManager {
      * */
     public static void clearSession() {
         SESSION = null;
-        PreferenceWrapper.getDefault().put("session_cache", null);
+        PreferenceManager.getDefault().put("session_cache", null);
     }
 
     public static String getSession() {

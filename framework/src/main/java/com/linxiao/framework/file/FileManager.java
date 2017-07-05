@@ -8,7 +8,7 @@ import android.text.TextUtils;
 
 import com.linxiao.framework.BaseApplication;
 import com.linxiao.framework.log.Logger;
-import com.linxiao.framework.permission.PermissionWrapper;
+import com.linxiao.framework.permission.PermissionManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,32 +21,40 @@ import java.io.OutputStream;
  * 文件管理封装，提供常见文件管理功能
  * Created by linxiao on 2016/12/14.
  */
-public class FileWrapper {
-    private static final String TAG = FileWrapper.class.getSimpleName();
-
-    private FileWrapper() {}
-
+public class FileManager {
+    private static final String TAG = FileManager.class.getSimpleName();
+    
+    private FileManager() {}
+    
     /**
      * 复制文件操作
      * @param src 源文件
      * @param targetPath 目标路径
-     * @param context
      * @return
      */
-    public static FileCopyTask copyFileOperate(File src, String targetPath, Context context) {
+    public static FileCopyTask copyFileOperate(File src, String targetPath) {
         return new FileCopyTask().addSrc(src).setTargetPath(targetPath);
     }
-
+    
+    /**
+     * 移动文件操作
+     * @param src 源文件
+     * @param targetPath 目标路径
+     * @return
+     */
+    public static FileMoveTask moveFileOperate(File src, String targetPath) {
+        return new FileMoveTask().addSrc(src).setTargetPath(targetPath);
+    }
+    
     /**
      * 删除文件操作
      * @param src 源文件
-     * @param context
      * @return
      */
-    public static FileDeleteTask deleteFileOperate(File src, Context context) {
-        return new FileDeleteTask(context).addSrc(src);
+    public static FileDeleteTask deleteFileOperate(File src) {
+        return new FileDeleteTask().addSrc(src);
     }
-
+    
     /**
      * 是否挂载sd卡
      * @return true 挂载; false 未挂载
@@ -54,12 +62,12 @@ public class FileWrapper {
     public static boolean existExternalStorage() {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
-
+    
     /**
      * 检查是否有文件操作权限
      * */
     public static boolean hasFileOperatePermission() {
-        boolean hasPermission = PermissionWrapper.checkPermissionsGranted(BaseApplication.getAppContext(),
+        boolean hasPermission = PermissionManager.checkPermissionsGranted(BaseApplication.getAppContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
@@ -67,7 +75,7 @@ public class FileWrapper {
         }
         return hasPermission;
     }
-
+    
     /**
      * 检查是否为有效的路径字符串
      * */
@@ -96,7 +104,7 @@ public class FileWrapper {
         Logger.i(TAG, "unknown path string : " + path);
         return false;
     }
-
+    
     /**
      * 获取当前SD卡的根路径
      * */
@@ -104,7 +112,7 @@ public class FileWrapper {
     public static String getExternalStorageRootString() {
         return Environment.getExternalStorageDirectory().getPath();
     }
-
+    
     /**
      * 获取当前SD卡的根路径
      * */
@@ -112,7 +120,7 @@ public class FileWrapper {
     public static File getExternalStorageRoot() {
         return Environment.getExternalStorageDirectory();
     }
-
+    
     /**
      * 获取内部存储路径
      * */
@@ -120,7 +128,7 @@ public class FileWrapper {
     public static String getInternalStorageRootString() {
         return BaseApplication.getAppContext().getFilesDir().getPath();
     }
-
+    
     /**
      * 获取内部存储路径
      * */
@@ -128,7 +136,7 @@ public class FileWrapper {
     public static File getInternalStorageRoot() {
         return BaseApplication.getAppContext().getFilesDir();
     }
-
+    
     /**
      * 通过路径字符串生成File对象，包含安全检查
      *
@@ -143,14 +151,14 @@ public class FileWrapper {
             return null;
         }
     }
-
+    
     /**
      * 检查文件是否存在
      * */
     public static boolean isExist(String dir) {
         return hasFileOperatePermission() && new File(dir).exists();
     }
-
+    
     /**
      * 重命名文件或文件夹
      * */
@@ -165,7 +173,7 @@ public class FileWrapper {
         }
         return renameFile.renameTo(new File(filePath + newName));
     }
-
+    
     /**
      * 新建文件夹
      * */
@@ -176,102 +184,5 @@ public class FileWrapper {
         File file = new File(path);
         return file.exists() || file.mkdirs();
     }
-
-    /**
-     * 复制文件
-     * */
-    private static boolean copyFile(File src, File target) {
-        InputStream input;
-        OutputStream output;
-        boolean result;
-        try {
-            input = new FileInputStream(src);
-            output = new FileOutputStream(target);
-            byte[] buf = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = input.read(buf)) > 0) {
-                output.write(buf, 0, bytesRead);
-            }
-
-            input.close();
-            output.close();
-            result = true;
-        } catch (IOException e) {
-            Logger.e(TAG, e);
-            result = false;
-        }
-        return result;
-    }
-
-    private static boolean copyDirectory(File src, File target) {
-        if (!target.exists()) {
-            if (!target.mkdirs()) {
-                return false;
-            }
-        }
-        File[] srcFiles = src.listFiles();
-        for (File sourceFile : srcFiles) {
-            if (sourceFile.isFile()) {
-                copyFile(sourceFile, target);
-            }
-            else if (sourceFile.isDirectory()) {
-                copyDirectory(sourceFile, new File(target, sourceFile.getName()));
-            }
-
-        }
-        return true;
-    }
-
-    public static boolean copy(File src, File target) {
-        if (!src.exists()) {
-           return false;
-        }
-        if (src.isDirectory()) {
-            return copyDirectory(src, target);
-        }
-        else {
-            return copyFile(src, target);
-        }
-    }
-
-    private static boolean moveFile(File src, File target) {
-        if (!target.exists()) {
-            if (!target.mkdirs()) {
-                return false;
-            }
-        }
-        File newPath = new File(target, src.getName());
-        return src.renameTo(newPath);
-    }
-
-    private static boolean moveDirectory(File src, File target) {
-        if (!target.exists()) {
-            if (!target.mkdirs()) {
-                return false;
-            }
-        }
-        File[] srcFiles = src.listFiles();
-        for (File sourceFile : srcFiles) {
-            if (sourceFile.isFile()) {
-                moveFile(sourceFile, target);
-            }
-            else if (sourceFile.isDirectory()) {
-                moveDirectory(sourceFile, new File(target, sourceFile.getName()));
-            }
-        }
-        return true;
-    }
-
-    private static boolean move(File src, File target) {
-        if (!src.exists()) {
-            return false;
-        }
-        if (src.isDirectory()) {
-            return moveDirectory(src, target);
-        }
-        else {
-            return moveFile(src, target);
-        }
-    }
-
+    
 }

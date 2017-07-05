@@ -16,15 +16,15 @@ import java.util.Random;
  * 通知消息包装器
  * Created by LinXiao on 2016-11-27.
  */
-public class NotificationWrapper {
-    private static final String TAG = NotificationWrapper.class.getSimpleName();
+public class NotificationManager {
+    private static final String TAG = NotificationManager.class.getSimpleName();
 
     public static String KEY_NOTIFICATION_EXTRA = "framework_notification_extra";
     public static final String KEY_TARGET_ACTIVITY_NAME = "key_dest_name";
 
     private static int defaultIconRes = R.drawable.ic_notify_default;
 
-    private NotificationWrapper() {}
+    private NotificationManager() {}
 
     public static void setDefaultIconRes(@DrawableRes int resId) {
         defaultIconRes = resId;
@@ -70,8 +70,8 @@ public class NotificationWrapper {
         Intent broadcastIntent = new Intent(context, NotificationReceiver.class);
         Bundle bundle = new Bundle();
         bundle.putAll(targetActivityIntent.getExtras());
-        bundle.putString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME, targetActivityIntent.getComponent().getClassName());
-        broadcastIntent.putExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA, bundle);
+        bundle.putString(NotificationManager.KEY_TARGET_ACTIVITY_NAME, targetActivityIntent.getComponent().getClassName());
+        broadcastIntent.putExtra(NotificationManager.KEY_NOTIFICATION_EXTRA, bundle);
         return broadcastIntent;
     }
 

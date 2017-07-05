@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.linxiao.framework.log.Logger;
-import com.linxiao.framework.notification.NotificationWrapper;
+import com.linxiao.framework.notification.NotificationManager;
 
 /**
  * 启动Activity基类
@@ -23,7 +23,7 @@ public abstract class BaseSplashActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        notificationExtra = intent.getBundleExtra(NotificationWrapper.KEY_NOTIFICATION_EXTRA);
+        notificationExtra = intent.getBundleExtra(NotificationManager.KEY_NOTIFICATION_EXTRA);
         isHandleNotification = notificationExtra != null;
 
     }
@@ -38,7 +38,7 @@ public abstract class BaseSplashActivity extends BaseActivity {
         if (!isHandleNotification) {
             return;
         }
-        String targetKey = notificationExtra.getString(NotificationWrapper.KEY_TARGET_ACTIVITY_NAME);
+        String targetKey = notificationExtra.getString(NotificationManager.KEY_TARGET_ACTIVITY_NAME);
         if (TextUtils.isEmpty(targetKey)) {
             Logger.e(TAG, "handleNotification: target key is null !");
             return;

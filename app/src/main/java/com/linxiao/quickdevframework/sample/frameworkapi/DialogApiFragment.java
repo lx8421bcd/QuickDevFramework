@@ -12,7 +12,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import com.linxiao.framework.dialog.AlertDialogBuilder;
-import com.linxiao.framework.dialog.AlertDialogWrapper;
+import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.framework.toast.ToastWrapper;
 import com.linxiao.quickdevframework.R;
@@ -68,7 +68,7 @@ public class DialogApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnShowAlertDialog)
     public void onShowAlertDialogClick(View v) {
-        AlertDialogBuilder builder = AlertDialogWrapper.createAlertDialogBuilder();
+        AlertDialogBuilder builder = AlertDialogManager.createAlertDialogBuilder();
         builder.setMessage(getString(R.string.sample_dialog_message));
         if (cbShowTitle.isChecked()) {
             builder.setTitle(getString(R.string.sample_dialog_title));
@@ -107,13 +107,13 @@ public class DialogApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnShowSimpleDialog)
     public void onSimpleDialogClick(View v) {
-        AlertDialogWrapper.showAlertDialog(getString(R.string.sample_dialog_message));
+        AlertDialogManager.showAlertDialog(getString(R.string.sample_dialog_message));
     }
 
     @OnClick(R.id.btnShowOnStartActivity)
     public void onShowStartActivityClick(View v) {
         startActivity(new Intent(getActivity(), NotificationTargetActivity.class));
-        AlertDialogWrapper.showAlertDialog( "dialog after start activity");
+        AlertDialogManager.showAlertDialog( "dialog after start activity");
     }
 
     @OnClick(R.id.btnShowTopDialog)

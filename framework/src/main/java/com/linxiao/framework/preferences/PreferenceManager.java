@@ -2,7 +2,6 @@ package com.linxiao.framework.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 
 import com.linxiao.framework.BaseApplication;
@@ -13,16 +12,16 @@ import com.linxiao.framework.BaseApplication;
  *
  * Created by linxiao on 2014/8/21.
  * */
-public class PreferenceWrapper {
+public class PreferenceManager {
 
-    private PreferenceWrapper() {}
+    private PreferenceManager() {}
 
     /**
      * 获取默认的SharedPreferences
      * <p>默认操作模式,代表该文件是私有数据,只能被应用本身访问,在该模式下,写入的内容会覆盖原文件的内容</p>
      * */
     public static PreferenceOperator getDefault(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
         return new PreferenceOperator(sharedPreferences);
     }
 

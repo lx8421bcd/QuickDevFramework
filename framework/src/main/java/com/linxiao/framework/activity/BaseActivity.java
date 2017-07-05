@@ -13,7 +13,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.linxiao.framework.manager.BaseDataManager;
-import com.linxiao.framework.permission.PermissionWrapper;
+import com.linxiao.framework.permission.PermissionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,14 +106,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        PermissionWrapper.onSysAlertPermissionResult(this, requestCode);
-        PermissionWrapper.onWriteSysSettingsPermissionResult(this, requestCode);
+        PermissionManager.onSysAlertPermissionResult(this, requestCode);
+        PermissionManager.onWriteSysSettingsPermissionResult(this, requestCode);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionWrapper.handleCallback(this, requestCode, permissions, grantResults);
+        PermissionManager.handleCallback(this, requestCode, permissions, grantResults);
     }
 
     /**

@@ -15,14 +15,13 @@ import java.util.List;
  */
 
 public class FileDeleteTask extends AsyncTask<Void, Long, String> {
-    private Context context;
     private List<File> srcFiles = new LinkedList<>();
     private FileCountListener fileCountListener;
     private long sum;
     private long curSum = 0;
 
-    public FileDeleteTask(Context context) {
-        this.context = context;
+    public FileDeleteTask() {
+        
     }
 
     public FileDeleteTask(File src) {
@@ -47,14 +46,12 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        if (!FileWrapper.existExternalStorage()) {
-            ToastWrapper.showToast(context, "未找到SD卡");
+        if (!FileManager.existExternalStorage()) {
             if (fileCountListener != null) {
                 fileCountListener.onFail("未找到SD卡");
             }
         }
-        if (!FileWrapper.hasFileOperatePermission()) {
-            ToastWrapper.showToast(context, "请授予文件管理权限");
+        if (!FileManager.hasFileOperatePermission()) {
             if (fileCountListener != null) {
                 fileCountListener.onFail("请授予文件管理权限");
             }

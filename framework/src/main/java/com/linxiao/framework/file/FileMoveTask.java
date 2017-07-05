@@ -12,57 +12,57 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 文件复制
- * Created by lbc on 2017/3/14.
+ * 文件移动异步操作类
+ * Created by linxiao on 2017/7/3.
  */
-public class FileCopyTask extends AsyncTask<Void, Double, String> {
+public class FileMoveTask extends AsyncTask<Void, Double, String> {
+    
     private static final double SIZE_FLAG = 1.00;
     private static final double SUM_FLAG = 2.00;
     private List<File> srcFiles = new LinkedList<>();
     private String targetPath;
     private FileSizeListener fileSizeListener;
     private FileCountListener fileCountListener;
-
+    
     private double size;
     private long sum;
     private long curSum = 0;
     private long curSize = 0;
-
-    public FileCopyTask() {
-
+    
+    public FileMoveTask() {
+        
     }
-
-
-    public FileCopyTask(File src, String targetPath) {
+    
+    public FileMoveTask(File src, String targetPath) {
         this.srcFiles.add(src);
         this.targetPath = targetPath;
     }
-
-    public FileCopyTask addSrc(File src) {
+    
+    public FileMoveTask addSrc(File src) {
         this.srcFiles.add(src);
         return this;
     }
-
-    public FileCopyTask setSrcFiles(List<File> srcFiles) {
+    
+    public FileMoveTask setSrcFiles(List<File> srcFiles) {
         this.srcFiles = srcFiles;
         return this;
     }
-
-    public FileCopyTask setTargetPath(String targetPath) {
+    
+    public FileMoveTask setTargetPath(String targetPath) {
         this.targetPath = targetPath;
         return this;
     }
-
-    public FileCopyTask setFileSizeListener(FileSizeListener fileSizeListener) {
+    
+    public FileMoveTask setFileSizeListener(FileSizeListener fileSizeListener) {
         this.fileSizeListener = fileSizeListener;
         return this;
     }
-
-    public FileCopyTask setFileCountListener(FileCountListener fileCountListener) {
+    
+    public FileMoveTask setFileCountListener(FileCountListener fileCountListener) {
         this.fileCountListener = fileCountListener;
         return this;
     }
-
+    
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -95,7 +95,7 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
             fileCountListener.onStart();
         }
     }
-
+    
     @Override
     protected String doInBackground(Void... params) {
         String result = "";
@@ -103,14 +103,25 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
             publishProgress(SUM_FLAG, (double)0);
         }
         for (File src : srcFiles) {
-            String strSrc = copy(src, new File(targetPath));
+            String strSrc = move(src, new File(targetPath));
             if (strSrc != null) {
                 result = strSrc;
             }
         }
         return result;
     }
-
+    
+    @Override
+    protected void onProgressUpdate(Double... values) {
+        super.onProgressUpdate(values);
+        if (values[0] == SIZE_FLAG) {
+            fileSizeListener.onProgressUpdate(size, values[1]);
+        }
+        if (values[0] == SUM_FLAG) {
+            fileCountListener.onProgressUpdate(Math.round(sum), Math.round(values[1]));
+        }
+    }
+    
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
@@ -129,24 +140,22 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
             }
         }
     }
-
-    @Override
-    protected void onProgressUpdate(Double... values) {
-        super.onProgressUpdate(values);
-        if (values[0] == SIZE_FLAG) {
-            fileSizeListener.onProgressUpdate(size, values[1]);
+    
+    private String move(File src, File target) {
+        if (src.isDirectory()) {
+            return moveDirectory(src, target);
         }
-        if (values[0] == SUM_FLAG) {
-            fileCountListener.onProgressUpdate(Math.round(sum), Math.round(values[1]));
+        else {
+            return moveFile(src, target);
         }
     }
-
+    
     /**
      * 复制文件
      * @param src
      * @return 失败返回文件名 成功返回null
      */
-    private String copyFile(File src, File target) {
+    private String moveFile(File src, File target) {
         InputStream input;
         OutputStream output;
         try {
@@ -163,6 +172,7 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
             }
             input.close();
             output.close();
+            src.delete();
         } catch (IOException e) {
             return e.getMessage();
         }
@@ -172,18 +182,18 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
         }
         return null;
     }
-
+    
     /**
      * 复制文件夹
      * @param src
      * @param target
      * @return
      */
-    private String copyDirectory(File src, File target) {
+    private String moveDirectory(File src, File target) {
         File[] srcFiles = src.listFiles();
         for (File srcFile : srcFiles) {
             if (srcFile.isFile()) {
-                copyFile(srcFile, target);
+                moveFile(srcFile, target);
             }
             else if (srcFile.isDirectory()) {
                 File targetDir = new File(target, srcFile.getName());
@@ -192,18 +202,10 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
                         return "false";
                     }
                 }
-                copyDirectory(srcFile, targetDir);
+                moveDirectory(srcFile, targetDir);
             }
         }
+        src.delete();
         return null;
-    }
-
-    private String copy(File src, File target) {
-        if (src.isDirectory()) {
-            return copyDirectory(src, target);
-        }
-        else {
-            return copyFile(src, target);
-        }
     }
 }

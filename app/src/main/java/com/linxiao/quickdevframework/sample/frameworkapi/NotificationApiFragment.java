@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.linxiao.framework.BaseApplication;
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.notification.NotificationWrapper;
+import com.linxiao.framework.notification.NotificationManager;
 import com.linxiao.quickdevframework.R;
 
 import java.util.Arrays;
@@ -36,7 +36,7 @@ public class NotificationApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnSendSimple)
     public void onSendNotificationClick(View v) {
-        NotificationWrapper.sendSimpleNotification("简单通知", "这是一条简单的通知", new Intent(getActivity(), NotificationTargetActivity.class));
+        NotificationManager.sendSimpleNotification("简单通知", "这是一条简单的通知", new Intent(getActivity(), NotificationTargetActivity.class));
     }
 
     @OnClick(R.id.btnSendBigText)
@@ -45,7 +45,7 @@ public class NotificationApiFragment extends BaseFragment {
         for (int i = 0; i < 50; i++) {
             bigText += "很长";
         }
-        NotificationWrapper.createSimpleNotificationBuilder(getContext(), "bigText", "一条bigText")
+        NotificationManager.createSimpleNotificationBuilder(getContext(), "bigText", "一条bigText")
         .setBigText("big text title", bigText)
         .configureNotificationAsDefault()
         .setTargetActivityIntent(new Intent(getActivity(), NotificationTargetActivity.class))
@@ -55,7 +55,7 @@ public class NotificationApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnSendBigPicture)
     public void onSendBigPictureClick(View v) {
-        NotificationWrapper.createSimpleNotificationBuilder(getContext(), "bigPicture", "一条bigPicture")
+        NotificationManager.createSimpleNotificationBuilder(getContext(), "bigPicture", "一条bigPicture")
         .setBigPicture("big picture title", BitmapFactory.decodeResource(getResources(), R.drawable.ic_notify))
         .configureNotificationAsDefault()
         .setTargetActivityIntent(new Intent(getActivity(), NotificationTargetActivity.class))
@@ -65,7 +65,7 @@ public class NotificationApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnSendInbox)
     public void onSendInboxClick(View v) {
-        NotificationWrapper.createSimpleNotificationBuilder(getContext(), "inbox", "一条inbox")
+        NotificationManager.createSimpleNotificationBuilder(getContext(), "inbox", "一条inbox")
         .setInboxMessages("inbox title", Arrays.asList("这是一行内容","这是一行内容","这是一行内容","这是一行内容"))
         .configureNotificationAsDefault()
         .setTargetActivityIntent(new Intent(getActivity(), NotificationTargetActivity.class))
