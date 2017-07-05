@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.toast.ToastWrapper;
+import com.linxiao.framework.toast.ToastAlert;
 import com.linxiao.quickdevframework.R;
 
 import butterknife.ButterKnife;
@@ -24,8 +24,8 @@ public class ToastApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnShowToast)
     public void onShowToastClick(View v) {
-        ToastWrapper.showToast(getContext(), "toast " + toastNum++);
-//        ToastWrapper.showToast(getContext(), "toast ", 10000);
+        ToastAlert.showToast(getContext(), "toast " + toastNum++);
+//        ToastAlert.showToast(getContext(), "toast ", 10000);
     }
 
 }

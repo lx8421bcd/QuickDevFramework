@@ -17,7 +17,7 @@ import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
-import com.linxiao.framework.toast.ToastWrapper;
+import com.linxiao.framework.toast.ToastAlert;
 import com.linxiao.framework.log.Logger;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.sample.adapter.AdapterTestFragment;
@@ -206,7 +206,7 @@ public class MainActivity extends BaseActivity {
         //2秒内按两次退出
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if ((System.currentTimeMillis() - exitTime) > 2000) {
-                ToastWrapper.showToast(this, getString(R.string.press_again_exit), 2000);
+                ToastAlert.showToast(this, getString(R.string.press_again_exit), 2000);
                 exitTime = System.currentTimeMillis();
             } else {
                 finish();

@@ -35,11 +35,11 @@ public class NotificationManager {
         return defaultIconRes;
     }
 
-    public static SimpleNotificationBuilder createSimpleNotificationBuilder(Context context, String title, String contentText) {
+    public static SimpleNotificationBuilder buildNotification(Context context, String title, String contentText) {
         return new SimpleNotificationBuilder(context, title, contentText);
     }
 
-    public static SimpleNotificationBuilder createSimpleNotificationBuilder(Context context, int icon, String title, String contentText) {
+    public static SimpleNotificationBuilder buildNotification(Context context, int icon, String title, String contentText) {
         return new SimpleNotificationBuilder(context, icon, title, contentText);
     }
 
@@ -54,8 +54,7 @@ public class NotificationManager {
         builder.setTicker(contentText)
         .setTargetActivityIntent(targetActivityIntent)
         .configureNotificationAsDefault()
-        .build(new Random().nextInt(65536))
-        .send();
+        .send(new Random().nextInt(65536));
     }
 
 

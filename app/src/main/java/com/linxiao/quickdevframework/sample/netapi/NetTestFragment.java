@@ -13,7 +13,7 @@ import com.linxiao.framework.net.HttpInfoCatchInterceptor;
 import com.linxiao.framework.net.HttpInfoCatchListener;
 import com.linxiao.framework.net.HttpInfoEntity;
 import com.linxiao.framework.rx.SampleSubscriber;
-import com.linxiao.framework.toast.ToastWrapper;
+import com.linxiao.framework.toast.ToastAlert;
 import com.linxiao.quickdevframework.R;
 
 import java.io.IOException;
@@ -69,13 +69,13 @@ public class NetTestFragment extends BaseFragment {
         .doOnSubscribe(new Consumer<Disposable>() {
             @Override
             public void accept(@NonNull Disposable disposable) throws Exception {
-                ToastWrapper.showToast(getContext(), "正在请求");
+                ToastAlert.showToast(getContext(), "正在请求");
             }
         })
         .doOnNext(new Consumer<ResponseBody>() {
             @Override
             public void accept(@NonNull ResponseBody responseBody) throws Exception {
-                ToastWrapper.showToast(getContext(), "请求成功");
+                ToastAlert.showToast(getContext(), "请求成功");
             }
         })
         .subscribe(new SampleSubscriber<ResponseBody>(){

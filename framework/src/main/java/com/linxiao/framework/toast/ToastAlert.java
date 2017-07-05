@@ -9,13 +9,13 @@ import android.widget.Toast;
  * Created by LinXiao on 2016-11-26.
  */
 
-public class ToastWrapper {
+public class ToastAlert {
 
     //用于连续Toast时的处理
     private static Toast mToast;
     private static Handler mHandler = new Handler();
 
-    private ToastWrapper() {}
+    private ToastAlert() {}
 
     public static void showToast(Context context, CharSequence message, int timeMills) {
         int delay = timeMills;
