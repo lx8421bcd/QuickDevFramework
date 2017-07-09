@@ -1,5 +1,6 @@
 package com.linxiao.quickdevframework.sample.netapi;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +22,14 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -63,30 +68,35 @@ public class NetTestFragment extends BaseFragment {
     }
 
     public void requestApi() {
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
         clientApi.getWeather("101010100")
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
+        .flatMap(new Function<ResponseBody, ObservableSource<String>>() {
+            @Override
+            public ObservableSource<String> apply(@NonNull ResponseBody responseBody) throws Exception {
+                return Observable.just(responseBody.string());
+            }
+        })
         .doOnSubscribe(new Consumer<Disposable>() {
             @Override
             public void accept(@NonNull Disposable disposable) throws Exception {
-                ToastAlert.showToast(getContext(), "正在请求");
+                progressDialog.setMessage("正在请求");
+                progressDialog.show();
             }
         })
-        .doOnNext(new Consumer<ResponseBody>() {
+        .doOnComplete(new Action() {
             @Override
-            public void accept(@NonNull ResponseBody responseBody) throws Exception {
-                ToastAlert.showToast(getContext(), "请求成功");
+            public void run() throws Exception {
+                progressDialog.dismiss();
             }
         })
-        .subscribe(new SampleSubscriber<ResponseBody>(){
+        .subscribe(new SampleSubscriber<String>(){
     
             @Override
-            public void onNext(@NonNull ResponseBody responseBody) {
-                try {
-                    tvResponse.setText("Response:\n " + responseBody.string());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            public void onNext(@NonNull String responseBody) {
+                String result = "Response:\n " + responseBody;
+                tvResponse.setText(result);
             }
         });
     }
