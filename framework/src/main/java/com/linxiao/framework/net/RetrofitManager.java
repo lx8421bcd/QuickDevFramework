@@ -3,7 +3,7 @@ package com.linxiao.framework.net;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.linxiao.framework.BaseApplication;
+import com.linxiao.framework.QDFApplication;
 import com.linxiao.framework.log.Logger;
 
 import java.io.InputStream;
@@ -72,7 +72,7 @@ public class RetrofitManager {
      * <p>此方法为本地存放证书时使用</p>
      * */
     public static RetrofitApiBuilder createRetrofitBuilder(int[] certificates, String serverUrl) {
-        SSLSocketFactory sslSocketFactory = getSSLSocketFactory(BaseApplication.getAppContext(), certificates);
+        SSLSocketFactory sslSocketFactory = getSSLSocketFactory(QDFApplication.getAppContext(), certificates);
         X509TrustManager trustManager = Platform.get().trustManager(sslSocketFactory);
         if (sslSocketFactory == null) {
             Logger.e(TAG, "sslSocketFactory is null");

@@ -12,6 +12,7 @@ import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.log.Logger;
@@ -28,7 +29,7 @@ import java.util.List;
  * <p>用于提供Framework模块下Application相关的基础功能，以及为Framework层提供Application Context</p>
  * Created by LinXiao on 2016-11-24.
  */
-public abstract class BaseApplication extends Application {
+public abstract class QDFApplication extends Application {
     protected static String TAG;
 
     /**
@@ -44,6 +45,17 @@ public abstract class BaseApplication extends Application {
         this.registerActivityLifecycleCallbacks(new FrameworkActivityLifeCycleCallback());
 
     }
+    
+    /**
+     * 从配置资源获取字符串
+     * */
+    public static String getResString(@StringRes int resId) {
+        Context context = getAppContext();
+        if (context == null) {
+            return null;
+        }
+        return context.getResources().getString(resId);
+    }
 
     /**
      * 通过广播的形式退出应用
@@ -51,7 +63,7 @@ public abstract class BaseApplication extends Application {
     public static void exitApplication() {
         Intent exitIntent = new Intent();
         exitIntent.setAction(BaseActivity.ACTION_EXIT_APPLICATION);
-        BaseApplication.getAppContext().sendBroadcast(exitIntent);
+        QDFApplication.getAppContext().sendBroadcast(exitIntent);
     }
 
     /**

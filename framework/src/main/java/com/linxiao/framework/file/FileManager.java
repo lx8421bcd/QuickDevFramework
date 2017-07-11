@@ -1,21 +1,15 @@
 package com.linxiao.framework.file;
 
 import android.Manifest;
-import android.content.Context;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.linxiao.framework.BaseApplication;
+import com.linxiao.framework.QDFApplication;
 import com.linxiao.framework.log.Logger;
 import com.linxiao.framework.permission.PermissionManager;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * 文件管理封装，提供常见文件管理功能
@@ -67,7 +61,7 @@ public class FileManager {
      * 检查是否有文件操作权限
      * */
     public static boolean hasFileOperatePermission() {
-        boolean hasPermission = PermissionManager.checkPermissionsGranted(BaseApplication.getAppContext(),
+        boolean hasPermission = PermissionManager.checkPermissionsGranted(QDFApplication.getAppContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
@@ -126,7 +120,7 @@ public class FileManager {
      * */
     @NonNull
     public static String getInternalStorageRootString() {
-        return BaseApplication.getAppContext().getFilesDir().getPath();
+        return QDFApplication.getAppContext().getFilesDir().getPath();
     }
 
     /**
@@ -134,7 +128,7 @@ public class FileManager {
      * */
     @NonNull
     public static File getInternalStorageRoot() {
-        return BaseApplication.getAppContext().getFilesDir();
+        return QDFApplication.getAppContext().getFilesDir();
     }
 
     /**

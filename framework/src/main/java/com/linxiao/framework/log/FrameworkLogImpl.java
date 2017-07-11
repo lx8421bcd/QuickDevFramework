@@ -3,7 +3,7 @@ package com.linxiao.framework.log;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.linxiao.framework.BaseApplication;
+import com.linxiao.framework.QDFApplication;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -63,7 +63,7 @@ public class FrameworkLogImpl implements LogInterface {
         printLog(logType, SEPARATE);
         printLog(logType, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS", Locale.getDefault()).format(new Date(System.currentTimeMillis())));
         printLog(logType, String.format("Application: %s | Thread: %s | tag: %s",
-                BaseApplication.getApplicationName(),
+                QDFApplication.getApplicationName(),
                 Thread.currentThread().getName(),
                 tag));
         printLog(logType, SEPARATE);
