@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.sample.mvvm.CaptchaActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -28,5 +29,10 @@ public class WidgetsGuideFragment extends BaseFragment {
     @OnClick(R.id.btnViewPager)
     public void onCusViewPagerClick(View v) {
         startActivity(new Intent(getActivity(), ViewPagerActivity.class));
+    }
+    
+    @OnClick(R.id.btnMVVMSample)
+    public void onMVVMSampleClick(View v) {
+        startActivity(new Intent(getActivity(), CaptchaActivity.class));
     }
 }
