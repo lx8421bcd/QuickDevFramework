@@ -19,9 +19,7 @@
 项目有以下分支：  
 * master: 目前项目以RxJava-Retrofit基本版为主，master分支发布基于RxJava2的框架模块的稳定版本  
 * retrofit-base: 基于Retrofit和基本框架实现的framework模块
-* retrofit-rx: 基于RxJava实现异步调用链的framework模块，网络库仍然基于Retrofit，整体上仍采取UI-DataManager-Support的分层架构  
-
-后面将陆续支持RxJava、MVP、MVVM等方案
+* retrofit-rx: 基于RxJava实现异步调用链的framework模块，网络库仍然基于Retrofit，整体上仍采取UI-DataManager-Support的分层架构
 
 
 ## LICENSE
