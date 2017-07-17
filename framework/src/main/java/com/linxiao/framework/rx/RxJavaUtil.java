@@ -22,14 +22,15 @@ public class RxJavaUtil {
      * */
     public static Observable<Integer> countDown(final int seconds) {
         return Observable.interval(0, 1, TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(new Function<Long, Integer>() {
-                    @Override
-                    public Integer apply(@NonNull Long increaseTime) throws Exception {
-                        return seconds - increaseTime.intValue();
-                    }
-                });
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .take(seconds)
+        .map(new Function<Long, Integer>() {
+            @Override
+            public Integer apply(@NonNull Long increaseTime) throws Exception {
+                return seconds - increaseTime.intValue();
+            }
+        });
     }
     
     
