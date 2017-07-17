@@ -4,13 +4,17 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.linxiao.framework.activity.BaseDataBindingActivity;
-import com.linxiao.framework.log.Logger;
+import com.linxiao.framework.toast.ToastAlert;
 import com.linxiao.quickdevframework.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
@@ -18,8 +22,11 @@ import io.reactivex.schedulers.Schedulers;
 
 public class CaptchaActivity extends BaseDataBindingActivity {
     
-    private Button btnRequestCaptcha;
-    private EditText etMobile;
+    @BindView(R.id.btn_request_captcha)
+    Button btnRequestCaptcha;
+    
+    @BindView(R.id.et_mobile)
+    EditText etMobile;
     
     CaptchaViewModel captchaViewModel;
     
@@ -27,10 +34,9 @@ public class CaptchaActivity extends BaseDataBindingActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_captcha);
+        ButterKnife.bind(this);
         captchaViewModel = ViewModelProviders.of(this).get(CaptchaViewModel.class);
         
-        btnRequestCaptcha = findView(R.id.btn_request_captcha);
-        etMobile = findView(R.id.et_mobile);
         etMobile.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -48,38 +54,48 @@ public class CaptchaActivity extends BaseDataBindingActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        observe(captchaViewModel.captchaRequestState()
+        observe(captchaViewModel.captchaCountDown()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Consumer<Integer>() {
             @Override
-            public void accept(@NonNull Integer seconds) throws Exception {
-                Logger.d(TAG, "accpet : " + seconds);
-                if (seconds > 0) {
-                    btnRequestCaptcha.setEnabled(false);
-                    btnRequestCaptcha.setText(String.valueOf(seconds));
-                }
-                else if (seconds == -1) {
-                    btnRequestCaptcha.setText("request");
-                    btnRequestCaptcha.setEnabled(false);
+            public void accept(@NonNull Integer remains) throws Exception {
+                if (remains > 0) {
+                    btnRequestCaptcha.setText(String.valueOf(remains));
                 }
                 else {
                     btnRequestCaptcha.setText("request");
-                    btnRequestCaptcha.setEnabled(true);
+                    updateCaptchaState(etMobile.getText().toString());
                 }
+                
+            }
+        }));
+        observe(captchaViewModel.canRequestCaptcha()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Consumer<Boolean>() {
+            @Override
+            public void accept(@NonNull Boolean canRequest) throws Exception {
+                btnRequestCaptcha.setEnabled(canRequest);
             }
         }));
     }
     
     private void updateCaptchaState(String mobile) {
-        observe(captchaViewModel.checkMobile(mobile)
+        captchaViewModel.checkRequestEnabled(mobile);
+    }
+    
+    @OnClick(R.id.btn_request_captcha)
+    void onRequestCaptchaClick(View v) {
+        captchaViewModel.requestSMSCaptcha(etMobile.getText().toString())
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Consumer<Boolean>() {
-           @Override
-           public void accept(@NonNull Boolean aBoolean) throws Exception {
-                
-           }
-        }));
+            @Override
+            public void accept(@NonNull Boolean result) throws Exception {
+                String strResult = result ? "请求成功" : "请求失败";
+                ToastAlert.showToast(CaptchaActivity.this, strResult);
+            }
+        });
     }
 }
