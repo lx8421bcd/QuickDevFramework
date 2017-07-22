@@ -12,8 +12,10 @@ import android.util.Log;
 import android.view.View;
 
 import com.linxiao.framework.permission.PermissionManager;
-import com.trello.rxlifecycle2.components.RxActivity;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 
 /**
@@ -28,6 +30,8 @@ public abstract class BaseActivity extends RxAppCompatActivity {
 
     private boolean printLifeCycle = false;
     private ActivityBaseReceiver mReceiver;
+    
+    private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,6 +77,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         if (printLifeCycle) {
             Log.d(TAG, "onStop");
         }
+        mCompositeDisposable.clear();
     }
 
     @Override
@@ -105,6 +110,15 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         PermissionManager.handleCallback(this, requestCode, permissions, grantResults);
     }
     
+    /**
+     * subscribe data which provide by ViewModel
+     * <p>observed data will unsubscribe while Activity onStop,
+     * for re-subscribe data correctly, suggest perform observe
+     * data in method {@link #onStart()}</p>
+     * */
+    protected void observe(Disposable disposable) {
+        mCompositeDisposable.add(disposable);
+    }
 
     /**
      * use this method instead of findViewById() to simplify view initialization <br>

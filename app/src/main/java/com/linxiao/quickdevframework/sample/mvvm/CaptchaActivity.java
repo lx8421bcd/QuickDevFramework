@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.linxiao.framework.activity.BaseDataBindingActivity;
+import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.toast.ToastAlert;
 import com.linxiao.quickdevframework.R;
 
@@ -20,7 +20,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-public class CaptchaActivity extends BaseDataBindingActivity {
+public class CaptchaActivity extends BaseActivity {
     
     @BindView(R.id.btn_request_captcha)
     Button btnRequestCaptcha;
