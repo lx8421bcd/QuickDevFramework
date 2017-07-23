@@ -10,16 +10,13 @@
 基于此框架的整个Android项目工程结构图如下：  
 ![project-architecture](https://github.com/ShonLin/QuickDevFramework/blob/master/architecture-images/project-architecture.png)  
 
-其中CommonDevLibrary是一个项目无关的公共代码库，我在Github上也有共享 
-[CommonDevLibrary](https://github.com/ShonLin/CommonDevLibrary)
-
-
 ## Usage
-目前先将项目下载下来将framework模块导入你的app工程即可。  
+将项目下载下来将framework模块导入你的app工程即可。  
 项目有以下分支：  
-* master: 目前项目以RxJava-Retrofit基本版为主，master分支发布基于RxJava2的框架模块的稳定版本  
+* master: 主要是合并提交记录，框架选取请按需求从其它分支选取  
 * retrofit-base: 基于Retrofit和基本框架实现的framework模块
 * retrofit-rx: 基于RxJava实现异步调用链的framework模块，网络库仍然基于Retrofit，整体上仍采取UI-DataManager-Support的分层架构
+* mvvm-rx: 在retrofit-rx基础上引入Google的android-architecture-components组件作为MVVM实现方案  
 
 
 ## LICENSE
