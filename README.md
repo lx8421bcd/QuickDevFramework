@@ -13,11 +13,17 @@
 ## Usage
 将项目下载下来将framework模块导入你的app工程即可。  
 项目有以下分支：  
-* master: 主要是合并提交记录，框架选取请按需求从其它分支选取  
-* retrofit-base: 基于Retrofit和基本框架实现的framework模块
-* retrofit-rx: 基于RxJava实现异步调用链的framework模块，网络库仍然基于Retrofit，整体上仍采取UI-DataManager-Support的分层架构
-* mvvm-rx: 在retrofit-rx基础上引入Google的android-architecture-components组件作为MVVM实现方案  
+#### master
+主要是合并提交记录，README更新等，__framework模块请按需求从其它分支选取__  
 
+#### retrofit-base
+基于Retrofit和基本框架实现的framework模块  
+
+#### retrofit-rx
+基于RxJava实现异步调用链的framework模块，网络库仍然基于Retrofit，整体上仍采取UI-DataManager-Support的分层架构
+
+#### mvvm-rx
+在retrofit-rx基础上引入Google的android-architecture-components组件作为MVVM实现方案  
 
 ## LICENSE
     Copyright 2016 linxiao
