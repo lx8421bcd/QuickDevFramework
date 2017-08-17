@@ -1,6 +1,7 @@
 package com.linxiao.quickdevframework.sample.frameworkapi;
 
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,10 @@ import android.widget.TextView;
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.SampleApplication;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +38,8 @@ public class ApplicationApiFragment extends BaseFragment {
     TextView tvIsAppRunning;
     @BindView(R.id.tvIsAppForeground)
     TextView tvIsAppForeground;
+    @BindView(R.id.tvSystemBootTime)
+    TextView tvSystemBootTime;
 
     @Override
     protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,5 +69,12 @@ public class ApplicationApiFragment extends BaseFragment {
     @OnClick(R.id.btnExitApp)
     public void onExitAppClick(View v) {
         SampleApplication.exitApplication();
+    }
+    
+    @OnClick(R.id.btnGetSystemBootTime)
+    public void onSystemBootTimeClick(View v) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS", Locale.getDefault());
+        
+        tvSystemBootTime.setText(format.format(new Date(SampleApplication.getSystemBootTime())));
     }
 }

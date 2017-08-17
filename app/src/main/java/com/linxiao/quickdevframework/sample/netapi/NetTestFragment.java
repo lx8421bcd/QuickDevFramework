@@ -46,6 +46,7 @@ public class NetTestFragment extends BaseFragment {
     protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setContentView(R.layout.fragment_net_test, container);
         ButterKnife.bind(this, getContentView());
+        mDataManager = new NetTestDataManager();
     }
 
     @OnClick(R.id.btnRequestNet)

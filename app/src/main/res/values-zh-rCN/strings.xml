@@ -28,6 +28,7 @@
     <string name="is_app_foreground">检查应用是否处于前台</string>
     <string name="is_exist_sd_card">是否存在SD卡路径</string>
     <string name="has_file_permission">是否拥有使用存储设备权限</string>
+    <string name="get_system_boot_time">获取开机时间</string>
 
 
 </resources>

@@ -3,6 +3,7 @@ package com.linxiao.framework;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
+import android.app.usage.NetworkStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -11,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
@@ -201,6 +203,20 @@ public abstract class QDFApplication extends Application {
             }
         }
         return false;
+    }
+    
+    /**
+     * 获取应用下行流量
+     * */
+    public static long getAppDownTraffic() {
+        return 0;
+    }
+    
+    /**
+     * 获取系统开机时间
+     * */
+    public static long getSystemBootTime() {
+        return System.currentTimeMillis() - SystemClock.elapsedRealtime();
     }
     
     /**

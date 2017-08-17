@@ -40,6 +40,17 @@
         android:layout_height="wrap_content" />
 
     <Button
+        android:id="@+id/btnGetSystemBootTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/get_system_boot_time"/>
+
+    <TextView
+        android:id="@+id/tvSystemBootTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
         android:id="@+id/btnExitApp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

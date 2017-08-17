@@ -12,6 +12,7 @@
 
 ## Usage
 将项目下载下来将framework模块导入你的app工程即可。  
+详细集成步骤，请参考 [Wiki](https://github.com/ShonLin/QuickDevFramework/wiki)  
 项目有以下分支：  
 #### master
 主要是合并提交记录，README更新等，__framework模块请按需求从其它分支选取__  
