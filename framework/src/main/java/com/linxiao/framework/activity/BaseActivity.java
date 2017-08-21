@@ -8,11 +8,11 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
 import com.linxiao.framework.permission.PermissionManager;
-import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -22,7 +22,7 @@ import io.reactivex.disposables.Disposable;
  * base activity class of entire project
  * <p>template for activities in the project, used to define common methods of activity </p>
  * */
-public abstract class BaseActivity extends RxAppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     public static final String ACTION_EXIT_APPLICATION = "exit_application";
 
@@ -46,6 +46,14 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         registerReceiver(mReceiver, filter);
 
     }
+    
+    /**
+     * used to add data binding in mvvm.
+     * <p>subscribe to the data source provided in ViewModel here </p>
+     * */
+    protected void onCreateDataBinding() {
+        //add data binding
+    }
 
     @Override
     protected void onStart() {
@@ -53,6 +61,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         if (printLifeCycle) {
             Log.d(TAG, "onStart");
         }
+        onCreateDataBinding();
     }
 
     @Override

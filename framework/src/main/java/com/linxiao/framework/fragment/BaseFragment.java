@@ -3,22 +3,26 @@ package com.linxiao.framework.fragment;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.linxiao.framework.log.Logger;
-import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment;
+
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * base Fragment of entire project
  * <p>template for Fragments in the project, used to define common methods </p>
  * */
-public abstract class BaseFragment extends RxAppCompatDialogFragment {
+public abstract class BaseFragment extends Fragment {
     protected String TAG;
     
     private View rootView;
-
+    
+    private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +38,27 @@ public abstract class BaseFragment extends RxAppCompatDialogFragment {
         
         return rootView;
     }
-
+    
+    /**
+     * used to add data binding in mvvm.
+     * <p>subscribe to the data source provided in ViewModel here </p>
+     * */
+    protected void onCreateDataBinding() {
+        //add data binding
+    }
+    
+    @Override
+    public void onStart() {
+        super.onStart();
+        onCreateDataBinding();
+    }
+    
+    @Override
+    public void onStop() {
+        super.onStop();
+        mCompositeDisposable.clear();
+    }
+    
     @Override
     public void onDestroyView() {
         super.onDestroyView();
