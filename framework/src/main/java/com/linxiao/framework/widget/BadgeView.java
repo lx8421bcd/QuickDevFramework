@@ -21,9 +21,16 @@ import com.linxiao.framework.R;
 /**
  * 小红点控件
  * <p>在没有字符时,默认为使用系统红色,大小为8dp * 8dp的小红点,
- * 通过badge_color属性可以设置红点颜色,badge_default_size属性可设置红点默认大小.
  * 在向其设置字符时,如果字符长度>5之后的内容将会被省略,如果设置数字,当数字大于99时,默认将显示99+,
  * 可以通过setTargetView()方法,在java代码中绑定至指定View</p>
+ * <p>
+ * 自定义属性：<br>
+ * badge_color: 设置红点颜色 <br>
+ * badge_default_size: 红点在无文字显示时的默认大小 <br>
+ * badge_hideOnZero: 在显示数字为0时是否隐藏 <br>
+ * badge_ellipsisDigit: 设置超限位数，超过位数后将显示超限省略符号，默认两位 <br>
+ * badge_numberEllipsis: 在数字超限时的省略符号，默认显示99+ <br>
+ * </p>
  *
  * Create on 2015-11-03
  * @author linxiao
@@ -99,6 +106,14 @@ public class BadgeView extends android.support.v7.widget.AppCompatTextView {
     public void setHideOnZero(boolean hideOnZero) {
         this.hideOnZero = hideOnZero;
         setText(getText());
+    }
+    
+    /**
+     * 设置小红点默认大小
+     * */
+    public void setDefaultBadgeSize(int defaultSize) {
+        this.defaultSize = defaultSize;
+        requestLayout();
     }
     
     /**
