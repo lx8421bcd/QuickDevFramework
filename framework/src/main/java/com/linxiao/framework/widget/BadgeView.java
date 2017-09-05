@@ -52,6 +52,12 @@ public class BadgeView extends android.support.v7.widget.AppCompatTextView {
     //省略标识
     private String ellipsis = "99+";
     private int ellipsisDigit = 2;
+    //重新布局前内边距值，用于在重新布局时计算内边距
+    private int lastPaddingHorizontal;
+    private int lastPaddingVertical;
+    //补充内边距值，内容为1字符时的内边距值，
+    private int extraPaddingHorizontal;
+    private int extraPaddingVertical;
     
     public BadgeView(Context context) {
         super(context);
@@ -144,7 +150,8 @@ public class BadgeView extends android.support.v7.widget.AppCompatTextView {
         } else if (text.length() > 5) {
             text = text.subSequence(0, 4) + "...";
         }
-        
+        lastPaddingHorizontal = getPaddingLeft();
+        lastPaddingVertical = getPaddingTop();
         super.setText(text, type);
         requestLayout();
     }
@@ -237,7 +244,10 @@ public class BadgeView extends android.support.v7.widget.AppCompatTextView {
             setMeasuredDimension(defaultSize, defaultSize);
             return;
         }
-        setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+        int mode = MeasureSpec.getMode(widthMeasureSpec);
+        if (mode != MeasureSpec.EXACTLY) {
+            setPadding(lastPaddingHorizontal, lastPaddingVertical, lastPaddingHorizontal, lastPaddingVertical);
+        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
     
@@ -256,16 +266,11 @@ public class BadgeView extends android.support.v7.widget.AppCompatTextView {
             return;
         }
         int padding = Math.max(Math.max(left, right), Math.max(top, bottom));
-        int textWidth = (int) (getPaint().measureText(getText().toString()));
-        Paint.FontMetrics fm = getPaint().getFontMetrics();
-        int textHeight = (int) (Math.ceil(fm.descent - fm.top) + 2);
-        Log.d(TAG, "TextLength = " + textLength + ", TextWidth = " + textWidth + ", TextHeight = " + textHeight + ", padding = " + padding);
-        
         if (textLength == 1) {
             // 在为单个字符时, 根据文字宽高计算出的水平/垂直方向补充padding, 使得控件为正方形
             // 此处根据文字宽高计算，至少有一个补充值为0
-            int extraPaddingHorizontal = getExtraPaddingHorizontal();
-            int extraPaddingVertical = getExtraPaddingVertical();
+            extraPaddingHorizontal = getExtraPaddingHorizontal();
+            extraPaddingVertical = getExtraPaddingVertical();
             super.setPadding(
                     padding + extraPaddingHorizontal,
                     padding + extraPaddingVertical,
@@ -288,8 +293,11 @@ public class BadgeView extends android.support.v7.widget.AppCompatTextView {
             return 0;
         }
         int textLength = this.getText().length();
+        if (textLength == 0) {
+            return 0;
+        }
         if (textLength == 1) {
-            return super.getPaddingLeft() - getExtraPaddingHorizontal();
+            return super.getPaddingLeft() - extraPaddingHorizontal;
         }
         if (textLength > 1) {
             return super.getPaddingLeft() - minPaddingHorizontal;
@@ -303,8 +311,11 @@ public class BadgeView extends android.support.v7.widget.AppCompatTextView {
             return 0;
         }
         int textLength = this.getText().length();
+        if (textLength == 0) {
+            return 0;
+        }
         if (textLength == 1) {
-            return super.getPaddingRight() - getExtraPaddingHorizontal();
+            return super.getPaddingRight() - extraPaddingHorizontal;
         }
         if (textLength > 1) {
             return super.getPaddingRight() - minPaddingHorizontal;
@@ -318,8 +329,11 @@ public class BadgeView extends android.support.v7.widget.AppCompatTextView {
             return 0;
         }
         int textLength = this.getText().length();
+        if (textLength == 0) {
+            return 0;
+        }
         if (textLength == 1) {
-            return super.getPaddingTop() - getExtraPaddingVertical();
+            return super.getPaddingTop() - extraPaddingVertical;
         }
         if (textLength > 1) {
             return super.getPaddingTop() - minPaddingVertical;
@@ -333,8 +347,11 @@ public class BadgeView extends android.support.v7.widget.AppCompatTextView {
             return 0;
         }
         int textLength = this.getText().length();
+        if (textLength == 0) {
+            return 0;
+        }
         if (textLength == 1) {
-            return super.getPaddingBottom() - getExtraPaddingVertical();
+            return super.getPaddingBottom() - extraPaddingVertical;
         }
         if (textLength > 1) {
             return super.getPaddingBottom() - minPaddingVertical;
