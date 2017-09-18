@@ -13,7 +13,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.linxiao.framework.R;
-import com.linxiao.framework.util.DensityUtil;
 
 /**
  * 从底部显示的全屏Dialog基类
