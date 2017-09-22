@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">QuickDevFramework</string>
+    <string name="title_activity_main">MainActivity</string>
     <string name="press_again_exit">再按一次退出</string>
     <string name="sample_bottom_dialog_desc">底部弹出自定义View Dialog示例 \n 点击退出</string>
     <string name="sample_dialog_message">演示AlertDialog信息</string>

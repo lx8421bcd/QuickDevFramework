@@ -1,5 +1,6 @@
 package com.linxiao.framework.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
@@ -8,7 +9,6 @@ import android.view.WindowManager;
 
 import com.linxiao.framework.QDFApplication;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -81,20 +81,28 @@ public class ScreenUtil {
     
     /**
      * 获取没有虚拟键盘的屏幕高度
+     * <p>由于有些虚拟键盘可以滑动隐藏（比如小米），
+     * 因此在这里必须传入Activity以准确计算当前Activity下的可用高度</p>
+     *
      * @return screenHeight without virtual key height
      * */
-    public static int getScreenHeightNoVirtualKey() {
-        Resources resources = QDFApplication.getAppContext().getResources();
-        DisplayMetrics dm = resources.getDisplayMetrics();
-        return dm.heightPixels;
+    public static int getUsableScreenHeight() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) QDFApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+        
+        return metrics.heightPixels;
     }
     
     /**
      * 获取虚拟按键高度
+     * <p>由于有些虚拟键盘可以滑动隐藏（比如小米），
+     * 因此这里需要动态获取Window并拿到实时高度</p>
+     *
      * @return virtual key height
      * */
     public static int getVirtualKeyHeight() {
-        return getScreenHeight() - getScreenHeightNoVirtualKey();
+        return getScreenHeight() - getUsableScreenHeight();
     }
     
     /**

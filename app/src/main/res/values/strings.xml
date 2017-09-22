@@ -17,8 +17,6 @@
     <string name="rationale_before_request">rationale before request</string>
     <string name="action_on_prohibited">set action on prohibited</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="exit_application">exit application</string>
     <string name="get_application_name">get application name</string>
     <string name="get_application_version">get application version</string>
