@@ -63,7 +63,7 @@ public class PermissionManager {
      * 检查是否需要RuntimePermission，即 System API >= API 23
      * */
     private static boolean checkHigherThanMarshmallow() {
-        return Build.VERSION.SDK_INT > Build.VERSION_CODES.M;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 
     /**
