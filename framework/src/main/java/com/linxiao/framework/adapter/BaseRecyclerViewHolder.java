@@ -30,4 +30,12 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
         return (T) v.findViewById(resId);
     }
 
+    @SuppressWarnings("unchecked")
+    protected  <T extends View> T findView(@IdRes int resId) {
+        if (itemView == null) {
+            return null;
+        }
+        return (T) itemView.findViewById(resId);
+    }
+
 }

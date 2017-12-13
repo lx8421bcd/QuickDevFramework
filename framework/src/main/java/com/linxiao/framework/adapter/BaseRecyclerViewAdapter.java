@@ -397,16 +397,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
         mNoDataViewContainer.removeAllViews();
         mNoDataViewContainer.addView(noDataView);
-
-//        if (hasHeaderView() && showHeaderView) {
-//            Logger.createLogPrinter(Logger.DEBUG)
-//                    .tag(TAG)
-//                    .appendLine("lpHeader.height = " + mHeaderContainer.getHeight())
-//                    .appendLine("empty.height = " +  mNoDataViewContainer.getHeight())
-//                    .print();
-//            mNoDataViewContainer.getLayoutParams().height = mNoDataViewContainer.getHeight() - mHeaderContainer.getHeight();
-//        }
-
         if (isInsert) {
             int position = getHeaderPosition() + 1;
             notifyItemInserted(position);
@@ -426,6 +416,56 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
                 params.setFullSpan(true);
             }
         }
+    }
+
+    public int getDataSize() {
+        if (mDataSource == null) {
+            return 0;
+        }
+        return mDataSource.size();
+    }
+
+    public int getLastIndex() {
+        if (mDataSource == null) {
+            return 0;
+        }
+        return mDataSource.size() - 1;
+    }
+
+    public void notifyDataInserted(int dataPosition) {
+        notifyItemInserted(dataPosition + 1); // count header container
+    }
+
+    public void notifyDataChanged(int dataPosition) {
+        notifyItemChanged(dataPosition + 1);
+    }
+
+    public void notifyDataChanged(int dataPosition, Object payload) {
+        notifyItemChanged(dataPosition + 1, payload);
+    }
+
+    public void notifyDataRemoved(int dataPosition) {
+        notifyItemRemoved(dataPosition + 1);
+    }
+
+    public void notifyDataMoved(int fromPosition, int toPosition) {
+        notifyItemMoved(fromPosition + 1, toPosition + 1);
+    }
+
+    public void notifyDataRangeChanged(int dataPosition, int itemCount) {
+        notifyItemRangeChanged(dataPosition + 1, itemCount);
+    }
+
+    public void notifyDataRangeChanged(int dataPosition, int itemCount, Object payload) {
+        notifyItemRangeChanged(dataPosition + 1, itemCount, payload);
+    }
+
+    public void notifyDataRangeRemoved(int dataPosition, int itemCount) {
+        notifyItemRangeRemoved(dataPosition + 1, itemCount);
+    }
+
+    public void notifyDataRangeInserted(int dataPosition, int itemCount) {
+        notifyItemRangeInserted(dataPosition + 1, itemCount);
     }
 
     public void setDataSource(@NonNull List<T> dataSource) {
@@ -453,7 +493,9 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
         hideNoDataView();
         this.mDataSource.add(position, data);
-        this.notifyItemInserted(position);
+        int dataPosition = hasHeaderView() ? position + 1 : position;
+        this.notifyItemInserted(dataPosition);
+        notifyItemRangeChanged(dataPosition, getItemCount());
     }
 
     public void addToDataSource(int position, @NonNull List<T> data) {
@@ -462,7 +504,9 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
         hideNoDataView();
         this.mDataSource.addAll(position, data);
-        this.notifyItemRangeInserted(position, data.size());
+        int dataPosition = hasHeaderView() ? position + 1 : position;
+        this.notifyItemInserted(dataPosition);
+        notifyItemRangeChanged(dataPosition, getItemCount());
     }
 
     public void removeFromDataSource(int position) {
@@ -470,8 +514,9 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             return;
         }
         this.mDataSource.remove(position);
-//        this.notifyItemRemoved(position);
-        this.notifyDataSetChanged();
+        int dataPosition = hasHeaderView() ? position + 1 : position;
+        this.notifyItemRemoved(dataPosition);
+        notifyItemRangeChanged(dataPosition, getItemCount());
     }
 
     public void removeFromDataSource(T data) {

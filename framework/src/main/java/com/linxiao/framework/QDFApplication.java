@@ -13,6 +13,7 @@ import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
@@ -206,10 +207,11 @@ public abstract class QDFApplication extends Application {
     }
     
     /**
-     * 获取应用下行流量
+     * 系统转屏是否开启
      * */
-    public static long getAppDownTraffic() {
-        return 0;
+    public static boolean isSystemOrientationEnabled() {
+        return Settings.System.getInt(getAppContext().getContentResolver(),
+                Settings.System.ACCELEROMETER_ROTATION, 0) == 1;
     }
     
     /**
