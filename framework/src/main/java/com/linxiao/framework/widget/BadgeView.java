@@ -37,18 +37,18 @@ import com.linxiao.framework.R;
  * @version 1.0
  */
 public class BadgeView extends TextView {
-
+    
     private static final String TAG = BadgeView.class.getSimpleName();
-
+    
     private int minPaddingHorizontal = dip2Px(4);
     private int minPaddingVertical = dip2Px(1);
-
+    
     private int badgeColor = Color.RED;
     private float radius;
-
+    
     private int defaultSize = dip2Px(8);
     private boolean hideOnZero = false;
-
+    
     //省略标识
     private String ellipsis = "99+";
     private int ellipsisDigit = 2;
@@ -62,11 +62,11 @@ public class BadgeView extends TextView {
     private int cachePaddingTop;
     private int cachePaddingRight;
     private int cachePaddingBottom;
-
+    
     // 边框参数
     private int strokeWidth = 0;
     private int strokeColor = 0;
-
+    
     public BadgeView(Context context) {
         super(context);
         init(context, null);
@@ -76,17 +76,17 @@ public class BadgeView extends TextView {
         );
         setTextSize(12);
     }
-
+    
     public BadgeView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
-
+    
     public BadgeView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
-
+    
     private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BadgeView);
@@ -108,7 +108,7 @@ public class BadgeView extends TextView {
         setTextColor(Color.WHITE);
         setGravity(Gravity.CENTER);
     }
-
+    
     private void countEllipsisString() {
         ellipsis = "";
         for (int i = 0; i < ellipsisDigit; i++) {
@@ -116,7 +116,7 @@ public class BadgeView extends TextView {
         }
         ellipsis += "+";
     }
-
+    
     /**
      * 设置在显示数字为0的时候隐藏小红点
      *
@@ -126,7 +126,7 @@ public class BadgeView extends TextView {
         this.hideOnZero = hideOnZero;
         setText(getText());
     }
-
+    
     /**
      * 设置小红点默认大小
      * */
@@ -134,7 +134,7 @@ public class BadgeView extends TextView {
         this.defaultSize = defaultSize;
         requestLayout();
     }
-
+    
     /**
      * 设置数字
      * <p></p>
@@ -142,7 +142,7 @@ public class BadgeView extends TextView {
     public void setNumber(int i) {
         setText(String.valueOf(i));
     }
-
+    
     /**
      * 设置消息, 数字大于99时显示"99+",字符串长度大于5的部分省略
      */
@@ -174,13 +174,13 @@ public class BadgeView extends TextView {
         super.setText(text, type);
         requestLayout();
     }
-
+    
     public void setBadgeStroke(int width, int color) {
         strokeWidth = width;
         strokeColor = color;
         setBadgeBackground();
     }
-
+    
     /**
      * 设置红点背景,在字符数为1时显示原型,在字符数超过1时显示圆角矩形
      * */
@@ -193,15 +193,15 @@ public class BadgeView extends TextView {
         }
         super.setBackgroundDrawable(defaultBgDrawable);
     }
-
+    
     public void show() {
         this.setVisibility(View.VISIBLE);
     }
-
+    
     public void hide() {
         this.setVisibility(View.GONE);
     }
-
+    
     /**
      * 将红点绑定到某个现有控件上
      * @param target 目标控件
@@ -233,10 +233,10 @@ public class BadgeView extends TextView {
                 if (lastTarget != null)  {
                     ViewGroup lastParent = (ViewGroup) badgeContainer.getParent();
                     ViewGroup.LayoutParams lastLayoutParams = badgeContainer.getLayoutParams();
-
+                    
                     badgeContainer.removeView(lastTarget);
                     lastParent.removeView(badgeContainer);
-
+                    
                     lastTarget.setLayoutParams(lastLayoutParams);
                     lastParent.addView(lastTarget);
                 }
@@ -245,15 +245,15 @@ public class BadgeView extends TextView {
             parentContainer.removeView(target);
             badgeContainer = new FrameLayout(getContext());
             ViewGroup.LayoutParams parentLayoutParams = target.getLayoutParams();
-
+            
             badgeContainer.setLayoutParams(parentLayoutParams);
             target.setLayoutParams(new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
+            
             parentContainer.addView(badgeContainer, groupIndex, parentLayoutParams);
             badgeContainer.addView(target);
             badgeContainer.addView(this);
-
+            
             FrameLayout.LayoutParams badgeLayoutParam = (FrameLayout.LayoutParams) this.getLayoutParams();
             badgeLayoutParam.gravity = badgeGravity;
             badgeLayoutParam.setMargins(marginLeft, marginTop, marginRight, marginBottom);
@@ -269,7 +269,7 @@ public class BadgeView extends TextView {
     public void setTargetView(View target) {
         setTargetView(target, Gravity.END, 0, 0, 0, 0);
     }
-
+    
     /**
      * 将红点绑定到某个控件上，默认各方向margin为 0
      *
@@ -279,7 +279,7 @@ public class BadgeView extends TextView {
     public void setTargetView(View target, int badgeGravity) {
         setTargetView(target, badgeGravity, 0, 0, 0, 0);
     }
-
+    
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int textLength = this.getText().length();
@@ -289,31 +289,18 @@ public class BadgeView extends TextView {
         }
         int mode = MeasureSpec.getMode(widthMeasureSpec);
         if (mode != MeasureSpec.EXACTLY) {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             execSetPadding();
-            if (textLength == 1) {
-                int textWidth = (int)getPaint().measureText(getText().toString());
-                int pLeft = getPaddingLeft();
-                int pRight = getPaddingRight();
-                int horSize = textWidth + pLeft + pRight + extraPaddingHorizontal * 2;
-                Log.d(TAG, "onMeasure: textWidth = " + textWidth);
-                Log.d(TAG, "onMeasure: pLeft = " + pLeft);
-                Log.d(TAG, "onMeasure: pRight = " + pRight);
-                Log.d(TAG, "onMeasure: extraHor = " + extraPaddingHorizontal);
-                setMeasuredDimension(horSize, horSize);
-                return;
-            }
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
-
+    
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         radius = bottom - top;
         setBadgeBackground();
     }
-
+    
     @Override
     public void setPadding(int left, int top, int right, int bottom) {
         cachePaddingLeft = left;
@@ -339,14 +326,12 @@ public class BadgeView extends TextView {
             super.setPadding(cachePaddingLeft, cachePaddingTop, cachePaddingRight, cachePaddingBottom);
             return;
         }
-        int padding = Math.max(
-                Math.max(cachePaddingLeft, cachePaddingRight),
-                Math.max(cachePaddingTop, cachePaddingBottom));
         if (textLength == 1) {
+            int padding = Math.max(
+                    Math.max(cachePaddingLeft, cachePaddingRight),
+                    Math.max(cachePaddingTop, cachePaddingBottom));
             // 在为单个字符时, 根据文字宽高计算出的水平/垂直方向补充padding, 使得控件为正方形
-            // 此处根据文字宽高计算，至少有一个补充值为0
-            extraPaddingHorizontal = getExtraPaddingHorizontal();
-            extraPaddingVertical = getExtraPaddingVertical();
+            calculateExtraPadding();
             super.setPadding(
                     padding + extraPaddingHorizontal,
                     padding + extraPaddingVertical,
@@ -355,14 +340,16 @@ public class BadgeView extends TextView {
             );
             return;
         }
+        int paddingHorizontal = Math.max(cachePaddingLeft, cachePaddingRight);
+        int paddingVertical = Math.max(cachePaddingTop, cachePaddingBottom);
         super.setPadding(
-                minPaddingHorizontal + padding,
-                minPaddingVertical + padding,
-                minPaddingHorizontal + padding,
-                minPaddingVertical + padding
+                minPaddingHorizontal + paddingHorizontal,
+                minPaddingVertical + paddingVertical,
+                minPaddingHorizontal + paddingHorizontal,
+                minPaddingVertical + paddingVertical
         );
     }
-
+    
     @Override
     public int getPaddingLeft() {
         if (super.getPaddingLeft() == 0) {
@@ -380,7 +367,7 @@ public class BadgeView extends TextView {
         }
         return super.getPaddingLeft();
     }
-
+    
     @Override
     public int getPaddingRight() {
         if (super.getPaddingRight() == 0) {
@@ -398,7 +385,7 @@ public class BadgeView extends TextView {
         }
         return super.getPaddingRight();
     }
-
+    
     @Override
     public int getPaddingTop() {
         if (super.getPaddingTop() == 0) {
@@ -416,7 +403,7 @@ public class BadgeView extends TextView {
         }
         return super.getPaddingTop();
     }
-
+    
     @Override
     public int getPaddingBottom() {
         if (super.getPaddingBottom() == 0) {
@@ -434,55 +421,53 @@ public class BadgeView extends TextView {
         }
         return super.getPaddingBottom();
     }
-
-
-    private int getExtraPaddingHorizontal() {
+    
+    
+    private void calculateExtraPadding() {
         if (this.getText().length() != 1) {
-            return 0 ;
+            extraPaddingHorizontal = 0;
+            extraPaddingVertical = 0;
+            return;
         }
+        // 此处根据文字宽高计算，至少有一个补充值为0
         int textWidth = (int) (getPaint().measureText(getText().toString()));
         Paint.FontMetrics fm = getPaint().getFontMetrics();
         int textHeight = (int) (Math.ceil(fm.descent - fm.top) + 2);
-        if (textHeight <= textWidth) {
-            return 0;
+        if (textWidth > textHeight) {
+            extraPaddingHorizontal = 0;
+            extraPaddingVertical = (textWidth - textHeight) / 2;
         }
-        return (textHeight + getCompoundPaddingBottom() + getCompoundPaddingTop() - textWidth) / 2;
+        else if (textHeight > textWidth) {
+            extraPaddingHorizontal = (textHeight - textWidth) / 2;
+            extraPaddingVertical = 0;
+        }
+        else {
+            extraPaddingHorizontal = 0;
+            extraPaddingVertical = 0;
+        }
     }
-
-    private int getExtraPaddingVertical() {
-        if (this.getText().length() != 1) {
-            return 0 ;
-        }
-        int textWidth = (int) (getPaint().measureText(getText().toString()));
-        Paint.FontMetrics fm = getPaint().getFontMetrics();
-        int textHeight = (int) (Math.ceil(fm.descent - fm.top) + 2);
-        if (textWidth <= textHeight) {
-            return 0;
-        }
-        return (textWidth + getCompoundPaddingLeft() + getCompoundPaddingRight() - textHeight) / 2;
-    }
-
+    
     @Override
     public void setBackground(Drawable background) {
         setBadgeBackground();
     }
-
+    
     @Override
     public void setBackgroundColor(int color) {
         badgeColor = color;
         setBadgeBackground();
     }
-
+    
     @Override
     public void setBackgroundDrawable(Drawable background) {
         setBadgeBackground();
     }
-
+    
     @Override
     public void setBackgroundResource(int resid) {
         setBadgeBackground();
     }
-
+    
     private int dip2Px(float dip) {
         return (int) (dip * getResources().getDisplayMetrics().density + 0.5f);
     }
