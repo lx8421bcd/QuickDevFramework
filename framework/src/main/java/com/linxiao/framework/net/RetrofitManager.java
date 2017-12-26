@@ -31,9 +31,9 @@ import okhttp3.internal.platform.Platform;
  * 框架下Retrofit管理类
  * Created by LinXiao on 2016-11-27.
  */
-public class FrameworkRetrofitManager {
+public class RetrofitManager {
 
-    private static final String TAG = FrameworkRetrofitManager.class.getSimpleName();
+    private static final String TAG = RetrofitManager.class.getSimpleName();
 
     /**
      * 提供Http请求的ApiBuilder
@@ -54,7 +54,7 @@ public class FrameworkRetrofitManager {
         final SSLContext sslContext;
         try {
             sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            sslContext.init(null, trustAllCerts, new SecureRandom());
 
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             Logger.e(TAG, e);

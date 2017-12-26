@@ -1,21 +1,15 @@
 package com.linxiao.framework.file;
 
 import android.Manifest;
-import android.content.Context;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.linxiao.framework.BaseApplication;
+import com.linxiao.framework.QDFApplication;
 import com.linxiao.framework.log.Logger;
 import com.linxiao.framework.permission.PermissionManager;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * 文件管理封装，提供常见文件管理功能
@@ -23,9 +17,9 @@ import java.io.OutputStream;
  */
 public class FileManager {
     private static final String TAG = FileManager.class.getSimpleName();
-    
+
     private FileManager() {}
-    
+
     /**
      * 复制文件操作
      * @param src 源文件
@@ -45,7 +39,7 @@ public class FileManager {
     public static FileMoveTask moveFileOperate(File src, String targetPath) {
         return new FileMoveTask().addSrc(src).setTargetPath(targetPath);
     }
-    
+
     /**
      * 删除文件操作
      * @param src 源文件
@@ -54,7 +48,7 @@ public class FileManager {
     public static FileDeleteTask deleteFileOperate(File src) {
         return new FileDeleteTask().addSrc(src);
     }
-    
+
     /**
      * 是否挂载sd卡
      * @return true 挂载; false 未挂载
@@ -62,12 +56,12 @@ public class FileManager {
     public static boolean existExternalStorage() {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
-    
+
     /**
      * 检查是否有文件操作权限
      * */
     public static boolean hasFileOperatePermission() {
-        boolean hasPermission = PermissionManager.checkPermissionsGranted(BaseApplication.getAppContext(),
+        boolean hasPermission = PermissionManager.checkPermissionsGranted(QDFApplication.getAppContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
@@ -75,7 +69,7 @@ public class FileManager {
         }
         return hasPermission;
     }
-    
+
     /**
      * 检查是否为有效的路径字符串
      * */
@@ -104,7 +98,7 @@ public class FileManager {
         Logger.i(TAG, "unknown path string : " + path);
         return false;
     }
-    
+
     /**
      * 获取当前SD卡的根路径
      * */
@@ -112,7 +106,7 @@ public class FileManager {
     public static String getExternalStorageRootString() {
         return Environment.getExternalStorageDirectory().getPath();
     }
-    
+
     /**
      * 获取当前SD卡的根路径
      * */
@@ -120,23 +114,23 @@ public class FileManager {
     public static File getExternalStorageRoot() {
         return Environment.getExternalStorageDirectory();
     }
-    
+
     /**
      * 获取内部存储路径
      * */
     @NonNull
     public static String getInternalStorageRootString() {
-        return BaseApplication.getAppContext().getFilesDir().getPath();
+        return QDFApplication.getAppContext().getFilesDir().getPath();
     }
-    
+
     /**
      * 获取内部存储路径
      * */
     @NonNull
     public static File getInternalStorageRoot() {
-        return BaseApplication.getAppContext().getFilesDir();
+        return QDFApplication.getAppContext().getFilesDir();
     }
-    
+
     /**
      * 通过路径字符串生成File对象，包含安全检查
      *
@@ -151,14 +145,14 @@ public class FileManager {
             return null;
         }
     }
-    
+
     /**
      * 检查文件是否存在
      * */
     public static boolean isExist(String dir) {
         return hasFileOperatePermission() && new File(dir).exists();
     }
-    
+
     /**
      * 重命名文件或文件夹
      * */
@@ -173,7 +167,7 @@ public class FileManager {
         }
         return renameFile.renameTo(new File(filePath + newName));
     }
-    
+
     /**
      * 新建文件夹
      * */
@@ -184,5 +178,5 @@ public class FileManager {
         File file = new File(path);
         return file.exists() || file.mkdirs();
     }
-    
+
 }

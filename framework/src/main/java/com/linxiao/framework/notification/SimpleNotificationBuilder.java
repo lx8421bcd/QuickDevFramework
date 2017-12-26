@@ -5,13 +5,18 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import java.util.List;
 
@@ -30,7 +35,7 @@ public class SimpleNotificationBuilder {
     private Context mContext;
     private NotificationCompat.Builder mBuilder;
     private PendingIntent mPendingIntent;
-
+    private boolean mHangUp = false;
     /**
      * 构造方法
      * <p>此处将Notification的icon设定为只用NotificationWrapper中所配置的默认icon</p>
@@ -50,15 +55,6 @@ public class SimpleNotificationBuilder {
         mBuilder.setSmallIcon(icon)
                 .setContentTitle(contentTitle)
                 .setContentText(contentText);
-    }
-
-    /**
-     * 对Builder中的NotificationCompat.Builder进行配置
-     * <p>直接使用形参中传入的builder对象配置属性即可，主要用于对Builder对象的一些特殊配置的处理</p>
-     * */
-    public SimpleNotificationBuilder configureBuilder(@NonNull BuilderConfigurator configurator) {
-        configurator.configure(mBuilder);
-        return this;
     }
 
     /**
@@ -207,24 +203,44 @@ public class SimpleNotificationBuilder {
         return this;
     }
 
-    public SimpleNotificationBuilder setShowHangUp() {
-
+    /**
+     * 显示横幅通知，在 Android 5.0 以下不会生效
+     * */
+    public SimpleNotificationBuilder setHangUp(boolean show) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            mHangUp = false;
+            return this;
+        }
+        mHangUp = show;
         return this;
     }
 
-
-    public NotificationOperator build() {
-       return build(0);
-    }
-
-    public NotificationOperator build(int notifyId) {
+    /**
+     * 构建Notification类
+     *
+     * @return built Notification
+     * */
+    public Notification build() {
         if (mPendingIntent == null) {
             Intent destIntent = new Intent(mContext, NotificationReceiver.class);
             mPendingIntent = PendingIntent.getBroadcast(mContext, 0, destIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
+        if (mHangUp) {
+            //这句是重点
+            mBuilder.setFullScreenIntent(mPendingIntent, true);
+            mBuilder.setAutoCancel(true);
+        }
         mBuilder.setContentIntent(mPendingIntent);
 
-        return new NotificationOperator(notifyId, mBuilder.build());
+        return mBuilder.build();
+    }
+    
+    /**
+     * 构建通知并发送
+     *
+     * */
+    public void send(int notifyId) {
+        NotificationManagerCompat.from(mContext).notify(notifyId, build());
     }
 
     public Context getBuilderContext() {
@@ -249,16 +265,6 @@ public class SimpleNotificationBuilder {
         return this;
     }
 
-    public SimpleNotificationBuilder setPriority(int pri) {
-        mBuilder.setPriority(pri);
-        return this;
-    }
-
-    public SimpleNotificationBuilder setVisibility(int visibility) {
-        mBuilder.setVisibility(visibility);
-        return this;
-    }
-
     /**
      * if called setContentInfo(), this method will not take effect
      * */
@@ -266,32 +272,233 @@ public class SimpleNotificationBuilder {
         mBuilder.setNumber(number);
         return this;
     }
-
-    public SimpleNotificationBuilder setAutoCancel(boolean autoCancel) {
-        mBuilder.setAutoCancel(autoCancel);
+    
+    public SimpleNotificationBuilder setWhen(long when) {
+        mBuilder.setWhen(when);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setShowWhen(boolean show) {
+        mBuilder.setShowWhen(show);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setUsesChronometer(boolean b) {
+        mBuilder.setUsesChronometer(b);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setSmallIcon(int icon) {
+        mBuilder.setSmallIcon(icon);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setSmallIcon(int icon, int level) {
+        mBuilder.setSmallIcon(icon, level);
         return this;
     }
 
-    public SimpleNotificationBuilder setOngoing(boolean ongoing) {
-        mBuilder.setOngoing(ongoing);
+    public SimpleNotificationBuilder setContentTitle(CharSequence title) {
+        mBuilder.setContentTitle(title);
         return this;
     }
-
-    public SimpleNotificationBuilder setContentInfo(String info) {
+    
+    public SimpleNotificationBuilder setContentText(CharSequence text) {
+        mBuilder.setContentText(text);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setSubText(CharSequence text) {
+        mBuilder.setSubText(text);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setRemoteInputHistory(CharSequence[] text) {
+        mBuilder.setRemoteInputHistory(text);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setContentInfo(CharSequence info) {
         mBuilder.setContentInfo(info);
         return this;
     }
-
+    
+    public SimpleNotificationBuilder setProgress(int max, int progress, boolean indeterminate) {
+        mBuilder.setProgress(max, progress, indeterminate);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setContent(RemoteViews views) {
+        mBuilder.setContent(views);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setContentIntent(PendingIntent intent) {
+        mBuilder.setContentIntent(intent);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setDeleteIntent(PendingIntent intent) {
+        mBuilder.setDeleteIntent(intent);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setFullScreenIntent(PendingIntent intent, boolean highPriority) {
+        mBuilder.setFullScreenIntent(intent, highPriority);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setTicker(CharSequence tickerText) {
+        mBuilder.setTicker(tickerText);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setTicker(CharSequence tickerText, RemoteViews views) {
+        mBuilder.setTicker(tickerText, views);
+        return this;
+    }
+    
     public SimpleNotificationBuilder setLargeIcon(Bitmap icon) {
         mBuilder.setLargeIcon(icon);
         return this;
     }
+    
+    public SimpleNotificationBuilder setSound(Uri sound) {
+        mBuilder.setSound(sound);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setSound(Uri sound, int streamType) {
+        mBuilder.setSound(sound, streamType);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setVibrate(long[] pattern) {
+        mBuilder.setVibrate(pattern);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setLights(@ColorInt int argb, int onMs, int offMs) {
+        mBuilder.setLights(argb, onMs, offMs);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setOngoing(boolean ongoing) {
+        mBuilder.setOngoing(ongoing);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setOnlyAlertOnce(boolean onlyAlertOnce) {
+        mBuilder.setOnlyAlertOnce(onlyAlertOnce);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setAutoCancel(boolean autoCancel) {
+        mBuilder.setAutoCancel(autoCancel);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setLocalOnly(boolean b) {
+        mBuilder.setLocalOnly(b);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setCategory(String category) {
+        mBuilder.setCategory(category);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setDefaults(int defaults) {
+        mBuilder.setDefaults(defaults);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setPriority(int pri) {
+        mBuilder.setPriority(pri);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder addPerson(String uri) {
+        mBuilder.addPerson(uri);
+        return this;
+    }
 
+    public SimpleNotificationBuilder setGroup(String groupKey) {
+        mBuilder.setGroup(groupKey);
+        return this;
+    }
+
+    public SimpleNotificationBuilder setGroupSummary(boolean isGroupSummary) {
+        mBuilder.setGroupSummary(isGroupSummary);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setSortKey(String sortKey) {
+        mBuilder.setSortKey(sortKey);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder addExtras(Bundle extras) {
+        mBuilder.addExtras(extras);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setExtras(Bundle extras) {
+        mBuilder.setExtras(extras);
+        return this;
+    }
+    
+    public Bundle getExtras() {
+        return mBuilder.getExtras();
+    }
+    
+    public SimpleNotificationBuilder addAction(int icon, CharSequence title, PendingIntent intent) {
+        mBuilder.addAction(icon, title, intent);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder addAction(NotificationCompat.Action action) {
+        mBuilder.addAction(action);
+        return this;
+    }
+    
     public SimpleNotificationBuilder setStyle(NotificationCompat.Style style) {
         mBuilder.setStyle(style);
         return this;
     }
+    
+    public SimpleNotificationBuilder setColor(@ColorInt int argb) {
+        mBuilder.setColor(argb);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setVisibility(int visibility) {
+        mBuilder.setVisibility(visibility);
+        return this;
+    }
 
+    public SimpleNotificationBuilder setPublicVersion(Notification n) {
+        mBuilder.setPublicVersion(n);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setCustomContentView(RemoteViews contentView) {
+        mBuilder.setCustomContentView(contentView);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder setCustomBigContentView(RemoteViews contentView) {
+        mBuilder.setCustomBigContentView(contentView);
+        return this;
+    }
 
-
+    public SimpleNotificationBuilder setCustomHeadsUpContentView(RemoteViews contentView) {
+        mBuilder.setCustomHeadsUpContentView(contentView);
+        return this;
+    }
+    
+    public SimpleNotificationBuilder extend(NotificationCompat.Extender extender) {
+        mBuilder.extend(extender);
+        return this;
+    }
 }

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
-import com.linxiao.framework.BaseApplication;
+import com.linxiao.framework.QDFApplication;
 
 /**
  * SharedPreferences封装
@@ -26,7 +26,7 @@ public class PreferenceManager {
     }
 
     public static PreferenceOperator getDefault() {
-        return getDefault(BaseApplication.getAppContext());
+        return getDefault(QDFApplication.getAppContext());
     }
 
     /**
@@ -39,7 +39,7 @@ public class PreferenceManager {
     }
 
     public static PreferenceOperator getPrivate(String name) {
-        return getPreferencesByMode(BaseApplication.getAppContext(), name, Context.MODE_PRIVATE);
+        return getPreferencesByMode(QDFApplication.getAppContext(), name, Context.MODE_PRIVATE);
     }
 
     /**
@@ -52,7 +52,7 @@ public class PreferenceManager {
     }
 
     public static PreferenceOperator getAppend(String name) {
-        return getPreferencesByMode(BaseApplication.getAppContext(), name, Context.MODE_APPEND);
+        return getPreferencesByMode(QDFApplication.getAppContext(), name, Context.MODE_APPEND);
     }
 
 

@@ -22,17 +22,26 @@ import com.linxiao.framework.util.ApplicationUtil;
 
 /**
  * 权限管理类
- * <p>用于适配Android 6.0+ 的权限问题。<br/>
- *
- * Google定义的Runtime权限使用 performWithPermission() 方法处理即可,
- * <strong>务必在申请权限操作所属 Activity的onRequestPermissionResult() 中调用 handleCallback() ,否则不会执行回调</strong><br/>
- *
- * SYSTEM_ALERT_WINDOW 权限请使用 requestSystemAlertWindowPermission() 函数申请,
- * <strong>必须在申请操作所属Activity的onActivityResult()中调用onSysAlertPermissionResult，否则无法通知权限是否授予</strong><br/>
- *
- * WRITE_SETTINGS 权限请使用 requestWriteSystemSettingsPermission() 函数申请,
- * <strong>必须在申请操作所属Activity的onActivityResult()中调用onWriteSysSettingsPermissionResult，否则无法通知权限是否授予</strong><br/>
+ * <p>
+ *     用于适配Android 6.0+ 的权限问题。<br/>
+ *     Google定义的Runtime权限使用 performWithPermission() 方法处理即可,
+ *     <strong>务必在申请权限操作所属 Activity的onRequestPermissionResult() 中调用
+ *     {@link #handleCallback(Activity, int, String[], int[])}, 否则不会执行回调</strong>
  * </p>
+ * <p>
+ *     SYSTEM_ALERT_WINDOW 权限请使用 requestSystemAlertWindowPermission() 函数申请,
+ *     <strong>必须在申请操作所属Activity的onActivityResult()中调用
+ *     {@link #onSysAlertPermissionResult(Activity, int)}，
+ *     否则无法通知权限是否授予</strong>
+ *     <br/>
+ * </p>
+ * <p>
+ *     WRITE_SETTINGS 权限请使用 requestWriteSystemSettingsPermission() 函数申请,
+ *     <strong>必须在申请操作所属Activity的onActivityResult()中调用
+ *     {@link #onWriteSysSettingsPermissionResult(Activity, int)}，
+ *     否则无法通知权限是否授予</strong><br/>
+ * </p>
+ *
  * Created by LinXiao on 2016-11-24.
  */
 public class PermissionManager {
@@ -53,7 +62,7 @@ public class PermissionManager {
     /**
      * 检查是否需要RuntimePermission，即 System API >= API 23
      * */
-    public static boolean checkHigherThanMarshmallow() {
+    private static boolean checkHigherThanMarshmallow() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 

@@ -158,7 +158,7 @@ public class RetrofitApiBuilder {
 
     private class ResponseConfigInterceptor implements Interceptor {
         @Override
-        public Response intercept(Interceptor.Chain chain) throws IOException {
+        public Response intercept(Chain chain) throws IOException {
             Response response = chain.proceed(chain.request());
             //存入Session
             if (response.header("Set-Cookie") != null) {

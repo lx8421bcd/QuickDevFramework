@@ -1,9 +1,6 @@
 package com.linxiao.framework.file;
 
-import android.content.Context;
 import android.os.AsyncTask;
-
-import com.linxiao.framework.toast.ToastWrapper;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -48,12 +45,12 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
         super.onPreExecute();
         if (!FileManager.existExternalStorage()) {
             if (fileCountListener != null) {
-                fileCountListener.onFail("未找到SD卡");
+                fileCountListener.onFail("sd card not found");
             }
         }
         if (!FileManager.hasFileOperatePermission()) {
             if (fileCountListener != null) {
-                fileCountListener.onFail("请授予文件管理权限");
+                fileCountListener.onFail("permission denied");
             }
         }
         if (fileCountListener != null) {
@@ -108,10 +105,10 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
                 }
                 return null;
             } else {
-                return "删除失败";
+                return "delete failed";
             }
         } else {
-            return "文件不存在";
+            return "no such file or directory";
         }
     }
 
@@ -139,6 +136,7 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
                 if (src.delete()) {
                     return null;
                 }
+                return "src is empty";
             }
             for (File srcFile : srcFiles) {
                 deleteDirectory(srcFile);

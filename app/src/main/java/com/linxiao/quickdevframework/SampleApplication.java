@@ -1,13 +1,13 @@
 package com.linxiao.quickdevframework;
 
-import com.linxiao.framework.BaseApplication;
+import com.linxiao.framework.QDFApplication;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
  *
  * Created by LinXiao on 2016-11-27.
  */
-public class SampleApplication extends BaseApplication {
+public class SampleApplication extends QDFApplication {
 
     @Override
     public void onCreate() {

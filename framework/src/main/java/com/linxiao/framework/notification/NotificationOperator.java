@@ -4,7 +4,7 @@ import android.app.Notification;
 import android.content.Context;
 import android.support.v4.app.NotificationManagerCompat;
 
-import com.linxiao.framework.BaseApplication;
+import com.linxiao.framework.QDFApplication;
 
 /**
  * Notification 操作类，用于在Builder类创建Notification进行操作
@@ -14,7 +14,7 @@ public class NotificationOperator {
 
     private int notifyId;
     private Notification mNotification;
-    private Context mContext = BaseApplication.getAppContext();
+    private Context mContext = QDFApplication.getAppContext();
 
     public NotificationOperator(Notification notification) {
         this.mNotification = notification;

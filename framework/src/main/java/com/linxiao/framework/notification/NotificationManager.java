@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.v4.app.NotificationManagerCompat;
 
-import com.linxiao.framework.BaseApplication;
+import com.linxiao.framework.QDFApplication;
 import com.linxiao.framework.R;
 
 import java.util.Random;
@@ -35,11 +35,11 @@ public class NotificationManager {
         return defaultIconRes;
     }
 
-    public static SimpleNotificationBuilder createSimpleNotificationBuilder(Context context, String title, String contentText) {
+    public static SimpleNotificationBuilder buildNotification(Context context, String title, String contentText) {
         return new SimpleNotificationBuilder(context, title, contentText);
     }
 
-    public static SimpleNotificationBuilder createSimpleNotificationBuilder(Context context, int icon, String title, String contentText) {
+    public static SimpleNotificationBuilder buildNotification(Context context, int icon, String title, String contentText) {
         return new SimpleNotificationBuilder(context, icon, title, contentText);
     }
 
@@ -50,12 +50,11 @@ public class NotificationManager {
      * @param targetActivityIntent 设定跳转目标的Intent
      */
     public static void sendSimpleNotification(String title, String contentText, Intent targetActivityIntent) {
-        SimpleNotificationBuilder builder = new SimpleNotificationBuilder(BaseApplication.getAppContext(), title, contentText);
+        SimpleNotificationBuilder builder = new SimpleNotificationBuilder(QDFApplication.getAppContext(), title, contentText);
         builder.setTicker(contentText)
         .setTargetActivityIntent(targetActivityIntent)
         .configureNotificationAsDefault()
-        .build(new Random().nextInt(65536))
-        .send();
+        .send(new Random().nextInt(65536));
     }
 
 
@@ -88,7 +87,7 @@ public class NotificationManager {
      * 检查用户是否屏蔽了通知显示。
      * */
     public static boolean checkNotificationEnabled() {
-        return NotificationManagerCompat.from(BaseApplication.getAppContext()).areNotificationsEnabled();
+        return NotificationManagerCompat.from(QDFApplication.getAppContext()).areNotificationsEnabled();
     }
 
 }

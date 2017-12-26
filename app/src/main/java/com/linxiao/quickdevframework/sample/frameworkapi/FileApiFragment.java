@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.toast.ToastWrapper;
+import com.linxiao.framework.toast.ToastAlert;
 import com.linxiao.framework.file.FileSizeListener;
 import com.linxiao.framework.file.FileCountListener;
 import com.linxiao.framework.file.FileManager;
@@ -102,7 +102,7 @@ public class FileApiFragment extends BaseFragment {
 
             @Override
             public void onSuccess() {
-                ToastWrapper.showToast(getContext(), "copy success");
+                ToastAlert.showToast(getContext(), "copy success");
             }
 
             @Override
@@ -172,7 +172,7 @@ public class FileApiFragment extends BaseFragment {
 
             @Override
             public void onSuccess() {
-                ToastWrapper.showToast(getContext(), "copy success");
+                ToastAlert.showToast(getContext(), "copy success");
             }
 
             @Override
@@ -211,12 +211,12 @@ public class FileApiFragment extends BaseFragment {
 
             @Override
             public void onSuccess() {
-                ToastWrapper.showToast(getContext(), "delete success");
+                ToastAlert.showToast(getContext(), "delete success");
             }
 
             @Override
             public void onFail(String failMsg) {
-                ToastWrapper.showToast(getContext(), failMsg);
+                ToastAlert.showToast(getContext(), failMsg);
             }
         }).execute();
         tvHasSDCard.setText(getString(R.string.is_exist_sd_card) + ": " + FileManager.existExternalStorage());

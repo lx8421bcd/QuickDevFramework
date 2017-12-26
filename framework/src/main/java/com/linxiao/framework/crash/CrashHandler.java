@@ -10,7 +10,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.linxiao.framework.BaseApplication;
+import com.linxiao.framework.QDFApplication;
 import com.linxiao.framework.R;
 import com.linxiao.framework.util.FileUtil;
 
@@ -167,7 +167,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
         sb.append(result);
         Log.e(TAG, sb.toString());
         FileUtil.writeFile(
-                FileUtil.SD_PATH + BaseApplication.getAppContext().getString(R.string.app_name),
+                FileUtil.SD_PATH + QDFApplication.getAppContext().getString(R.string.app_name),
                 sb.toString(),
                 true);
     }

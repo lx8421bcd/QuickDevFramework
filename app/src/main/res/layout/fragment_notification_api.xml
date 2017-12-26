@@ -35,4 +35,10 @@
         android:layout_height="wrap_content"
         android:text="send in box notification"/>
 
+    <Button
+        android:id="@+id/btnSendHangUp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="send hang up notification(support 5.0 +)"/>
+
 </LinearLayout>

@@ -14,7 +14,7 @@ import android.widget.CompoundButton;
 import com.linxiao.framework.dialog.AlertDialogBuilder;
 import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.toast.ToastWrapper;
+import com.linxiao.framework.toast.ToastAlert;
 import com.linxiao.quickdevframework.R;
 
 import butterknife.BindView;
@@ -82,7 +82,7 @@ public class DialogApiFragment extends BaseFragment {
 
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    ToastWrapper.showToast(getContext(), getString(R.string.positive_click));
+                    ToastAlert.showToast(getContext(), getString(R.string.positive_click));
                     dialogInterface.dismiss();
                 }
             });
@@ -92,7 +92,7 @@ public class DialogApiFragment extends BaseFragment {
             builder.setNegativeButton(new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    ToastWrapper.showToast(getContext(), getString(R.string.negative_click));
+                    ToastAlert.showToast(getContext(), getString(R.string.negative_click));
                     dialogInterface.dismiss();
                 }
             });
