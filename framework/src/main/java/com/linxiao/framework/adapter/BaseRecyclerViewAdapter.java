@@ -181,16 +181,29 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             default :
                 return super.getItemViewType(position);
             }
-        } else {
-            int realPosition = showHeader ? position - 1 : position;
-            if (realPosition < 0) {
-                return HEADER_VIEW;
-            } else if (mDataSource.size() > 0) {
-                return realPosition < mDataSource.size() ? super.getItemViewType(realPosition) : FOOTER_VIEW;
-            } else {
-                return hasFooterView() && showFooterView ? FOOTER_VIEW : super.getItemViewType(realPosition);
+        }
+        int dataPosition = showHeader ? position - 1 : position;
+        if (dataPosition < 0) {
+            return HEADER_VIEW;
+        }
+        else if (mDataSource.size() > 0) {
+            if (dataPosition >= mDataSource.size()) {
+                return FOOTER_VIEW;
             }
         }
+        else {
+            if (hasFooterView() && showFooterView) {
+                return FOOTER_VIEW;
+            }
+        }
+        return super.getItemViewType(dataPosition);
+    }
+
+    /**
+     * 获取高度更新
+     * */
+    private int getRealPosition(int dataPosition) {
+        return hasHeaderView() ? dataPosition + 1 : dataPosition;
     }
 
     private boolean hasNoDataView() {
@@ -433,39 +446,43 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     }
 
     public void notifyDataInserted(int dataPosition) {
-        notifyItemInserted(dataPosition + 1); // count header container
+
+        notifyItemInserted(getRealPosition(dataPosition)); // count header container
     }
 
     public void notifyDataChanged(int dataPosition) {
-        notifyItemChanged(dataPosition + 1);
+
+        notifyItemChanged(getRealPosition(dataPosition));
     }
 
     public void notifyDataChanged(int dataPosition, Object payload) {
-        notifyItemChanged(dataPosition + 1, payload);
+
+        notifyItemChanged(getRealPosition(dataPosition), payload);
     }
 
     public void notifyDataRemoved(int dataPosition) {
-        notifyItemRemoved(dataPosition + 1);
+
+        notifyItemRemoved(getRealPosition(dataPosition));
     }
 
     public void notifyDataMoved(int fromPosition, int toPosition) {
-        notifyItemMoved(fromPosition + 1, toPosition + 1);
+        notifyItemMoved(getRealPosition(fromPosition), getRealPosition(toPosition));
     }
 
     public void notifyDataRangeChanged(int dataPosition, int itemCount) {
-        notifyItemRangeChanged(dataPosition + 1, itemCount);
+        notifyItemRangeChanged(getRealPosition(dataPosition), itemCount);
     }
 
     public void notifyDataRangeChanged(int dataPosition, int itemCount, Object payload) {
-        notifyItemRangeChanged(dataPosition + 1, itemCount, payload);
+        notifyItemRangeChanged(getRealPosition(dataPosition), itemCount, payload);
     }
 
     public void notifyDataRangeRemoved(int dataPosition, int itemCount) {
-        notifyItemRangeRemoved(dataPosition + 1, itemCount);
+        notifyItemRangeRemoved(getRealPosition(dataPosition), itemCount);
     }
 
     public void notifyDataRangeInserted(int dataPosition, int itemCount) {
-        notifyItemRangeInserted(dataPosition + 1, itemCount);
+        notifyItemRangeInserted(getRealPosition(dataPosition), itemCount);
     }
 
     public void setDataSource(@NonNull List<T> dataSource) {
@@ -477,14 +494,13 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     public void addToDataSource(@NonNull T data) {
         hideNoDataView();
         this.mDataSource.add(data);
-        this.notifyItemInserted(mDataSource.size());
+        this.notifyDataInserted(getLastIndex());
     }
 
     public void addToDataSource(@NonNull List<T> data) {
         hideNoDataView();
         this.mDataSource.addAll(data);
-        this.notifyItemRangeInserted(mDataSource.size() - data.size(), data.size());
-        notifyDataSetChanged();
+        this.notifyDataRangeInserted(getLastIndex(), data.size());
     }
 
     public void addToDataSource(int position, @NonNull T data) {
@@ -493,9 +509,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
         hideNoDataView();
         this.mDataSource.add(position, data);
-        int dataPosition = hasHeaderView() ? position + 1 : position;
-        this.notifyItemInserted(dataPosition);
-        notifyItemRangeChanged(dataPosition, getItemCount());
+        this.notifyDataInserted(position);
     }
 
     public void addToDataSource(int position, @NonNull List<T> data) {
@@ -504,9 +518,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
         hideNoDataView();
         this.mDataSource.addAll(position, data);
-        int dataPosition = hasHeaderView() ? position + 1 : position;
-        this.notifyItemInserted(dataPosition);
-        notifyItemRangeChanged(dataPosition, getItemCount());
+        notifyDataRangeInserted(position, data.size());
     }
 
     public void removeFromDataSource(int position) {
@@ -514,9 +526,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             return;
         }
         this.mDataSource.remove(position);
-        int dataPosition = hasHeaderView() ? position + 1 : position;
-        this.notifyItemRemoved(dataPosition);
-        notifyItemRangeChanged(dataPosition, getItemCount());
+        notifyDataRemoved(position);
     }
 
     public void removeFromDataSource(T data) {
@@ -525,9 +535,7 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
         int position = mDataSource.indexOf(data);
         mDataSource.remove(data);
-        this.notifyDataSetChanged();
-//        this.notifyItemRemoved(position);
-
+        notifyDataRemoved(position);
     }
 
     public void removeFromDataSource(List<T> data) {
@@ -537,14 +545,14 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         for (T t : data) {
             int position = mDataSource.indexOf(t);
             mDataSource.remove(t);
-            this.notifyItemRemoved(position);
+            notifyDataRemoved(position);
         }
     }
 
     public void removeAll() {
         int count = mDataSource.size();
         this.mDataSource.clear();
-        this.notifyItemRangeRemoved(0, count);
+        notifyDataRangeRemoved(0, count);
     }
 
     public T getFromDataSource(int position) {
