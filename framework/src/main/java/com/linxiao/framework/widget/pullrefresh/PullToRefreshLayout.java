@@ -67,7 +67,7 @@ public class PullToRefreshLayout extends ViewGroup {
     // 触发下拉的触摸点Id
     private int mActivePointerId;
     // 是否正在刷新
-    private boolean isRefreshing = false;
+    private boolean refreshing = false;
     // 是否正在拉动
     private boolean isDragging;
     // 是否向下层容器传递触控事件
@@ -101,7 +101,7 @@ public class PullToRefreshLayout extends ViewGroup {
         @Override
         public void onAnimationStart(Animation animation) {
             mRefreshView.setVisibility(View.VISIBLE);
-            if (isRefreshing) {
+            if (refreshing) {
                 mRefreshView.startRefreshAnim();
             }
         }
@@ -112,7 +112,7 @@ public class PullToRefreshLayout extends ViewGroup {
         
         @Override
         public void onAnimationEnd(Animation animation) {
-            if (!isRefreshing) {
+            if (!refreshing) {
                 mRefreshView.stopRefreshAnim();
                 moveToStartPosition();
             }
@@ -249,16 +249,16 @@ public class PullToRefreshLayout extends ViewGroup {
     
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (!isEnabled() || (canChildScrollUp() && !isRefreshing)) {
+        if (!isEnabled() || (canChildScrollUp() && !refreshing)) {
             return false;
         }
-        if (mInterceptListener != null && mInterceptListener.onInterceptTouchEvent(ev)) {
+        if (mInterceptListener != null && !mInterceptListener.onInterceptTouchEvent(ev)) {
             return false;
         }
         final int action = MotionEventCompat.getActionMasked(ev);
         switch (action) {
         case MotionEvent.ACTION_DOWN:
-            if (!isRefreshing) {
+            if (!refreshing) {
                 setOffsetTop(0, true);
             }
             mActivePointerId = MotionEventCompat.getPointerId(ev, 0);
@@ -281,7 +281,7 @@ public class PullToRefreshLayout extends ViewGroup {
                 return false;
             }
             final float yDiff = y - mInitialMotionY;
-            if (isRefreshing) {
+            if (refreshing) {
                 isDragging = !(yDiff < 0 && mCurrentOffsetTop <= 0);
             } else if (yDiff > mTouchSlop && !isDragging) {
                 isDragging = true;
@@ -315,7 +315,7 @@ public class PullToRefreshLayout extends ViewGroup {
             final float y = MotionEventCompat.getY(event, pointerIndex);
             final float yDiff = y - mInitialMotionY;
             int targetY;
-            if (isRefreshing) {
+            if (refreshing) {
                 targetY = (int) (mInitialOffsetTop + yDiff);
                 if (canChildScrollUp()) {
                     targetY = -1;
@@ -374,7 +374,7 @@ public class PullToRefreshLayout extends ViewGroup {
             if (mActivePointerId == INVALID_POINTER) {
                 return false;
             }
-            if (isRefreshing) {
+            if (refreshing) {
                 if (dispatchTouchDown) {
                     mTargetView.dispatchTouchEvent(event);
                     dispatchTouchDown = false;
@@ -391,7 +391,7 @@ public class PullToRefreshLayout extends ViewGroup {
                     mOnRefreshListener.onRefresh();
                 }
             } else {
-                isRefreshing = false;
+                refreshing = false;
                 moveToStartPosition();
             }
             mActivePointerId = INVALID_POINTER;
@@ -402,16 +402,20 @@ public class PullToRefreshLayout extends ViewGroup {
     }
     
     public void setRefreshing(boolean refreshing) {
-        if (this.isRefreshing == refreshing) {
+        if (this.refreshing == refreshing) {
             return;
         }
-        this.isRefreshing = refreshing;
+        this.refreshing = refreshing;
         captureTargetView();
         if (refreshing) {
             moveToRefreshPosition();
         } else {
             moveToStartPosition();
         }
+    }
+    
+    public boolean isRefreshing() {
+        return refreshing;
     }
     
     private void moveToStartPosition() {
@@ -478,5 +482,5 @@ public class PullToRefreshLayout extends ViewGroup {
                 getContext().getResources().getDisplayMetrics()
         );
     }
-    
+
 }
