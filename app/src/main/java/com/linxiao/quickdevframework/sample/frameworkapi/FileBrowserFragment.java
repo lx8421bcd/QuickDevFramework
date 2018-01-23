@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
+import com.linxiao.framework.list.BaseRecyclerViewAdapter;
 import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.framework.file.FileManager;
@@ -27,7 +27,6 @@ import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * 文件浏览Fragment

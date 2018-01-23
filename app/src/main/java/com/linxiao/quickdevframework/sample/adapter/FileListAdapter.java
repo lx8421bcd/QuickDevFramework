@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
-import com.linxiao.framework.adapter.BaseRecyclerViewHolder;
+import com.linxiao.framework.list.BaseRecyclerViewAdapter;
+import com.linxiao.framework.list.BaseRecyclerViewHolder;
 import com.linxiao.quickdevframework.R;
 
 import java.io.File;

@@ -1,18 +1,13 @@
 package com.linxiao.quickdevframework.main;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
-import com.linxiao.framework.adapter.BaseRecyclerViewHolder;
+import com.linxiao.framework.list.BaseRecyclerViewAdapter;
+import com.linxiao.framework.list.BaseRecyclerViewHolder;
 import com.linxiao.quickdevframework.R;
-
-import java.util.List;
 
 /**
  *

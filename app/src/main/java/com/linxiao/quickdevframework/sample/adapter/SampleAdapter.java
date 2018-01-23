@@ -3,8 +3,8 @@ package com.linxiao.quickdevframework.sample.adapter;
 import android.content.Context;
 import android.view.ViewGroup;
 
-import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
-import com.linxiao.framework.adapter.BaseRecyclerViewHolder;
+import com.linxiao.framework.list.BaseRecyclerViewAdapter;
+import com.linxiao.framework.list.BaseRecyclerViewHolder;
 import com.linxiao.quickdevframework.R;
 
 /**

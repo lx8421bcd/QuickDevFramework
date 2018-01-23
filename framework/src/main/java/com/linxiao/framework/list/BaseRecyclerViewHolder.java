@@ -1,4 +1,4 @@
-package com.linxiao.framework.adapter;
+package com.linxiao.framework.list;
 
 import android.support.annotation.IdRes;
 import android.support.v7.widget.RecyclerView;

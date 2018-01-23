@@ -16,7 +16,7 @@ import android.view.KeyEvent;
 import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
-import com.linxiao.framework.adapter.BaseRecyclerViewAdapter;
+import com.linxiao.framework.list.BaseRecyclerViewAdapter;
 import com.linxiao.framework.toast.ToastAlert;
 import com.linxiao.framework.log.Logger;
 import com.linxiao.quickdevframework.R;

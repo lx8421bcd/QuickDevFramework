@@ -25,20 +25,20 @@ import okio.BufferedSource;
  * Created by linxiao on 2016/12/4.
  */
 public class HttpInfoCatchInterceptor implements Interceptor {
-
+    
     private static final Charset UTF8 = Charset.forName("UTF-8");
-
+    
     private HttpInfoCatchListener httpInfoCatchListener;
-
+    
     private boolean catchEnabled;
-
+    
     /**
      * 是否抓取Http请求信息
      * */
     public void setCatchEnabled(boolean enabled) {
         catchEnabled = enabled;
     }
-
+    
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
@@ -46,18 +46,18 @@ public class HttpInfoCatchInterceptor implements Interceptor {
             return chain.proceed(request);
         }
         HttpInfoEntity entity = new HttpInfoEntity();
-
+        
         RequestBody requestBody = request.body();
         Connection connection = chain.connection();
-
+        
         Protocol protocol = connection != null ? connection.protocol() : Protocol.HTTP_1_1;
         entity.protocol = protocol.toString();
         entity.method = request.method();
         entity.url = request.url().toString();
         entity.requestHeaders = request.headers();
-
+        
         if (requestBody != null) {
-            entity.requestContentType = requestBody.contentType().toString();
+            entity.requestContentType = String.valueOf(requestBody.contentType());
             entity.requestContentLength = requestBody.contentLength();
             Buffer buffer = new Buffer();
             requestBody.writeTo(buffer);
@@ -66,22 +66,24 @@ public class HttpInfoCatchInterceptor implements Interceptor {
             if (contentType != null) {
                 charset = contentType.charset(UTF8);
             }
-            entity.requestBody = buffer.readString(charset);
+            if (charset != null) {
+                entity.requestBody = buffer.readString(charset);
+            }
         }
         //-----request prepare----
         long startNs = System.nanoTime();
         Response response;
         response = chain.proceed(request);
         //-----request done--------
-
+        
         entity.tookMills = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs);
-
-        ResponseBody responseBody = response.body();
         entity.responseHeaders = response.headers();
         entity.responseCode = response.code();
         entity.responseMessage = response.message();
-        entity.responseContentLength = responseBody.contentLength();
-        if (response.body() != null) {
+        
+        ResponseBody responseBody = response.body();
+        if (responseBody != null) {
+            entity.responseContentLength = responseBody.contentLength();
             BufferedSource source = responseBody.source();
             source.request(Long.MAX_VALUE); // Buffer the entire requestBody.
             Buffer buffer = source.buffer();
@@ -95,7 +97,9 @@ public class HttpInfoCatchInterceptor implements Interceptor {
                 }
             }
             if (isPlaintext(buffer) && responseBody.contentLength() != 0) {
-                entity.responseBody = buffer.clone().readString(charset);
+                if (charset != null) {
+                    entity.responseBody = buffer.clone().readString(charset);
+                }
             }
             else {
                 entity.responseBody = "unreadable, not text";
@@ -104,7 +108,7 @@ public class HttpInfoCatchInterceptor implements Interceptor {
         httpInfoCatchListener.onInfoCaught(entity);
         return response;
     }
-
+    
     /**
      * 检查是否包含可以读取的字符信息
      * */
@@ -127,11 +131,11 @@ public class HttpInfoCatchInterceptor implements Interceptor {
             return false; // Truncated UTF-8 sequence.
         }
     }
-
+    
     public HttpInfoCatchListener getHttpInfoCatchListener() {
         return httpInfoCatchListener;
     }
-
+    
     public void setHttpInfoCatchListener(@NonNull HttpInfoCatchListener httpInfoCatchListener) {
         this.httpInfoCatchListener = httpInfoCatchListener;
     }

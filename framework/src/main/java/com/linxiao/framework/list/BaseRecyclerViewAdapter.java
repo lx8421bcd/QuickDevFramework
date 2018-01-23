@@ -1,4 +1,4 @@
-package com.linxiao.framework.adapter;
+package com.linxiao.framework.list;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
@@ -6,47 +6,36 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
 /**
  * RecyclerView 基类
  * Created by linxiao on 2017/1/4.
  */
 public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHolder> extends RecyclerView.Adapter<VH> {
-
     /**
      * item click listener in RecyclerView
      * */
     public interface OnItemClickListener {
-
         void onItemClick(BaseRecyclerViewAdapter adapter, View itemView, int position);
     }
-
     /**
      * item long click Listener in RecyclerView
      * */
     public interface OnItemLongClickListener {
-
         void onItemLongClick(BaseRecyclerViewAdapter adapter, View itemView, int position);
     }
-
     private static final int HEADER_VIEW = 101;
     private static final int EMPTY_VIEW = 102;
     private static final int FOOTER_VIEW = 103;
-
     protected String TAG;
-
     private List<T> mDataSource;
     private Context mContext;
     //在这里使用ViewGroup存储Header、Footer和Empty，因为View是被存储在ViewHolder中的，
@@ -55,19 +44,14 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     private LinearLayout mHeaderContainer;
     private LinearLayout mFooterContainer;
     private FrameLayout mNoDataViewContainer;
-
-
     private View mEmptyView;
     private View mErrorView;
     private View mLoadingView;
-
     private boolean showNoDataView = false;
     private boolean showHeaderView = true;
     private boolean showFooterView = true;
-
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
-
     private View.OnClickListener itemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -75,7 +59,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             mOnItemClickListener.onItemClick(BaseRecyclerViewAdapter.this, v, position);
         }
     };
-
     private View.OnLongClickListener itemLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
@@ -84,24 +67,26 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             return true;
         }
     };
-
     public BaseRecyclerViewAdapter(Context context) {
         TAG = this.getClass().getSimpleName();
         mContext = context;
         mDataSource = new ArrayList<>();
+        mHeaderContainer = new LinearLayout(mContext);
+        mHeaderContainer.setOrientation(LinearLayout.VERTICAL);
+        mHeaderContainer.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+        mFooterContainer = new LinearLayout(mContext);
+        mFooterContainer.setOrientation(LinearLayout.VERTICAL);
+        mFooterContainer.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
     }
-
     /**
      * 向Holder设置数据
      * */
     protected abstract void setData(VH holder, int position, T data);
-
     /**
      * create ViewHolder which used to handle data
      * <p>called on On</p>
      * */
     protected abstract VH onCreateDataViewHolder(ViewGroup parent, int viewType);
-
     /**
      * 创建不使用数据的ViewHolder
      * <p>主要用于承载Adapter的Header、Footer、EmptyView等默认View</p>
@@ -110,11 +95,9 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     public VH createEmptyViewHolder(View itemView) {
         return (VH) new BaseRecyclerViewHolder(itemView);
     }
-
     protected View inflateItemView(@LayoutRes int layoutRes, @Nullable ViewGroup parent) {
         return LayoutInflater.from(mContext).inflate(layoutRes, parent, false);
     }
-
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
@@ -128,7 +111,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             return onCreateDataViewHolder(parent, viewType);
         }
     }
-
     @Override
     public void onBindViewHolder(VH holder, int position) {
         int dataPosition = hasHeaderView() && showHeaderView ? position - 1 : position;
@@ -166,7 +148,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
         return count;
     }
-
     @Override
     public int getItemViewType(int position) {
         boolean showHeader = hasHeaderView() && showHeaderView;
@@ -198,48 +179,42 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
         return super.getItemViewType(dataPosition);
     }
-
     /**
      * 获取高度更新
      * */
     private int getRealPosition(int dataPosition) {
         return hasHeaderView() ? dataPosition + 1 : dataPosition;
     }
-
-    private boolean hasNoDataView() {
+    protected int getDataPosition(int realPosition) {
+        return hasHeaderView() ? realPosition - 1 : realPosition;
+    }
+    public boolean hasNoDataView() {
         return mNoDataViewContainer != null && mNoDataViewContainer.getChildCount() > 0 && mDataSource.size() == 0;
     }
-
-    private boolean hasHeaderView() {
+    public boolean hasHeaderView() {
         return mHeaderContainer != null && mHeaderContainer.getChildCount() > 0;
     }
-
-    private boolean hasFooterView() {
+    public boolean hasFooterView() {
         return mFooterContainer != null && mFooterContainer.getChildCount() > 0;
     }
-
     private int getHeaderPosition() {
         if (mHeaderContainer != null) {
             return 0;
         }
         return -1;
     }
-
     private int getFooterPosition() {
         if (mFooterContainer == null) {
             return -1;
         }
         return getItemCount();
     }
-
     public void addHeaderView(@NonNull View v) {
         addHeaderView(v, -1);
     }
-
     public void addHeaderView(@NonNull View v, int position) {
         if (mHeaderContainer == null) {
             mHeaderContainer = new LinearLayout(mContext);
-
             mHeaderContainer.setOrientation(LinearLayout.VERTICAL);
             mHeaderContainer.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         }
@@ -250,15 +225,12 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
         notifyDataSetChanged();
     }
-
     public void addFooterView(@NonNull View v) {
         addFooterView(v, -1);
     }
-
     public void addFooterView(@NonNull View v, int position) {
         if (mFooterContainer == null) {
             mFooterContainer = new LinearLayout(mContext);
-
             mFooterContainer.setOrientation(LinearLayout.VERTICAL);
             mFooterContainer.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         }
@@ -268,16 +240,13 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             mFooterContainer.addView(v);
         }
         notifyDataSetChanged();
-
     }
-
     public void removeHeaderView(View v) {
         if (mHeaderContainer != null) {
             mHeaderContainer.removeView(v);
             notifyDataSetChanged();
         }
     }
-
     public void removeHeaderView(int position) {
         if (mHeaderContainer != null) {
             View v = mHeaderContainer.getChildAt(position);
@@ -286,14 +255,12 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             }
         }
     }
-
     public void removeFooterView(View v) {
         if (mFooterContainer != null) {
             mFooterContainer.removeView(v);
             notifyDataSetChanged();
         }
     }
-
     public void removeFooterView(int position) {
         if (mFooterContainer != null) {
             View v = mFooterContainer.getChildAt(position);
@@ -302,7 +269,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             }
         }
     }
-
     /**
      * 是否显示Header
      * */
@@ -312,11 +278,9 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             notifyItemChanged(getHeaderPosition());
         }
     }
-
     public boolean isHeaderVisible() {
         return hasHeaderView() && showHeaderView;
     }
-
     /**
      * 是否显示Footer
      * */
@@ -326,11 +290,9 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             notifyItemChanged(getFooterPosition());
         }
     }
-
     public boolean isFooterVisible() {
         return hasFooterView() && showFooterView;
     }
-
     /**
      * 设置没有数据时显示的View
      * */
@@ -338,38 +300,32 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         mEmptyView = v;
         showNoDataView = true;
     }
-
     public void setLoadingView(@NonNull View v) {
         mLoadingView = v;
         showNoDataView = true;
     }
-
     public void setErrorView(@NonNull View v) {
         mErrorView = v;
         showNoDataView = true;
     }
-
     /**
      * 显示加载视图
      * */
     public void showLoadingView() {
         showNoDataView(mLoadingView);
     }
-
     /**
      * 显示空视图
      * */
     public void showEmptyView() {
         showNoDataView(mEmptyView);
     }
-
     /**
      * 显示加载错误视图
      * */
     public void showErrorView() {
         showNoDataView(mErrorView);
     }
-
     /**
      * 隐藏没有数据时显示的View
      * */
@@ -380,7 +336,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
 //        notifyDataSetChanged();
         notifyItemRemoved(hasHeaderView() ? 1 : 0);
     }
-
     /**
      * 没有数据时显示的View
      * <p>主要是操作EmptyContainer用于切换在Empty、Loading、Error下显示的View</p>
@@ -418,7 +373,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             notifyDataSetChanged();
         }
     }
-
     @Override
     public void onViewAttachedToWindow(VH holder) {
         super.onViewAttachedToWindow(holder);
@@ -430,79 +384,60 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             }
         }
     }
-
     public int getDataSize() {
         if (mDataSource == null) {
             return 0;
         }
         return mDataSource.size();
     }
-
     public int getLastIndex() {
         if (mDataSource == null) {
             return 0;
         }
         return mDataSource.size() - 1;
     }
-
     public void notifyDataInserted(int dataPosition) {
-
         notifyItemInserted(getRealPosition(dataPosition)); // count header container
     }
-
     public void notifyDataChanged(int dataPosition) {
-
         notifyItemChanged(getRealPosition(dataPosition));
     }
-
     public void notifyDataChanged(int dataPosition, Object payload) {
-
         notifyItemChanged(getRealPosition(dataPosition), payload);
     }
-
     public void notifyDataRemoved(int dataPosition) {
-
         notifyItemRemoved(getRealPosition(dataPosition));
     }
-
     public void notifyDataMoved(int fromPosition, int toPosition) {
         notifyItemMoved(getRealPosition(fromPosition), getRealPosition(toPosition));
     }
-
     public void notifyDataRangeChanged(int dataPosition, int itemCount) {
         notifyItemRangeChanged(getRealPosition(dataPosition), itemCount);
     }
-
     public void notifyDataRangeChanged(int dataPosition, int itemCount, Object payload) {
         notifyItemRangeChanged(getRealPosition(dataPosition), itemCount, payload);
     }
-
     public void notifyDataRangeRemoved(int dataPosition, int itemCount) {
         notifyItemRangeRemoved(getRealPosition(dataPosition), itemCount);
     }
-
     public void notifyDataRangeInserted(int dataPosition, int itemCount) {
         notifyItemRangeInserted(getRealPosition(dataPosition), itemCount);
     }
-
     public void setDataSource(@NonNull List<T> dataSource) {
-        this.mDataSource.clear();
+//        this.mDataSource.clear();
         this.mDataSource = dataSource;
         this.notifyDataSetChanged();
     }
-
     public void addToDataSource(@NonNull T data) {
         hideNoDataView();
         this.mDataSource.add(data);
         this.notifyDataInserted(getLastIndex());
     }
-
     public void addToDataSource(@NonNull List<T> data) {
         hideNoDataView();
         this.mDataSource.addAll(data);
         this.notifyDataRangeInserted(getLastIndex(), data.size());
     }
-
     public void addToDataSource(int position, @NonNull T data) {
         if (position < 0 || position > mDataSource.size()) {
             return;
@@ -511,7 +446,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         this.mDataSource.add(position, data);
         this.notifyDataInserted(position);
     }
-
     public void addToDataSource(int position, @NonNull List<T> data) {
         if (position < 0 || position >= mDataSource.size() || data.size() == 0) {
             return;
@@ -520,7 +454,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         this.mDataSource.addAll(position, data);
         notifyDataRangeInserted(position, data.size());
     }
-
     public void removeFromDataSource(int position) {
         if (position < 0 || position >= mDataSource.size()) {
             return;
@@ -528,7 +461,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         this.mDataSource.remove(position);
         notifyDataRemoved(position);
     }
-
     public void removeFromDataSource(T data) {
         if (data == null) {
             return;
@@ -537,7 +469,6 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         mDataSource.remove(data);
         notifyDataRemoved(position);
     }
-
     public void removeFromDataSource(List<T> data) {
         if (data == null || data.size() == 0) {
             return;
@@ -548,52 +479,41 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
             notifyDataRemoved(position);
         }
     }
-
     public void removeAll() {
         int count = mDataSource.size();
         this.mDataSource.clear();
         notifyDataRangeRemoved(0, count);
     }
-
     public T getFromDataSource(int position) {
         if (position >= 0 && position < mDataSource.size()) {
             return mDataSource.get(position);
         }
         return null;
     }
-
     public List<T> getDataSource() {
         return mDataSource;
     }
-
     protected Context getContext() {
         return mContext;
     }
-
     public LinearLayout getHeaderContainer() {
         return mHeaderContainer;
     }
-
     public LinearLayout getFooterContainer() {
         return mFooterContainer;
     }
-
     public FrameLayout getNoDataContainer() {
         return mNoDataViewContainer;
     }
-
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.mOnItemClickListener = listener;
     }
-
     public void setOnItemLongClickListener(OnItemLongClickListener listener) {
         this.mOnItemLongClickListener = listener;
     }
-
     public OnItemClickListener getOnItemClickListener() {
         return mOnItemClickListener;
     }
-
     public OnItemLongClickListener getOnItemLongClickListener() {
         return mOnItemLongClickListener;
     }
