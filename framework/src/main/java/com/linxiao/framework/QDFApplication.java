@@ -19,6 +19,7 @@ import android.support.annotation.StringRes;
 
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.log.Logger;
+import com.linxiao.framework.toast.ToastAlert;
 
 
 import java.io.ByteArrayInputStream;
@@ -46,7 +47,7 @@ public abstract class QDFApplication extends Application {
         super.onCreate();
         TAG = getClass().getSimpleName();
         this.registerActivityLifecycleCallbacks(new FrameworkActivityLifeCycleCallback());
-
+        ToastAlert.init(this);
     }
     
     /**
