@@ -1,8 +1,12 @@
 package com.linxiao.framework.net;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.franmontiel.persistentcookiejar.PersistentCookieJar;
+import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.linxiao.framework.QDFApplication;
 import com.linxiao.framework.log.Logger;
 
@@ -25,29 +29,73 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.OkHttpClient;
 import okhttp3.internal.platform.Platform;
 
 /**
  * 框架下Retrofit管理类
- * Created by LinXiao on 2016-11-27.
+ * Created by linxiao on 2016-11-27.
  */
 public class RetrofitManager {
 
     private static final String TAG = RetrofitManager.class.getSimpleName();
-
+    
     /**
-     * 提供Http请求的ApiBuilder
+     * 生成用于OKHttpClient持久化Cookie存储的PersistentCookieJar
+     * @return instance of {@link PersistentCookieJar}
      * */
-    public static RetrofitApiBuilder createRetrofitBuilder(String serverUrl) {
-        return new RetrofitApiBuilder()
-                .setServerUrl(serverUrl);
+    public static PersistentCookieJar generatePersistentCookieJar() {
+        return new PersistentCookieJar(
+                new SetCookieCache(),
+                new SharedPrefsCookiePersistor(QDFApplication.getAppContext())
+        );
     }
-
+    
     /**
-     * 提供Https请求的ApiBuilder
-     * <p>此方法为本地不存放证书时使用</p>
+     * https TrustAll 配置，如果需要抓包的话可以打开此配置，否则没有必要
      * */
-    public static RetrofitApiBuilder createRetrofitBuilder(String publicKey, String serverUrl) {
+    public static OkHttpClient.Builder configTrustAll(OkHttpClient.Builder builder) {
+        final TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+            @SuppressLint("TrustAllX509TrustManager")
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain, String authType)
+                    throws CertificateException {}
+            
+            @SuppressLint("TrustAllX509TrustManager")
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain, String authType)
+                    throws CertificateException {}
+            
+            @Override
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return new java.security.cert.X509Certificate[]{};
+            }
+        }};
+        try {
+            // Install the all-trusting trust manager
+            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            // Create an ssl socket factory with our all-trusting manager
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
+            builder.hostnameVerifier(new HostnameVerifier() {
+                @SuppressLint("BadHostnameVerifier")
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return builder;
+    }
+    
+    /**
+     * 信任配置
+     * <p>本地不存放证书时使用</p>
+     * */
+    public static OkHttpClient.Builder configTrust(OkHttpClient.Builder builder, String publicKey) {
         X509TrustManager trustManager = getDefaultTrustManager(publicKey);
         final TrustManager[] trustAllCerts = new TrustManager[]{trustManager};
         // Install the all-trusting trust manager
@@ -55,43 +103,36 @@ public class RetrofitManager {
         try {
             sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-
+        
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             Logger.e(TAG, e);
-            return null;
+            return builder;
         }
         // Create an ssl socket factory with our all-trusting manager
         SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-        return new RetrofitApiBuilder()
-                .setServerUrl(serverUrl)
-                .setSSLSocketFactory(sslSocketFactory, trustManager);
+        builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
+        return builder;
     }
-
+    
     /**
-     * 提供Https请求的ApiBuilder
-     * <p>此方法为本地存放证书时使用</p>
+     * 信任配置
+     * <p>本地存放证书时使用</p>
      * */
-    public static RetrofitApiBuilder createRetrofitBuilder(int[] certificates, String serverUrl) {
+    public static OkHttpClient.Builder configTrust(OkHttpClient.Builder builder, int[] certificates) {
         SSLSocketFactory sslSocketFactory = getSSLSocketFactory(QDFApplication.getAppContext(), certificates);
         X509TrustManager trustManager = Platform.get().trustManager(sslSocketFactory);
         if (sslSocketFactory == null) {
             Logger.e(TAG, "sslSocketFactory is null");
-            return null;
+            return builder;
         }
         if (trustManager == null) {
             Logger.e(TAG, "trustManager is null");
-            return null;
+            return builder;
         }
-        return new RetrofitApiBuilder()
-                .setServerUrl(serverUrl)
-                .setSSLSocketFactory(sslSocketFactory, trustManager);
+        builder.sslSocketFactory(sslSocketFactory, trustManager);
+        return builder;
     }
-
-
-    /**
-     * 获取本地不存放证书时的TrustTrustManager
-     *
-     * */
+    
     private static X509TrustManager getDefaultTrustManager(final String publicKey) {
         return new X509TrustManager() {
             @Override

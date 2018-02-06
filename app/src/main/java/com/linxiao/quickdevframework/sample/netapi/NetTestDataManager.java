@@ -1,7 +1,6 @@
 package com.linxiao.quickdevframework.sample.netapi;
 
 import com.linxiao.framework.manager.BaseDataManager;
-import com.linxiao.framework.net.CookieMode;
 import com.linxiao.framework.net.HttpInfoCatchInterceptor;
 import com.linxiao.framework.net.HttpInfoCatchListener;
 import com.linxiao.framework.net.HttpInfoEntity;
@@ -11,8 +10,11 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
+import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
+import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * 分层架构简单示例
@@ -33,11 +35,19 @@ public class NetTestDataManager extends BaseDataManager {
                 //do something......
             }
         });
-        clientApi = RetrofitManager.createRetrofitBuilder("http://www.weather.com.cn/")
-        .setCookieMode(CookieMode.ADD_BY_ANNOTATION)
+    
+        OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
+        okBuilder.cookieJar(RetrofitManager.generatePersistentCookieJar());
+        okBuilder.addInterceptor(infoCatchInterceptor);
+        RetrofitManager.configTrustAll(okBuilder);
+    
+        Retrofit.Builder builder = new Retrofit.Builder();
+        builder.baseUrl("http://www.weather.com.cn/")
+        .client(okBuilder.build())
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .addCustomInterceptor(infoCatchInterceptor)
-        .build(ClientApi.class);
+        .addConverterFactory(GsonConverterFactory.create());
+        
+        clientApi = builder.build().create(ClientApi.class);
     }
     
     /**

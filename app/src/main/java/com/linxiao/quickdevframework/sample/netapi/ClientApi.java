@@ -2,12 +2,8 @@ package com.linxiao.quickdevframework.sample.netapi;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
-import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 import retrofit2.http.Path;
-
-import static com.linxiao.framework.net.FrameworkNetConstants.ADD_COOKIE_HEADER_STRING;
 
 /**
  *
@@ -15,7 +11,6 @@ import static com.linxiao.framework.net.FrameworkNetConstants.ADD_COOKIE_HEADER_
  */
 public interface ClientApi {
 
-    @Headers(ADD_COOKIE_HEADER_STRING)
     @GET("adat/sk/{cityId}.html")
     Observable<ResponseBody> getWeather(@Path("cityId") String cityId);
 }
