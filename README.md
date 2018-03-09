@@ -13,18 +13,19 @@
 ## Usage
 将项目下载下来将framework模块导入你的app工程即可。  
 详细集成步骤，请参考 [Wiki](https://github.com/ShonLin/QuickDevFramework/wiki)  
-项目有以下分支：  
-#### master
-主要是合并提交记录，README更新等，__framework模块请按需求从其它分支选取__  
 
-#### retrofit-base
-基于Retrofit和基本框架实现的framework模块  
+update：为了方便小项目快速接入，以及工具类和关联资源的维护，目前将原有的retrofit-rx分支与mvvm-rx分支合并到master分支，统一管理。
 
-#### retrofit-rx
-基于RxJava实现异步调用链的framework模块，网络库仍然基于Retrofit，整体上仍采取UI-DataManager-Support的分层架构
+#### 项目有以下分支：  
+##### master
+基于RxJava实现异步调用链的framework模块，网络库基于Retrofit，整体上采取UI-DataManager-Support的分层架构，也包含了MVVM基类和示例。 
 
-#### mvvm-rx
-在retrofit-rx基础上引入Google的android-architecture-components组件作为MVVM实现方案  
+有关MVVM架构的实现在app module内 [mvvm package](https://github.com/ShonLin/QuickDevFramework/tree/master/app/src/main/java/com/linxiao/quickdevframework/sample/mvvm)，
+包含了MVVM基类和基于RxJava的MVVM验证码交互简单实现示例，在想要使用MVVM架构时可以参考，也可以将基类放在Framework模块中
+
+##### retrofit-base
+基于Retrofit和基本框架实现的framework模块，相当于master上的内容去除了RxJava之后的实现。  
+
 
 ## LICENSE
     Copyright 2016 linxiao
