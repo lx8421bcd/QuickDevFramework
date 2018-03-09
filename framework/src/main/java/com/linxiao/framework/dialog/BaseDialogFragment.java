@@ -6,12 +6,14 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.View;
 
+import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment;
+
 
 /**
  * Fragment 基类
- * Created by LinXiao on 2016-07-14.
+ * Created by linxiao on 2016-07-14.
  */
-public abstract class BaseDialogFragment extends AppCompatDialogFragment {
+public abstract class BaseDialogFragment extends RxAppCompatDialogFragment {
 
     public static String TAG;
     

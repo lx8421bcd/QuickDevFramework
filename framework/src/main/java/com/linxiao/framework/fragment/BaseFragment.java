@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.linxiao.framework.log.Logger;
+import com.trello.rxlifecycle2.components.support.RxFragment;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -16,7 +17,7 @@ import io.reactivex.disposables.CompositeDisposable;
  * base Fragment of entire project
  * <p>template for Fragments in the project, used to define common methods </p>
  * */
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends RxFragment {
     protected String TAG;
     
     private View rootView;

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.linxiao.framework.permission.PermissionManager;
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -22,7 +23,7 @@ import io.reactivex.disposables.Disposable;
  * base activity class of entire project
  * <p>template for activities in the project, used to define common methods of activity </p>
  * */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends RxAppCompatActivity {
 
     public static final String ACTION_EXIT_APPLICATION = "exit_application";
 
@@ -30,8 +31,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private boolean printLifeCycle = false;
     private ActivityBaseReceiver mReceiver;
-    
-    private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,7 +85,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (printLifeCycle) {
             Log.d(TAG, "onStop");
         }
-        mCompositeDisposable.clear();
     }
 
     @Override
@@ -117,16 +115,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionManager.handleCallback(this, requestCode, permissions, grantResults);
-    }
-    
-    /**
-     * subscribe data which provide by ViewModel
-     * <p>observed data will unsubscribe while Activity onStop,
-     * for re-subscribe data correctly, suggest perform observe
-     * data in method {@link #onStart()}</p>
-     * */
-    protected void observe(Disposable disposable) {
-        mCompositeDisposable.add(disposable);
     }
 
     /**

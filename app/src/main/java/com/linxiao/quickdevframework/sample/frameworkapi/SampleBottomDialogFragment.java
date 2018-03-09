@@ -8,7 +8,7 @@ import com.linxiao.quickdevframework.R;
 
 /**
  *
- * Created by LinXiao on 2016-12-12.
+ * Created by linxiao on 2016-12-12.
  */
 public class SampleBottomDialogFragment extends BaseBottomDialogFragment {
 

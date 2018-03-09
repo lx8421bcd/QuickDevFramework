@@ -20,7 +20,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-public class CaptchaActivity extends BaseActivity {
+public class CaptchaActivity extends BaseMVVMActivity {
     
     @BindView(R.id.btn_request_captcha)
     Button btnRequestCaptcha;

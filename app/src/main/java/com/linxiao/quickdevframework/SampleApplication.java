@@ -5,7 +5,7 @@ import com.squareup.leakcanary.LeakCanary;
 
 /**
  *
- * Created by LinXiao on 2016-11-27.
+ * Created by linxiao on 2016-11-27.
  */
 public class SampleApplication extends QDFApplication {
 
