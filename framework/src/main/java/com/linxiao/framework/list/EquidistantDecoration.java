@@ -66,7 +66,7 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         int position = parent.getChildLayoutPosition(view);
 
-        int[] rect = getItemOffsetRect(position, parent.getChildCount());
+        int[] rect = getItemOffsetRect(position, state.getItemCount());
 
         outRect.set(rect[0], rect[1], rect[2], rect[3]);
     }
