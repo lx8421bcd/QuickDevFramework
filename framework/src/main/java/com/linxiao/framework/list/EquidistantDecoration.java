@@ -116,6 +116,7 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
         int left, top, right, bottom;
         //纵向
         if (orientation == VERTICAL) {
+            int lastRowStartIndex = itemCount - spanCount + itemCount % spanCount;
             // 只有一列
             if (spanCount == 1) {
                 left = right = spacingSize;
@@ -149,7 +150,7 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
                 bottom = (int) (spacingSize * 1.0f / 3);
             }
             // 纵向最后一列
-            else if (itemCount - position <= spanCount) {
+            else if (position >= lastRowStartIndex) {
                 top = (int) (spacingSize * 1.0f / 3);
                 bottom = spacingSize;
             }
@@ -159,6 +160,7 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
         }
         // 横向
         else {
+            int lastColumnStartIndex = itemCount - spanCount + itemCount % spanCount;
             // 只有一行
             if (spanCount == 1) {
                 top = bottom = spacingSize;
@@ -192,7 +194,7 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
                 right = (int) (spacingSize * 1.0f / 3);
             }
             // 横向最后一列
-            else if (itemCount - position <= spanCount) {
+            else if (position >= lastColumnStartIndex) {
                 left = (int) (spacingSize * 1.0f / 3);
                 right = spacingSize;
             }
