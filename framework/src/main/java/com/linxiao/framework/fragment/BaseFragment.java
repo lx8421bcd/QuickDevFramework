@@ -3,12 +3,15 @@ package com.linxiao.framework.fragment;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
+import android.text.SpannedString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.linxiao.framework.log.Logger;
+import com.linxiao.framework.util.SpanFormatter;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -106,6 +109,18 @@ public abstract class BaseFragment extends RxFragment {
      * set the root view of this fragment like activity</strong>
      * */
     protected abstract void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
+    
+    /**
+     * get spanned string from xml resources
+     * <p>use this method to get the text which include style labels in strings.xml,
+     * support using format args</p>
+     * @param resId string resource id
+     * @param args format args
+     * @return SpannedString
+     */
+    protected SpannedString getSpannedString(@StringRes int resId, Object... args) {
+        return SpanFormatter.format(getText(resId), args);
+    }
     
     
     /**

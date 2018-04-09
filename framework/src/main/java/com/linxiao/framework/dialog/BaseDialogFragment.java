@@ -3,9 +3,12 @@ package com.linxiao.framework.dialog;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatDialogFragment;
+import android.text.SpannedString;
 import android.view.View;
 
+import com.linxiao.framework.util.SpanFormatter;
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment;
 
 
@@ -32,7 +35,20 @@ public abstract class BaseDialogFragment extends RxAppCompatDialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
     }
-
+    
+    /**
+     * get spanned string from xml resources
+     * <p>use this method to get the text which include style labels in strings.xml,
+     * support using format args</p>
+     * @param resId string resource id
+     * @param args format args
+     * @return SpannedString
+     */
+    protected SpannedString getSpannedString(@StringRes int resId, Object... args) {
+        return SpanFormatter.format(getText(resId), args);
+    }
+    
+    
     /**
      * use this method instead of findViewById() to simplify view initialization <br>
      * it's not unchecked because T extends View

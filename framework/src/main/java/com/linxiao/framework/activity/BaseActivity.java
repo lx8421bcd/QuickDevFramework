@@ -8,11 +8,15 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.SpannedString;
 import android.util.Log;
 import android.view.View;
 
 import com.linxiao.framework.permission.PermissionManager;
+import com.linxiao.framework.util.SpanFormatter;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -115,6 +119,18 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionManager.handleCallback(this, requestCode, permissions, grantResults);
+    }
+    
+    /**
+     * get spanned string from xml resources
+     * <p>use this method to get the text which include style labels in strings.xml,
+     * support using format args</p>
+     * @param resId string resource id
+     * @param args format args
+     * @return SpannedString
+     */
+    protected SpannedString getSpannedString(@StringRes int resId, Object... args) {
+        return SpanFormatter.format(getText(resId), args);
     }
 
     /**
