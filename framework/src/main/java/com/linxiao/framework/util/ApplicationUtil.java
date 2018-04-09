@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 
 import com.linxiao.framework.log.Logger;
 
@@ -89,5 +90,25 @@ public class ApplicationUtil {
         intent.setDataAndType(installPackageUri, "application/vnd.android.package-archive");
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+    }
+    
+    /**
+     * 获取手机参数信息
+     * @return mobile device params string
+     */
+    private static String getHandSetInfo() {
+        return "手机型号:" + Build.MODEL
+                + "\n系统版本:" + Build.VERSION.RELEASE
+                + "\n产品型号:" + Build.PRODUCT
+                + "\n版本显示:" + Build.DISPLAY
+                + "\n系统定制商:" + Build.BRAND
+                + "\n设备参数:" + Build.DEVICE
+                + "\n开发代号:" + Build.VERSION.CODENAME
+                + "\nSDK版本号:" + Build.VERSION.SDK_INT
+                + "\nCPU类型:" + Build.CPU_ABI
+                + "\n硬件类型:" + Build.HARDWARE
+                + "\n主机:" + Build.HOST
+                + "\n生产ID:" + Build.ID
+                + "\nROM制造商:" + Build.MANUFACTURER;
     }
 }

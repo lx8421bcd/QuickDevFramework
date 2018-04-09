@@ -1,5 +1,7 @@
 package com.linxiao.framework.util;
 
+import android.text.TextUtils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,8 +32,7 @@ public class RegexUtil {
      * 检查是否为正确邮箱
      * */
     public static boolean checkEmailLegality(String email) {
-
-        return email != null && email.matches("^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$");
+        return !TextUtils.isEmpty(email) && email.matches("^([a-z0-9A-Z]+[-|.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$");
     }
 
     /**

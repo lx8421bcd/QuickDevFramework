@@ -74,7 +74,6 @@ public final class StatusBarUtil {
         if (activity == null) {
             return false;
         }
-        Log.d(TAG, "hardInfo:" + getHandSetInfo());
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return false;
         }
@@ -104,24 +103,6 @@ public final class StatusBarUtil {
                     cachedParams & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
         return true;
-    }
-
-    private static String getHandSetInfo() {
-        String handSetInfo = "手机型号:" + Build.MODEL
-                + "\n系统版本:" + Build.VERSION.RELEASE
-                + "\n产品型号:" + Build.PRODUCT
-                + "\n版本显示:" + Build.DISPLAY
-                + "\n系统定制商:" + Build.BRAND
-                + "\n设备参数:" + Build.DEVICE
-                + "\n开发代号:" + Build.VERSION.CODENAME
-                + "\nSDK版本号:" + Build.VERSION.SDK_INT
-                + "\nCPU类型:" + Build.CPU_ABI
-                + "\n硬件类型:" + Build.HARDWARE
-                + "\n主机:" + Build.HOST
-                + "\n生产ID:" + Build.ID
-                + "\nROM制造商:" + Build.MANUFACTURER // 这行返回的是rom定制商的名称
-                ;
-        return handSetInfo;
     }
 
     /**
