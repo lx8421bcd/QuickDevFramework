@@ -27,6 +27,21 @@ public class BaseMVVMActivity extends BaseActivity {
         mCompositeDisposable.add(disposable);
     }
     
+    
+    /**
+     * used to add data binding in mvvm.
+     * <p>subscribe to the data source provided in ViewModel here </p>
+     * */
+    protected void onCreateDataBinding() {
+        //add data binding
+    }
+    
+    @Override
+    protected void onStart() {
+        super.onStart();
+        onCreateDataBinding();
+    }
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();
