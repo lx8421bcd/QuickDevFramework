@@ -12,7 +12,8 @@ import io.reactivex.schedulers.Schedulers;
 
 /**
  * RxJava 工具类
- * Created by LinXiao on 2016-07-24.
+ * <p>提供RxJava相关常用工具方法</p>
+ * Created by linxiao on 2016-07-24.
  */
 public class RxJavaUtil {
     
@@ -23,7 +24,6 @@ public class RxJavaUtil {
     public static Observable<Integer> countDown(final int seconds) {
         return Observable.interval(0, 1, TimeUnit.SECONDS)
         .subscribeOn(Schedulers.newThread())
-        .observeOn(AndroidSchedulers.mainThread())
         .take(seconds)
         .map(new Function<Long, Integer>() {
             @Override

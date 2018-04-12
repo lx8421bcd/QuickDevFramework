@@ -4,10 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v7.app.AppCompatDialogFragment;
 import android.text.SpannedString;
 import android.view.View;
 
+import com.linxiao.framework.util.ScreenUtil;
 import com.linxiao.framework.util.SpanFormatter;
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment;
 
@@ -48,6 +48,13 @@ public abstract class BaseDialogFragment extends RxAppCompatDialogFragment {
         return SpanFormatter.format(getText(resId), args);
     }
     
+    protected int dp2px(float dpValue) {
+        return ScreenUtil.dp2px(dpValue);
+    }
+    
+    public static int px2dp(float pxValue) {
+        return ScreenUtil.px2dp(pxValue);
+    }
     
     /**
      * use this method instead of findViewById() to simplify view initialization <br>

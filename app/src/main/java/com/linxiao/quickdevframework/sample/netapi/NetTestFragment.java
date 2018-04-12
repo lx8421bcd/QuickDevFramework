@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.rx.SampleSubscriber;
+import com.linxiao.framework.rx.RxSubscriber;
 import com.linxiao.quickdevframework.R;
 
 import butterknife.BindView;
@@ -59,7 +59,7 @@ public class NetTestFragment extends BaseFragment {
                 progressDialog.dismiss();
             }
         })
-        .subscribe(new SampleSubscriber<String>(){
+        .subscribe(new RxSubscriber<String>(){
     
             @Override
             public void onNext(@NonNull String responseBody) {

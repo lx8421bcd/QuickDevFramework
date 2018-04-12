@@ -1,19 +1,15 @@
 package com.linxiao.framework.rx;
 
-import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 
 /**
- * 默认订阅对象实现，可以有选择的实现方法
+ * RxJava 可取消订阅的订阅类
+ * <p>默认订阅对象实现，可以有选择的实现方法</p>
+ *
  * Created by linxiao on 2017/7/2.
  */
-public class SampleSubscriber<T> implements Observer<T> {
-    
-    @Override
-    public void onSubscribe(@NonNull Disposable d) {
-        
-    }
+public class RxSubscriber<T> extends DisposableObserver<T> {
     
     @Override
     public void onNext(@NonNull T t) {

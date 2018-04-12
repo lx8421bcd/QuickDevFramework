@@ -9,18 +9,14 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v7.app.AppCompatActivity;
-import android.text.SpannableString;
 import android.text.SpannedString;
 import android.util.Log;
 import android.view.View;
 
 import com.linxiao.framework.permission.PermissionManager;
+import com.linxiao.framework.util.ScreenUtil;
 import com.linxiao.framework.util.SpanFormatter;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
-
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 
 
 /**
@@ -123,7 +119,15 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     protected SpannedString getSpannedString(@StringRes int resId, Object... args) {
         return SpanFormatter.format(getText(resId), args);
     }
-
+    
+    protected int dp2px(float dpValue) {
+        return ScreenUtil.dp2px(dpValue);
+    }
+    
+    public static int px2dp(float pxValue) {
+        return ScreenUtil.px2dp(pxValue);
+    }
+    
     /**
      * use this method instead of findViewById() to simplify view initialization <br>
      * it's not unchecked because T extends View

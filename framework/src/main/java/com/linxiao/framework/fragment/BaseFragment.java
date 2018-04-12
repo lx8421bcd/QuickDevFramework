@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.linxiao.framework.log.Logger;
+import com.linxiao.framework.util.ScreenUtil;
 import com.linxiao.framework.util.SpanFormatter;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
@@ -122,6 +123,13 @@ public abstract class BaseFragment extends RxFragment {
         return SpanFormatter.format(getText(resId), args);
     }
     
+    protected int dp2px(float dpValue) {
+        return ScreenUtil.dp2px(dpValue);
+    }
+    
+    public static int px2dp(float pxValue) {
+        return ScreenUtil.px2dp(pxValue);
+    }
     
     /**
      * use this method instead of findViewById() to simplify view initialization <br>
