@@ -20,16 +20,19 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.SpannedString;
 import android.text.Spannable;
+import android.text.style.ForegroundColorSpan;
 
 /**
  * Provides {@link String#format} style functions that work with {@link Spanned} strings and preserve formatting.
  * 
  * @author George T. Steel
  *
+ * remark by linxiao
  */
 public class SpanFormatter {
 	
@@ -69,7 +72,7 @@ public class SpanFormatter {
      * @see String#format(Locale, String, Object...)
      */
 	public static SpannedString format(Locale locale, CharSequence format, Object... args){
-		SpannableStringBuilder out = new SpannableStringBuilder(format);
+		SpannableStringBuilder out = new SpannableStringBuilder(fixSpanColor(format));
 		
 		int i = 0;
 		int argAt = -1;
@@ -122,5 +125,20 @@ public class SpanFormatter {
 		}
 		
 		return new SpannedString(out);
+	}
+	
+	private static CharSequence fixSpanColor(CharSequence text) {
+		if (text instanceof Spanned) {
+			final SpannableString s = new SpannableString(text);
+			final ForegroundColorSpan[] spans = s.getSpans(0, s.length(), ForegroundColorSpan.class);
+			for (final ForegroundColorSpan oldSpan : spans) {
+				final ForegroundColorSpan newSpan = new ForegroundColorSpan(oldSpan.getForegroundColor() | 0xFF000000);
+				s.setSpan(newSpan, s.getSpanStart(oldSpan), s.getSpanEnd(oldSpan), s.getSpanFlags(oldSpan));
+				s.removeSpan(oldSpan);
+			}
+			return s;
+		} else {
+			return text;
+		}
 	}
 }
