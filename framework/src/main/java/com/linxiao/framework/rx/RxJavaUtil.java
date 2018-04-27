@@ -23,7 +23,7 @@ public class RxJavaUtil {
      * */
     public static Observable<Integer> countDown(final int seconds) {
         return Observable.interval(0, 1, TimeUnit.SECONDS)
-        .subscribeOn(Schedulers.newThread())
+        .subscribeOn(Schedulers.computation())
         .take(seconds)
         .map(new Function<Long, Integer>() {
             @Override

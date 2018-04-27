@@ -390,12 +390,26 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
         }
         return mDataSource.size();
     }
-    public int getLastIndex() {
-        if (mDataSource == null) {
-            return 0;
-        }
+    
+    /**
+     * 得到最后一个数据的在数据源中的位置
+     * <p>get the last data index in data source</p>
+     *
+     * @return last data index
+     */
+    public int getLastDataIndex() {
         return mDataSource.size() - 1;
     }
+    
+    /**
+     * 得到最后一个item在adapter中的position
+     *  <p>get the position of the last adapter item, including header and footer </p>
+     * @return last item position
+     */
+    public int getLastItemIndex() {
+        return getItemCount() - 1;
+    }
+    
     public void notifyDataInserted(int dataPosition) {
         notifyItemInserted(getRealPosition(dataPosition)); // count header container
     }
@@ -431,12 +445,12 @@ public abstract class BaseRecyclerViewAdapter<T, VH extends BaseRecyclerViewHold
     public void addToDataSource(@NonNull T data) {
         hideNoDataView();
         this.mDataSource.add(data);
-        this.notifyDataInserted(getLastIndex());
+        this.notifyDataInserted(getLastDataIndex());
     }
     public void addToDataSource(@NonNull List<T> data) {
         hideNoDataView();
         this.mDataSource.addAll(data);
-        this.notifyDataRangeInserted(getLastIndex(), data.size());
+        this.notifyDataRangeInserted(getLastDataIndex(), data.size());
     }
     public void addToDataSource(int position, @NonNull T data) {
         if (position < 0 || position > mDataSource.size()) {

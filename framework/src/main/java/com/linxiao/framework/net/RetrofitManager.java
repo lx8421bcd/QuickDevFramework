@@ -114,24 +114,24 @@ public class RetrofitManager {
         return builder;
     }
     
-    /**
-     * 信任配置
-     * <p>本地存放证书时使用</p>
-     * */
-    public static OkHttpClient.Builder configTrust(OkHttpClient.Builder builder, int[] certificates) {
-        SSLSocketFactory sslSocketFactory = getSSLSocketFactory(QDFApplication.getAppContext(), certificates);
-        X509TrustManager trustManager = Platform.get().trustManager(sslSocketFactory);
-        if (sslSocketFactory == null) {
-            Logger.e(TAG, "sslSocketFactory is null");
-            return builder;
-        }
-        if (trustManager == null) {
-            Logger.e(TAG, "trustManager is null");
-            return builder;
-        }
-        builder.sslSocketFactory(sslSocketFactory, trustManager);
-        return builder;
-    }
+//    /**
+//     * 信任配置
+//     * <p>本地存放证书时使用</p>
+//     * */
+//    public static OkHttpClient.Builder configTrust(OkHttpClient.Builder builder, int[] certificates) {
+//        SSLSocketFactory sslSocketFactory = getSSLSocketFactory(QDFApplication.getAppContext(), certificates);
+//        X509TrustManager trustManager = Platform.get().trustManager(sslSocketFactory);
+//        if (sslSocketFactory == null) {
+//            Logger.e(TAG, "sslSocketFactory is null");
+//            return builder;
+//        }
+//        if (trustManager == null) {
+//            Logger.e(TAG, "trustManager is null");
+//            return builder;
+//        }
+//        builder.sslSocketFactory(sslSocketFactory, trustManager);
+//        return builder;
+//    }
     
     private static X509TrustManager getDefaultTrustManager(final String publicKey) {
         return new X509TrustManager() {

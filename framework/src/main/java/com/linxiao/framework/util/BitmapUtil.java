@@ -45,7 +45,7 @@ public class BitmapUtil {
         options.inSampleSize = 1;
         
         // 如果尺寸接近则不压缩，否则进行比例压缩
-        if (widthRatio > 1 || widthRatio > 1) {
+        if (widthRatio > 1 || heightRatio > 1) {
             if (widthRatio > heightRatio) {
                 options.inSampleSize = widthRatio;
             } else {
@@ -60,6 +60,7 @@ public class BitmapUtil {
     
     /**
      * 设定限制大小压缩图片，单位 B
+     * <p>此方法主要降低的是图像的内存占用，并不会降低图像的存储占用</p>
      * <p>此方法将会降低图像质量</p>
      * */
     public static Bitmap compressByLimit(Bitmap bitmap, int limitSize) {
