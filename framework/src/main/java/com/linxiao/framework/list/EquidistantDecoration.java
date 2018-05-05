@@ -111,7 +111,7 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
             spacingDrawable.draw(c);
         }
     }
-
+    
     private int[] getItemOffsetRect(int position, int itemCount) {
         int left, top, right, bottom;
         //纵向
@@ -147,15 +147,15 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
             // 纵向第一行
             if(position < spanCount) {
                 top = spacingSize;
-                bottom = (int) (spacingSize * 1.0f / 3);
+                bottom = (int) (spacingSize * 1.0f / 2);
             }
-            // 纵向最后一列
+            // 纵向最后一行
             else if (position >= lastRowStartIndex) {
-                top = (int) (spacingSize * 1.0f / 3);
+                top = (int) (spacingSize * 1.0f / 2);
                 bottom = spacingSize;
             }
             else {
-                top = bottom = (int) (spacingSize * 2.0f / 3);
+                top = bottom = (int) (spacingSize * 1.0f / 2);
             }
         }
         // 横向
@@ -187,19 +187,19 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
             else {
                 top = bottom = (int) (spacingSize * 2.0f / 3);
             }
-
+            
             // 横向第一列
             if (position < spanCount) {
                 left = spacingSize;
-                right = (int) (spacingSize * 1.0f / 3);
+                right = (int) (spacingSize * 1.0f / 2);
             }
             // 横向最后一列
             else if (position >= lastColumnStartIndex) {
-                left = (int) (spacingSize * 1.0f / 3);
+                left = (int) (spacingSize * 1.0f / 2);
                 right = spacingSize;
             }
             else {
-                left = right = (int) (spacingSize * 2.0f / 3);
+                left = right = (int) (spacingSize * 1.0f / 2);
             }
         }
         return new int[]{left, top, right, bottom};
