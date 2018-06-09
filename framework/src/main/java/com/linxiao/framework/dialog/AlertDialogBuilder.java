@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable;
 
 /**
  *
- * Created by LinXiao on 2016-12-12.
+ * Created by linxiao on 2016-12-12.
  */
 public class AlertDialogBuilder {
 

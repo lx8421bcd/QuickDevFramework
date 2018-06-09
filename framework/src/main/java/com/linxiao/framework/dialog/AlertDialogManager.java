@@ -7,7 +7,7 @@ import com.linxiao.framework.QDFApplication;
 
 /**
  * 应用内消息通知封装
- * Created by LinXiao on 2016-11-25.
+ * Created by linxiao on 2016-11-25.
  */
 public class AlertDialogManager {
 

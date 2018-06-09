@@ -12,7 +12,7 @@ import android.text.TextUtils;
 
 /**
  * 提示对话框
- * Created by LinXiao on 2016-08-07.
+ * Created by linxiao on 2016-08-07.
  */
 public class AlertDialogFragment extends DialogFragment {
     public static final String KEY_TITLE = "title";

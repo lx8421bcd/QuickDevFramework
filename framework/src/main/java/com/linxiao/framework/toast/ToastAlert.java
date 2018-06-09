@@ -53,7 +53,7 @@ import java.util.Map;
  * <p>
  * more and more powerful usage - use custom layout(please see wiki)
  *
- * @author LinXiao, wangxin
+ * @author linxiao, wangxin
  * @since 2016/11/26
  */
 public class ToastAlert {

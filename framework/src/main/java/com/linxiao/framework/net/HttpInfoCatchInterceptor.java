@@ -19,9 +19,21 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
 import okio.BufferedSource;
+import okio.GzipSource;
 
 /**
- * Http请求信息拦截器，在Retrofit build的过程中添加
+ * instance of OkHttp interceptor
+ * <p>
+ * Used to catch http request and response info and
+ * save as {@link HttpInfoEntity}.
+ *
+ * Use method {@link okhttp3.OkHttpClient.Builder#addNetworkInterceptor(Interceptor)} to register
+ * {@link HttpInfoCatchInterceptor} instance into OkHttpClient, if registered instance using
+ * {@link okhttp3.OkHttpClient.Builder#addInterceptor(Interceptor)},
+ * you will unable to get complete network messages.
+ *
+ * </p>
+ *
  * Created by linxiao on 2016/12/4.
  */
 public class HttpInfoCatchInterceptor implements Interceptor {
@@ -33,14 +45,15 @@ public class HttpInfoCatchInterceptor implements Interceptor {
     private boolean catchEnabled;
     
     /**
-     * 是否抓取Http请求信息
-     * */
+     * set catch http info enabled
+     * @param enabled enabled
+     */
     public void setCatchEnabled(boolean enabled) {
         catchEnabled = enabled;
     }
     
     @Override
-    public Response intercept(Chain chain) throws IOException {
+    public Response intercept(@NonNull Chain chain) throws IOException {
         Request request = chain.request();
         if (!catchEnabled || httpInfoCatchListener == null) {
             return chain.proceed(request);
@@ -87,6 +100,21 @@ public class HttpInfoCatchInterceptor implements Interceptor {
             BufferedSource source = responseBody.source();
             source.request(Long.MAX_VALUE); // Buffer the entire requestBody.
             Buffer buffer = source.buffer();
+            
+            // handle gzip
+            if ("gzip".equalsIgnoreCase(response.headers().get("Content-Encoding"))) {
+                GzipSource gzippedResponseBody = null;
+                try {
+                    gzippedResponseBody = new GzipSource(buffer.clone());
+                    buffer = new Buffer();
+                    buffer.writeAll(gzippedResponseBody);
+                } finally {
+                    if (gzippedResponseBody != null) {
+                        gzippedResponseBody.close();
+                    }
+                }
+            }
+            
             Charset charset = UTF8;
             MediaType contentType = responseBody.contentType();
             if (contentType != null) {
@@ -109,9 +137,6 @@ public class HttpInfoCatchInterceptor implements Interceptor {
         return response;
     }
     
-    /**
-     * 检查是否包含可以读取的字符信息
-     * */
     private static boolean isPlaintext(Buffer buffer) {
         try {
             Buffer prefix = new Buffer();

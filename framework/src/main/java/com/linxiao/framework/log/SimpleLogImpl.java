@@ -4,7 +4,7 @@ import android.util.Log;
 
 /**
  * 简易log实现，可以在不需要详细Log信息的时候比如正式环境下使用,以提升性能
- * Created by LinXiao on 2017-01-08.
+ * Created by linxiao on 2017-01-08.
  */
 public class SimpleLogImpl implements LogInterface {
     @Override

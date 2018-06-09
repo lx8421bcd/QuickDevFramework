@@ -16,7 +16,7 @@ import com.linxiao.framework.R;
 
 /**
  * 从底部显示的全屏Dialog基类
- * Created by LinXiao on 2016-12-12.
+ * Created by linxiao on 2016-12-12.
  */
 public abstract class BaseBottomDialogFragment extends BaseDialogFragment {
 

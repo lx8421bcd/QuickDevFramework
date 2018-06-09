@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 /**
  * 框架Log管理类
- * Created by LinXiao on 2017-01-05.
+ * Created by linxiao on 2017-01-05.
  */
 public class Logger {
 

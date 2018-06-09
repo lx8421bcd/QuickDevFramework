@@ -9,7 +9,7 @@ import java.util.Locale;
 
 /**
  *
- * Created by LinXiao on 2016-07-28.
+ * Created by linxiao on 2016-07-28.
  */
 public class MD5Util {
 

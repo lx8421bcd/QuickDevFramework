@@ -18,8 +18,8 @@ import com.trello.rxlifecycle2.components.support.RxFragment;
 import io.reactivex.disposables.CompositeDisposable;
 
 /**
- * base Fragment of entire project
- * <p>template for Fragments in the project, used to define common methods </p>
+ * base Fragment class of entire project
+ * <p>template for Fragments in the project, contains common methods </p>
  * */
 public abstract class BaseFragment extends RxFragment {
     protected String TAG;

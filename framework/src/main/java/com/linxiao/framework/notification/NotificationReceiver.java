@@ -11,7 +11,7 @@ import com.linxiao.framework.log.Logger;
 
 /**
  * 用于接收应用通知消息点击的事件并根据当前应用的状态做出处理
- * Created by LinXiao on 2016-12-05.
+ * Created by linxiao on 2016-12-05.
  */
 public class NotificationReceiver extends BroadcastReceiver {
 

@@ -16,7 +16,7 @@ import com.linxiao.framework.R;
  * 自定义加载布局
  * <p>可以整合加载中, 加载失败, 加载为空几种状态的界面,简化布局, 默认显示内容布局</p>
  *
- * Created by LinXiao on 2016-05-15.
+ * Created by linxiao on 2016-05-15.
  */
 public class LoadingLayout extends FrameLayout {
 

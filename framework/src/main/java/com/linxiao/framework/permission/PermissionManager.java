@@ -42,7 +42,7 @@ import com.linxiao.framework.util.ApplicationUtil;
  *     否则无法通知权限是否授予</strong><br/>
  * </p>
  *
- * Created by LinXiao on 2016-11-24.
+ * Created by linxiao on 2016-11-24.
  */
 public class PermissionManager {
     private static final String TAG = PermissionManager.class.getSimpleName();

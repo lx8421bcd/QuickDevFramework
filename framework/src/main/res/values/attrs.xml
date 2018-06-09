@@ -55,4 +55,19 @@
         <attr name="l_errorView" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="CustomRatingBar" >
+        <attr name="starCount" format="integer"/>
+        <attr name="starWidth" format="dimension"/>
+        <attr name="starHeight" format="dimension"/>
+        <attr name="starPadding" format="dimension"/>
+        <attr name="starMargin" format="dimension"/>
+        <attr name="starClickable" format="boolean"/>
+        <attr name="rating" format="float"/>
+        <attr name="emptyImage" format="reference"/>
+        <attr name="filledImage" format="reference"/>
+        <attr name="halfImage" format="reference"/>
+        <attr name="showHalf" format="boolean"/>
+        <attr name="showPercent" format="boolean"/>
+    </declare-styleable>
+
 </resources>

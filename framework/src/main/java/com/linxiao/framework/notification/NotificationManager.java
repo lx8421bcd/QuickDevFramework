@@ -14,7 +14,7 @@ import java.util.Random;
 
 /**
  * 通知消息包装器
- * Created by LinXiao on 2016-11-27.
+ * Created by linxiao on 2016-11-27.
  */
 public class NotificationManager {
     private static final String TAG = NotificationManager.class.getSimpleName();

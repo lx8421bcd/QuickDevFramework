@@ -11,7 +11,7 @@ import java.util.Locale;
 
 /**
  * 框架下Log实现
- * Created by LinXiao on 2017-01-05.
+ * Created by linxiao on 2017-01-05.
  */
 public class FrameworkLogImpl implements LogInterface {
 

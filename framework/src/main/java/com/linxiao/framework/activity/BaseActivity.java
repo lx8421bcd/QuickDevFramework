@@ -147,10 +147,10 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     }
 
     /**
-     * set is print activity life cycle
+     * set is print activity lifecycle
      * <p>if true, activity will log out life cycle</p>
      * */
-    public void printLifeCycle(boolean printLifeCycle) {
+    public void printLifecycle(boolean printLifeCycle) {
         this.printLifeCycle = printLifeCycle;
     }
 

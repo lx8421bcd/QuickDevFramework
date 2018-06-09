@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * 应用Application基类
  * <p>用于提供Framework模块下Application相关的基础功能，以及为Framework层提供Application Context</p>
- * Created by LinXiao on 2016-11-24.
+ * Created by linxiao on 2016-11-24.
  */
 public abstract class QDFApplication extends Application {
     protected static String TAG;

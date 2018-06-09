@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * 显示顶级Dialog，比如Service弹出Dialog
- * Created by LinXiao on 2016-11-25.
+ * Created by linxiao on 2016-11-25.
  */
 public class TopDialogActivity extends AppCompatActivity {
 
