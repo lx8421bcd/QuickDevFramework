@@ -1,4 +1,4 @@
-package com.linxiao.framework.crash;
+package com.linxiao.framework.common;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.linxiao.framework.QDFApplication;
 import com.linxiao.framework.R;
-import com.linxiao.framework.util.FileUtil;
 
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -18,7 +18,7 @@ import android.util.Log;
 import com.linxiao.framework.R;
 import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.log.Logger;
-import com.linxiao.framework.util.ApplicationUtil;
+import com.linxiao.framework.common.ApplicationUtil;
 
 /**
  * 权限管理类

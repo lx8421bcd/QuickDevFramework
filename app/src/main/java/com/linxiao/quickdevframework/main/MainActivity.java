@@ -17,7 +17,7 @@ import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.list.SingleItemRecyclerAdapter;
-import com.linxiao.framework.toast.ToastAlert;
+import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.framework.log.Logger;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.sample.adapter.AdapterTestFragment;

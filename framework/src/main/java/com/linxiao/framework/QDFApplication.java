@@ -3,7 +3,6 @@ package com.linxiao.framework;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
-import android.app.usage.NetworkStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -19,7 +18,7 @@ import android.support.annotation.StringRes;
 
 import com.linxiao.framework.activity.BaseActivity;
 import com.linxiao.framework.log.Logger;
-import com.linxiao.framework.toast.ToastAlert;
+import com.linxiao.framework.common.ToastAlert;
 
 
 import java.io.ByteArrayInputStream;
@@ -191,6 +190,9 @@ public abstract class QDFApplication extends Application {
             return false;
         }
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager == null) {
+            return false;
+        }
         List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
         if (appProcesses == null) {
             return false;

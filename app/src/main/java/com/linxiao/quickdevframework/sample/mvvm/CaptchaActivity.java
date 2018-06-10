@@ -8,8 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.linxiao.framework.activity.BaseActivity;
-import com.linxiao.framework.toast.ToastAlert;
+import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.quickdevframework.R;
 
 import butterknife.BindView;

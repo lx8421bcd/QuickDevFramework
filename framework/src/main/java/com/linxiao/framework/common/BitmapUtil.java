@@ -1,4 +1,4 @@
-package com.linxiao.framework.util;
+package com.linxiao.framework.common;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

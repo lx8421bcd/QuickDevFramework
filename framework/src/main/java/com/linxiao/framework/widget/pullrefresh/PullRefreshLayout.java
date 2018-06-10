@@ -9,7 +9,6 @@ import android.support.v4.view.NestedScrollingParent;
 import android.support.v4.view.NestedScrollingParentHelper;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,9 +26,7 @@ import android.widget.FrameLayout;
  * 下拉刷新头部使用{@link RefreshView} 铺成 MATCH_PARENT 的布局，
  * 各种下拉刷新效果直接继承 RefreshView 并在其中实现即可
  * </p>
- *
- * @author linxiao
- * @since 2017/6/21.
+ * Created by linxiao on 2017/6/21.
  */
 public class PullRefreshLayout extends FrameLayout implements NestedScrollingParent, NestedScrollingChild {
     private static final String TAG = PullRefreshLayout.class.getSimpleName();
@@ -64,6 +61,7 @@ public class PullRefreshLayout extends FrameLayout implements NestedScrollingPar
     // 插值器，用于回弹动画
     private Interpolator mDecelerateInterpolator;
     // 滑动判断距离
+    private float preX;
     private int mTouchSlop;
     private int mSpinnerFinalOffset;
     // 滑动总距离
@@ -296,7 +294,7 @@ public class PullRefreshLayout extends FrameLayout implements NestedScrollingPar
     public int getNestedScrollAxes() {
         return mNestedScrollingParentHelper.getNestedScrollAxes();
     }
-
+    
     /* ------------- implements from NestedScrollingChild ------------- */
     
     @Override
@@ -345,7 +343,7 @@ public class PullRefreshLayout extends FrameLayout implements NestedScrollingPar
     public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
         return mNestedScrollingChildHelper.dispatchNestedPreFling(velocityX, velocityY);
     }
-
+    
     /* ------------------------------------------------------------- */
     
     private void captureTargetView() {
@@ -405,6 +403,7 @@ public class PullRefreshLayout extends FrameLayout implements NestedScrollingPar
         final int action = MotionEventCompat.getActionMasked(ev);
         switch (action) {
         case MotionEvent.ACTION_DOWN:
+            preX = MotionEvent.obtain(ev).getX();
             dragging = true;
             if (!refreshing) {
                 moveRefreshHeader(0, true);
@@ -421,6 +420,11 @@ public class PullRefreshLayout extends FrameLayout implements NestedScrollingPar
             mDragPercent = 0;
             break;
         case MotionEvent.ACTION_MOVE:
+            float eventX = ev.getX();
+            float xDiff = Math.abs(eventX - preX);
+            if (xDiff > mTouchSlop) {
+                return false;
+            }
             if (mActivePointerId == INVALID_POINTER) {
                 return false;
             }

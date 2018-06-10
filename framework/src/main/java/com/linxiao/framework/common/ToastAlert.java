@@ -1,4 +1,4 @@
-package com.linxiao.framework.toast;
+package com.linxiao.framework.common;
 
 import android.annotation.TargetApi;
 import android.app.Application;

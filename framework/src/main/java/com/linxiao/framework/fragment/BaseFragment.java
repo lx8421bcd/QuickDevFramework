@@ -4,15 +4,14 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
-import android.support.v4.app.Fragment;
 import android.text.SpannedString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.linxiao.framework.log.Logger;
-import com.linxiao.framework.util.ScreenUtil;
-import com.linxiao.framework.util.SpanFormatter;
+import com.linxiao.framework.common.ScreenUtil;
+import com.linxiao.framework.common.SpanFormatter;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
 import io.reactivex.disposables.CompositeDisposable;

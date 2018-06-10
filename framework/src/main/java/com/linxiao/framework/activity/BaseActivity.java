@@ -14,8 +14,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.linxiao.framework.permission.PermissionManager;
-import com.linxiao.framework.util.ScreenUtil;
-import com.linxiao.framework.util.SpanFormatter;
+import com.linxiao.framework.common.ScreenUtil;
+import com.linxiao.framework.common.SpanFormatter;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 

@@ -2,7 +2,7 @@ package com.linxiao.quickdevframework.sample.mvvm;
 
 import android.arch.lifecycle.ViewModel;
 
-import com.linxiao.framework.util.RegexUtil;
+import com.linxiao.framework.common.RegexUtil;
 
 import java.util.concurrent.TimeUnit;
 

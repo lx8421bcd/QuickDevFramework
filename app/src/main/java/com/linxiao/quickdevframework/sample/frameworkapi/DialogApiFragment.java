@@ -13,7 +13,7 @@ import android.widget.CompoundButton;
 import com.linxiao.framework.dialog.AlertDialogBuilder;
 import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.toast.ToastAlert;
+import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.quickdevframework.R;
 
 import butterknife.BindView;

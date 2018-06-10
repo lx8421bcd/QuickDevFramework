@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.toast.ToastAlert;
+import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.framework.file.FileSizeListener;
 import com.linxiao.framework.file.FileCountListener;
 import com.linxiao.framework.file.FileManager;
