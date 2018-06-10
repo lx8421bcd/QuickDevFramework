@@ -1,11 +1,12 @@
 package com.linxiao.quickdevframework.main;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.linxiao.framework.list.BaseRecyclerViewAdapter;
+import com.linxiao.framework.list.SingleItemRecyclerAdapter;
 import com.linxiao.framework.list.BaseRecyclerViewHolder;
 import com.linxiao.quickdevframework.R;
 
@@ -13,7 +14,7 @@ import com.linxiao.quickdevframework.R;
  *
  * Created by linxiao on 2016/11/30.
  */
-public class ApiSampleListAdapter extends BaseRecyclerViewAdapter<ApiSampleObject, ApiSampleListAdapter.ApiSampleHolder> {
+public class ApiSampleListAdapter extends SingleItemRecyclerAdapter<ApiSampleObject, ApiSampleListAdapter.ApiSampleHolder> {
 
     public ApiSampleListAdapter(Context context) {
         super(context);
@@ -21,6 +22,7 @@ public class ApiSampleListAdapter extends BaseRecyclerViewAdapter<ApiSampleObjec
 
     @Override
     protected void setData(ApiSampleHolder holder, int position, ApiSampleObject data) {
+        Log.d(TAG, "setData: " + position + data.toString());
         holder.textView.setText(data.getApiName());
     }
 
@@ -33,7 +35,7 @@ public class ApiSampleListAdapter extends BaseRecyclerViewAdapter<ApiSampleObjec
 
         TextView textView;
 
-        public ApiSampleHolder(View itemView) {
+        ApiSampleHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView.findViewById(R.id.tvApiSample);
         }

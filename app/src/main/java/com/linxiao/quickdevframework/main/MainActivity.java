@@ -16,7 +16,7 @@ import android.view.KeyEvent;
 import android.view.View;
 
 import com.linxiao.framework.activity.BaseActivity;
-import com.linxiao.framework.list.BaseRecyclerViewAdapter;
+import com.linxiao.framework.list.SingleItemRecyclerAdapter;
 import com.linxiao.framework.toast.ToastAlert;
 import com.linxiao.framework.log.Logger;
 import com.linxiao.quickdevframework.R;
@@ -95,12 +95,13 @@ public class MainActivity extends BaseActivity {
         apiSampleList.add(new ApiSampleObject("Network API", "NetTestFragment"));
         apiSampleList.add(new ApiSampleObject("Adapter API", "AdapterTestFragment"));
         apiSampleList.add(new ApiSampleObject("Widgets", "WidgetsGuideFragment"));
-
+        
+        
         ApiSampleListAdapter adapter = new ApiSampleListAdapter(this);
         adapter.setDataSource(apiSampleList);
-        adapter.setOnItemClickListener(new BaseRecyclerViewAdapter.OnItemClickListener() {
+        adapter.setOnItemClickListener(new SingleItemRecyclerAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(BaseRecyclerViewAdapter adapter, View itemView, int position) {
+            public void onItemClick(SingleItemRecyclerAdapter adapter, View itemView, int position) {
                 ApiSampleObject object = (ApiSampleObject) adapter.getFromDataSource(position);
                 switchFragment(object.getTarget());
                 if (getSupportActionBar() != null) {
@@ -125,9 +126,9 @@ public class MainActivity extends BaseActivity {
         addFragment(new NetTestFragment(), "NetTestFragment");
         addFragment(new AdapterTestFragment(), "AdapterTestFragment");
         addFragment(new WidgetsGuideFragment(), "WidgetsGuideFragment");
-
+    
         currentTag = "DialogApiFragment";
-        switchFragment("ApplicationApiFragment");
+        switchFragment("AdapterTestFragment");
     }
 
     private void restoreFragments(@NonNull Bundle savedInstanceState) {

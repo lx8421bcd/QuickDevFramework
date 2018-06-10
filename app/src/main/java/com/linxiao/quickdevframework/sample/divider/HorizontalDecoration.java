@@ -8,7 +8,7 @@ import android.view.View;
 
 /**
  * 水平列表分隔线
- * Created by LinXiao on 2016-08-07.
+ * Created by linxiao on 2016-08-07.
  */
 public class HorizontalDecoration extends RecyclerView.ItemDecoration {
 

@@ -7,7 +7,7 @@ import retrofit2.http.Path;
 
 /**
  *
- * Created by LinXiao on 2016-12-04.
+ * Created by linxiao on 2016-12-04.
  */
 public interface ClientApi {
 

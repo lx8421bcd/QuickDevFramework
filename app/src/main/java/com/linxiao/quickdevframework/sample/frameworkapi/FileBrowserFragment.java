@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.linxiao.framework.list.BaseRecyclerViewAdapter;
+import com.linxiao.framework.list.SingleItemRecyclerAdapter;
 import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.fragment.BaseFragment;
 import com.linxiao.framework.file.FileManager;
@@ -67,9 +67,9 @@ public class FileBrowserFragment extends BaseFragment {
 
         fileListAdapter = new FileListAdapter(getContext());
         rcvFileList.setAdapter(fileListAdapter);
-        fileListAdapter.setOnItemClickListener(new BaseRecyclerViewAdapter.OnItemClickListener() {
+        fileListAdapter.setOnItemClickListener(new SingleItemRecyclerAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(BaseRecyclerViewAdapter adapter, View itemView, int position) {
+            public void onItemClick(SingleItemRecyclerAdapter adapter, View itemView, int position) {
 
             }
         });

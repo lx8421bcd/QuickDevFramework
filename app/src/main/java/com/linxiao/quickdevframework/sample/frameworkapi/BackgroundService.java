@@ -8,7 +8,7 @@ import com.linxiao.framework.dialog.AlertDialogManager;
 
 /**
  * 用于测试全局ActivityDialog的使用
- * Created by LinXiao on 2016-12-11.
+ * Created by linxiao on 2016-12-11.
  */
 public class BackgroundService extends IntentService {
 

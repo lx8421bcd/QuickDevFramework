@@ -3,7 +3,7 @@ package com.linxiao.quickdevframework.sample.adapter;
 import android.content.Context;
 import android.view.ViewGroup;
 
-import com.linxiao.framework.list.BaseRecyclerViewAdapter;
+import com.linxiao.framework.list.SingleItemRecyclerAdapter;
 import com.linxiao.framework.list.BaseRecyclerViewHolder;
 import com.linxiao.quickdevframework.R;
 
@@ -11,7 +11,7 @@ import com.linxiao.quickdevframework.R;
  *
  * Created by linxiao on 2017/1/16.
  */
-public class SampleAdapter extends BaseRecyclerViewAdapter<String, BaseRecyclerViewHolder> {
+public class SampleAdapter extends SingleItemRecyclerAdapter<String, BaseRecyclerViewHolder> {
 
 
     public SampleAdapter(Context context) {

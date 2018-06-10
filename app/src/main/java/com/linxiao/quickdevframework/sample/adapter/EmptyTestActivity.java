@@ -65,6 +65,7 @@ public class EmptyTestActivity extends BaseActivity {
         showEmpty = true;
         showError = false;
         showData = false;
+        mAdapter.removeAll();
         refreshData();
     }
 
