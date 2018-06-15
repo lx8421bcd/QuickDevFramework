@@ -2,14 +2,20 @@ package com.linxiao.framework.net;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
+import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
-import com.linxiao.framework.QDFApplication;
+import com.linxiao.framework.common.GlobalContext;
 import com.linxiao.framework.log.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.KeyManagementException;
@@ -29,26 +35,164 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.internal.platform.Platform;
+import okhttp3.Request;
+import okhttp3.Response;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 /**
- * 框架下Retrofit管理类
+ * Retrofit management class
+ * <p>
+ * provides the default retrofit config method, default OkHttpClient Builder
+ * and default {@link HttpInfoCatchInterceptor} implementation.
+ * see code for more details.
+ * </p>
+ *
  * Created by linxiao on 2016-11-27.
  */
 public class RetrofitManager {
 
     private static final String TAG = RetrofitManager.class.getSimpleName();
     
+    private static ClearableCookieJar cookieJar;
+    private static HttpInfoCatchInterceptor infoCatchInterceptor;
+    private static OkHttpClient mOkHttpClient;
+    private static CommonApi commonApi;
+    
+    // use handler to ensure that an entity logout will print one by one
+    private static Handler logHandler = new Handler(Looper.myLooper()) {
+    
+        @Override
+        public void handleMessage(Message msg) {
+            HttpInfoEntity entity = (HttpInfoEntity) msg.obj;
+            if (entity == null) {
+                return;
+            }
+            entity.logOut();
+        }
+    };
+    
+    private static HttpInfoCatchListener infoCatchListener = new HttpInfoCatchListener() {
+        
+        @Override
+        public void onInfoCaught(final HttpInfoEntity entity) {
+            if (entity == null) {
+                return;
+            }
+            Message msg = new Message();
+            msg.obj = entity;
+            logHandler.sendMessage(msg);
+        }
+    };
+    
+    static {
+        mOkHttpClient = getDefaultOKHttpClientBuilder().build();
+        commonApi = initClientApi("", CommonApi.class);
+    }
+    
+    
     /**
-     * 生成用于OKHttpClient持久化Cookie存储的PersistentCookieJar
-     * @return instance of {@link PersistentCookieJar}
-     * */
-    public static PersistentCookieJar generatePersistentCookieJar() {
-        return new PersistentCookieJar(
-                new SetCookieCache(),
-                new SharedPrefsCookiePersistor(QDFApplication.getAppContext())
+     * get retrofit common http request method
+     * @return {@link CommonApi}
+     */
+    public static CommonApi getCommonApi() {
+        return commonApi;
+    }
+    
+    /**
+     * init a Retrofit API declares interface class wtih default framework config
+     * <p>
+     * using default framework config means:
+     * 1. use default OkHttpClient; <br/>
+     * 2. use RxJava2CallAdapter; <br/>
+     * 3. use Gson to serialize and deserialize; <br/>
+     * 4. use {@link ApiConverterFactory} to convert response data; <br/>
+     * </p>
+     * @param baseUrl base server address for the API declares
+     * @param apiClazz class object of API declares interface
+     * @param <T> type define of API declares interface
+     * @return instance of API interface
+     */
+    public static <T> T initClientApi(String baseUrl, Class<T> apiClazz) {
+        Retrofit.Builder builder = new Retrofit.Builder();
+        if (!TextUtils.isEmpty(baseUrl) && !baseUrl.endsWith("/")) {
+            baseUrl += "/";
+            builder.baseUrl(baseUrl);
+        }
+        builder.client(mOkHttpClient);
+        builder.addCallAdapterFactory(RxJava2CallAdapterFactory.create());
+        builder.addConverterFactory(ApiConverterFactory.create());
+        return builder.build().create(apiClazz);
+    }
+    
+    /**
+     * clear cookies in default OkHttpClient instance
+     */
+    public static void clearCookie() {
+        cookieJar.clearSession();
+    }
+    
+    /**
+     * get default OkHttpClient instance
+     * @return instance of OkHttpClient, global static
+     */
+    public static OkHttpClient getOKHttpClient() {
+        return mOkHttpClient;
+    }
+    
+    /**
+     * get default OkHttpClient Builder
+     * <p>see method implementation for more details</p>
+     */
+    public static OkHttpClient.Builder getDefaultOKHttpClientBuilder() {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        // config cookie persistent storage
+        cookieJar = new PersistentCookieJar(
+          new SetCookieCache(),
+          new SharedPrefsCookiePersistor(GlobalContext.get())
         );
+        builder.cookieJar(cookieJar);
+        
+        // Https trust config, you can use trust all
+        // in debug mode to catch http info more easier
+        builder = configTrustAll(builder);
+        
+        // if you want to do some custom header modification before request and effect on global,
+        // you should do it at here
+        builder.addNetworkInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request.Builder builder = chain.request().newBuilder();
+                //TODO ADD YOUR CUSTOM HEADER HERE
+//                builder.addHeader("User-Agent", USER_AGENT);
+                Request request = builder.build();
+                
+                return chain.proceed(request);
+            }
+        });
+        // config http request and response catch
+        infoCatchInterceptor = new HttpInfoCatchInterceptor();
+        infoCatchInterceptor.setHttpInfoCatchListener(infoCatchListener);
+        infoCatchInterceptor.setCatchEnabled(true);
+        //注意这里必须使用addNetworkInterceptor，否则无法打印完整信息
+        builder.addNetworkInterceptor(infoCatchInterceptor);
+        
+        return builder;
+    }
+    
+    /**
+     * set http info catch enabled
+     * <p>
+     * enable http info catch will completely print request and response details
+     * during a single http request
+     * </p>
+     *
+     * @param enabled 是否启用
+     * */
+    public static void setHttpInfoCatchEnabled(boolean enabled) {
+        infoCatchInterceptor.setCatchEnabled(enabled);
     }
     
     /**
@@ -114,24 +258,20 @@ public class RetrofitManager {
         return builder;
     }
     
-//    /**
-//     * 信任配置
-//     * <p>本地存放证书时使用</p>
-//     * */
-//    public static OkHttpClient.Builder configTrust(OkHttpClient.Builder builder, int[] certificates) {
-//        SSLSocketFactory sslSocketFactory = getSSLSocketFactory(QDFApplication.getAppContext(), certificates);
-//        X509TrustManager trustManager = Platform.get().trustManager(sslSocketFactory);
-//        if (sslSocketFactory == null) {
-//            Logger.e(TAG, "sslSocketFactory is null");
-//            return builder;
-//        }
-//        if (trustManager == null) {
-//            Logger.e(TAG, "trustManager is null");
-//            return builder;
-//        }
-//        builder.sslSocketFactory(sslSocketFactory, trustManager);
-//        return builder;
-//    }
+    protected static HostnameVerifier getHostnameVerifier(final String[] hostUrls) {
+        return new HostnameVerifier() {
+            
+            public boolean verify(String hostname, SSLSession session) {
+                boolean ret = false;
+                for (String host : hostUrls) {
+                    if (host.equalsIgnoreCase(hostname)) {
+                        ret = true;
+                    }
+                }
+                return ret;
+            }
+        };
+    }
     
     private static X509TrustManager getDefaultTrustManager(final String publicKey) {
         return new X509TrustManager() {
@@ -208,21 +348,6 @@ public class RetrofitManager {
             Logger.e(TAG, e);
         }
         return null;
-    }
-
-    protected static HostnameVerifier getHostnameVerifier(final String[] hostUrls) {
-        return new HostnameVerifier() {
-
-            public boolean verify(String hostname, SSLSession session) {
-                boolean ret = false;
-                for (String host : hostUrls) {
-                    if (host.equalsIgnoreCase(hostname)) {
-                        ret = true;
-                    }
-                }
-                return ret;
-            }
-        };
     }
 
 }
