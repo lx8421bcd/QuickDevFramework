@@ -89,7 +89,7 @@ public class RetrofitManager {
     
     static {
         mOkHttpClient = getDefaultOKHttpClientBuilder().build();
-        commonApi = initClientApi("", CommonApi.class);
+        commonApi = initClientApi("https://useless.url.placeholder", CommonApi.class);
     }
     
     
