@@ -37,7 +37,7 @@ public class NetTestDataManager extends BaseDataManager {
         });
     
         OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
-        okBuilder.cookieJar(RetrofitManager.generatePersistentCookieJar());
+//        okBuilder.cookieJar(RetrofitManager.());
         okBuilder.addInterceptor(infoCatchInterceptor);
         RetrofitManager.configTrustAll(okBuilder);
     

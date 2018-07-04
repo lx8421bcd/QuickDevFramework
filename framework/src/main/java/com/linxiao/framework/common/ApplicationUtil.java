@@ -96,7 +96,7 @@ public class ApplicationUtil {
      * 获取手机参数信息
      * @return mobile device params string
      */
-    private static String getHandSetInfo() {
+    public static String getHandSetInfo() {
         return "手机型号:" + Build.MODEL
                 + "\n系统版本:" + Build.VERSION.RELEASE
                 + "\n产品型号:" + Build.PRODUCT

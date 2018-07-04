@@ -95,8 +95,8 @@ public class MainActivity extends BaseActivity {
         apiSampleList.add(new ApiSampleObject("Network API", "NetTestFragment"));
         apiSampleList.add(new ApiSampleObject("Adapter API", "AdapterTestFragment"));
         apiSampleList.add(new ApiSampleObject("Widgets", "WidgetsGuideFragment"));
-        
-        
+
+
         ApiSampleListAdapter adapter = new ApiSampleListAdapter(this);
         adapter.setDataSource(apiSampleList);
         adapter.setOnItemClickListener(new SingleItemRecyclerAdapter.OnItemClickListener() {
@@ -126,7 +126,7 @@ public class MainActivity extends BaseActivity {
         addFragment(new NetTestFragment(), "NetTestFragment");
         addFragment(new AdapterTestFragment(), "AdapterTestFragment");
         addFragment(new WidgetsGuideFragment(), "WidgetsGuideFragment");
-    
+
         currentTag = "DialogApiFragment";
         switchFragment("AdapterTestFragment");
     }
