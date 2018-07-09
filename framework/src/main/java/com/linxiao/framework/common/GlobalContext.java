@@ -34,13 +34,14 @@ public final class GlobalContext {
     /**
      * 通过反射获取AppContext，避免直接使用static context
      */
+    @SuppressWarnings("JavaReflectionInvocation")
     @SuppressLint("PrivateApi")
     private static Context getAppContext() {
         Application application = null;
         try {
             application = (Application) Class.forName("android.app.ActivityThread")
-                    .getMethod("currentApplication")
-                    .invoke(null, (Object[]) null);
+            .getMethod("currentApplication")
+            .invoke(null, (Object[]) null);
         } catch (Exception e) {
             e.printStackTrace();
         }

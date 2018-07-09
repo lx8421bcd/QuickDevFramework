@@ -25,11 +25,6 @@ public class WidgetsGuideFragment extends BaseFragment {
         setContentView(R.layout.fragment_widgets_guide, container);
         ButterKnife.bind(this, getContentView());
     }
-
-    @OnClick(R.id.btnViewPager)
-    public void onCusViewPagerClick(View v) {
-        startActivity(new Intent(getActivity(), ViewPagerActivity.class));
-    }
     
     @OnClick(R.id.btnMVVMSample)
     public void onMVVMSampleClick(View v) {
