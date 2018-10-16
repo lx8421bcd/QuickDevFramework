@@ -12,6 +12,19 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 public abstract class ScrollPageLoader extends RecyclerView.OnScrollListener {
 
     private boolean isSlidingToLast;
+    private int offset;
+
+    public ScrollPageLoader() {
+        offset = 1;
+    }
+
+    /**
+     *
+     * @param offset 偏移量，即倒数第offset个item可见时触发分页加载
+     */
+    public ScrollPageLoader(int offset) {
+        this.offset = offset;
+    }
 
     /**
      * 是否有更多的分页数据
@@ -54,7 +67,7 @@ public abstract class ScrollPageLoader extends RecyclerView.OnScrollListener {
         if (layoutManager instanceof LinearLayoutManager) {
             int pos = ((LinearLayoutManager)layoutManager).findLastVisibleItemPosition();
             int totalItemCount = layoutManager.getItemCount();
-            pageLoadEnabled = pos == (totalItemCount -1);
+            pageLoadEnabled = pos >= (totalItemCount - offset);
         }
         else if (layoutManager instanceof StaggeredGridLayoutManager) {
             int[] lastPositions = ((StaggeredGridLayoutManager)layoutManager).findLastVisibleItemPositions(null);
@@ -68,7 +81,7 @@ public abstract class ScrollPageLoader extends RecyclerView.OnScrollListener {
                 }
             }
             int totalItemCount = layoutManager.getItemCount();
-            pageLoadEnabled = lastVisiblePos == (totalItemCount -1);
+            pageLoadEnabled = lastVisiblePos >= (totalItemCount - offset);
         }
         // add more default judgement class here
 
