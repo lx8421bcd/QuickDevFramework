@@ -20,20 +20,20 @@ import java.util.List;
  * @author linxiao
  * Create on 2018/6/10.
  */
-public abstract class SingleItemRecyclerAdapter<T, VH extends BaseRecyclerViewHolder> extends BaseRecyclerViewAdapter<VH> {
+public abstract class SingleItemAdapter<T, VH extends BaseRecyclerViewHolder> extends BaseRecyclerViewAdapter<VH> {
     /**
      * item click listener in RecyclerView
      * */
     public interface OnItemClickListener {
         
-        void onItemClick(SingleItemRecyclerAdapter adapter, View itemView, int position);
+        void onItemClick(SingleItemAdapter adapter, View itemView, int position);
     }
     /**
      * item long click Listener in RecyclerView
      * */
     public interface OnItemLongClickListener {
         
-        void onItemLongClick(SingleItemRecyclerAdapter adapter, View itemView, int position);
+        void onItemLongClick(SingleItemAdapter adapter, View itemView, int position);
     }
     
     private OnItemClickListener mOnItemClickListener;
@@ -43,7 +43,7 @@ public abstract class SingleItemRecyclerAdapter<T, VH extends BaseRecyclerViewHo
         @Override
         public void onClick(View v) {
             int position = (int) v.getTag(R.id.tag_on_item_click);
-            mOnItemClickListener.onItemClick(SingleItemRecyclerAdapter.this, v, position);
+            mOnItemClickListener.onItemClick(SingleItemAdapter.this, v, position);
         }
     };
     
@@ -51,14 +51,14 @@ public abstract class SingleItemRecyclerAdapter<T, VH extends BaseRecyclerViewHo
         @Override
         public boolean onLongClick(View v) {
             int position = (int) v.getTag(R.id.tag_on_item_click);
-            mOnItemLongClickListener.onItemLongClick(SingleItemRecyclerAdapter.this, v, position);
+            mOnItemLongClickListener.onItemLongClick(SingleItemAdapter.this, v, position);
             return true;
         }
     };
     
     private List<T> mDataSource;
     
-    public SingleItemRecyclerAdapter(Context context) {
+    public SingleItemAdapter(Context context) {
         super(context);
         mDataSource = new ArrayList<>();
     }

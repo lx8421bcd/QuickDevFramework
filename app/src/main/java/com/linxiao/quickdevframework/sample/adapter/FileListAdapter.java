@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.linxiao.framework.list.SingleItemRecyclerAdapter;
+import com.linxiao.framework.list.SingleItemAdapter;
 import com.linxiao.framework.list.BaseRecyclerViewHolder;
 import com.linxiao.quickdevframework.R;
 
@@ -22,7 +22,7 @@ import butterknife.ButterKnife;
  * solution2：在操作时扫描
  * Created by linxiao on 2017/4/17.
  */
-public class FileListAdapter extends SingleItemRecyclerAdapter<File, FileListAdapter.FileItemHolder> {
+public class FileListAdapter extends SingleItemAdapter<File, FileListAdapter.FileItemHolder> {
 
     public FileListAdapter(Context context) {
         super(context);
