@@ -2,18 +2,12 @@ package com.linxiao.framework.list;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+
+import com.linxiao.framework.R;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * adapter template that contains single type data source management
@@ -48,7 +42,7 @@ public abstract class SingleItemRecyclerAdapter<T, VH extends BaseRecyclerViewHo
     private View.OnClickListener itemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            int position = (int) v.getTag();
+            int position = (int) v.getTag(R.id.tag_on_item_click);
             mOnItemClickListener.onItemClick(SingleItemRecyclerAdapter.this, v, position);
         }
     };
@@ -56,7 +50,7 @@ public abstract class SingleItemRecyclerAdapter<T, VH extends BaseRecyclerViewHo
     private View.OnLongClickListener itemLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
-            int position = (int) v.getTag();
+            int position = (int) v.getTag(R.id.tag_on_item_click);
             mOnItemLongClickListener.onItemLongClick(SingleItemRecyclerAdapter.this, v, position);
             return true;
         }
@@ -79,7 +73,7 @@ public abstract class SingleItemRecyclerAdapter<T, VH extends BaseRecyclerViewHo
     
     @Override
     protected void onBindDataViewHolder(@NonNull VH holder, int dataPosition) {
-        holder.itemView.setTag(dataPosition);
+        holder.itemView.setTag(R.id.tag_on_item_click, dataPosition);
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener(itemClickListener);
         }
