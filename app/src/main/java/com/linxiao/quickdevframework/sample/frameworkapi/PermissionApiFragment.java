@@ -27,8 +27,9 @@ public class PermissionApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnRequestSample)
     public void onRequestPermissionClick(View v) {
-        PermissionManager.performWithPermission(Manifest.permission.READ_CONTACTS)
-        .perform(getActivity(),new RequestPermissionCallback() {
+        PermissionManager.createPermissionOperator()
+        .requestAudioRecord()
+        .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
                 AlertDialogManager.showAlertDialog("权限已授予");
@@ -43,7 +44,8 @@ public class PermissionApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnRequestWithRationale)
     public void onRationaleClick(View v) {
-        PermissionManager.performWithPermission(Manifest.permission.SEND_SMS)
+        PermissionManager.createPermissionOperator()
+        .addRequestPermission(Manifest.permission.SEND_SMS)
         .showRationaleBeforeRequest("请授予发送短信权限权限以启用功能")
         .perform(getActivity(),new RequestPermissionCallback() {
             @Override
@@ -60,13 +62,12 @@ public class PermissionApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnDoOnProhibited)
     public void OnProhibitedClick(View v) {
-        PermissionManager.performWithPermission(Manifest.permission.READ_PHONE_STATE)
+        PermissionManager.createPermissionOperator()
+        .addRequestPermission(Manifest.permission.READ_PHONE_STATE)
         .showRationaleBeforeRequest("请两次以上请求申请权限然后勾选\"不再提醒\"查看功能")
-        .doOnProhibited(new PermissionProhibitedListener() {
-            @Override
-            public void onProhibited(String permission) {
-                PermissionManager.showPermissionProhibitedDialog(getActivity(), permission);
-            }
+        .doOnProhibited(permission -> {
+            // default handle
+            PermissionManager.showPermissionProhibitedDialog(getActivity(), permission);
         })
         .perform(getActivity(),new RequestPermissionCallback() {
             @Override
@@ -83,7 +84,9 @@ public class PermissionApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnRequestAlertWindow)
     public void onReqSysAlertClick(View v) {
-        PermissionManager.requestSystemAlertWindowPermission(getActivity(), new RequestPermissionCallback() {
+        PermissionManager.createPermissionOperator()
+        .requestManageOverlayPermission()
+        .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
                 AlertDialogManager.showAlertDialog("权限已授予");
@@ -98,7 +101,9 @@ public class PermissionApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnRequestWriteSettings)
     public void onReqWriteSettingsClick(View v) {
-        PermissionManager.requestWriteSystemSettingsPermission(getActivity(), new RequestPermissionCallback() {
+        PermissionManager.createPermissionOperator()
+        .requestManageOverlayPermission()
+        .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
                 AlertDialogManager.showAlertDialog("权限已授予");

@@ -80,15 +80,9 @@ public class FileBrowserFragment extends BaseFragment {
      * 加载文件路径，将文件夹下的列表
      * */
     private void loadPath(final File path) {
-        PermissionManager.performWithPermission(
-        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        android.Manifest.permission.READ_EXTERNAL_STORAGE)
-        .doOnProhibited(new PermissionProhibitedListener() {
-            @Override
-            public void onProhibited(String permission) {
-                AlertDialogManager.showAlertDialog("请授予文件管理权限以查看演示效果");
-            }
-        })
+        PermissionManager.createPermissionOperator()
+        .requestSDCard()
+        .doOnProhibited(permission -> AlertDialogManager.showAlertDialog("请授予文件管理权限以查看演示效果"))
         .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {

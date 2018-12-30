@@ -98,8 +98,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        PermissionManager.onSysAlertPermissionResult(this, requestCode);
-        PermissionManager.onWriteSysSettingsPermissionResult(this, requestCode);
+        PermissionManager.onActivityResult(this, requestCode, resultCode, data);
     }
 
     @Override

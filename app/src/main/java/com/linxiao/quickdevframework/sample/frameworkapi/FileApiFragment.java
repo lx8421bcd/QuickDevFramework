@@ -48,9 +48,8 @@ public class FileApiFragment extends BaseFragment {
     protected void onCreateContentView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setContentView(R.layout.fragment_file_api, container);
         ButterKnife.bind(this, getContentView());
-        PermissionManager.performWithPermission(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE)
+        PermissionManager.createPermissionOperator()
+        .requestSDCard()
         .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
