@@ -116,9 +116,9 @@ public class TopDialogActivity extends AppCompatActivity {
     }
 
     @Override
-    public void finish() {
-        super.finish();
+    protected void onPause() {
         overridePendingTransition(0, 0); //取消关闭Activity时的动画
+        super.onPause();
     }
 
     /**
