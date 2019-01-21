@@ -1,4 +1,4 @@
-package com.linxiao.framework.util;
+package com.linxiao.framework.common;
 
 import com.linxiao.framework.log.Logger;
 

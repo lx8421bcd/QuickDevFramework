@@ -1,8 +1,10 @@
 package com.linxiao.framework.list;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 
 /**
  * RecyclerView 滚动式分页加载监听器
@@ -11,7 +13,35 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
  */
 public abstract class ScrollPageLoader extends RecyclerView.OnScrollListener {
 
-    private boolean isSlidingToLast;
+    // 触发滑动方向标志位
+    private boolean movingToTrigger;
+
+    private int offset;
+    private boolean reverse = false;
+
+    public ScrollPageLoader() {
+        offset = 1;
+    }
+
+    /**
+     *
+     * @param offset 偏移量，即倒数第offset个item可见时触发分页加载
+     */
+    public ScrollPageLoader(int offset) {
+        this.offset = offset;
+    }
+
+    /**
+     * @param reverse 是否反向分页，比如下拉分页
+     */
+    public ScrollPageLoader(boolean reverse) {
+        this.reverse = reverse;
+    }
+
+    public ScrollPageLoader(int offset, boolean reverse) {
+        this.offset = offset;
+        this.reverse = reverse;
+    }
 
     /**
      * 是否有更多的分页数据
@@ -36,48 +66,80 @@ public abstract class ScrollPageLoader extends RecyclerView.OnScrollListener {
     }
 
     @Override
-    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-        isSlidingToLast = dy > 0;
+    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+        movingToTrigger = (!reverse && dy > 0) || (reverse && dy < 0);
     }
 
     @Override
-    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-        // 只检测下划
-        if (!isSlidingToLast) {
+    public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+        // 如果未向触发方向滑动,不处理
+        if (!movingToTrigger) {
             return;
         }
         boolean pageLoadEnabled = false;
-        if (!hasMoreData()) {
-            return;
-        }
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         if (layoutManager instanceof LinearLayoutManager) {
-            int pos = ((LinearLayoutManager)layoutManager).findLastVisibleItemPosition();
-            int totalItemCount = layoutManager.getItemCount();
-            pageLoadEnabled = pos == (totalItemCount -1);
+            if (!reverse) {
+                int pos = ((LinearLayoutManager)layoutManager).findLastVisibleItemPosition();
+                int lastPos = layoutManager.getItemCount() - 1;
+                pageLoadEnabled = pos >= (lastPos - offset);
+            }
+            else {
+                int pos = ((LinearLayoutManager)layoutManager).findFirstVisibleItemPosition();
+                pageLoadEnabled = pos <= offset;
+            }
         }
         else if (layoutManager instanceof StaggeredGridLayoutManager) {
-            int[] lastPositions = ((StaggeredGridLayoutManager)layoutManager).findLastVisibleItemPositions(null);
-            int lastVisiblePos = 0;
-            if (lastPositions == null) {
-                return;
-            }
-            for (int pos : lastPositions) {
-                if (pos > lastVisiblePos) {
-                    lastVisiblePos = pos;
+            if (!reverse) {
+                int[] lastPositions = ((StaggeredGridLayoutManager)layoutManager).findLastVisibleItemPositions(null);
+                if (lastPositions != null) {
+                    int lastVisiblePos = max(lastPositions);
+                    int lastPos = layoutManager.getItemCount() - 1;
+                    pageLoadEnabled = lastVisiblePos >= (lastPos - offset);
                 }
             }
-            int totalItemCount = layoutManager.getItemCount();
-            pageLoadEnabled = lastVisiblePos == (totalItemCount -1);
+            else {
+                int[] firstPositions = ((StaggeredGridLayoutManager)layoutManager).findFirstVisibleItemPositions(null);
+                if (firstPositions != null) {
+                    int firstVisiblePos = min(firstPositions);
+                    pageLoadEnabled = firstVisiblePos <= offset;
+                }
+            }
         }
         // add more default judgement class here
-
         else {
             pageLoadEnabled = onCustomJudgePageLoadEnabled(layoutManager);
         }
 
-        if (pageLoadEnabled) {
+        if (pageLoadEnabled && hasMoreData()) {
             onPageLoadEnabled();
         }
+        movingToTrigger = false;
+    }
+
+    private int max(int [] arr) {
+        if (arr == null || arr.length == 0) {
+            return Integer.MIN_VALUE;
+        }
+        int ret = arr[0];
+        for (int a : arr) {
+            if (a > ret) {
+                ret = a;
+            }
+        }
+        return ret;
+    }
+
+    private int min(int [] arr) {
+        if (arr == null || arr.length == 0) {
+            return Integer.MIN_VALUE;
+        }
+        int ret = arr[0];
+        for (int a : arr) {
+            if (a < ret) {
+                ret = a;
+            }
+        }
+        return ret;
     }
 }

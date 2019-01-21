@@ -7,8 +7,8 @@ import android.support.annotation.StringRes;
 import android.text.SpannedString;
 import android.view.View;
 
-import com.linxiao.framework.util.ScreenUtil;
-import com.linxiao.framework.util.SpanFormatter;
+import com.linxiao.framework.common.ScreenUtil;
+import com.linxiao.framework.common.SpanFormatter;
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment;
 
 

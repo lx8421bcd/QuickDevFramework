@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.linxiao.framework.list.SingleItemRecyclerAdapter;
+import com.linxiao.framework.list.SingleItemAdapter;
 import com.linxiao.framework.list.BaseRecyclerViewHolder;
 import com.linxiao.quickdevframework.R;
 
@@ -14,7 +14,7 @@ import com.linxiao.quickdevframework.R;
  *
  * Created by linxiao on 2016/11/30.
  */
-public class ApiSampleListAdapter extends SingleItemRecyclerAdapter<ApiSampleObject, ApiSampleListAdapter.ApiSampleHolder> {
+public class ApiSampleListAdapter extends SingleItemAdapter<ApiSampleObject, ApiSampleListAdapter.ApiSampleHolder> {
 
     public ApiSampleListAdapter(Context context) {
         super(context);

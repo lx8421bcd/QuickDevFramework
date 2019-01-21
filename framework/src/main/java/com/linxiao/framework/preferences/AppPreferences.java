@@ -12,9 +12,9 @@ import com.linxiao.framework.QDFApplication;
  *
  * Created by linxiao on 2014/8/21.
  * */
-public class PreferenceManager {
+public class AppPreferences {
 
-    private PreferenceManager() {}
+    private AppPreferences() {}
 
     /**
      * 获取默认的SharedPreferences

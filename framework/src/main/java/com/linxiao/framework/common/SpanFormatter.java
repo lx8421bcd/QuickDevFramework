@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package com.linxiao.framework.util;
+package com.linxiao.framework.common;
 
 import java.util.Locale;
 import java.util.regex.Matcher;

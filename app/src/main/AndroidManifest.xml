@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.SEND_SMS"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
         android:name=".SampleApplication"
@@ -34,7 +35,6 @@
         <activity android:name=".sample.frameworkapi.NotificationTargetActivity"/>
         <activity android:name=".sample.adapter.EmptyTestActivity"/>
         <activity android:name=".sample.adapter.HeaderFooterActivity"/>
-        <activity android:name=".sample.widget.ViewPagerActivity"/>
         <activity android:name=".sample.mvvm.CaptchaActivity">
         </activity>
     </application>

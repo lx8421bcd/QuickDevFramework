@@ -61,9 +61,7 @@ public class FileManager {
      * 检查是否有文件操作权限
      * */
     public static boolean hasFileOperatePermission() {
-        boolean hasPermission = PermissionManager.checkPermissionsGranted(QDFApplication.getAppContext(),
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        boolean hasPermission = PermissionManager.hasSDCardPermission();
         if (!hasPermission) {
             Logger.e(TAG, "can't operate files, permission denied");
         }
