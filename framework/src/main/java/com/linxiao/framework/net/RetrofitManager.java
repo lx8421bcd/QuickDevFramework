@@ -26,6 +26,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -35,6 +39,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -74,24 +81,21 @@ public class RetrofitManager {
         }
     };
     
-    private static HttpInfoCatchListener infoCatchListener = new HttpInfoCatchListener() {
-        
-        @Override
-        public void onInfoCaught(final HttpInfoEntity entity) {
-            if (entity == null) {
-                return;
-            }
-            Message msg = new Message();
-            msg.obj = entity;
-            logHandler.sendMessage(msg);
+    private static HttpInfoCatchListener infoCatchListener = entity -> {
+        if (entity == null) {
+            return;
         }
+        Message msg = new Message();
+        msg.obj = entity;
+        logHandler.sendMessage(msg);
     };
     
     static {
         mOkHttpClient = getDefaultOKHttpClientBuilder().build();
         commonApi = initClientApi("https://useless.url.placeholder", CommonApi.class);
     }
-    
+
+    private RetrofitManager(){}
     
     /**
      * get retrofit common http request method
@@ -125,6 +129,39 @@ public class RetrofitManager {
         builder.addCallAdapterFactory(RxJava2CallAdapterFactory.create());
         builder.addConverterFactory(ApiConverterFactory.create());
         return builder.build().create(apiClazz);
+    }
+
+    /**
+     * get CookieJar from OkHttpClient instance in the framework
+     * @return cookieJar
+     */
+    public static CookieJar getCookieJar() {
+        return mOkHttpClient.cookieJar();
+    }
+
+    /**
+     * a simple method to add custom cookie into OkHttpClient int the framework
+     * @param forUrl the url your cookie using for
+     * @param cookie cookie body
+     */
+    public static void addCookie(String forUrl, Cookie cookie) {
+        HttpUrl url = HttpUrl.parse(forUrl);
+        if (url == null) {
+            return;
+        }
+        getCookieJar().saveFromResponse(url, Collections.singletonList(cookie));
+    }
+
+    /**
+     * load cached cookies from framework network module
+     * @return list of cookie
+     */
+    public static List<Cookie> getCachedCookies(String forUrl) {
+        HttpUrl url = HttpUrl.parse(forUrl);
+        if (url == null) {
+            return new ArrayList<>();
+        }
+        return getCookieJar().loadForRequest(url);
     }
     
     /**
@@ -161,16 +198,13 @@ public class RetrofitManager {
         
         // if you want to do some custom header modification before request and effect on global,
         // you should do it at here
-        builder.addNetworkInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request.Builder builder = chain.request().newBuilder();
-                //TODO ADD YOUR CUSTOM HEADER HERE
-//                builder.addHeader("User-Agent", USER_AGENT);
-                Request request = builder.build();
-                
-                return chain.proceed(request);
-            }
+        builder.addNetworkInterceptor(chain -> {
+            Request.Builder builder1 = chain.request().newBuilder();
+            //TODO ADD YOUR CUSTOM HEADER HERE
+//            builder.addHeader("User-Agent", USER_AGENT);
+            Request request = builder1.build();
+
+            return chain.proceed(request);
         });
         // config http request and response catch
         infoCatchInterceptor = new HttpInfoCatchInterceptor();
@@ -222,13 +256,7 @@ public class RetrofitManager {
             // Create an ssl socket factory with our all-trusting manager
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
             builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @SuppressLint("BadHostnameVerifier")
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
+            builder.hostnameVerifier((hostname, session) -> true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -259,17 +287,14 @@ public class RetrofitManager {
     }
     
     protected static HostnameVerifier getHostnameVerifier(final String[] hostUrls) {
-        return new HostnameVerifier() {
-            
-            public boolean verify(String hostname, SSLSession session) {
-                boolean ret = false;
-                for (String host : hostUrls) {
-                    if (host.equalsIgnoreCase(hostname)) {
-                        ret = true;
-                    }
+        return (hostname, session) -> {
+            boolean ret = false;
+            for (String host : hostUrls) {
+                if (host.equalsIgnoreCase(hostname)) {
+                    ret = true;
                 }
-                return ret;
             }
+            return ret;
         };
     }
     
@@ -333,9 +358,7 @@ public class RetrofitManager {
                 //读取本地证书
                 InputStream is = context.getResources().openRawResource(certificates[i]);
                 keyStore.setCertificateEntry(String.valueOf(i), certificateFactory.generateCertificate(is));
-                if (is != null) {
-                    is.close();
-                }
+                is.close();
             }
             //Create a TrustManager that trusts the CAs in our keyStore
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
