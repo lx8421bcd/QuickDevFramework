@@ -152,7 +152,7 @@ public class HttpInfoCatchInterceptor implements Interceptor {
                 }
             }
             return true;
-        } catch (EOFException e) {
+        } catch (Exception e) {
             return false; // Truncated UTF-8 sequence.
         }
     }

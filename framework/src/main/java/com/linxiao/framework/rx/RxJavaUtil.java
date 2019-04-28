@@ -25,12 +25,7 @@ public class RxJavaUtil {
         return Observable.interval(0, 1, TimeUnit.SECONDS)
         .subscribeOn(Schedulers.computation())
         .take(seconds)
-        .map(new Function<Long, Integer>() {
-            @Override
-            public Integer apply(@NonNull Long increaseTime) throws Exception {
-                return seconds - increaseTime.intValue();
-            }
-        });
+        .map(increaseTime -> seconds - increaseTime.intValue());
     }
     
     
