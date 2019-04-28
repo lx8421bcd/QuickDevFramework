@@ -33,6 +33,8 @@
         <attr name="badge_hideOnZero" format="boolean" />
         <attr name="badge_numberEllipsis" format="string|reference" />
         <attr name="badge_ellipsisDigit" format="integer" />
+        <attr name="badge_strokeWidth" format="dimension" />
+        <attr name="badge_strokeColor" format="color" />
     </declare-styleable>
 
     <declare-styleable name="HorizontalNumberPicker">
