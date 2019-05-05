@@ -24,7 +24,8 @@ public class DateUtil {
 	public static final String HOUR_FORMAT_12 = "hh";
 	public static final String MINUTE = "mm";
 	public static final String SECOND = "ss";
-	
+	public static final String MILLSECOND = "SSS";
+
 	/*常用时间单位毫秒数，到天，再往上没有意义了，请通过日历获取*/
 	/**一秒的毫秒数*/
 	public static final long MS_ONE_SECOND = 1000;
@@ -43,21 +44,29 @@ public class DateUtil {
 		calendar.set(Calendar.MILLISECOND, 0);
 		return calendar.getTimeInMillis();
 	}
-	
+
 	/**
 	 * get current timestamp as millisecond
 	 */
 	public static long currentTimeMillis() {
 		return System.currentTimeMillis();
 	}
-	
+
 	/**
 	 * get current timestamp as second
 	 */
 	public static long currentTimeSecond() {
 		return System.currentTimeMillis() / 1000;
 	}
-	
+
+	/**
+	 * 当前时间字符串，按格式转换
+	 * @param format 格式
+	 */
+	public static String currentTimeString(String format) {
+		return formatDate(format, currentTimeMillis());
+	}
+
 	/**
 	 * get current time as {@link Date} object
 	 */
@@ -66,7 +75,7 @@ public class DateUtil {
 		calendar.setTimeZone(TimeZone.getDefault());
 		return calendar.getTime();
 	}
-	
+
 	/**
 	 * convert date string to {@link Date} object
 	 *
@@ -83,7 +92,7 @@ public class DateUtil {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * convert {@link Date} object to timestamp
 	 *
@@ -114,7 +123,7 @@ public class DateUtil {
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * convert {@link Date} object to string
 	 *
@@ -131,7 +140,7 @@ public class DateUtil {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * convert timestamp object to string
 	 *
@@ -208,5 +217,119 @@ public class DateUtil {
 	public static boolean isInThePeriod(long start, long end) {
 		long cur = currentTimeMillis();
 		return start <= cur && cur <= end;
+	}
+
+	/**
+	 * 比较两个时间字符串的大小
+	 * @param format 格式化字符串
+	 * @param compared 开始时间
+	 * @param compareTo 结束时间
+	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
+	 */
+	public static int compareDate(String format, Date compared, Date compareTo) {
+		return compareDate(format, formatDate(format, compared), formatDate(format, compareTo));
+	}
+
+	/**
+	 * 比较两个时间字符串的大小
+	 * @param compared 开始时间
+	 * @param compareTo 结束时间
+	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
+	 */
+	public static int compareDate(long compared, long compareTo) {
+		return Long.compare(compared, compareTo);
+	}
+
+	/**
+	 * 比较两个时间字符串的大小
+	 * @param format 格式化字符串
+	 * @param compared 开始时间
+	 * @param compareTo 结束时间
+	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
+	 */
+	public static int compareDate(String format, Date compared, long compareTo) {
+		return compareDate(format, formatDate(format, compared), formatDate(format, compareTo));
+	}
+
+	/**
+	 * 比较两个时间字符串的大小
+	 * @param format 格式化字符串
+	 * @param compared 开始时间
+	 * @param compareTo 结束时间
+	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
+	 */
+	public static int compareDate(String format, long compared, Date compareTo) {
+		return compareDate(format, formatDate(format, compared), formatDate(format, compareTo));
+	}
+
+	/**
+	 * 比较两个时间字符串的大小
+	 * @param format 格式化字符串
+	 * @param compared 开始时间
+	 * @param compareTo 结束时间
+	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
+	 */
+	public static int compareDate(String format, String compared, Date compareTo) {
+		return compareDate(format, compared, formatDate(format, compareTo));
+	}
+
+	/**
+	 * 比较两个时间字符串的大小
+	 * @param format 格式化字符串
+	 * @param compared 开始时间
+	 * @param compareTo 结束时间
+	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
+	 */
+	public static int compareDate(String format, String compared, long compareTo) {
+		return compareDate(format, compared, formatDate(format, compareTo));
+	}
+
+	/**
+	 * 比较两个时间字符串的大小
+	 * @param format 格式化字符串
+	 * @param compared 开始时间
+	 * @param compareTo 结束时间
+	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
+	 */
+	public static int compareDate(String format, long compared, String compareTo) {
+		return compareDate(format, formatDate(format, compared), compareTo);
+	}
+
+	/**
+	 * 比较两个时间字符串的大小
+	 * @param format 格式化字符串
+	 * @param compared 开始时间
+	 * @param compareTo 结束时间
+	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
+	 */
+	public static int compareDate(String format, Date compared, String compareTo) {
+		return compareDate(format, formatDate(format, compared), compareTo);
+	}
+
+	/**
+	 * 比较两个时间字符串的大小
+	 * @param format 格式化字符串
+	 * @param compared 开始时间
+	 * @param compareTo 结束时间
+	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
+	 */
+	public static int compareDate(String format, String compared, String compareTo){
+		int flag = 0;
+		SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
+		try {
+			long result = (sdf.parse(compared).getTime() - sdf.parse(compareTo).getTime());
+			if(result > 0) {
+				return 1;
+			}
+			else if(result < 0) {
+				return -1;
+			}
+			else {
+				return 0;
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return flag;
 	}
 }
