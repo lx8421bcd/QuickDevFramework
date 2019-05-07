@@ -1,5 +1,9 @@
 # QuickDevFramework
+个人长期维护的以基础分层架构为核心实现的的Android框架library，代码库。
 
+
+
+## 项目简介
 此项目为本人在工作和个人项目中积累的开发经验凝结而成的代码库，长期维护，项目主要有以下几块构成：
 
 1. 以个人构思的UI-DataManager-Support分层架构为项目的基础骨架，整理出一个业务无关的基础框架module，以便在有新项目时通过此库快速完成框架搭建。
@@ -19,7 +23,7 @@
 #### 已经实现/封装较为完善的功能
 * __RxJava2集成__，应用内集成了RxJava、RxAndroid、RxLifeCycle等内容，大量组件以RxJava为异步实现基础
 * __分层框架基类__（Activity、Fragment、DataManager、Dialog等），为整个项目的骨架，为需要使用Android组件相关功能和生命周期的SDK和模块提供支持，同时为派生类统一提供大量便利的方法。
-* __网络层封装__，基于OkHttp3和Retrofit2，提供快速构建RetrofitApi的方法、统一处理网络异常和数据解析、网络调用抓包、Cookie管理、SSL配置等功能
+* __网络层封装__，基于OkHttp3和Retrofit2，提供快速构建RetrofitApi的方法、统一处理网络异常和数据解析、网络调用抓包、Cookie管理、SSL配置等功能。
 * __权限管理__，封装自Android 6.0以来的运行时权限管理，简化权限申请和回调配置。
 * __通知栏通知构建封装__，封装Notification构建，保证必须参数在构建时填入，同时封装Notification点击事件，提供唤起应用之前台，先启动应用再打开指定页面等功能。
 * __SharedPreferences__，封装SharedPreferences常用存取操作，简化调用，为不同等级的SharedPreferences对象提供构建方法。
