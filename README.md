@@ -93,8 +93,8 @@
 
 ##### 修改基类
 现有项目的组件基类（Activity、Fragment等）如果继承了某些SDK内特定的基类，比如皮肤包等，就无法直接继承framework module中的框架基类了，此时的应对办法有2种
-1.修改framework module中的框架基类，让其继承现有项目Base类的基类，此办法适用于SDK特定基类本身也属于业务无关，适用范围很广的情况
-2.将framework module中基类内部的实现复制到业务module的Base类中。这样做的话一个module中要维护一套基类代码，不太推荐，但这是应对继承冲突行之有效的解决方法之一，特别是SDK特定基类所属SDK本身不适合迁移到framework中的情况下。
+1. 修改framework module中的框架基类，让其继承现有项目Base类的基类，此办法适用于SDK特定基类本身也属于业务无关，适用范围很广的情况
+2. 将framework module中基类内部的实现复制到业务module的Base类中。这样做的话一个module中要维护一套基类代码，不太推荐，但这是应对继承冲突行之有效的解决方法之一，特别是SDK特定基类所属SDK本身不适合迁移到framework中的情况下。
 
 ##### Style统一
 整合你业务module中的Style与framework中的Style，方法与上面的全新集成基本一致。
