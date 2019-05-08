@@ -1,4 +1,4 @@
-package com.linxiao.framework.activity;
+package com.linxiao.framework.architecture;
 
 import android.content.Intent;
 import android.os.Bundle;

@@ -54,7 +54,9 @@
 
 ## 如何使用
 作为一个应用业务无关的应用框架/工具资源合集module，在任何情况下都推荐使用源码集成的方式将此项目整合进你的Android项目，以便修改和扩展。
+
 如果你将此项目当作一个代码库，想从中获取对你项目中有用的代码部分集成，那么直接将工具类、工具组件复制进你项目使用即可。
+
 如果你准备集成此项目作为资源库和框架module，将framework module 导入你的项目，并在app的build.gradle中添加
  ```gradle
  implementation project(':framework')

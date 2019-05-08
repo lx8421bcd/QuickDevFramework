@@ -1,4 +1,4 @@
-package com.linxiao.framework.manager;
+package com.linxiao.framework.architecture;
 
 /**
  * base data manager class

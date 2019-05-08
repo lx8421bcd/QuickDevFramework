@@ -1,4 +1,4 @@
-package com.linxiao.framework.manager;
+package com.linxiao.framework.common;
 
 /**
  * 分页器，用于分页加载接口

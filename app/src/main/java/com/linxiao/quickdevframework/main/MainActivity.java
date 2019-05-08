@@ -15,7 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
 
-import com.linxiao.framework.activity.BaseActivity;
+import com.linxiao.framework.architecture.BaseActivity;
 import com.linxiao.framework.list.SingleItemAdapter;
 import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.framework.log.Logger;

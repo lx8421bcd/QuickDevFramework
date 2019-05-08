@@ -1,4 +1,4 @@
-package com.linxiao.framework.dialog;
+package com.linxiao.framework.architecture;
 
 import android.app.Dialog;
 import android.content.res.Resources;

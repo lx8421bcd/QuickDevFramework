@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.linxiao.framework.activity.BaseSplashActivity;
+import com.linxiao.framework.architecture.BaseSplashActivity;
 import com.linxiao.quickdevframework.R;
 
 public class SplashActivity extends BaseSplashActivity {

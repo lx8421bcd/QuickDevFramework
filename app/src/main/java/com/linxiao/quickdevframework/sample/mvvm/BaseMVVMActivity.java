@@ -1,6 +1,6 @@
 package com.linxiao.quickdevframework.sample.mvvm;
 
-import com.linxiao.framework.activity.BaseActivity;
+import com.linxiao.framework.architecture.BaseActivity;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;

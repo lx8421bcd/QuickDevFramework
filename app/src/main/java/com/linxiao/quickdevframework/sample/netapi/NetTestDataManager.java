@@ -1,6 +1,6 @@
 package com.linxiao.quickdevframework.sample.netapi;
 
-import com.linxiao.framework.manager.BaseDataManager;
+import com.linxiao.framework.architecture.BaseDataManager;
 import com.linxiao.framework.net.HttpInfoCatchInterceptor;
 import com.linxiao.framework.net.HttpInfoCatchListener;
 import com.linxiao.framework.net.HttpInfoEntity;

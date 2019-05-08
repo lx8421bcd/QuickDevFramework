@@ -2,14 +2,12 @@ package com.linxiao.quickdevframework.sample.frameworkapi;
 
 import android.Manifest;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.linxiao.framework.dialog.AlertDialogManager;
-import com.linxiao.framework.fragment.BaseFragment;
-import com.linxiao.framework.permission.PermissionProhibitedListener;
+import com.linxiao.framework.architecture.BaseFragment;
 import com.linxiao.framework.permission.PermissionManager;
 import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;

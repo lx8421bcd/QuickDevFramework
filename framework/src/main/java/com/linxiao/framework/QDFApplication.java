@@ -16,7 +16,7 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
-import com.linxiao.framework.activity.BaseActivity;
+import com.linxiao.framework.architecture.BaseActivity;
 import com.linxiao.framework.log.Logger;
 import com.linxiao.framework.common.ToastAlert;
 

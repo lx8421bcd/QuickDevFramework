@@ -3,7 +3,7 @@ package com.linxiao.quickdevframework.sample.frameworkapi;
 import android.os.Bundle;
 import android.view.View;
 
-import com.linxiao.framework.activity.BaseActivity;
+import com.linxiao.framework.architecture.BaseActivity;
 import com.linxiao.quickdevframework.R;
 
 import butterknife.ButterKnife;

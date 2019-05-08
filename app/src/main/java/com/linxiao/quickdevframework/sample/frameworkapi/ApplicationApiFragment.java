@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.linxiao.framework.fragment.BaseFragment;
+import com.linxiao.framework.architecture.BaseFragment;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.SampleApplication;
 

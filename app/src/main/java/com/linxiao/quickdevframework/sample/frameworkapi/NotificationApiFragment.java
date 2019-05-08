@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.linxiao.framework.fragment.BaseFragment;
+import com.linxiao.framework.architecture.BaseFragment;
 import com.linxiao.framework.notification.NotificationManager;
 import com.linxiao.quickdevframework.R;
 

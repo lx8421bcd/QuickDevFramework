@@ -1,6 +1,5 @@
 package com.linxiao.quickdevframework.sample.frameworkapi;
 
-import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -8,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.linxiao.framework.dialog.AlertDialogManager;
-import com.linxiao.framework.fragment.BaseFragment;
+import com.linxiao.framework.architecture.BaseFragment;
 import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.framework.file.FileSizeListener;
 import com.linxiao.framework.file.FileCountListener;

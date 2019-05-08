@@ -1,29 +1,46 @@
-package com.linxiao.framework.activity;
+package com.linxiao.framework.architecture;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.CheckResult;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v7.app.AppCompatActivity;
 import android.text.SpannedString;
 import android.util.Log;
 import android.view.View;
 
-import com.linxiao.framework.permission.PermissionManager;
 import com.linxiao.framework.common.ScreenUtil;
 import com.linxiao.framework.common.SpanFormatter;
-import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+import com.linxiao.framework.permission.PermissionManager;
+import com.trello.rxlifecycle2.LifecycleProvider;
+import com.trello.rxlifecycle2.LifecycleTransformer;
+import com.trello.rxlifecycle2.RxLifecycle;
+import com.trello.rxlifecycle2.android.ActivityEvent;
+import com.trello.rxlifecycle2.android.RxLifecycleAndroid;
+
+import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
 
 
 /**
  * base activity class of entire project
- * <p>template for activities in the project, used to define common methods of activity </p>
- * */
-public abstract class BaseActivity extends RxAppCompatActivity {
+ * <p>
+ * template for activities in the project, used to define common methods of activity,
+ * extends from Android base appcompat component class, manually implemented the implementation
+ * of RxLifeCycle, if you have to extends framework base class from some third sdk, just
+ * change parent class is ok.
+ * </p>
+ *
+ * @author linxiao
+ * @since 2016-12-05
+ */
+public abstract class BaseActivity extends AppCompatActivity  implements LifecycleProvider<ActivityEvent> {
 
     public static final String ACTION_EXIT_APPLICATION = "exit_application";
 
@@ -32,9 +49,45 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     private boolean printLifeCycle = false;
     private ActivityBaseReceiver mReceiver;
 
+    private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
+    private final BehaviorSubject<Object> finishSubject = BehaviorSubject.create();
+    private static final Object finishSignal = new Object();
+
+    @Override
+    @NonNull
+    @CheckResult
+    public final Observable<ActivityEvent> lifecycle() {
+        return lifecycleSubject.hide();
+    }
+
+    @Override
+    @NonNull
+    @CheckResult
+    public final <T> LifecycleTransformer<T> bindUntilEvent(@NonNull ActivityEvent event) {
+        return RxLifecycle.bindUntilEvent(lifecycleSubject, event);
+    }
+
+    /**
+     * notify subscriber once {@link #finish()} has been called
+     */
+    @NonNull
+    @CheckResult
+    public final <T> LifecycleTransformer<T> bindUntilFinish() {
+        return RxLifecycle.bindUntilEvent(finishSubject, finishSignal);
+    }
+
+    @Override
+    @NonNull
+    @CheckResult
+    public final <T> LifecycleTransformer<T> bindToLifecycle() {
+        return RxLifecycleAndroid.bindActivity(lifecycleSubject);
+    }
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        lifecycleSubject.onNext(ActivityEvent.CREATE);
         if (printLifeCycle) {
             Log.d(TAG, "onCreate");
         }
@@ -43,12 +96,12 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         filter.addAction(ACTION_EXIT_APPLICATION);
         mReceiver = new ActivityBaseReceiver();
         registerReceiver(mReceiver, filter);
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        lifecycleSubject.onNext(ActivityEvent.START);
         if (printLifeCycle) {
             Log.d(TAG, "onStart");
         }
@@ -57,6 +110,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        lifecycleSubject.onNext(ActivityEvent.RESUME);
         if (printLifeCycle) {
             Log.d(TAG, "onResume");
         }
@@ -65,6 +119,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        lifecycleSubject.onNext(ActivityEvent.PAUSE);
         if (printLifeCycle) {
             Log.d(TAG, "onPause");
         }
@@ -73,6 +128,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        lifecycleSubject.onNext(ActivityEvent.STOP);
         if (printLifeCycle) {
             Log.d(TAG, "onStop");
         }
@@ -89,10 +145,17 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        lifecycleSubject.onNext(ActivityEvent.DESTROY);
         if (printLifeCycle) {
             Log.d(TAG, "onDestroy");
         }
         unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        finishSubject.onNext(finishSignal);
     }
 
     @Override

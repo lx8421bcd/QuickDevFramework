@@ -13,9 +13,8 @@ import android.widget.TextView;
 
 import com.linxiao.framework.list.SingleItemAdapter;
 import com.linxiao.framework.dialog.AlertDialogManager;
-import com.linxiao.framework.fragment.BaseFragment;
+import com.linxiao.framework.architecture.BaseFragment;
 import com.linxiao.framework.file.FileManager;
-import com.linxiao.framework.permission.PermissionProhibitedListener;
 import com.linxiao.framework.permission.PermissionManager;
 import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;

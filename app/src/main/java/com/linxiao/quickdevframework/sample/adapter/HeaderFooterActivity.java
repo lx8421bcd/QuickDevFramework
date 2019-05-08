@@ -6,7 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.linxiao.framework.activity.BaseActivity;
+import com.linxiao.framework.architecture.BaseActivity;
 import com.linxiao.quickdevframework.R;
 
 import butterknife.BindView;

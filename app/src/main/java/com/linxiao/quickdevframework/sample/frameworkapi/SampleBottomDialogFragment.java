@@ -3,7 +3,7 @@ package com.linxiao.quickdevframework.sample.frameworkapi;
 import android.app.Dialog;
 import android.view.View;
 
-import com.linxiao.framework.dialog.BaseBottomDialogFragment;
+import com.linxiao.framework.architecture.BaseBottomDialogFragment;
 import com.linxiao.quickdevframework.R;
 
 /**
