@@ -16,8 +16,12 @@
 
 ## 项目概况
 目前项目已经基本达到设计目的，以分层架构为基础，集成了常用的工具类和自定义控件，并对任何Android原生应用都会使用到的常见功能进行了一定封装。
-基于此框架的整个Android项目工程结构图如下：  
-![project-architecture](https://github.com/ShonLin/QuickDevFramework/blob/master/architecture-images/project-architecture.png)
+基于此框架的整个Android项目工程结构图如下：
+```html
+<p align="center">
+  <img width="495" height="290" src="https://github.com/ShonLin/QuickDevFramework/blob/master/architecture-images/project-architecture.png">
+</p>
+```
 
 
 #### 已经实现/封装较为完善的功能
@@ -39,7 +43,6 @@
 * 图片上传、上传队列功能，鉴于Retrofit和OkHttp上传文件必带Content-Size导致某些服务端接收失败，考虑用HttpUrlConnection + AsyncTask封装一个简易的图片上传工具，以应对应用中普遍存在的上传图片需求。
 * log功能封装完善
 * 简易下载功能，应对诸如应用更新等需求。
-* AppTextUtil工具类，用于封装各种String转换
 * 等比缩放模式支持，在Activity基类中提供一键开关
 * 待续
 
