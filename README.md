@@ -17,11 +17,10 @@
 ## 项目概况
 目前项目已经基本达到设计目的，以分层架构为基础，集成了常用的工具类和自定义控件，并对任何Android原生应用都会使用到的常见功能进行了一定封装。
 基于此框架的整个Android项目工程结构图如下：
-```html
+
 <p align="center">
   <img width="495" height="290" src="https://github.com/ShonLin/QuickDevFramework/blob/master/architecture-images/project-architecture.png">
 </p>
-```
 
 
 #### 已经实现/封装较为完善的功能
