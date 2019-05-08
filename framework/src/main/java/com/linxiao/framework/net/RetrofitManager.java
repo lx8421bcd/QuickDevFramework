@@ -9,7 +9,7 @@ import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
-import com.linxiao.framework.common.GlobalContext;
+import com.linxiao.framework.common.ContextProvider;
 
 import java.io.File;
 import java.security.KeyStore;
@@ -170,7 +170,7 @@ public class RetrofitManager {
         // config cookie persistent storage
         cookieJar = new PersistentCookieJar(
           new SetCookieCache(),
-          new SharedPrefsCookiePersistor(GlobalContext.get())
+          new SharedPrefsCookiePersistor(ContextProvider.get())
         );
         builder.cookieJar(cookieJar);
         
