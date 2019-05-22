@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.linxiao.framework.common.ApplicationUtil;
 import com.linxiao.framework.dialog.AlertDialogManager;
 
 import java.util.ArrayList;
@@ -217,8 +218,15 @@ public class PermissionOperator {
         }
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
         intent.setData(Uri.parse("package:" + activity.getPackageName()));
-        activity.startActivityForResult(intent, MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
-        currCallback = callback;
+        if (intent.resolveActivity(activity.getPackageManager()) != null) {
+            activity.startActivityForResult(intent, MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
+            currCallback = callback;
+        }
+        //某些机型找不到浮窗设置页面，会弹出no activity handle exception，此时跳转应用详情，无法回调
+        else {
+            ApplicationUtil.jumpToApplicationDetail(activity);
+        }
+
     }
 
     /**
