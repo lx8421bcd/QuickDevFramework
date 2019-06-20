@@ -10,7 +10,10 @@ import android.os.Build;
 
 import com.linxiao.framework.log.Logger;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -110,5 +113,39 @@ public class ApplicationUtil {
                 + "\n主机:" + Build.HOST
                 + "\n生产ID:" + Build.ID
                 + "\nROM制造商:" + Build.MANUFACTURER;
+    }
+
+    /**
+     * 获取手机cpu信息
+     */
+    public static String getCPUName() {
+        FileReader fr = null;
+        BufferedReader br = null;
+        String text;
+        try {
+            fr = new FileReader("/proc/cpuinfo");
+            br = new BufferedReader(fr);
+            while ((text = br.readLine()) != null) {
+                if (text.toLowerCase().contains("hardware")) {
+                    String[] array = text.split(":\\s+", 2);
+                    return array[1];
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fr != null) {
+                    fr.close();
+                }
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return "";
     }
 }

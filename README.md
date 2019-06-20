@@ -39,7 +39,7 @@
 
 
 #### 开发中/规划内的功能
-* 图片上传、上传队列功能，鉴于Retrofit和OkHttp上传文件必带Content-Size导致某些服务端接收失败，考虑用HttpUrlConnection + AsyncTask封装一个简易的图片上传工具，以应对应用中普遍存在的上传图片需求。
+* 图片上传、上传队列功能，鉴于Retrofit和OkHttp上传文件必带Content-Size导致某些服务端接收失败，考虑用HttpUrlConnection + AsyncTask封装一个简易的图片上传工具，以应对应用中普遍存在的上传图片需求。[Multipart should not add "Content-Length" #2138](https://github.com/square/okhttp/issues/2138)
 * log功能封装完善
 * 简易下载功能，应对诸如应用更新等需求。
 * 等比缩放模式支持，在Activity基类中提供一键开关
