@@ -225,13 +225,11 @@ public class SimpleNotificationBuilder {
             Intent destIntent = new Intent(mContext, NotificationReceiver.class);
             mPendingIntent = PendingIntent.getBroadcast(mContext, 0, destIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
+        mBuilder.setContentIntent(mPendingIntent);
         if (mHangUp) {
-            //这句是重点
-            mBuilder.setFullScreenIntent(mPendingIntent, true);
+            mBuilder.setFullScreenIntent(null, true);
             mBuilder.setAutoCancel(true);
         }
-        mBuilder.setContentIntent(mPendingIntent);
-
         return mBuilder.build();
     }
     
