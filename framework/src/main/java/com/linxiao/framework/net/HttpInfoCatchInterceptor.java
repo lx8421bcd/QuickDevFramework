@@ -1,8 +1,7 @@
 package com.linxiao.framework.net;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;

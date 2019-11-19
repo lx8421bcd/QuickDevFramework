@@ -1,16 +1,16 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion '28.0.3'
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'proguard-rules.pro'
     }
     buildTypes {
@@ -28,19 +28,20 @@ android {
 
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testImplementation 'junit:junit:4.12'
 
-    api 'com.android.support:appcompat-v7:28.0.0'
-    api 'com.android.support:recyclerview-v7:28.0.0'
+    api 'androidx.appcompat:appcompat:1.1.0'
+    api 'androidx.recyclerview:recyclerview:1.0.0'
 
-    api "android.arch.lifecycle:runtime:1.1.1"
-    api "android.arch.lifecycle:extensions:1.1.1"
-    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
+    def lifecycle_version = "2.1.0"
+    api "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 
-    api 'com.google.code.gson:gson:2.8.2'
+    api 'com.google.code.gson:gson:2.8.5'
 
     api 'com.squareup.okhttp3:okhttp:3.10.0'
     api 'com.squareup.okio:okio:1.14.0'
@@ -51,7 +52,7 @@ dependencies {
     api 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     api 'com.squareup.retrofit2:converter-gson:2.3.0'
 
-    api 'io.reactivex.rxjava2:rxjava:2.1.9'
+    api 'io.reactivex.rxjava2:rxjava:2.2.9'
     api 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
     api 'com.trello.rxlifecycle2:rxlifecycle:2.2.1'

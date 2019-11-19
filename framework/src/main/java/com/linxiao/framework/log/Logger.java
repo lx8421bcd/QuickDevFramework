@@ -1,6 +1,6 @@
 package com.linxiao.framework.log;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * 框架Log管理类

@@ -2,7 +2,7 @@ package com.linxiao.framework.net;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.RawRes;
+import androidx.annotation.RawRes;
 
 import com.linxiao.framework.common.ContextProvider;
 

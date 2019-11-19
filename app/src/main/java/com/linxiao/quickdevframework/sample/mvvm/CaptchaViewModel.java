@@ -1,6 +1,6 @@
 package com.linxiao.quickdevframework.sample.mvvm;
 
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModel;
 
 import com.linxiao.framework.common.RegexUtil;
 

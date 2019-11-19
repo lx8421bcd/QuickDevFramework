@@ -4,8 +4,8 @@ import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.annotation.DrawableRes;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.linxiao.framework.QDFApplication;
 import com.linxiao.framework.R;

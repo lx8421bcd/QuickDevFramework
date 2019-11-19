@@ -1,8 +1,7 @@
 package com.linxiao.framework.file;
 
-import android.Manifest;
 import android.os.Environment;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.linxiao.framework.QDFApplication;

@@ -2,7 +2,7 @@ package com.linxiao.framework.architecture;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.linxiao.framework.log.Logger;

@@ -2,7 +2,7 @@ package com.linxiao.framework.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.linxiao.framework.QDFApplication;
 
