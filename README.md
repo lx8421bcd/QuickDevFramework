@@ -36,12 +36,14 @@
 * __工具类合集__，开发过程中经常需要使用的工具方法归纳整理，也包含对于框架内一些SDK的优化方法，比如Gson反序列化优化。
 * __自定义控件合集__，整理应用开发中常用的自定义控件，比如下拉刷新、小红点、高亮引导等。
 * __MVVM架构演示示例__，有关MVVM架构的实现在app module内 [mvvm package](https://github.com/ShonLin/QuickDevFramework/tree/master/app/src/main/java/com/linxiao/quickdevframework/sample/mvvm)，包含了MVVM基类和基于RxJava的MVVM验证码交互简单实现示例，在想要使用MVVM架构时可以参考，也可以将基类放在Framework模块中
+* __简易图片上传工具__，鉴于Retrofit和OkHttp上传文件必带Content-Size导致某些服务端接收失败，考虑用HttpUrlConnection + AsyncTask封装一个简易的图片上传工具，以应对应用中普遍存在的上传图片需求。[Multipart should not add "Content-Length" #2138](https://github.com/square/okhttp/issues/2138)
 
 
 #### 开发中/规划内的功能
-* 图片上传、上传队列功能，鉴于Retrofit和OkHttp上传文件必带Content-Size导致某些服务端接收失败，考虑用HttpUrlConnection + AsyncTask封装一个简易的图片上传工具，以应对应用中普遍存在的上传图片需求。[Multipart should not add "Content-Length" #2138](https://github.com/square/okhttp/issues/2138)
 * log功能封装完善
 * 简易下载功能，应对诸如应用更新等需求。
+* 升级RxJava至RxJava3
+* 使用kotlin语言改造framework框架
 * 待续
 
 
