@@ -28,6 +28,7 @@ import com.linxiao.quickdevframework.sample.frameworkapi.FileBrowserFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.NotificationApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.PermissionApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.ToastApiFragment;
+import com.linxiao.quickdevframework.sample.netapi.DownloadTestFragment;
 import com.linxiao.quickdevframework.sample.netapi.NetTestFragment;
 import com.linxiao.quickdevframework.sample.widget.WidgetsGuideFragment;
 
@@ -93,6 +94,7 @@ public class MainActivity extends BaseActivity {
         apiSampleList.add(new ApiSampleObject("File API", "FileApiFragment"));
         apiSampleList.add(new ApiSampleObject("File Browser", "FileBrowserFragment"));
         apiSampleList.add(new ApiSampleObject("Network API", "NetTestFragment"));
+        apiSampleList.add(new ApiSampleObject("Download Test", "DownloadTestFragment"));
         apiSampleList.add(new ApiSampleObject("Adapter API", "AdapterTestFragment"));
         apiSampleList.add(new ApiSampleObject("Widgets", "WidgetsGuideFragment"));
 
@@ -124,6 +126,7 @@ public class MainActivity extends BaseActivity {
         addFragment(new FileApiFragment(), "FileApiFragment");
         addFragment(new FileBrowserFragment(), "FileBrowserFragment");
         addFragment(new NetTestFragment(), "NetTestFragment");
+        addFragment(new DownloadTestFragment(), "DownloadTestFragment");
         addFragment(new AdapterTestFragment(), "AdapterTestFragment");
         addFragment(new WidgetsGuideFragment(), "WidgetsGuideFragment");
 

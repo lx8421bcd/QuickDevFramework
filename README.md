@@ -35,13 +35,12 @@
 * __异步文件操作封装__，封装以File操作+AsyncTask为基础，封装剪切、复制、删除等文件异步操作，方便批量文件操作时使用。
 * __工具类合集__，开发过程中经常需要使用的工具方法归纳整理，也包含对于框架内一些SDK的优化方法，比如Gson反序列化优化。
 * __自定义控件合集__，整理应用开发中常用的自定义控件，比如下拉刷新、小红点、高亮引导等。
-* __MVVM架构演示示例__，有关MVVM架构的实现在app module内 [mvvm package](https://github.com/ShonLin/QuickDevFramework/tree/master/app/src/main/java/com/linxiao/quickdevframework/sample/mvvm)，包含了MVVM基类和基于RxJava的MVVM验证码交互简单实现示例，在想要使用MVVM架构时可以参考，也可以将基类放在Framework模块中
-* __简易图片上传工具__，鉴于Retrofit和OkHttp上传文件必带Content-Size导致某些服务端接收失败，考虑用HttpUrlConnection + AsyncTask封装一个简易的图片上传工具，以应对应用中普遍存在的上传图片需求。[Multipart should not add "Content-Length" #2138](https://github.com/square/okhttp/issues/2138)
-
+* __MVVM架构演示示例__，[mvvm package](https://github.com/lx8421bcd/QuickDevFramework/tree/master/app/src/main/java/com/linxiao/quickdevframework/sample/mvvm)，包含了MVVM基类和基于RxJava的MVVM验证码交互简单实现示例，在想要使用MVVM架构时可以参考，也可以将基类放在Framework模块中
+* __简易图片上传工具__，鉴于[Retrofit和OkHttp上传文件必带Content-Size导致某些服务端接收失败](https://github.com/square/okhttp/issues/2138)， 基于RxJava用HttpUrlConnection封装一个简易的图片上传工具，以应对应用中普遍存在的上传图片需求。
+* __简易下载工具__，基于DownloadManager开发，封装权限检查，文件检查，下载进度回调等功能，用于应对一般应用的简易下载需求，比如下载更新包
 
 #### 开发中/规划内的功能
 * log功能封装完善
-* 简易下载功能，应对诸如应用更新等需求。
 * 升级RxJava至RxJava3
 * 使用kotlin语言改造framework框架
 * 待续
