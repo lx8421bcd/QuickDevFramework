@@ -2,7 +2,9 @@ package com.linxiao.framework.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import com.linxiao.framework.QDFApplication;
 
@@ -21,7 +23,7 @@ public class AppPreferences {
      * <p>默认操作模式,代表该文件是私有数据,只能被应用本身访问,在该模式下,写入的内容会覆盖原文件的内容</p>
      * */
     public static PreferenceOperator getDefault(Context context) {
-        SharedPreferences sharedPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return new PreferenceOperator(sharedPreferences);
     }
 
