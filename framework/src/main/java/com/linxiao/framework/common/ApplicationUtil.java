@@ -7,8 +7,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-
-import com.linxiao.framework.log.Logger;
+import android.os.SystemClock;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,6 +26,32 @@ public class ApplicationUtil {
 
     private ApplicationUtil() {}
 
+
+    /**
+     * 获取系统开机时间
+     * */
+    public static long getSystemBootTime() {
+        return System.currentTimeMillis() - SystemClock.elapsedRealtime();
+    }
+
+    /**
+     * 获取进程名称
+     * @param pid
+     * @return
+     */
+    public static String getProcessName(int pid) {
+        ActivityManager am = (ActivityManager) ContextProvider.get().getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningApps = am.getRunningAppProcesses();
+        if (runningApps != null) {
+            for (ActivityManager.RunningAppProcessInfo procInfo : runningApps) {
+                if (procInfo.pid == pid) {
+                    return procInfo.processName;
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * 判断应用是否已经启动
      *
@@ -39,11 +65,11 @@ public class ApplicationUtil {
         List<ActivityManager.RunningAppProcessInfo> processInfo = activityManager.getRunningAppProcesses();
         for (int i = 0; i < processInfo.size(); i++) {
             if (processInfo.get(i).processName.equals(packageName)) {
-                Logger.d(TAG, String.format("the %s is running", packageName));
+                Log.d(TAG, String.format("the %s is running", packageName));
                 return true;
             }
         }
-        Logger.d(TAG, String.format("the %s is not running", packageName));
+        Log.d(TAG, String.format("the %s is not running", packageName));
         return false;
     }
 
@@ -81,11 +107,11 @@ public class ApplicationUtil {
     public static void installApk(Context context, String apkPath) {
         File installFile = new File(apkPath);
         if (!installFile.exists()) {
-            Logger.e(TAG, "cannot found apk file, path = " + apkPath);
+            Log.e(TAG, "cannot found apk file, path = " + apkPath);
             return;
         }
         if (!apkPath.endsWith(".apk")) {
-            Logger.e(TAG, "illegal file : " + apkPath);
+            Log.e(TAG, "illegal file : " + apkPath);
             return;
         }
         Uri installPackageUri = Uri.parse("file://" + installFile);

@@ -1,6 +1,6 @@
 package com.linxiao.framework.file;
 
-import com.linxiao.framework.log.Logger;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +35,7 @@ public class FileSizeUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.e(TAG,"获取文件大小失败!");
+            Log.e(TAG,"获取文件大小失败!");
         }
         return formatFileSize(blockSize);
     }
@@ -56,7 +56,7 @@ public class FileSizeUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.e(TAG,"获取文件大小失败!");
+            Log.e(TAG,"获取文件大小失败!");
         }
         return formatFileSize(blockSize, sizeType);
     }

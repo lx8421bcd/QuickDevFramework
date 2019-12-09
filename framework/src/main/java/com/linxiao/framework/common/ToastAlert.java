@@ -100,7 +100,7 @@ public class ToastAlert {
             final CharSequence text = toastInfo.text();
             if (TextUtils.isEmpty(text) && toastInfo.iconResId() == 0) return null;
 
-            final TextView textView = new TextView(sApp);
+            final TextView textView = new TextView(ContextProvider.get());
             textView.setText(text);
             textView.setTextColor(Color.WHITE);
 
@@ -156,12 +156,8 @@ public class ToastAlert {
         void onDismiss(ToastDelegate toastDelegate);
     }
 
-    private static Application sApp;
     private static Factory sFactory = DEFAULT_FACTORY;
 
-    public static void init(Application app) {
-        sApp = app;
-    }
 
     public static void setDefaultFactory(Factory factory) {
         sFactory = factory != null ? factory : DEFAULT_FACTORY;
@@ -173,19 +169,19 @@ public class ToastAlert {
     }
 
     public static void show(int stringResId) {
-        show(sApp.getString(stringResId));
+        show(ContextProvider.get().getString(stringResId));
     }
 
     public static void show(int stringResId, int iconResId) {
-        show(sApp.getString(stringResId), iconResId);
+        show(ContextProvider.get().getString(stringResId), iconResId);
     }
 
     public static void enqueue(int stringResId) {
-        enqueue(sApp.getString(stringResId));
+        enqueue(ContextProvider.get().getString(stringResId));
     }
 
     public static void enqueue(int stringResId, int iconResId) {
-        enqueue(sApp.getString(stringResId), iconResId);
+        enqueue(ContextProvider.get().getString(stringResId), iconResId);
     }
 
 
@@ -210,7 +206,7 @@ public class ToastAlert {
     public static class ToastInfo {
 
         public static int dpToPx(float dp) {
-            final float scale = sApp.getResources().getDisplayMetrics().density;
+            final float scale = ContextProvider.get().getResources().getDisplayMetrics().density;
             return (int) (dp * scale + 0.5f);
         }
 
@@ -348,7 +344,7 @@ public class ToastAlert {
         private long mStartTimestamp;
 
         public ToastDelegate(View view, ToastInfo toastInfo) {
-            final Toast toast = new Toast(sApp);
+            final Toast toast = new Toast(ContextProvider.get());
             toast.setView(view);
             toast.setGravity(toastInfo.gravity(), 0, toastInfo.offsetY());
             toast.setDuration(Toast.LENGTH_LONG);

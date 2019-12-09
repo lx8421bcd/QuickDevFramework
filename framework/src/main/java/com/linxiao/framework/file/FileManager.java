@@ -3,9 +3,9 @@ package com.linxiao.framework.file;
 import android.os.Environment;
 import androidx.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.linxiao.framework.QDFApplication;
-import com.linxiao.framework.log.Logger;
 import com.linxiao.framework.permission.PermissionManager;
 
 import java.io.File;
@@ -62,7 +62,7 @@ public class FileManager {
     public static boolean hasFileOperatePermission() {
         boolean hasPermission = PermissionManager.hasSDCardPermission();
         if (!hasPermission) {
-            Logger.e(TAG, "can't operate files, permission denied");
+            Log.e(TAG, "can't operate files, permission denied");
         }
         return hasPermission;
     }
@@ -92,7 +92,7 @@ public class FileManager {
 //        if (path.indexOf("/") == 0) {
 //            return true;
 //        }
-        Logger.i(TAG, "unknown path string : " + path);
+        Log.i(TAG, "unknown path string : " + path);
         return false;
     }
 
@@ -159,7 +159,7 @@ public class FileManager {
         }
         File renameFile = new File(filePath + File.separator + newName);
         if (renameFile.exists()) {
-            Logger.e(TAG, "rename failed, new name");
+            Log.e(TAG, "rename failed, new name");
             return false;
         }
         return renameFile.renameTo(new File(filePath + newName));

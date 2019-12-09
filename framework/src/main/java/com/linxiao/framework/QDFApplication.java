@@ -13,11 +13,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.linxiao.framework.architecture.BaseActivity;
-import com.linxiao.framework.log.Logger;
 import com.linxiao.framework.common.ToastAlert;
 
 
@@ -46,7 +47,6 @@ public abstract class QDFApplication extends Application {
         super.onCreate();
         TAG = getClass().getSimpleName();
         this.registerActivityLifecycleCallbacks(new FrameworkActivityLifeCycleCallback());
-        ToastAlert.init(this);
     }
     
     /**
@@ -174,7 +174,7 @@ public abstract class QDFApplication extends Application {
             return pubKey + "|" + signNumber;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
-            Logger.d(TAG, "package name not found");
+            Log.d(TAG, "package name not found");
         } catch (CertificateException e) {
             e.printStackTrace();
         }
@@ -216,19 +216,12 @@ public abstract class QDFApplication extends Application {
         return Settings.System.getInt(getAppContext().getContentResolver(),
                 Settings.System.ACCELEROMETER_ROTATION, 0) == 1;
     }
-    
-    /**
-     * 获取系统开机时间
-     * */
-    public static long getSystemBootTime() {
-        return System.currentTimeMillis() - SystemClock.elapsedRealtime();
-    }
-    
+
     /**
      * 获取正在运行的Activity的数量
      * */
     public static int getRunningActivityCount() {
-        
+
         return mActivityCount;
     }
 

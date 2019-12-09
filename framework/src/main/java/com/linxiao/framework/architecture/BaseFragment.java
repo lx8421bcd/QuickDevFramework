@@ -9,11 +9,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import android.text.SpannedString;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.linxiao.framework.log.Logger;
 import com.linxiao.framework.common.ScreenUtil;
 import com.linxiao.framework.common.SpanFormatter;
 import com.trello.rxlifecycle2.LifecycleProvider;
@@ -149,7 +149,7 @@ public abstract class BaseFragment extends Fragment implements LifecycleProvider
      * */
     protected void setContentView(@LayoutRes int resId, ViewGroup container) {
         if (rootView != null) {
-            Logger.w(TAG, "contentView has set already");
+            Log.w(TAG, "contentView has set already");
             return;
         }
         rootView = LayoutInflater.from(getActivity()).inflate(resId, container, false);
@@ -163,7 +163,7 @@ public abstract class BaseFragment extends Fragment implements LifecycleProvider
      * */
     protected void setContentView(View contentView) {
         if (rootView != null) {
-            Logger.w(TAG, "contentView has set already");
+            Log.w(TAG, "contentView has set already");
             return;
         }
         rootView = contentView;

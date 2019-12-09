@@ -2,6 +2,8 @@ package com.linxiao.quickdevframework.sample.frameworkapi;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -12,7 +14,6 @@ import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.framework.file.FileSizeListener;
 import com.linxiao.framework.file.FileCountListener;
 import com.linxiao.framework.file.FileManager;
-import com.linxiao.framework.log.Logger;
 import com.linxiao.framework.permission.PermissionManager;
 import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;
@@ -52,8 +53,8 @@ public class FileApiFragment extends BaseFragment {
         .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
-                Logger.d(TAG, FileManager.getExternalStorageRootString());
-                Logger.d(TAG, FileManager.getInternalStorageRootString());
+                Log.d(TAG, FileManager.getExternalStorageRootString());
+                Log.d(TAG, FileManager.getInternalStorageRootString());
                 try {
                     FileManager.pathStringToFile(totalFilePath).mkdir();
                     File txtFile = FileManager.pathStringToFile(totalFilePath + File.separator + "text.txt");
@@ -68,7 +69,7 @@ public class FileApiFragment extends BaseFragment {
                     bufferedOutputStream.close();
                     outputStream.close();
                 } catch (IOException e) {
-                    Logger.e(TAG, e);
+                    e.printStackTrace();
                 }
             }
 
@@ -148,7 +149,7 @@ public class FileApiFragment extends BaseFragment {
             bufferedOutputStream_.close();
             outputStream_.close();
         } catch (IOException e) {
-            Logger.e(TAG, e);
+            e.printStackTrace();
         }
 
         FileManager.copyFileOperate(

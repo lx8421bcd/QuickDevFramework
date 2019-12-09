@@ -12,13 +12,14 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
 import com.linxiao.framework.architecture.BaseActivity;
 import com.linxiao.framework.list.SingleItemAdapter;
 import com.linxiao.framework.common.ToastAlert;
-import com.linxiao.framework.log.Logger;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.sample.adapter.AdapterTestFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.ApplicationApiFragment;
@@ -140,9 +141,9 @@ public class MainActivity extends BaseActivity {
         fragmentTags.addAll(savedInstanceState.getStringArrayList(KEY_TAGS));
         fragmentClassNames.clear();
         fragmentClassNames.addAll(savedInstanceState.getStringArrayList(KEY_CLASS_NAMES));
-        Logger.d(TAG, fragmentTags.toString());
-        Logger.d(TAG, fragmentClassNames.toString());
-        Logger.d(TAG, "CurrentTag = " + currentTag);
+        Log.d(TAG, fragmentTags.toString());
+        Log.d(TAG, fragmentClassNames.toString());
+        Log.d(TAG, "CurrentTag = " + currentTag);
         for(int i = 0; i < fragmentTags.size(); i++) {
             Fragment fragment = mFragmentManager.findFragmentByTag(fragmentTags.get(i));
             if (fragment == null) {
