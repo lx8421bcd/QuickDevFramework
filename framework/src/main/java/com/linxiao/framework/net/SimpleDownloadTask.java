@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
+import android.text.TextUtils;
+import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import com.linxiao.framework.common.ContextProvider;
 import com.linxiao.framework.permission.PermissionException;
@@ -39,11 +42,7 @@ public class SimpleDownloadTask {
 
     }
 
-    private static DownloadManager getDownloadManager() {
-        return (DownloadManager) ContextProvider.get()
-                .getSystemService(Context.DOWNLOAD_SERVICE);
-    }
-
+    private static final String TAG = SimpleDownloadTask.class.getSimpleName();
     private static final int MIN_UPDATE_PERIOD = 100;
 
     private DownloadManager.Request request;
@@ -56,6 +55,7 @@ public class SimpleDownloadTask {
 
     private DownloadListener downloadListener;
 
+
     public static SimpleDownloadTask newInstance(String url) {
         SimpleDownloadTask instance = new SimpleDownloadTask();
         instance.request = new DownloadManager.Request(Uri.parse(url));
@@ -64,19 +64,49 @@ public class SimpleDownloadTask {
                         DownloadManager.Request.NETWORK_WIFI);
         instance.request.setAllowedOverMetered(true);
         instance.request.setAllowedOverRoaming(true);
+        String mimeType = instance.getMimeType(url);
+        Log.d(TAG, "mimeType: " + mimeType);
+        if (TextUtils.isEmpty(mimeType)) {
+            instance.setDownloadMimeType(mimeType);
+        }
         return instance;
     }
 
+    /**
+     * set download destination in local disk
+     * <p>
+     * please request sdcard read and write permission if the download destination is not
+     * app's internal/external cache or file directory, otherwise the local file will not
+     * be created
+     * </p>
+     * @param fullPath full path
+     */
     public SimpleDownloadTask setDownloadTo(String fullPath) {
         downloadTo = new File(fullPath);
         return this;
     }
 
+    /**
+     * set download destination in local disk
+     * <p>
+     * please request sdcard read and write permission if the download destination is not
+     * app's internal/external cache or file directory, otherwise the local file will not
+     * be created
+     * </p>
+     * @param path download destination directory
+     * @param fileName download file name
+     */
     public SimpleDownloadTask setDownloadTo(String path, String fileName) {
         downloadTo = new File(path, fileName);
         return this;
     }
 
+    /**
+     * set download notification params
+     * <p>this will set notification visibility to VISIBILITY_VISIBLE_NOTIFY_COMPLETED</p>
+     * @param title title
+     * @param desc description
+     */
     public SimpleDownloadTask setNotification(String title, String desc) {
         request.setTitle(title);
         request.setDescription(desc);
@@ -85,16 +115,48 @@ public class SimpleDownloadTask {
         return this;
     }
 
+    /**
+     * download without notification
+     * <p>
+     * need to declare android.permission.DOWNLOAD_WITHOUT_NOTIFICATION in manifest
+     * to enable this setting
+     * </p>
+     */
     public SimpleDownloadTask hideNotification() {
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
+        if (PermissionManager.isPermissionsGranted(ContextProvider.get(),
+                "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION")) {
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
+        }
         return this;
     }
 
+    /**
+     * set specific file MIME type
+     * <p>
+     * the SimpleDownloadTask will auto generate MIME type for download file, use this
+     * method to set a specific type if auto generate was failed or incorrect
+     * </p>
+     * @param mimeType mimeType string
+     */
+    public SimpleDownloadTask setDownloadMimeType(String mimeType) {
+        request.setMimeType(mimeType);
+        return this;
+    }
+
+    /**
+     * add extra http request header for download
+     * @param name header name
+     * @param value header value
+     */
     public SimpleDownloadTask addRequestHeader(String name, Object value) {
         request.addRequestHeader(name, String.valueOf(value));
         return this;
     }
 
+    /**
+     * set download progress query period, min value is 100ms
+     * @param period query period
+     */
     public SimpleDownloadTask setProgressUpdatePeriod(int period) {
         updatePeriod = period < MIN_UPDATE_PERIOD ? MIN_UPDATE_PERIOD : period;
         return this;
@@ -140,26 +202,9 @@ public class SimpleDownloadTask {
         if (downloadId == 0) {
             return;
         }
+        stopProgressQuery();
         getDownloadManager().remove(downloadId);
         downloadId = 0;
-    }
-
-    private boolean isAppDataPath(String path) {
-        File extCacheRoot = ContextProvider.get().getExternalCacheDir();
-        if (extCacheRoot != null && path.contains(extCacheRoot.getPath())) {
-            return true;
-        }
-        File extFileRoot = ContextProvider.get().getExternalFilesDir(null);
-        if (extFileRoot != null && path.contains(extFileRoot.getPath())) {
-            return true;
-        }
-        if (path.contains(ContextProvider.get().getCacheDir().getPath())) {
-            return true;
-        }
-        if (path.contains(ContextProvider.get().getFilesDir().getPath())) {
-            return true;
-        }
-        return false;
     }
 
     private void startProgressQuery() {
@@ -192,7 +237,7 @@ public class SimpleDownloadTask {
                 cursor.close();
             }
         };
-        timer.schedule(task, 0,updatePeriod);
+        timer.schedule(task, 0, updatePeriod);
     }
 
     private void stopProgressQuery() {
@@ -202,5 +247,37 @@ public class SimpleDownloadTask {
         if (timer != null) {
             timer.cancel();
         }
+    }
+
+    private boolean isAppDataPath(String path) {
+        File extCacheRoot = ContextProvider.get().getExternalCacheDir();
+        if (extCacheRoot != null && path.contains(extCacheRoot.getPath())) {
+            return true;
+        }
+        File extFileRoot = ContextProvider.get().getExternalFilesDir(null);
+        if (extFileRoot != null && path.contains(extFileRoot.getPath())) {
+            return true;
+        }
+        if (path.contains(ContextProvider.get().getCacheDir().getPath())) {
+            return true;
+        }
+        if (path.contains(ContextProvider.get().getFilesDir().getPath())) {
+            return true;
+        }
+        return false;
+    }
+
+    private String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
+
+    private DownloadManager getDownloadManager() {
+        return (DownloadManager) ContextProvider.get()
+                .getSystemService(Context.DOWNLOAD_SERVICE);
     }
 }

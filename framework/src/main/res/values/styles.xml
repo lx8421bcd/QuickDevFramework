@@ -10,6 +10,9 @@
         <!--<item name="titleTextColor">@color/dark_gray</item>-->
         <!--<item name="android:actionMenuTextColor">@color/dark_gray</item>-->
         <item name="alertDialogTheme">@style/AppDialogTheme</item>
+
+        <!-- cancel the default button border -->
+        <!--<item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless</item>-->
     </style>
 
 

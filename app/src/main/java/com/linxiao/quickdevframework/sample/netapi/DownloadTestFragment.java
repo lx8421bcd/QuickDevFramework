@@ -59,7 +59,8 @@ public class DownloadTestFragment extends BaseFragment {
         downloadTask = SimpleDownloadTask.newInstance(url)
         .setDownloadTo(ContextProvider.get().getExternalCacheDir().getPath(), "test.apk")
 //        .hideNotification()
-        .setNotification("TestDownload", "download test");
+        .setNotification("TestDownload", "download test")
+        ;
         downloadTask.start(new SimpleDownloadTask.DownloadListener() {
             @Override
             public void onStart() {
