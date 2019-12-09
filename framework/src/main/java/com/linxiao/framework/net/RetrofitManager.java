@@ -1,8 +1,5 @@
 package com.linxiao.framework.net;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.text.TextUtils;
 
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
@@ -10,6 +7,7 @@ import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.linxiao.framework.common.ContextProvider;
+import com.linxiao.framework.rx.RxSubscriber;
 
 import java.io.File;
 import java.security.KeyStore;
@@ -23,6 +21,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.HttpUrl;
@@ -49,27 +50,20 @@ public class RetrofitManager {
     private static HttpInfoCatchInterceptor infoCatchInterceptor;
     private static OkHttpClient mOkHttpClient;
     private static CommonApi commonApi;
-    
-    // use handler to ensure that an entity logout will print one by one
-    private static Handler logHandler = new Handler(Looper.myLooper()) {
-    
-        @Override
-        public void handleMessage(Message msg) {
-            HttpInfoEntity entity = (HttpInfoEntity) msg.obj;
-            if (entity == null) {
-                return;
-            }
-            entity.logOut();
-        }
-    };
-    
+
+    private static Scheduler logoutScheduler = Schedulers.newThread();
     private static HttpInfoCatchListener infoCatchListener = entity -> {
         if (entity == null) {
             return;
         }
-        Message msg = new Message();
-        msg.obj = entity;
-        logHandler.sendMessage(msg);
+        Observable.just(entity)
+        .subscribeOn(logoutScheduler)
+        .subscribe(new RxSubscriber<HttpInfoEntity>() {
+            @Override
+            public void onNext(HttpInfoEntity httpInfoEntity) {
+                httpInfoEntity.logOut();
+            }
+        });
     };
     
     static {
