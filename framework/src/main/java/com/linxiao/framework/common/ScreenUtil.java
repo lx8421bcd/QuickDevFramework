@@ -1,13 +1,9 @@
 package com.linxiao.framework.common;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
-
-import com.linxiao.framework.QDFApplication;
 
 import java.lang.reflect.Method;
 
@@ -25,7 +21,7 @@ public class ScreenUtil {
      * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
      */
     public static int dp2px(float dpValue) {
-        final float scale = QDFApplication.getAppContext().getResources().getDisplayMetrics().density;
+        final float scale = ContextProvider.get().getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
 
@@ -33,7 +29,7 @@ public class ScreenUtil {
      * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
      */
     public static int px2dp(float pxValue) {
-        final float scale = QDFApplication.getAppContext().getResources().getDisplayMetrics().density;
+        final float scale = ContextProvider.get().getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
 
@@ -42,7 +38,7 @@ public class ScreenUtil {
      * @return screenWidth;
      * */
     public static int getScreenWidth() {
-        WindowManager windowManager = (WindowManager) QDFApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) ContextProvider.get().getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
         DisplayMetrics dm = new DisplayMetrics();
         Class c;
@@ -63,7 +59,7 @@ public class ScreenUtil {
      * @return screenHeight;
      * */
     public static int getScreenHeight() {
-        WindowManager windowManager = (WindowManager) QDFApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) ContextProvider.get().getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
         DisplayMetrics dm = new DisplayMetrics();
         Class c;
@@ -88,7 +84,7 @@ public class ScreenUtil {
      * */
     public static int getUsableScreenHeight() {
         DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager) QDFApplication.getAppContext().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) ContextProvider.get().getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(metrics);
         
         return metrics.heightPixels;
@@ -115,7 +111,7 @@ public class ScreenUtil {
             Class<?> clazz = Class.forName("com.android.internal.R$dimen");
             Object obj = clazz.newInstance();
             int height = Integer.parseInt(clazz.getField("status_bar_height").get(obj).toString());
-            statusBarHeight = QDFApplication.getAppContext().getResources().getDimensionPixelSize(height);
+            statusBarHeight = ContextProvider.get().getResources().getDimensionPixelSize(height);
         } catch (Exception e) {
             e.printStackTrace();
         }

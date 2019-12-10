@@ -8,8 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.linxiao.framework.architecture.BaseFragment;
+import com.linxiao.framework.common.ApplicationUtil;
 import com.linxiao.quickdevframework.R;
-import com.linxiao.quickdevframework.SampleApplication;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,35 +45,35 @@ public class ApplicationApiFragment extends BaseFragment {
         setContentView(R.layout.fragment_application_api, container);
         ButterKnife.bind(this, getContentView());
 
-        ivAppIcon.setImageDrawable(SampleApplication.getApplicationIcon());
-        tvIsAppRunning.setText(getString(R.string.is_app_running) + ": " + SampleApplication.isAppForeground());
-        tvIsAppForeground.setText(getString(R.string.is_app_foreground) + ": " + SampleApplication.isAppForeground());
+        ivAppIcon.setImageDrawable(ApplicationUtil.getApplicationIcon());
+        tvIsAppRunning.setText(getString(R.string.is_app_running) + ": " + ApplicationUtil.isAppForeground());
+        tvIsAppForeground.setText(getString(R.string.is_app_foreground) + ": " + ApplicationUtil.isAppForeground());
     }
 
     @OnClick(R.id.btnGetAppName)
     public void onGetAppNameClick(View v) {
-        tvAppName.setText(SampleApplication.getApplicationName());
+        tvAppName.setText(ApplicationUtil.getApplicationName());
     }
 
     @OnClick(R.id.btnGetAppVersion)
     public void onGetAppVersionClick(View v) {
-        tvAppVersion.setText(SampleApplication.getApplicationVersionName());
+        tvAppVersion.setText(ApplicationUtil.getApplicationVersionName());
     }
 
     @OnClick(R.id.btnGetAppSignature)
     public void onGetAppSignatureClick(View v) {
-        tvAppSignature.setText(SampleApplication.getAppSignature());
+        tvAppSignature.setText(ApplicationUtil.getAppSignature());
     }
 
     @OnClick(R.id.btnExitApp)
     public void onExitAppClick(View v) {
-        SampleApplication.exitApplication();
+        ApplicationUtil.exitApplication();
     }
     
     @OnClick(R.id.btnGetSystemBootTime)
     public void onSystemBootTimeClick(View v) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS", Locale.getDefault());
         
-        tvSystemBootTime.setText(format.format(new Date(SampleApplication.getSystemBootTime())));
+        tvSystemBootTime.setText(format.format(new Date(ApplicationUtil.getSystemBootTime())));
     }
 }

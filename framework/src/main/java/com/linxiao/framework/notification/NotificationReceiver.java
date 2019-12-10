@@ -7,7 +7,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.linxiao.framework.QDFApplication;
+import com.linxiao.framework.common.ApplicationUtil;
+import com.linxiao.framework.common.ContextProvider;
 
 /**
  * 用于接收应用通知消息点击的事件并根据当前应用的状态做出处理
@@ -24,7 +25,7 @@ public class NotificationReceiver extends BroadcastReceiver {
             Log.i(TAG, "notification extra is null, can't guide to target page");
             return;
         }
-        if (QDFApplication.isAppForeground()) {
+        if (ApplicationUtil.isAppForeground()) {
              Log.i(TAG, "application state: running");
             Intent targetIntent = new Intent();
             String targetKey = notificationExtra.getString(NotificationManager.KEY_TARGET_ACTIVITY_NAME);
@@ -46,7 +47,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         else {
              Log.i(TAG, "application state: not running");
             Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(
-                    QDFApplication.getAppContext().getPackageName());
+                    ContextProvider.get().getPackageName());
             launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             launchIntent.putExtra(NotificationManager.KEY_NOTIFICATION_EXTRA, notificationExtra);
             context.startActivity(launchIntent);

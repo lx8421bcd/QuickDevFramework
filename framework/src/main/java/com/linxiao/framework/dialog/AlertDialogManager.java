@@ -3,7 +3,7 @@ package com.linxiao.framework.dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
-import com.linxiao.framework.QDFApplication;
+import com.linxiao.framework.common.ContextProvider;
 
 /**
  * 应用内消息通知封装
@@ -14,7 +14,7 @@ public class AlertDialogManager {
     private AlertDialogManager() {}
 
     public static AlertDialogBuilder createAlertDialogBuilder() {
-        return createAlertDialogBuilder(QDFApplication.getAppContext());
+        return createAlertDialogBuilder(ContextProvider.get());
     }
 
     public static AlertDialogBuilder createAlertDialogBuilder(Context context) {

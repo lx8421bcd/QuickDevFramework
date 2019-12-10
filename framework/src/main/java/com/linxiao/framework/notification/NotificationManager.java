@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.linxiao.framework.QDFApplication;
 import com.linxiao.framework.R;
 import com.linxiao.framework.common.ContextProvider;
 
@@ -39,7 +38,7 @@ public class NotificationManager {
      * @return instance of {@link NotificationManagerCompat}
      */
     public static NotificationManagerCompat getManager() {
-        return NotificationManagerCompat.from(QDFApplication.getAppContext());
+        return NotificationManagerCompat.from(ContextProvider.get());
     }
 
     /**

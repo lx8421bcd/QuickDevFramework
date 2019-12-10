@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.linxiao.framework.QDFApplication;
+import com.linxiao.framework.common.ContextProvider;
 import com.linxiao.framework.permission.PermissionManager;
 
 import java.io.File;
@@ -117,7 +117,7 @@ public class FileManager {
      * */
     @NonNull
     public static String getInternalStorageRootString() {
-        return QDFApplication.getAppContext().getFilesDir().getPath();
+        return ContextProvider.get().getFilesDir().getPath();
     }
 
     /**
@@ -125,7 +125,7 @@ public class FileManager {
      * */
     @NonNull
     public static File getInternalStorageRoot() {
-        return QDFApplication.getAppContext().getFilesDir();
+        return ContextProvider.get().getFilesDir();
     }
 
     /**
