@@ -29,17 +29,6 @@
         android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/btnGetAppSignature"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/get_application_signature"/>
-
-    <TextView
-        android:id="@+id/tvAppSignature"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <Button
         android:id="@+id/btnGetSystemBootTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,6 +44,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/exit_application"/>
+
+    <Button
+        android:id="@+id/btnRestartApp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/restart_application"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -96,5 +91,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/is_app_foreground"/>
+
+    <TextView
+        android:id="@+id/tvCPUName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="cpuName:"/>
 
 </LinearLayout>

@@ -223,7 +223,7 @@ public class PermissionManager {
         .setMessage(message)
         .setPositiveButton((dialog, which) -> {
             // jump to application detail
-            ApplicationUtil.jumpToApplicationDetail(context);
+            ApplicationUtil.openAppDetail(context);
         })
         .setNegativeButton((dialog, which) -> dialog.dismiss())
         .show();

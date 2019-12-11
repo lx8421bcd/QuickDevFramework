@@ -223,7 +223,7 @@ public class PermissionOperator {
         }
         //某些机型找不到浮窗设置页面，会弹出no activity handle exception，此时跳转应用详情，无法回调
         else {
-            ApplicationUtil.jumpToApplicationDetail(activity);
+            ApplicationUtil.openAppDetail(activity);
         }
 
     }

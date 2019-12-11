@@ -18,6 +18,7 @@
     <string name="action_on_prohibited">set action on prohibited</string>
 
     <string name="exit_application">exit application</string>
+    <string name="restart_application">restart application</string>
     <string name="get_application_name">get application name</string>
     <string name="get_application_version">get application version</string>
     <string name="get_application_signature">get application signature</string>
