@@ -18,7 +18,7 @@ import java.util.List;
  * </p>
  *
  * @author linxiao
- * Create on 2018/6/10.
+ * @since 2018/6/10.
  */
 public abstract class SingleItemAdapter<T, VH extends BaseRecyclerViewHolder> extends BaseRecyclerViewAdapter<VH> {
     /**

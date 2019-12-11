@@ -18,7 +18,7 @@ import com.linxiao.framework.R;
  * 底部弹出Dialog基类
  *
  * @author linxiao
- * Create on 2017-06-19
+ * @since 2017-06-19
  */
 public class BottomDialog extends Dialog {
 

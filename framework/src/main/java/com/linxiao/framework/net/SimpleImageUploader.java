@@ -51,7 +51,7 @@ import io.reactivex.schedulers.Schedulers;
  * </p>
  *
  * @author linxiao
- * Create on 2019-12-04
+ * @since 2019-12-04
  */
 public class SimpleImageUploader {
     

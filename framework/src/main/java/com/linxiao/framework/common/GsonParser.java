@@ -41,7 +41,7 @@ import java.util.List;
  * </p>
  *
  * @author linxiao
- * Create on 2018/1/11.
+ * @since 2018/1/11.
  */
 public final class GsonParser {
     

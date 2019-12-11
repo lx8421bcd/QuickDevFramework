@@ -25,7 +25,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * </p>
  *
  * @author linxiao
- * Create on 2018/6/10.
+ * @since 2018/6/10.
  */
 public abstract class BaseRecyclerViewAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     

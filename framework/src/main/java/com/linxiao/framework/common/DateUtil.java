@@ -11,7 +11,7 @@ import java.util.TimeZone;
  * date tools
  *
  * @author linxiao
- * Create on 2014/8/21
+ * @since 2014/8/21
  */
 public class DateUtil {
 	private static final String TAG = DateUtil.class.getSimpleName();

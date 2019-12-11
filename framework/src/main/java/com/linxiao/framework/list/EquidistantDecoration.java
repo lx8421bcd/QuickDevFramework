@@ -15,7 +15,7 @@ import android.view.View;
  * <strong>此装饰器不适用于瀑布流布局</strong>
  *
  * @author linxiao
- * Create on 2017-11-09
+ * @since 2017-11-09
  */
 public class EquidistantDecoration extends RecyclerView.ItemDecoration {
     /**

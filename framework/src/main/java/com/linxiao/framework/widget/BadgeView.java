@@ -35,7 +35,7 @@ import com.linxiao.framework.R;
  * badge_strokeColor: 小圆点边框颜色
  * </p>
  *
- * Create on 2015-11-03
+ * @since 2015-11-03
  * @author linxiao
  * @version 1.0
  */

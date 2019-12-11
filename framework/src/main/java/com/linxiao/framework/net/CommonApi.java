@@ -23,7 +23,7 @@ import retrofit2.http.Url;
  * </p>
  *
  * @author linxiao
- * Create on 2018/6/11.
+ * @since 2018/6/11.
  */
 public interface CommonApi {
     

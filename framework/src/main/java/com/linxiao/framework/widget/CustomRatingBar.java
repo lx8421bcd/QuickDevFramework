@@ -25,7 +25,7 @@ import com.linxiao.framework.R;
  *
  * @author linxiao
  * @version 1.0
- * Create on 2018-06-07
+ * @since 2018-06-07
  */
 public class CustomRatingBar extends LinearLayout {
     private static final String TAG = CustomRatingBar.class.getSimpleName();

@@ -38,7 +38,7 @@ import com.linxiao.framework.R;
  *
  * @author linxiao
  * @version 1.0.0
- * Create on 2015-11-15
+ * @since 2015-11-15
  */
 public class HorizontalNumberPicker extends LinearLayout {
 

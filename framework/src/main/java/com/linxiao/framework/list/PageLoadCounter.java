@@ -10,7 +10,7 @@ package com.linxiao.framework.list;
  * </p>
  *
  * @author linxiao
- * Create on 2018/5/4.
+ * @since 2018/5/4.
  * */
 public class PageLoadCounter {
     private int pageSize = 10;
