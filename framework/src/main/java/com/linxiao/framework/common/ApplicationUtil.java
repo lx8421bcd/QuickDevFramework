@@ -279,7 +279,7 @@ public class ApplicationUtil {
      *
      * @param filePath full path of install apk file
      */
-    public static void installApk(String filePath) {
+    public static void installApk(String filePath, String providerAuth) {
         Context mContext = ContextProvider.get();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mContext.getPackageManager().canRequestPackageInstalls()) {
             return; // do not have package install permission
@@ -293,12 +293,12 @@ public class ApplicationUtil {
             Log.e(TAG, "target file is not apk file");
             return;
         }
-        Uri installPackageUri = null;
+        Uri installPackageUri;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            installPackageUri = FileProvider.getUriForFile(mContext, mContext.getPackageName() + ".fileprovider", installFile);
+            installPackageUri = FileProvider.getUriForFile(mContext, providerAuth, installFile);
         }
         else {
-            Uri.fromFile(new File(filePath)); //Uri.parse("file://" + installFile);
+            installPackageUri = Uri.fromFile(new File(filePath)); //Uri.parse("file://" + installFile);
         }
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(installPackageUri, "application/vnd.android.package-archive");
