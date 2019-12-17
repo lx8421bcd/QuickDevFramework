@@ -11,7 +11,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.linxiao.framework.R;
+import com.linxiao.framework.file.FileUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -164,9 +166,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
         String result = writer.toString();
         sb.append(result);
         Log.e(TAG, sb.toString());
-        FileUtil.writeFile(
-                FileUtil.SD_PATH + ContextProvider.get().getString(R.string.app_name),
-                sb.toString(),
-                true);
+        String destPath = ContextProvider.get().getExternalCacheDir() + File.separator + "error_logs";
+        FileUtil.writeToFile(destPath, sb.toString());
     }
 }
