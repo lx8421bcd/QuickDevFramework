@@ -19,7 +19,7 @@
 基于此框架的整个Android项目工程结构图如下：
 
 <p align="center">
-  <img width="495" height="290" src="https://github.com/ShonLin/QuickDevFramework/blob/master/architecture-images/project-architecture.png">
+  <img width="495" height="290" src="https://github.com/lx8421bcd/QuickDevFramework/blob/master/architecture-images/project-architecture.png">
 </p>
 
 
@@ -40,7 +40,7 @@
 * __简易下载工具__，基于DownloadManager开发，封装权限检查，文件检查，下载进度回调等功能，用于应对一般应用的简易下载需求，比如下载更新包
 
 #### 开发中/规划内的功能
-* log功能封装完善
+* 包装Log已经移除，log相关扩展功能封装完善
 * 升级RxJava至RxJava3
 * 使用kotlin语言改造framework框架
 * 待续
@@ -53,7 +53,7 @@
 
 
 ## 如何使用
-作为一个应用业务无关的应用框架/工具资源合集module，在任何情况下都推荐使用源码集成的方式将此项目整合进你的Android项目，以便修改和扩展。
+**作为一个应用业务无关的应用框架/工具资源合集module，在任何情况下都推荐使用源码集成的方式将此项目整合进你的Android项目，以便修改和扩展**。
 
 如果你将此项目当作一个代码库，想从中获取对你项目中有用的代码部分集成，那么直接将工具类、工具组件复制进你项目使用即可。
 
@@ -68,9 +68,9 @@
 如果你是全新搭建项目，使用QuickDevFramework的分层架构，则需要进行以下步骤
 
 ##### 继承基类
-1. app中的Activity继承BaseActivity，注意BaseActivity中实现了对PermissionManager的回调处理，如果子类Activity不继承BaseActivity则有可能无法正确收到权限申请回调。
-2. Fragment继承BaseFragment。
-3. 如果你使用DialogFragment来管理你APP内的dialog，可以让DialogFragment继承BaseDialogFragment。
+1. **app中的Activity继承BaseActivity**，注意BaseActivity中实现了对PermissionManager的回调处理，如果子类Activity不继承BaseActivity则有可能无法正确收到权限申请回调。
+2. **Fragment继承BaseFragment**。
+3. **DialogFragment继承BaseDialogFragment**，如果你使用DialogFragment来管理你APP内的dialog。
 4. 如果你的项目中有底部弹出Dialog的需求，可以考虑将此类继承BaseBottomDialogFragment，直接实现底部弹出Dialog效果，如果不使用DialogFragment，框架也提供了BottomDialog供业务模块使用
 5. 数据管理的DataManager继承BaseDataManger，可以在BaseDataManager中实现通用功能
 
@@ -79,6 +79,7 @@
 ##### 继承Style
 出于简化开发的目的，我在framework模块的style.xml中添加了基础style并缓存了开发中常见的style配置，如果你需要使用这些配置，请在app的AndroidManifest.xml中直接使用。但是考虑到不同App module可能有不同的配置，推荐的集成方式还是在app的style.xml中配置基础style，继承framework中的style。
 当然了，这个只属于简化开发的代码，集成与否对其它代码没有任何影响，统一样式是一个比较好的Android开发实践，个人推荐按照此方法管理应用中的style配置。
+
 ```xml
 <!-- Base application theme. -->
 <style name="AppTheme" parent="AppTheme.Base">
@@ -105,9 +106,77 @@
 ##### 业务无关组件/SDK迁移
 将业务无关的SDK和工具组件迁移到framework module中，此步骤非必须，且优先级很低，但如果你是为公司项目集成此框架，完成此步骤可以将framework module变成一个为公司定制的Android平台的AppSDK，极大降低公司其他Android项目的开发成本。
 
+## FAQ
+#### Q：我不想使用Gson or 项目里的其他什么SDK，作者能否封装一层方便替换？
+**A：封装一层不在项目规划之内，如果项目里有什么SDK你不想用，建议直接将其移除替换为自己要用的SDK，并将标红代码修改为对应实现**  
+
+以JSON框架为例，一个Android项目里一般只需要一个就够了，而我们并没有频繁替换JSON解析框架的需求，把所有功能都封装一层代理出去，对于我们的项目来说并没有什么好处，反而提升了项目复杂度，以及框架的侵入性(侵入性简而言之就是，假如你哪天想要移除这个解析实现，需要删改很多东西)。
+
+#### Q：我想做组件化/插件化，怎么实现？
+
+**A：直接集成相关SDK构建对应的工程结构即可，不要在framework module中实现**
+
+组件化/插件化跟这个framework module并不是一个层面的东西。framework的定位类似于一个业务module的骨架和支持工具类库，在后续的开发过程中务必要保持framework的定位（业务无关），这一点非常重要。一个巨无霸framework将会是后续维护的噩梦。
+
+#### Q：我需要集成Tinker or 其他热修复，怎么做？
+
+**A：如果你只是在某个平台（如手机）需要热更新，直接在业务module里面集成tinker就行了**
+
+对于类似的SDK集成需求，本着一个思路去集成就好：
+
+* 无论什么地方都会用 → framework
+* 只在某个地方用 → 业务module
+* 根据业务不同选择 → 单独构建一个library module，业务module选择集成
+
+#### Q：希望/应该添加some功能 or some判断
+
+**A：欢迎向本项目提交Pull Request，不过请遵循以下守则**
+
+* **提交功能尽可能的遵循业务无关原则，功能应尽量适用于绝大多数Android项目**
+
+* **提交class请遵循以下格式在class添加javadoc，方便使用者了其概况**
+
+  ```java
+  /**
+   * 一句话简介
+   * <p>
+   * 类功能简要介绍，包括使用目的，注意事项等
+   * </p>
+   *
+   * @author 作者昵称
+   * @since 提交日期 yyyy-MM-dd 格式
+   */
+  public final class SomeUtils {
+    ...
+     /**
+       * 对外方法简介
+       *
+       * <p>
+       * 一些额外注释，如补充说明，注意事项等
+       * </p>
+       * @param param 入参说明
+       * @return 如果返回参数不能明显判断出意义，请添加此项补充说明
+       */
+      public static SomeObject boolean someMethods(SomeParam param) {
+          return someInstance;
+      }
+  }
+  ```
+
+* **请勿提交为了封装而封装的代码**
+
+如之前所言，我不希望framework变成一个无所不包的巨无霸项目，内容应尽量精简，所以在往此项目里添加代码时十分谨慎。添加为了封装而封装的代码，将会严重破坏项目的价值。
+
+我见过有人写的工具类，versionCode判断Android版本都要封装成方法，外面调用从```if(versionCode >= XXX)``` 变成```if(VersionUtil.isXXX())```…… 还有更奇葩的连启动Service都要封装一下，变成```OSUtils.startService(context);```。这种封装除了增强框架的侵入性，提升修改成本之外还有其他意义吗？这种只是把调用方式换成“我看着舒服”的封装，在开发中要尽量避免。
+
+这个项目最初立意是代码库+简易框架合集，一个目的是收集Android常见的业务无关的需求封装好拿来就用，另外一个目的依托提炼出来的分层框架方便做外包。
+
+之后可能会根据业务需求添加一些特定的module，如视频处理、直播、支付相关的SDK封装。可以根据业务需求集成，提升特定项目的开发速度，欢迎大家提出意见
+
 
 
 ## LICENSE
+
     Copyright 2016 linxiao
     
     Licensed under the Apache License, Version 2.0 (the "License");
