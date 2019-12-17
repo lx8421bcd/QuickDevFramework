@@ -10,10 +10,10 @@
   * [搭建新项目](#搭建新项目)
   * [现有项目重构](#现有项目重构)
 * [FAQ](#FAQ)
-  * [Q：我不想使用Gson or 项目里的其他什么SDK，作者能否封装一层方便替换？](#Q：我不想使用Gson or 项目里的其他什么SDK，作者能否封装一层方便替换？)
+  * [Q：我不想使用Gson或者项目里的其他什么SDK，作者能否封装一层方便替换？](#Q：我不想使用Gson或者项目里的其他什么SDK，作者能否封装一层方便替换？)
   * [Q：我想做组件化/插件化，怎么实现？](#Q：我想做组件化/插件化，怎么实现？)
-  * [Q：我需要集成Tinker or 其他热修复，怎么做？](#Q：我需要集成Tinker or 其他热修复，怎么做？)
-  * [Q：希望/应该添加some功能 or some判断](#Q：希望/应该添加some功能 or some判断)
+  * [Q：我需要集成Tinker或者其他热修复，怎么做？](#Q：我需要集成Tinker或者其他热修复，怎么做？)
+  * [Q：希望/应该添加some功能或者some判断](#Q：希望/应该添加some功能或者some判断)
 
 * [LICENSE](#LICENSE)
 
@@ -121,7 +121,7 @@
 将业务无关的SDK和工具组件迁移到framework module中，此步骤非必须，且优先级很低，但如果你是为公司项目集成此框架，完成此步骤可以将framework module变成一个为公司定制的Android平台的AppSDK，极大降低公司其他Android项目的开发成本。
 
 ## FAQ
-#### Q：我不想使用Gson or 项目里的其他什么SDK，作者能否封装一层方便替换？
+#### Q：我不想使用Gson或者项目里的其他什么SDK，作者能否封装一层方便替换？
 **A：封装一层不在项目规划之内，如果项目里有什么SDK你不想用，建议直接将其移除替换为自己要用的SDK，并将标红代码修改为对应实现**  
 
 以JSON框架为例，一个Android项目里一般只需要一个就够了，而我们并没有频繁替换JSON解析框架的需求，把所有功能都封装一层代理出去，对于我们的项目来说并没有什么好处，反而提升了项目复杂度，以及框架的侵入性(侵入性简而言之就是，假如你哪天想要移除这个解析实现，需要删改很多东西)。
@@ -132,7 +132,7 @@
 
 组件化/插件化跟这个framework module并不是一个层面的东西。framework的定位类似于一个业务module的骨架和支持工具类库，在后续的开发过程中务必要保持framework的定位（业务无关），这一点非常重要。一个巨无霸framework将会是后续维护的噩梦。
 
-#### Q：我需要集成Tinker or 其他热修复，怎么做？
+#### Q：我需要集成Tinker或者其他热修复，怎么做？
 
 **A：如果你只是在某个平台（如手机）需要热更新，直接在业务module里面集成tinker就行了**
 
@@ -142,7 +142,7 @@
 * 只在某个地方用 → 业务module
 * 根据业务不同选择 → 单独构建一个library module，业务module选择集成
 
-#### Q：希望/应该添加some功能 or some判断
+#### Q：希望/应该添加some功能或者some判断
 
 **A：欢迎向本项目提交Pull Request，不过请遵循以下守则**
 
@@ -199,8 +199,8 @@
     
        http://www.apache.org/licenses/LICENSE-2.0
     
-    Unless required by applicable law or agreed to in writing, software
+    Unless required by applicable law或者agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    WITHOUT WARRANTIES或者CONDITIONS OF ANY KIND, either express或者implied.
     See the License for the specific language governing permissions and
     limitations under the License.
