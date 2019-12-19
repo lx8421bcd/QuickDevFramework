@@ -11,10 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.linxiao.framework.file.FileUtil;
 import com.linxiao.framework.list.SingleItemAdapter;
 import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.architecture.BaseFragment;
-import com.linxiao.framework.file.FileManager;
 import com.linxiao.framework.permission.PermissionManager;
 import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;
@@ -48,7 +48,7 @@ public class FileBrowserFragment extends BaseFragment {
         ButterKnife.bind(this, getContentView());
         initView();
 
-        currentPath = FileManager.getExternalStorageRoot();
+        currentPath = FileUtil.extRoot();
         loadPath(currentPath);
     }
 

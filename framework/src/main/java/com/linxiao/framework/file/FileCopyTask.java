@@ -2,41 +2,55 @@ package com.linxiao.framework.file;
 
 import android.os.AsyncTask;
 
+import com.linxiao.framework.permission.PermissionException;
+import com.linxiao.framework.permission.PermissionManager;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 文件复制
- * Created by lbc on 2017/3/14.
+ * file copy async task
+ * <p>
+ * used to copy multiple files or large file, which needs to run in background
+ * and needs progress callback
+ * </p>
+ *
+ * @author lbc,linxiao
+ * @since 2017-03-14
  */
 public class FileCopyTask extends AsyncTask<Void, Double, String> {
-    private static final double SIZE_FLAG = 1.00;
-    private static final double SUM_FLAG = 2.00;
     private List<File> srcFiles = new LinkedList<>();
     private String targetPath;
-    private FileSizeListener fileSizeListener;
-    private FileCountListener fileCountListener;
+    private FileModifyListener fileModifyListener;
 
-    private double size;
-    private long sum;
-    private long curSum = 0;
-    private long curSize = 0;
+    private long totalSize;
+    private long totalCount;
+    private long finishedCount = 0;
+    private long finishedSize = 0;
+    private Throwable error;
 
-    public FileCopyTask() {
+    private FileCopyTask() {}
 
+    public static FileCopyTask newInstance(File src, String targetPath) {
+        FileCopyTask task = new FileCopyTask();
+        task.addSrc(src);
+        task.setTargetPath(targetPath);
+        return task;
     }
 
-
-    public FileCopyTask(File src, String targetPath) {
-        this.srcFiles.add(src);
-        this.targetPath = targetPath;
+    public static FileCopyTask newInstance(List<File> srcFiles, String targetPath) {
+        FileCopyTask task = new FileCopyTask();
+        task.setSrcFiles(srcFiles);
+        task.setTargetPath(targetPath);
+        return task;
     }
+
 
     public FileCopyTask addSrc(File src) {
         this.srcFiles.add(src);
@@ -53,134 +67,92 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
         return this;
     }
 
-    public FileCopyTask setFileSizeListener(FileSizeListener fileSizeListener) {
-        this.fileSizeListener = fileSizeListener;
-        return this;
-    }
-
-    public FileCopyTask setFileCountListener(FileCountListener fileCountListener) {
-        this.fileCountListener = fileCountListener;
+    public FileCopyTask setFileModifyListener(FileModifyListener fileModifyListener) {
+        this.fileModifyListener = fileModifyListener;
         return this;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        if (!FileManager.existExternalStorage()) {
-            if (fileSizeListener != null) {
-                fileSizeListener.onFail("未找到SD卡");
-            }
-            if (fileCountListener != null) {
-                fileCountListener.onFail("未找到SD卡");
-            }
+        if (fileModifyListener != null) {
+            fileModifyListener.onStart();
         }
-        if (!FileManager.hasFileOperatePermission()) {
-            if (fileSizeListener != null) {
-                fileSizeListener.onFail("请授予文件管理权限");
-            }
-            if (fileCountListener != null) {
-                fileCountListener.onFail("请授予文件管理权限");
-            }
-        }
-        if (fileSizeListener != null) {
-            for (File src : srcFiles) {
-                size += FileSizeUtil.getFileOrFilesSize(src, 2);  //KB
-            }
-            fileSizeListener.onStart();
-        }
-        if (fileCountListener != null) {
-            for (File src : srcFiles) {
-                sum += FileSizeUtil.getFilesSum(src);
-            }
-            fileCountListener.onStart();
-        }
+        error = null;
+        totalSize  = 0;
+        totalCount = 0;
+        finishedCount = 0;
+        finishedSize  = 0;
     }
 
     @Override
     protected String doInBackground(Void... params) {
-        String result = "";
-        if (fileCountListener != null){
-            publishProgress(SUM_FLAG, (double)0);
+        if (!FileUtil.hasExt()) {
+            error = new FileNotFoundException("SDCard not mounted");
+            return "error";
         }
+        boolean needPermission = !FileUtil.isAppDataPath(targetPath);
         for (File src : srcFiles) {
-            String strSrc = copy(src, new File(targetPath));
-            if (strSrc != null) {
-                result = strSrc;
+            if (!FileUtil.isAppDataPath(src.getPath())) {
+                needPermission = true;
             }
+            totalCount += FileSizeUtil.calculateSubFileCount(src);
+            totalSize  += FileSizeUtil.calculateSize(src, FileSizeUtil.SIZE_UNIT_BYTE);
         }
-        return result;
-    }
+        if (needPermission && !PermissionManager.hasSDCardPermission()) {
+            error = new PermissionException();
+            return "error";
+        }
 
-    @Override
-    protected void onPostExecute(String result) {
-        super.onPostExecute(result);
-        if (fileCountListener != null) {
-            if (result.equals("")) {
-                fileCountListener.onSuccess();
-            } else {
-                fileCountListener.onFail(result);
+        publishProgress();
+        File target = new File(targetPath);
+        for (File src : srcFiles) {
+            try {
+                if (src.isDirectory()) {
+                    copyDirectory(src, target);
+                }
+                else {
+                    copyFile(src, target);
+                }
+            } catch (Exception e) {
+                error = e;
+                return "error";
             }
         }
-        if (fileSizeListener != null) {
-            if (result.equals("")) {
-                fileSizeListener.onSuccess();
-            } else {
-                fileSizeListener.onFail(result);
-            }
-        }
+        return "success";
     }
 
     @Override
     protected void onProgressUpdate(Double... values) {
         super.onProgressUpdate(values);
-        if (values[0] == SIZE_FLAG) {
-            fileSizeListener.onProgressUpdate(size, values[1]);
-        }
-        if (values[0] == SUM_FLAG) {
-            fileCountListener.onProgressUpdate(Math.round(sum), Math.round(values[1]));
+        if (fileModifyListener != null) {
+            fileModifyListener.onProgressUpdate(totalCount, finishedCount, totalSize, finishedSize);
         }
     }
 
-    /**
-     * 复制文件
-     * @param src
-     * @return 失败返回文件名 成功返回null
-     */
-    private String copyFile(File src, File target) {
-        InputStream input;
-        OutputStream output;
-        try {
-            input = new FileInputStream(src);
-            output = new FileOutputStream(new File(target, src.getName()));
-            byte[] buf = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = input.read(buf)) > 0) {
-                output.write(buf, 0, bytesRead);
-                curSize += bytesRead;
-                if (fileSizeListener != null) {
-                    publishProgress(SIZE_FLAG, FileSizeUtil.formatFileSize(curSize, 2));
-                }
+
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+        if (fileModifyListener == null) {
+            if (error != null) {
+                error.printStackTrace();
             }
-            input.close();
-            output.close();
-        } catch (IOException e) {
-            return e.getMessage();
+            return;
         }
-        curSum++;
-        if (fileCountListener != null) {
-            publishProgress(SUM_FLAG, (double) curSum);
+        if (error != null) {
+            fileModifyListener.onError(error);
         }
-        return null;
+        else {
+            fileModifyListener.onSuccess();
+        }
     }
 
-    /**
-     * 复制文件夹
-     * @param src
-     * @param target
-     * @return
-     */
-    private String copyDirectory(File src, File target) {
+    private void copyDirectory(File src, File target) throws Exception {
         File[] srcFiles = src.listFiles();
+        if (srcFiles == null) {
+            return;
+        }
         for (File srcFile : srcFiles) {
             if (srcFile.isFile()) {
                 copyFile(srcFile, target);
@@ -189,21 +161,29 @@ public class FileCopyTask extends AsyncTask<Void, Double, String> {
                 File targetDir = new File(target, srcFile.getName());
                 if (!targetDir.exists()) {
                     if (!targetDir.mkdirs()) {
-                        return "false";
+                        return;
                     }
                 }
                 copyDirectory(srcFile, targetDir);
             }
         }
-        return null;
     }
 
-    private String copy(File src, File target) {
-        if (src.isDirectory()) {
-            return copyDirectory(src, target);
+
+    private void copyFile(File src, File target) throws Exception {
+        InputStream input;
+        OutputStream output;
+        input = new FileInputStream(src);
+        output = new FileOutputStream(new File(target, src.getName()));
+        byte[] buf = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = input.read(buf)) > 0) {
+            output.write(buf, 0, bytesRead);
+            finishedSize += bytesRead;
         }
-        else {
-            return copyFile(src, target);
-        }
+        input.close();
+        output.close();
+        finishedCount++;
+        onProgressUpdate();
     }
 }

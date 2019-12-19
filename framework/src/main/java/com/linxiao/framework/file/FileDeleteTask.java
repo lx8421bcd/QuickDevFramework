@@ -2,27 +2,46 @@ package com.linxiao.framework.file;
 
 import android.os.AsyncTask;
 
+import com.linxiao.framework.permission.PermissionException;
+import com.linxiao.framework.permission.PermissionManager;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 文件删除
- * Created by lbc on 2017/3/16.
+ * file delete async task
+ * <p>
+ * used to delete multiple files or large file, which needs to run in background
+ * and needs progress callback
+ * </p>
+ *
+ * @author lbc,linxiao
+ * @since 2017-03-16
  */
-
 public class FileDeleteTask extends AsyncTask<Void, Long, String> {
-    private List<File> srcFiles = new LinkedList<>();
-    private FileCountListener fileCountListener;
-    private long sum;
-    private long curSum = 0;
 
-    public FileDeleteTask() {
-        
+    private List<File> srcFiles = new LinkedList<>();
+    private FileModifyListener fileModifyListener;
+    private long totalSize;
+    private long totalCount;
+    private long finishedCount = 0;
+    private long finishedSize = 0;
+    private Throwable error;
+
+    private FileDeleteTask() {}
+
+    public static FileDeleteTask newInstance(File src) {
+        FileDeleteTask task = new FileDeleteTask();
+        task.addSrc(src);
+        return task;
     }
 
-    public FileDeleteTask(File src) {
-        this.srcFiles.add(src);
+    public static FileDeleteTask newInstance(List<File> srcFiles) {
+        FileDeleteTask task = new FileDeleteTask();
+        task.setSrcFiles(srcFiles);
+        return task;
     }
 
     public FileDeleteTask addSrc(File src) {
@@ -35,122 +54,110 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
         return this;
     }
 
-    public FileDeleteTask setFileCountListener(FileCountListener fileCountListener) {
-        this.fileCountListener = fileCountListener;
+    public FileDeleteTask setFileModifyListener(FileModifyListener fileModifyListener) {
+        this.fileModifyListener = fileModifyListener;
         return this;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        if (!FileManager.existExternalStorage()) {
-            if (fileCountListener != null) {
-                fileCountListener.onFail("sd card not found");
-            }
+        if (fileModifyListener != null) {
+            fileModifyListener.onStart();
         }
-        if (!FileManager.hasFileOperatePermission()) {
-            if (fileCountListener != null) {
-                fileCountListener.onFail("permission denied");
-            }
-        }
-        if (fileCountListener != null) {
-            for (File src : srcFiles) {
-                sum += FileSizeUtil.getFilesSum(src);
-            }
-            fileCountListener.onStart();
-        }
+        error = null;
+        totalSize  = 0;
+        totalCount = 0;
+        finishedCount = 0;
+        finishedSize  = 0;
     }
 
     @Override
     protected String doInBackground(Void... params) {
-        String result = "";
-        if (fileCountListener != null){
-            publishProgress((long)0);
+        if (!FileUtil.hasExt()) {
+            error = new FileNotFoundException("SDCard not mounted");
+            return "error";
         }
+        boolean needPermission = false;
         for (File src : srcFiles) {
-            String strSrc = deleteFile(src);
-            if (strSrc != null) {
-                result = strSrc;
+            if (!FileUtil.isAppDataPath(src.getPath())) {
+                needPermission = true;
             }
+            totalCount += FileSizeUtil.calculateSubFileCount(src);
+            totalSize  += FileSizeUtil.calculateSize(src, FileSizeUtil.SIZE_UNIT_BYTE);
         }
-        return result;
-    }
+        if (needPermission && !PermissionManager.hasSDCardPermission()) {
+            error = new PermissionException();
+            return "error";
+        }
 
-    @Override
-    protected void onPostExecute(String result) {
-        super.onPostExecute(result);
-        if (fileCountListener != null) {
-            if (result.equals("")) {
-                fileCountListener.onSuccess();
-            } else {
-                fileCountListener.onFail(result);
-            }
+        publishProgress();
+        for (File src : srcFiles) {
+            deleteFile(src);
         }
-    }
-
-    /**
-     * 删除文件
-     * @param src
-     * @return 失败返回文件名 成功返回null
-     */
-    private String deleteFile(File src) {
-        if (src.isDirectory()) {
-            return deleteDirectory(src);
-        }
-        if (src.exists()) {
-            if (src.delete()){
-                curSum++;
-                if (fileCountListener != null) {
-                    publishProgress(curSum);
-                }
-                return null;
-            } else {
-                return "delete failed";
-            }
-        } else {
-            return "no such file or directory";
-        }
-    }
-
-    /**
-     * 删除文件夹
-     * @param src
-     * @return
-     */
-    private String deleteDirectory(File src) {
-        if (!src.exists()) {
-            return "文件不存在";
-        }
-        if (src.isFile()) {
-            if (src.delete()) {
-                curSum++;
-                if (fileCountListener != null) {
-                    publishProgress(curSum);
-                }
-                return null;
-            }
-        }
-        if (src.isDirectory()) {
-            File[] srcFiles = src.listFiles();
-            if (srcFiles == null || srcFiles.length == 0) {
-                if (src.delete()) {
-                    return null;
-                }
-                return "src is empty";
-            }
-            for (File srcFile : srcFiles) {
-                deleteDirectory(srcFile);
-            }
-            if (src.delete()) {
-                return null;
-            }
-        }
-        return null;
+        return "success";
     }
 
     @Override
     protected void onProgressUpdate(Long... values) {
         super.onProgressUpdate(values);
-        fileCountListener.onProgressUpdate(sum, values[0]);
+        if (fileModifyListener != null) {
+            fileModifyListener.onProgressUpdate(totalCount, finishedCount, totalSize, finishedSize);
+        }
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+        if (fileModifyListener == null) {
+            if (error != null) {
+                error.printStackTrace();
+            }
+            return;
+        }
+        if (error != null) {
+            fileModifyListener.onError(error);
+        }
+        else {
+            fileModifyListener.onSuccess();
+        }
+    }
+
+    private void deleteFile(File src) {
+        if (src.isDirectory()) {
+            deleteDirectory(src);
+            return;
+        }
+        if (src.exists()) {
+            src.delete();
+            finishedCount++;
+            publishProgress();
+        }
+    }
+
+    private void deleteDirectory(File src) {
+        if (!src.exists()) {
+            return;
+        }
+        if (src.isFile()) {
+            if (src.delete()) {
+                finishedCount++;
+                if (fileModifyListener != null) {
+                    publishProgress();
+                }
+                return;
+            }
+        }
+        if (src.isDirectory()) {
+            File[] srcFiles = src.listFiles();
+            if (srcFiles == null || srcFiles.length == 0) {
+                src.delete();
+                return ;
+            }
+            for (File srcFile : srcFiles) {
+                deleteDirectory(srcFile);
+            }
+            src.delete();
+        }
     }
 }

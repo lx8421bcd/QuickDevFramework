@@ -68,7 +68,6 @@ public class ToastAlert {
      * @see #create(CharSequence)
      * @see #show(CharSequence)
      * @see ToastInfo#duration()
-     * @deprecated 请使用功能更强大的新方法
      */
     public static void showToast(Context context, CharSequence message, int timeMills) {
         create(message).duration(timeMills).show();
@@ -79,7 +78,6 @@ public class ToastAlert {
      * @param message
      * @see #show(CharSequence)
      * @see #create(CharSequence)
-     * @deprecated 请使用功能更强大的新方法
      */
     public static void showToast(Context context, String message) {
         showToast(context, message, Toast.LENGTH_SHORT);

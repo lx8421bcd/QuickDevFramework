@@ -5,68 +5,132 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 /**
- * 文件大小管理类
- * Created by lbc on 2017/3/12.
+ * tools for file size operate
+ *
+ * @author lbc,linxiao
+ * @since 2017-3-12
  */
-
 public class FileSizeUtil {
     private static final String TAG = FileSizeUtil.class.getSimpleName();
 
-    public static final int SIZETYPE_B = 1;//获取文件大小单位为B的double值
-    public static final int SIZETYPE_KB = 2;//获取文件大小单位为KB的double值
-    public static final int SIZETYPE_MB = 3;//获取文件大小单位为MB的double值
-    public static final int SIZETYPE_GB = 4;//获取文件大小单位为GB的double值
+    public static final int SIZE_UNIT_BYTE = 1;
+    public static final int SIZE_UNIT_KB = 2;
+    public static final int SIZE_UNIT_MB = 3;
+    public static final int SIZE_UNIT_GB = 4;
+
+    public static final long KB_BYTES = 1024;
+    public static final long MB_BYTES = KB_BYTES * 1024;
+    public static final long GB_BYTES = MB_BYTES * 1024;
+
 
     /**
-     * 调用此方法自动计算指定文件或指定文件夹的大小
-     * @param file 文件
-     * @return 计算好的带B、KB、MB、GB的字符串
+     * get file size value by input size unit
+     *
+     * @param size     file size
+     * @param sizeType one of the defined SIZE_UNIT type in this class
+     * @return formatted value
      */
-    public static String getAutoFileOrFilesSize(File file) {
-        long blockSize=0;
+    public static double getSizeValueByUnit(long size, int sizeType) {
+        switch (sizeType) {
+        case SIZE_UNIT_BYTE:
+            return size;
+        case SIZE_UNIT_KB:
+            return Math.round(size * 1.0 / KB_BYTES * 100) * 1.0 / 100;
+        case SIZE_UNIT_MB:
+            return Math.round(size * 1.0 / MB_BYTES * 100) * 1.0 / 100;
+        case SIZE_UNIT_GB:
+            return Math.round(size * 1.0 / GB_BYTES * 100) * 1.0 / 100;
+        }
+        return size;
+    }
+
+    /**
+     * get formatted file size string
+     *
+     * <p>
+     * convert following these rules: <br>
+     * fileSize < 0:            wrong value, output "wrong$input_number" <br>
+     * fileSize < 1KB:          output "fileSizeB"                       <br>
+     * 1KB <= fileSize < 1MB:   output "fileSizeKB"                      <br>
+     * 1MB <= fileSize < 1GB:   output "fileSizeMB"                      <br>
+     * fileSize >= 1GB:         output "fileSizeGB"                      <br>
+     * </p>
+     *
+     * @param fileSize file size value, byte unit
+     * @return formatted file size string
+     */
+    public static String getFormattedSizeString(long fileSize) {
+        if (fileSize < 0) {
+            return "wrong" + fileSize;
+        }
+        if (fileSize < KB_BYTES) {
+            return fileSize + "B";
+        }
+        if (fileSize < MB_BYTES) {
+            return getSizeValueByUnit(fileSize, SIZE_UNIT_KB) + "KB";
+        }
+        if (fileSize < GB_BYTES) {
+            return getSizeValueByUnit(fileSize, SIZE_UNIT_MB) + "MB";
+        } else {
+            return getSizeValueByUnit(fileSize, SIZE_UNIT_GB) + "GB";
+        }
+    }
+
+    /**
+     * get formatted file size string for input file or directory
+     *
+     * @param file file or directory
+     * @return formatted file size string
+     */
+    public static String getFileOrDirectorySizeString(File file) {
+        long blockSize = 0;
         try {
-            if(file.isDirectory()){
-                blockSize = getFileSizes(file);
-            }else{
+            if (file.isDirectory()) {
+                blockSize = getDirectorySize(file);
+            } else {
                 blockSize = getFileSize(file);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(TAG,"获取文件大小失败!");
+            Log.e(TAG, "获取文件大小失败!");
         }
-        return formatFileSize(blockSize);
+        return getFormattedSizeString(blockSize);
     }
 
     /**
-     * 获取指定文件的指定单位的大小
-     * @param file 文件
-     * @param sizeType 获取大小的类型1为B、2为KB、3为MB、4为GB
-     * @return double值的大小
+     * get file or directory size on disk
+     *
+     * @param file     file
+     * @param sizeType one of the defined SIZE_UNIT type in this class
+     * @return file size value
      */
-    public static double getFileOrFilesSize(File file,int sizeType) {
-        long blockSize=0;
+    public static double calculateSize(File file, int sizeType) {
+        long blockSize = 0;
         try {
-            if(file.isDirectory()){
-                blockSize = getFileSizes(file);
-            }else{
+            if (file.isDirectory()) {
+                blockSize = getDirectorySize(file);
+            } else {
                 blockSize = getFileSize(file);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(TAG,"获取文件大小失败!");
+            Log.e(TAG, "获取文件大小失败!");
         }
-        return formatFileSize(blockSize, sizeType);
+        return getSizeValueByUnit(blockSize, sizeType);
     }
 
     /**
-     * 获取指定文件夹文件数目
-     * @param file 文件
-     * @return double值的大小
+     * get total file count in input directory
+     *
+     * <p>
+     * if input file object is not directory, method will returns 1
+     * </p>
+     * @param file input directory
+     * @return total file count in the directory
      */
-    public static long getFilesSum(File file) {
+    public static long calculateSubFileCount(File file) {
         if (!file.exists()) {
             return 0;
         }
@@ -74,108 +138,47 @@ public class FileSizeUtil {
             return 1;
         }
         long filesSum = 0;
-        File fList[] = file.listFiles();
-        for (int i = 0; i < fList.length; i++){
-            if (fList[i].isDirectory()){
-                filesSum = filesSum + getFilesSum(fList[i]);
-            }
-            else{
+        File[] fList = file.listFiles();
+        if (fList == null) {
+            return 0;
+        }
+        for (File value : fList) {
+            if (value.isDirectory()) {
+                filesSum = filesSum + calculateSubFileCount(value);
+            } else {
                 filesSum++;
             }
         }
         return filesSum;
     }
 
-    /**
-     * 获取指定文件大小
-     * @param file
-     * @return
-     * @throws Exception
-     */
     private static long getFileSize(File file) throws IOException {
         if (file == null) {
             return 0;
         }
         long size = 0;
-        if (file.exists()){
-            FileInputStream fis = null;
+        if (file.exists()) {
+            FileInputStream fis;
             fis = new FileInputStream(file);
             size = fis.available();
+            fis.close();
         }
         return size;
     }
 
-    /**
-     * 获取指定文件夹大小
-     * @param f
-     * @return
-     * @throws Exception
-     */
-    private static long getFileSizes(File f) throws Exception {
+    private static long getDirectorySize(File f) throws Exception {
         long size = 0;
-        File fList[] = f.listFiles();
-        for (int i = 0; i < fList.length; i++){
-            if (fList[i].isDirectory()){
-                size = size + getFileSizes(fList[i]);
-            }
-            else{
-                size =size + getFileSize(fList[i]);
+        File[] fList = f.listFiles();
+        if (fList == null) {
+            return 0;
+        }
+        for (File file : fList) {
+            if (file.isDirectory()) {
+                size = size + getDirectorySize(file);
+            } else {
+                size = size + getFileSize(file);
             }
         }
         return size;
-    }
-    /**
-     * 转换文件大小
-     * @param fileS
-     * @return
-     */
-    public static String formatFileSize(long fileS) {
-        DecimalFormat df = new DecimalFormat("#.00");
-        String fileSizeString = "";
-        String wrongSize="0B";
-        if(fileS==0){
-            return wrongSize;
-        }
-        if (fileS < 1024){
-            fileSizeString = df.format((double) fileS) + "B";
-        }
-        else if (fileS < 1048576){
-            fileSizeString = df.format((double) fileS / 1024) + "KB";
-        }
-        else if (fileS < 1073741824){
-            fileSizeString = df.format((double) fileS / 1048576) + "MB";
-        }
-        else{
-            fileSizeString = df.format((double) fileS / 1073741824) + "GB";
-        }
-        return fileSizeString;
-    }
-
-    /**
-     * 转换文件大小,指定转换的类型
-     * @param fileS
-     * @param sizeType
-     * @return
-     */
-    public static double formatFileSize(long fileS, int sizeType) {
-        DecimalFormat df = new DecimalFormat("#.00");
-        double fileSizeLong = 0;
-        switch (sizeType) {
-            case SIZETYPE_B:
-                fileSizeLong=Double.valueOf(df.format((double) fileS));
-                break;
-            case SIZETYPE_KB:
-                fileSizeLong=Double.valueOf(df.format((double) fileS / 1024));
-                break;
-            case SIZETYPE_MB:
-                fileSizeLong=Double.valueOf(df.format((double) fileS / 1048576));
-                break;
-            case SIZETYPE_GB:
-                fileSizeLong=Double.valueOf(df.format((double) fileS / 1073741824));
-                break;
-            default:
-                break;
-        }
-        return fileSizeLong;
     }
 }

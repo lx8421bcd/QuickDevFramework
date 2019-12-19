@@ -10,6 +10,7 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.linxiao.framework.common.ContextProvider;
+import com.linxiao.framework.file.FileUtil;
 import com.linxiao.framework.permission.PermissionException;
 import com.linxiao.framework.permission.PermissionManager;
 
@@ -174,7 +175,7 @@ public class SimpleDownloadTask {
             return;
         }
         String downloadPath = downloadTo.getPath();
-        if (!isAppDataPath(downloadPath) && !PermissionManager.hasSDCardPermission()) {
+        if (!FileUtil.isAppDataPath(downloadPath) && !PermissionManager.hasSDCardPermission()) {
             if (downloadListener != null) {
                 downloadListener.onError(new PermissionException());
             }
@@ -247,24 +248,6 @@ public class SimpleDownloadTask {
         if (timer != null) {
             timer.cancel();
         }
-    }
-
-    private boolean isAppDataPath(String path) {
-        File extCacheRoot = ContextProvider.get().getExternalCacheDir();
-        if (extCacheRoot != null && path.contains(extCacheRoot.getPath())) {
-            return true;
-        }
-        File extFileRoot = ContextProvider.get().getExternalFilesDir(null);
-        if (extFileRoot != null && path.contains(extFileRoot.getPath())) {
-            return true;
-        }
-        if (path.contains(ContextProvider.get().getCacheDir().getPath())) {
-            return true;
-        }
-        if (path.contains(ContextProvider.get().getFilesDir().getPath())) {
-            return true;
-        }
-        return false;
     }
 
     private String getMimeType(String url) {

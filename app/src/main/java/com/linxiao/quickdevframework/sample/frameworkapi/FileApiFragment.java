@@ -11,9 +11,11 @@ import android.widget.TextView;
 import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.architecture.BaseFragment;
 import com.linxiao.framework.common.ToastAlert;
-import com.linxiao.framework.file.FileSizeListener;
-import com.linxiao.framework.file.FileCountListener;
-import com.linxiao.framework.file.FileManager;
+import com.linxiao.framework.file.FileCopyTask;
+import com.linxiao.framework.file.FileDeleteTask;
+import com.linxiao.framework.file.FileModifyListener;
+import com.linxiao.framework.file.FileSizeUtil;
+import com.linxiao.framework.file.FileUtil;
 import com.linxiao.framework.permission.PermissionManager;
 import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;
@@ -28,7 +30,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class FileApiFragment extends BaseFragment {
-    private String totalFilePath = FileManager.getExternalStorageRoot() + File.separator + "QuickDevFramework";
+    private String totalFilePath = FileUtil.extRoot() + File.separator + "QuickDevFramework";
 
     @BindView(R.id.tvTotalSize)
     TextView tvTotalSize;
@@ -53,11 +55,10 @@ public class FileApiFragment extends BaseFragment {
         .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
-                Log.d(TAG, FileManager.getExternalStorageRootString());
-                Log.d(TAG, FileManager.getInternalStorageRootString());
+                Log.d(TAG, FileUtil.extRoot().getAbsolutePath());
                 try {
-                    FileManager.pathStringToFile(totalFilePath).mkdir();
-                    File txtFile = FileManager.pathStringToFile(totalFilePath + File.separator + "text.txt");
+                    new File(totalFilePath).mkdirs();
+                    File txtFile = new File(totalFilePath + File.separator + "text.txt");
                     txtFile.createNewFile();
                     FileOutputStream outputStream = new FileOutputStream(txtFile);
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
@@ -82,58 +83,51 @@ public class FileApiFragment extends BaseFragment {
 
     @OnClick(R.id.btnCopyFileSimple)
     public void OnCopyFileSimple() {
-        FileManager.pathStringToFile(totalFilePath + File.separator + "Copy").mkdir();
-        FileManager.copyFileOperate(FileManager.pathStringToFile(totalFilePath + File.separator + "text.txt"),
-                totalFilePath + File.separator + "Copy").setFileSizeListener(new FileSizeListener() {
+        File src = new File(totalFilePath + File.separator + "text.txt");
+        File target = new File(totalFilePath + File.separator + "Copy");
+        target.mkdirs();
+        FileCopyTask.newInstance(src, target.getPath())
+        .setFileModifyListener(new FileModifyListener() {
             @Override
-            public void onStart() {}
+            public void onStart() {
+
+            }
 
             @Override
-            public void onProgressUpdate(final double count, final double current) {
-                tvCurrentSize.setText("currentSize:" + current + "KB");
-                tvTotalSize.setText("totalSize:" + count + "KB");
+            public void onProgressUpdate(long totalCount, long finishedCount, long totalSize, long finishedSize) {
+                tvTotalSum.setText("totalSum:"  + totalCount + "");
+                tvCurrentSum.setText("currentSum:" + finishedCount + "");
+                tvTotalSize.setText("totalSize:" + FileSizeUtil.getFormattedSizeString(totalSize));
+                tvCurrentSize.setText("currentSize:" + FileSizeUtil.getFormattedSizeString(finishedSize));
             }
 
             @Override
             public void onSuccess() {
-                ToastAlert.showToast(getContext(), "copy success");
+                ToastAlert.showToast(getActivity(), "copy success");
             }
 
             @Override
-            public void onFail(String failMsg) {}
-        }).setFileCountListener(new FileCountListener() {
-            @Override
-            public void onStart() {}
-
-            @Override
-            public void onProgressUpdate(final long count, final long current) {
-                tvCurrentSum.setText("currentSum:" + current + "");
-                tvTotalSum.setText("totalSum:"  + count + "");
+            public void onError(Throwable e) {
+                ToastAlert.showToast(getActivity(), e.getMessage());
+                e.printStackTrace();
             }
-
-            @Override
-            public void onSuccess() {}
-
-            @Override
-            public void onFail(String failMsg) {}
-        }).execute();
+        })
+        .execute();
     }
 
     @OnClick(R.id.btnCopyFolderSimple)
     public void OnCopyFolderSimple() {
         try {
-            FileManager.pathStringToFile(totalFilePath + File.separator + "FolderExample").mkdir();
-            FileManager.pathStringToFile(totalFilePath + File.separator + "FolderExample"+ File.separator + "1").mkdir();
-            FileManager.pathStringToFile(totalFilePath + File.separator + "FolderExample"+ File.separator + "2").mkdir();
-            FileManager.pathStringToFile(totalFilePath + File.separator + "CopyFolder").mkdir();
-            FileManager.pathStringToFile(totalFilePath).mkdir();
+            new File(totalFilePath + File.separator + "FolderExample").mkdirs();
+            new File(totalFilePath + File.separator + "FolderExample"+ File.separator + "1").mkdirs();
+            new File(totalFilePath + File.separator + "FolderExample"+ File.separator + "2").mkdirs();
+            new File(totalFilePath + File.separator + "CopyFolder").mkdirs();
+            new File(totalFilePath).mkdirs();
 
-            File txtFile = FileManager.pathStringToFile(totalFilePath + File.separator + "FolderExample"+
-                    File.separator + "2" + File.separator + "text.txt");
-            File txtFile_ = FileManager.pathStringToFile(totalFilePath + File.separator + "FolderExample"+
-                    File.separator + "text.txt");
+            File txtFile = new File(totalFilePath + File.separator + "FolderExample"+ File.separator + "2" + File.separator + "text.txt");
+            File txtFile_ = new File(totalFilePath + File.separator + "FolderExample"+ File.separator + "text.txt");
             txtFile.createNewFile();
-            txtFile.createNewFile();
+            txtFile_.createNewFile();
             FileOutputStream outputStream = new FileOutputStream(txtFile);
             FileOutputStream outputStream_ = new FileOutputStream(txtFile_);
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
@@ -152,72 +146,68 @@ public class FileApiFragment extends BaseFragment {
             e.printStackTrace();
         }
 
-        FileManager.copyFileOperate(
-                FileManager.pathStringToFile(
-                    totalFilePath + File.separator + "FolderExample"),
-                    totalFilePath + File.separator + "CopyFolder"
-        ).setFileSizeListener(new FileSizeListener() {
+
+        FileCopyTask.newInstance(new File(totalFilePath + File.separator + "FolderExample"),
+                totalFilePath + File.separator + "CopyFolder")
+        .setFileModifyListener(new FileModifyListener() {
             @Override
-            public void onStart() {}
+            public void onStart() {
+
+            }
 
             @Override
-            public void onProgressUpdate(final double count, final double current) {
-                tvCurrentSize.setText("currentSize:" + current + "KB");
-                tvTotalSize.setText("totalSize:" + count + "KB");
-
+            public void onProgressUpdate(long totalCount, long finishedCount, long totalSize, long finishedSize) {
+                tvTotalSum.setText("totalSum:"  + totalCount + "");
+                tvCurrentSum.setText("currentSum:" + finishedCount + "");
+                tvTotalSize.setText("totalSize:" + FileSizeUtil.getFormattedSizeString(totalSize));
+                tvCurrentSize.setText("currentSize:" + FileSizeUtil.getFormattedSizeString(finishedSize));
             }
 
             @Override
             public void onSuccess() {
-                ToastAlert.showToast(getContext(), "copy success");
+                ToastAlert.showToast(getActivity(), "copy success");
             }
 
             @Override
-            public void onFail(String failMsg) {}
-        }).setFileCountListener(new FileCountListener() {
-            @Override
-            public void onStart() {}
-
-            @Override
-            public void onProgressUpdate(final long count, final long current) {
-                tvCurrentSum.setText("currentSum:" + current + "");
-                tvTotalSum.setText("totalSum:"  + count + "");
-
+            public void onError(Throwable e) {
+                ToastAlert.showToast(getActivity(), e.getMessage());
+                e.printStackTrace();
             }
-
-            @Override
-            public void onSuccess() {}
-
-            @Override
-            public void onFail(String failMsg) {}
-        }).execute();
+        })
+        .execute();
     }
 
     @OnClick(R.id.btnDeleteFolderSimple)
     public void OnDeleteFolderSimple() {
-        FileManager.deleteFileOperate(FileManager.pathStringToFile(totalFilePath + File.separator +
-                "FolderExample")).setFileCountListener(new FileCountListener() {
+        FileDeleteTask.newInstance(new File(totalFilePath + File.separator + "FolderExample"))
+        .setFileModifyListener(new FileModifyListener() {
             @Override
-            public void onStart() {}
+            public void onStart() {
+
+            }
 
             @Override
-            public void onProgressUpdate(final long count, final long current) {
-                tvCurrentSum.setText("currentSum:" + current + "");
-                tvTotalSum.setText("totalSum:"  + count + "");
+            public void onProgressUpdate(long totalCount, long finishedCount, long totalSize, long finishedSize) {
+                tvTotalSum.setText("totalSum:"  + totalCount + "");
+                tvCurrentSum.setText("currentSum:" + finishedCount + "");
+                tvTotalSize.setText("totalSize:" + FileSizeUtil.getFormattedSizeString(totalSize));
+                tvCurrentSize.setText("currentSize:" + FileSizeUtil.getFormattedSizeString(finishedSize));
             }
 
             @Override
             public void onSuccess() {
-                ToastAlert.showToast(getContext(), "delete success");
+                ToastAlert.showToast(getActivity(), "delete success");
             }
 
             @Override
-            public void onFail(String failMsg) {
-                ToastAlert.showToast(getContext(), failMsg);
+            public void onError(Throwable e) {
+                ToastAlert.showToast(getActivity(), e.getMessage());
+                e.printStackTrace();
             }
-        }).execute();
-        tvHasSDCard.setText(getString(R.string.is_exist_sd_card) + ": " + FileManager.existExternalStorage());
-        tvHasPermission.setText(getString(R.string.has_file_permission) + ": " + FileManager.hasFileOperatePermission());
+        })
+        .execute();
+        tvHasSDCard.setText(getString(R.string.is_exist_sd_card) + ": " + FileUtil.hasExt());
+        tvHasPermission.setText(getString(R.string.has_file_permission) + ": " + PermissionManager.hasSDCardPermission());
     }
 
 }

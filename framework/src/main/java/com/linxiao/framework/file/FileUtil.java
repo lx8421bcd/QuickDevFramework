@@ -4,6 +4,8 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.linxiao.framework.common.ContextProvider;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -174,5 +176,33 @@ public final class FileUtil {
             fileWriter.write(content);
             fileWriter.flush();
         }
+    }
+
+    /**
+     * check the path is belong to application's data or cache path
+     *
+     * <p>
+     * modify the application's cache and data directory do not need
+     * any runtime permission
+     * </p>
+     * @param path path string
+     * @return true path belongs to app cache or data path
+     */
+    public static boolean isAppDataPath(String path) {
+        File extCacheRoot = ContextProvider.get().getExternalCacheDir();
+        if (extCacheRoot != null && path.contains(extCacheRoot.getPath())) {
+            return true;
+        }
+        File extFileRoot = ContextProvider.get().getExternalFilesDir(null);
+        if (extFileRoot != null && path.contains(extFileRoot.getPath())) {
+            return true;
+        }
+        if (path.contains(ContextProvider.get().getCacheDir().getPath())) {
+            return true;
+        }
+        if (path.contains(ContextProvider.get().getFilesDir().getPath())) {
+            return true;
+        }
+        return false;
     }
 }
