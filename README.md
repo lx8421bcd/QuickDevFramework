@@ -52,6 +52,7 @@
 * 包装Log已经移除，log相关扩展功能封装完善
 * 升级RxJava至RxJava3
 * 使用kotlin语言改造framework框架
+* 基于当前项目框架，添加常用UI模板，如单列表界面等
 * 待续
 
 
