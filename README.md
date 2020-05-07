@@ -138,7 +138,7 @@
 * 只在某个地方用 → 业务module
 * 根据业务不同选择 → 单独构建一个library module，业务module选择集成
 
-#### Q：希望/应该添加some功能或者some判断
+#### Q：希望/应该添加某些功能或者判断
 
 **A：欢迎向本项目提交Pull Request，不过请遵循以下守则**
 
@@ -195,8 +195,8 @@
     
        http://www.apache.org/licenses/LICENSE-2.0
     
-    Unless required by applicable law或者agreed to in writing, software
+    Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES或者CONDITIONS OF ANY KIND, either express或者implied.
+    WITHOUT WARRANTIES or CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
