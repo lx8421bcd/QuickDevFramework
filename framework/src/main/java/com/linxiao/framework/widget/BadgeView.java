@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -15,6 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 
 import com.linxiao.framework.R;
 
@@ -47,6 +52,7 @@ public class BadgeView extends TextView {
     private int minPaddingHorizontal = dip2Px(4);
     private int minPaddingVertical = dip2Px(0.5f);
 
+    private static int defaultTextViewTextColor = 0;
     private int badgeColor = Color.RED;
     private float radius;
 
@@ -91,6 +97,12 @@ public class BadgeView extends TextView {
         init(context, attrs);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public BadgeView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init(context, attrs);
+    }
+
     private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BadgeView);
@@ -107,11 +119,17 @@ public class BadgeView extends TextView {
         if (TextUtils.isEmpty(ellipsis)) {
             countEllipsisString();
         }
-        //在自定义属性初始化后重新setText
+        // 在自定义属性初始化后重新setText
         if (!TextUtils.isEmpty(getText())) {
             setText(getText());
         }
-        setTextColor(Color.WHITE);
+        if (defaultTextViewTextColor == 0) {
+            defaultTextViewTextColor = ContextCompat.getColor(getContext(), android.R.color.secondary_text_dark);
+        }
+        if (getCurrentTextColor() == defaultTextViewTextColor) {
+            // 如果getCurrentTextColor颜色为TextView默认值说明用户没有手动设置过颜色，使用白色默认
+            setTextColor(Color.WHITE);
+        }
         setGravity(Gravity.CENTER);
         execSetPadding();
     }
