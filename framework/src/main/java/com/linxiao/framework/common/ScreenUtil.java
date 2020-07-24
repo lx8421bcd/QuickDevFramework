@@ -1,5 +1,6 @@
 package com.linxiao.framework.common;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -37,15 +38,12 @@ public class ScreenUtil {
      * 获取屏幕宽, 单位 px
      * @return screenWidth;
      * */
-    public static int getScreenWidth() {
+    public static int getRealScreenWidth() {
         WindowManager windowManager = (WindowManager) ContextProvider.get().getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
         DisplayMetrics dm = new DisplayMetrics();
-        Class c;
         try {
-            c = Class.forName("android.view.Display");
-            @SuppressWarnings("unchecked")
-            Method method = c.getMethod("getRealMetrics", DisplayMetrics.class);
+            Method method = Class.forName("android.view.Display").getMethod("getRealMetrics", DisplayMetrics.class);
             method.invoke(display, dm);
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,20 +51,17 @@ public class ScreenUtil {
         }
         return dm.widthPixels;
     }
-    
+
     /**
      * 获取屏幕高(包含虚拟键盘)， 单位 px
      * @return screenHeight;
      * */
-    public static int getScreenHeight() {
+    public static int getRealScreenHeight() {
         WindowManager windowManager = (WindowManager) ContextProvider.get().getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
         DisplayMetrics dm = new DisplayMetrics();
-        Class c;
         try {
-            c = Class.forName("android.view.Display");
-            @SuppressWarnings("unchecked")
-            Method method = c.getMethod("getRealMetrics", DisplayMetrics.class);
+            Method method = Class.forName("android.view.Display").getMethod("getRealMetrics", DisplayMetrics.class);
             method.invoke(display, dm);
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,7 +69,23 @@ public class ScreenUtil {
         }
         return dm.heightPixels;
     }
-    
+
+    /**
+     * 获取没有虚拟键盘的屏幕宽度
+     * <p>在这里必须传入Activity以准确计算当前Activity下的可用宽度</p>
+     *
+     * @return screenHeight without virtual key height
+     * */
+    public static int getUsableScreenWidth(Context context) {
+        if (context == null) {
+            return 0;
+        }
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+
+        return metrics.widthPixels;
+    }
     /**
      * 获取没有虚拟键盘的屏幕高度
      * <p>由于有些虚拟键盘可以滑动隐藏（比如小米），
@@ -82,14 +93,17 @@ public class ScreenUtil {
      *
      * @return screenHeight without virtual key height
      * */
-    public static int getUsableScreenHeight() {
+    public static int getUsableScreenHeight(Context context) {
+        if (context == null) {
+            return 0;
+        }
         DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager) ContextProvider.get().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(metrics);
-        
+
         return metrics.heightPixels;
     }
-    
+
     /**
      * 获取虚拟按键高度
      * <p>由于有些虚拟键盘可以滑动隐藏（比如小米），
@@ -97,18 +111,19 @@ public class ScreenUtil {
      *
      * @return virtual key height
      * */
-    public static int getVirtualKeyHeight() {
-        return getScreenHeight() - getUsableScreenHeight();
+    public static int getVirtualKeyHeight(Context context) {
+        return getRealScreenHeight() - getUsableScreenHeight(context);
     }
     
     /**
      * 获取status bar高度
      * @return status bar height in px value
      * */
+    @SuppressLint("PrivateApi")
     public static int getStatusBarHeight() {
         int statusBarHeight = 0;
         try {
-            Class<?> clazz = Class.forName("com.android.internal.R$dimen");
+           Class<?> clazz = Class.forName("com.android.internal.R$dimen");
             Object obj = clazz.newInstance();
             int height = Integer.parseInt(clazz.getField("status_bar_height").get(obj).toString());
             statusBarHeight = ContextProvider.get().getResources().getDimensionPixelSize(height);
