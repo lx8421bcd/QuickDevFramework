@@ -47,9 +47,9 @@
 * __MVVM架构演示示例__，[mvvm package](https://github.com/lx8421bcd/QuickDevFramework/tree/master/app/src/main/java/com/linxiao/quickdevframework/sample/mvvm)，包含了MVVM基类和基于RxJava的MVVM验证码交互简单实现示例，在想要使用MVVM架构时可以参考，也可以将基类放在Framework模块中
 * __简易图片上传工具__，鉴于[Retrofit和OkHttp上传文件必带Content-Size导致某些服务端接收失败](https://github.com/square/okhttp/issues/2138)， 基于RxJava用HttpUrlConnection封装一个简易的图片上传工具，以应对应用中普遍存在的上传图片需求。
 * __简易下载工具__，基于DownloadManager开发，封装权限检查，文件检查，下载进度回调等功能，用于应对一般应用的简易下载需求，比如下载更新包
+* __简易Logger__, 支持log输出超过单行最大值自动换行，提供打印当前线程信息，堆栈信息等工具方法。
 
 #### 开发中/规划内的功能
-* 包装Log已经移除，log相关扩展功能封装完善
 * 升级RxJava至RxJava3
 * 使用kotlin语言改造framework框架
 * 基于当前项目框架，添加常用UI模板，如单列表界面等
