@@ -154,14 +154,5 @@ public abstract class BaseDialogFragment extends AppCompatDialogFragment impleme
     public static int px2dp(float pxValue) {
         return ScreenUtil.px2dp(pxValue);
     }
-    
-    /**
-     * use this method instead of findViewById() to simplify view initialization <br>
-     * it's not unchecked because T extends View
-     * */
-    @SuppressWarnings("unchecked")
-    protected <T extends View> T findView(View layoutView, @IdRes int resId) {
-        return (T) layoutView.findViewById(resId);
-    }
 
 }

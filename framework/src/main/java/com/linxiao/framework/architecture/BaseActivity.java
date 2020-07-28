@@ -189,24 +189,7 @@ public abstract class BaseActivity extends AppCompatActivity  implements Lifecyc
     public static int px2dp(float pxValue) {
         return ScreenUtil.px2dp(pxValue);
     }
-    
-    /**
-     * use this method instead of findViewById() to simplify view initialization <br>
-     * it's not unchecked because T extends View
-     * */
-    @SuppressWarnings("unchecked")
-    protected <T extends View> T findView(@IdRes int resId) {
-        return (T) findViewById(resId);
-    }
 
-    /**
-     * use this method instead of findViewById() to simplify view initialization <br>
-     * it's not unchecked because T extends View
-     * */
-    @SuppressWarnings("unchecked")
-    protected <T extends View> T findView(@IdRes int resId, View containerView) {
-        return (T) containerView.findViewById(resId);
-    }
 
     /**
      * set is print activity lifecycle

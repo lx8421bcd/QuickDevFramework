@@ -199,14 +199,4 @@ public abstract class BaseFragment extends Fragment implements LifecycleProvider
     public static int px2dp(float pxValue) {
         return ScreenUtil.px2dp(pxValue);
     }
-    
-    /**
-     * use this method instead of findViewById() to simplify view initialization <br>
-     * it's not unchecked because of T extends View
-     * */
-    @SuppressWarnings("unchecked")
-    protected <T extends View> T findView(View layoutView, @IdRes int resId) {
-        return (T) layoutView.findViewById(resId);
-    }
-
 }
