@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +50,9 @@ public class FileBrowserFragment extends BaseFragment {
         ButterKnife.bind(this, getContentView());
         initView();
 
-        currentPath = FileUtil.extRoot();
+        currentPath = getContext().getExternalCacheDir();
+        //FIXME Environment.getExternalFileDirectory() is duplicated
+        Log.d(TAG, "onCreateContentView: " + currentPath);
         loadPath(currentPath);
     }
 
@@ -85,7 +89,7 @@ public class FileBrowserFragment extends BaseFragment {
         .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
-
+                Log.d(TAG, "onGranted: " + path.listFiles());
                 fileListAdapter.setDataSource(Arrays.asList(path.listFiles()));
                 tvPath.setText(path.getName());
                 currentPath = path;
