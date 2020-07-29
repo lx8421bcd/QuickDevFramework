@@ -3,11 +3,14 @@ package com.linxiao.quickdevframework.sample.adapter;
 import android.os.Handler;
 import android.os.Bundle;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import com.linxiao.framework.architecture.BaseActivity;
+import com.linxiao.framework.common.ScreenUtil;
+import com.linxiao.framework.list.EquidistantDecoration;
 import com.linxiao.quickdevframework.R;
 
 import java.util.Arrays;
@@ -35,28 +38,29 @@ public class EmptyTestActivity extends BaseActivity {
         mAdapter = new SampleAdapter(this);
         rcvEmptySimple.setAdapter(mAdapter);
         rcvEmptySimple.setItemAnimator(new DefaultItemAnimator());
-        rcvEmptySimple.setLayoutManager(new LinearLayoutManager(this));
+        rcvEmptySimple.setLayoutManager(new GridLayoutManager(this, 3));
+        rcvEmptySimple.addItemDecoration(new EquidistantDecoration(3, ScreenUtil.dp2px(12)));
 
-        View emptyView = getLayoutInflater().inflate(R.layout.empty_view, null);
-        mAdapter.setEmptyView(emptyView);
-
-        View loadingView = getLayoutInflater().inflate(R.layout.loading_view, null);
-        mAdapter.setLoadingView(loadingView);
-
-        View errorView = getLayoutInflater().inflate(R.layout.error_view, null);
-        mAdapter.setErrorView(errorView);
-        errorView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                refreshData();
-            }
-        });
-        emptyView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                refreshData();
-            }
-        });
+//        View emptyView = getLayoutInflater().inflate(R.layout.empty_view, null);
+//        mAdapter.setEmptyView(emptyView);
+//
+//        View loadingView = getLayoutInflater().inflate(R.layout.loading_view, null);
+//        mAdapter.setLoadingView(loadingView);
+//
+//        View errorView = getLayoutInflater().inflate(R.layout.error_view, null);
+//        mAdapter.setErrorView(errorView);
+//        errorView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                refreshData();
+//            }
+//        });
+//        emptyView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                refreshData();
+//            }
+//        });
         refreshData();
     }
 
@@ -90,9 +94,10 @@ public class EmptyTestActivity extends BaseActivity {
                     showEmpty = true;
                     showData = false;
                     showError = false;
-                    mAdapter.addToDataSource(Arrays.asList("1","1","1","1","1","1","1","1","1","1","1"));
+                    mAdapter.addToDataSource(Arrays.asList("1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"));
                 }
             }
         }, 1000);
+        mAdapter.addToDataSource(Arrays.asList("1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"));
     }
 }

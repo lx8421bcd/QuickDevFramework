@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 /**
@@ -31,9 +33,9 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
      */
     public static final int BORDER_DEFAULT = -1;
     // 布局方向
-    private int orientation = VERTICAL;
+    private int orientation;
     // 行/列数
-    private int spanCount = 1;
+    private int spanCount;
     // 距离大小
     private int spacingSize;
     // 间距内容
@@ -85,21 +87,23 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
     public void setBorderBottomWidth(int borderBottomWidth) {
         this.borderBottomWidth = borderBottomWidth;
     }
+
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+    public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         int position = parent.getChildLayoutPosition(view);
         int[] rect = getItemOffsetRect(position, state.getItemCount());
         outRect.set(rect[0], rect[1], rect[2], rect[3]);
     }
+
     @Override
-    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.onDraw(c, parent, state);
         int itemCount = parent.getChildCount();
         int left, right, top, bottom;
         for(int i = 0; i < itemCount; i++) {
             View item = parent.getChildAt(i);
             RecyclerView.LayoutParams itemLayoutParams = (RecyclerView.LayoutParams) item.getLayoutParams();
-            int itemOffsets[] = getItemOffsetRect(i, itemCount);
+            int[] itemOffsets = getItemOffsetRect(i, itemCount);
             // 控件左侧绘制
             right = item.getLeft() - itemLayoutParams.leftMargin;
             top = item.getTop() - itemLayoutParams.topMargin;
@@ -130,6 +134,7 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
             spacingDrawable.draw(c);
         }
     }
+
     private int[] getItemOffsetRect(int position, int itemCount) {
         if (orientation == VERTICAL) {
             return offsetVerticalOrientation(position, itemCount);
@@ -143,47 +148,23 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
      */
     private int[] offsetVerticalOrientation(int position, int itemCount) {
         int left, top, right, bottom;
-        int lastRowStartIndex = itemCount - spanCount + itemCount % spanCount;
-        // 只有一列
-        if (spanCount == 1) {
-            left = borderLeftWidth >= 0 ? borderLeftWidth : spacingSize;
-            right = borderRightWidth >= 0 ? borderRightWidth : spacingSize;
-        }
+        int lastRowStartIndex = spanCount * (int) (Math.ceil(itemCount * 1.0 / spanCount) - 1);
+        left = right = top = bottom = (int) (spacingSize / 2f);
         // 纵向第一列
-        else if(position % spanCount == 0) {
+        if (position % spanCount == 0) {
             left = borderLeftWidth >= 0 ? borderLeftWidth : spacingSize;
-            if (spanCount == 2) {
-                right = (int) (spacingSize * 1.0f / 2);
-            }
-            else {
-                right = (int) (spacingSize * 1.0f / 3);
-            }
         }
         // 纵向最后一列
-        else if ((position + 1) % spanCount == 0) {
-            if (spanCount == 2) {
-                left = (int) (spacingSize * 1.0f / 2);
-            }
-            else {
-                left = (int) (spacingSize * 1.0f / 3);
-            }
+        if ((position + 1) % spanCount == 0) {
             right = borderRightWidth >= 0 ? borderRightWidth : spacingSize;
-        }
-        else {
-            left = right = (int) (spacingSize * 2.0f / 3);
         }
         // 纵向第一行
         if(position < spanCount) {
             top = borderTopWidth >= 0 ? borderTopWidth : spacingSize;
-            bottom = (int) (spacingSize * 1.0f / 2);
         }
         // 纵向最后一行
-        else if (position >= lastRowStartIndex) {
-            top = (int) (spacingSize * 1.0f / 2);
+        if (position >= lastRowStartIndex) {
             bottom = borderBottomWidth >= 0 ? borderBottomWidth : spacingSize;
-        }
-        else {
-            top = bottom = (int) (spacingSize * 1.0f / 2);
         }
         return new int[]{left, top, right, bottom};
     }
@@ -192,46 +173,23 @@ public class EquidistantDecoration extends RecyclerView.ItemDecoration {
      */
     private int[] offsetHorizontalOrientation(int position, int itemCount) {
         int left, top, right, bottom;
-        int lastColumnStartIndex = itemCount - spanCount + itemCount % spanCount;
-        // 只有一行
-        if (spanCount == 1) {
-            top = borderTopWidth >= 0 ? borderTopWidth : spacingSize;
-            bottom = borderBottomWidth >= 0 ? borderBottomWidth : spacingSize;
-        }
+        int lastColumnStartIndex = spanCount * (int) (Math.ceil(itemCount * 1.0 / spanCount) - 1);
+        left = right = top = bottom = (int) (spacingSize / 2f);
         // 横向第一行
-        else if(position % spanCount == 0) {
+        if(position % spanCount == 0) {
             top = borderTopWidth >= 0 ? borderTopWidth : spacingSize;
-            if (spanCount == 2) {
-                bottom = (int) (spacingSize * 1.0f / 2);
-            }
-            else {
-                bottom = (int) (spacingSize * 1.0f / 3);
-            }
         }
-        else if((position + 1) % spanCount == 0) {
-            if (spanCount == 2) {
-                top = (int) (spacingSize * 1.0f / 2);
-            }
-            else {
-                top = (int) (spacingSize * 1.0f / 3);
-            }
+        // 横向最后一行
+        if((position + 1) % spanCount == 0) {
             bottom = borderBottomWidth >= 0 ? borderBottomWidth : spacingSize;
-        }
-        else {
-            top = bottom = (int) (spacingSize * 2.0f / 3);
         }
         // 横向第一列
         if (position < spanCount) {
             left = borderLeftWidth >= 0 ? borderLeftWidth : spacingSize;
-            right = (int) (spacingSize * 1.0f / 2);
         }
         // 横向最后一列
         else if (position >= lastColumnStartIndex) {
-            left = (int) (spacingSize * 1.0f / 2);
             right = borderRightWidth >= 0 ? borderRightWidth : spacingSize;
-        }
-        else {
-            left = right = (int) (spacingSize * 1.0f / 2);
         }
         return new int[]{left, top, right, bottom};
     }
