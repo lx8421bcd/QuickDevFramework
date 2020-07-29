@@ -58,18 +58,7 @@ public class NotificationManager {
      * @param channelName channelName
      */
     public static void createChannel(String channelId, String channelName) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return;
-        }
-        NotificationManagerCompat manager = getManager();
-        NotificationChannel mChannel = manager.getNotificationChannel(channelId);
-        if (mChannel != null) {
-            return;
-        }
-        mChannel = new NotificationChannel(channelId, channelName,
-                android.app.NotificationManager.IMPORTANCE_DEFAULT);
-        mChannel.setSound(null, null);
-        manager.createNotificationChannel(mChannel);
+        createChannel(channelId, channelName, NotificationManagerCompat.IMPORTANCE_DEFAULT);
     }
 
     /**
@@ -80,6 +69,7 @@ public class NotificationManager {
      * </p>
      * @param channelId channelId
      * @param channelName channelName
+     * @param importance channelImportance, see importance constants in {@link NotificationManagerCompat}
      */
     public static void createChannel(String channelId, String channelName, int importance) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -90,8 +80,7 @@ public class NotificationManager {
         if (mChannel != null) {
             return;
         }
-        mChannel = new NotificationChannel(channelId, channelName,
-                android.app.NotificationManager.IMPORTANCE_DEFAULT);
+        mChannel = new NotificationChannel(channelId, channelName, importance);
         mChannel.setSound(null, null);
         manager.createNotificationChannel(mChannel);
     }
