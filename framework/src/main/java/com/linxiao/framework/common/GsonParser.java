@@ -130,7 +130,7 @@ public final class GsonParser {
             return retList;
         }
         try {
-            JsonArray arr = new JsonParser().parse(jsonArrayStr).getAsJsonArray();
+            JsonArray arr = JsonParser.parseString(jsonArrayStr).getAsJsonArray();
             for (JsonElement jsonElement : arr) {
                 retList.add(getParser().fromJson(jsonElement, clazz));
             }
