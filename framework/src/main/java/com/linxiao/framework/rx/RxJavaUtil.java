@@ -23,7 +23,7 @@ public class RxJavaUtil {
      * */
     public static Observable<Integer> countDown(final int seconds) {
         return Observable.interval(0, 1, TimeUnit.SECONDS)
-        .subscribeOn(Schedulers.computation())
+        .subscribeOn(Schedulers.newThread())
         .take(seconds)
         .map(increaseTime -> seconds - increaseTime.intValue());
     }
