@@ -2,28 +2,29 @@ package com.linxiao.quickdevframework.sample.frameworkapi;
 
 import android.Manifest;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.linxiao.framework.dialog.AlertDialogManager;
-import com.linxiao.framework.architecture.BaseFragment;
 import com.linxiao.framework.permission.PermissionManager;
 import com.linxiao.framework.permission.RequestPermissionCallback;
-import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.databinding.FragmentPermissionApiBinding;
+import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
 
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+public class PermissionApiFragment extends SimpleViewBindingFragment<FragmentPermissionApiBinding> {
 
-public class PermissionApiFragment extends BaseFragment {
-    
     @Override
-    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setContentView(R.layout.fragment_permission_api, container);
-        ButterKnife.bind(this, getContentView());
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getViewBinding().btnRequestSample.setOnClickListener(this::onRequestPermissionClick);
+        getViewBinding().btnRequestWithRationale.setOnClickListener(this::onRationaleClick);
+        getViewBinding().btnDoOnProhibited.setOnClickListener(this::OnProhibitedClick);
+        getViewBinding().btnRequestAlertWindow.setOnClickListener(this::onReqSysAlertClick);
+        getViewBinding().btnRequestWriteSettings.setOnClickListener(this::onReqWriteSettingsClick);
     }
 
-    @OnClick(R.id.btnRequestSample)
     public void onRequestPermissionClick(View v) {
         PermissionManager.createPermissionOperator()
         .requestAudioRecord()
@@ -40,7 +41,6 @@ public class PermissionApiFragment extends BaseFragment {
         });
     }
 
-    @OnClick(R.id.btnRequestWithRationale)
     public void onRationaleClick(View v) {
         PermissionManager.createPermissionOperator()
         .addRequestPermission(Manifest.permission.SEND_SMS)
@@ -58,7 +58,6 @@ public class PermissionApiFragment extends BaseFragment {
         });
     }
 
-    @OnClick(R.id.btnDoOnProhibited)
     public void OnProhibitedClick(View v) {
         PermissionManager.createPermissionOperator()
         .addRequestPermission(Manifest.permission.READ_PHONE_STATE)
@@ -80,7 +79,6 @@ public class PermissionApiFragment extends BaseFragment {
         });
     }
 
-    @OnClick(R.id.btnRequestAlertWindow)
     public void onReqSysAlertClick(View v) {
         PermissionManager.createPermissionOperator()
         .requestManageOverlayPermission()
@@ -97,7 +95,6 @@ public class PermissionApiFragment extends BaseFragment {
         });
     }
 
-    @OnClick(R.id.btnRequestWriteSettings)
     public void onReqWriteSettingsClick(View v) {
         PermissionManager.createPermissionOperator()
         .requestManageOverlayPermission()

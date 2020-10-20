@@ -3,22 +3,17 @@ package com.linxiao.quickdevframework.sample.frameworkapi;
 import android.os.Bundle;
 import android.view.View;
 
-import com.linxiao.framework.architecture.BaseActivity;
-import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.databinding.ActivityNotificationTargetBinding;
+import com.linxiao.quickdevframework.main.SimpleViewBindingActivity;
 
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-public class NotificationTargetActivity extends BaseActivity {
+public class NotificationTargetActivity extends SimpleViewBindingActivity<ActivityNotificationTargetBinding> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notification_target);
-        ButterKnife.bind(this);
+        getViewBinding().tvTargetDesc.setOnClickListener(this::onTextViewClick);
     }
 
-    @OnClick(R.id.tvTargetDesc)
     public void onTextViewClick(View v) {
         finish();
     }

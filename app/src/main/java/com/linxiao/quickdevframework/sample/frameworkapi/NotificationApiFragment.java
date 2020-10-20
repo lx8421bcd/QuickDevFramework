@@ -3,30 +3,31 @@ package com.linxiao.quickdevframework.sample.frameworkapi;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import com.linxiao.framework.architecture.BaseFragment;
 import com.linxiao.framework.notification.NotificationManager;
 import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.databinding.FragmentNotificationApiBinding;
+import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
 
 import java.util.Arrays;
 
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-public class NotificationApiFragment extends BaseFragment {
+public class NotificationApiFragment extends SimpleViewBindingFragment<FragmentNotificationApiBinding> {
 
     @Override
-    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setContentView(R.layout.fragment_notification_api, container);
-        ButterKnife.bind(this, getContentView());
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getViewBinding().btnSendSimple.setOnClickListener(this::onSendNotificationClick);
+        getViewBinding().btnSendBigText.setOnClickListener(this::onSendBigTextClick);
+        getViewBinding().btnSendBigPicture.setOnClickListener(this::onSendBigPictureClick);
+        getViewBinding().btnSendInbox.setOnClickListener(this::onSendInboxClick);
+        getViewBinding().btnSendHangUp.setOnClickListener(this::onSendHangUpClick);
     }
 
-    @OnClick(R.id.btnSendSimple)
     public void onSendNotificationClick(View v) {
         NotificationCompat.Builder builder = NotificationManager.create()
                 .setContentTitle("简单通知")
@@ -36,7 +37,6 @@ public class NotificationApiFragment extends BaseFragment {
         NotificationManager.show(123, builder);
     }
 
-    @OnClick(R.id.btnSendBigText)
     public void onSendBigTextClick(View v) {
         String bigText = "这条通知很长";
         for (int i = 0; i < 50; i++) {
@@ -54,7 +54,6 @@ public class NotificationApiFragment extends BaseFragment {
         NotificationManager.show(124, builder);
     }
 
-    @OnClick(R.id.btnSendBigPicture)
     public void onSendBigPictureClick(View v) {
         NotificationCompat.Builder builder = NotificationManager.create()
                 .setContentTitle("bigPicture")
@@ -68,7 +67,6 @@ public class NotificationApiFragment extends BaseFragment {
         NotificationManager.show(125, builder);
     }
 
-    @OnClick(R.id.btnSendInbox)
     public void onSendInboxClick(View v) {
         NotificationCompat.Builder builder = NotificationManager.create()
                 .setContentTitle("inbox")
@@ -82,7 +80,6 @@ public class NotificationApiFragment extends BaseFragment {
         NotificationManager.show(126, builder);
     }
 
-    @OnClick(R.id.btnSendHangUp)
     public void onSendHangUpClick(View v) {
         NotificationCompat.Builder builder = NotificationManager.createHangup("hangup")
                 .setContentTitle("横幅通知")

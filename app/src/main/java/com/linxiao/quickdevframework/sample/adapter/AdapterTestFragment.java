@@ -6,28 +6,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.linxiao.framework.architecture.BaseFragment;
-import com.linxiao.quickdevframework.R;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import com.linxiao.framework.architecture.BaseFragment;
+import com.linxiao.quickdevframework.databinding.FragmentAdapterTestBinding;
 
 public class AdapterTestFragment extends BaseFragment {
 
+    private FragmentAdapterTestBinding viewBinding;
+
+    @Nullable
     @Override
-    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setContentView(R.layout.fragment_adapter_test, container);
-        ButterKnife.bind(this, getContentView());
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        viewBinding = FragmentAdapterTestBinding.inflate(inflater);
+        return viewBinding.getRoot();
     }
 
-    @OnClick(R.id.btnTestEmptyView)
-    public void onTestEmptyClick(View v) {
-        startActivity(new Intent(getActivity(), EmptyTestActivity.class));
-    }
-
-    @OnClick(R.id.btnHeaderFooter)
-    public void onHeaderFooterClick(View v) {
-        startActivity(new Intent(getActivity(), HeaderFooterActivity.class));
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewBinding.btnTestEmptyView.setOnClickListener(v -> startActivity(new Intent(getActivity(), EmptyTestActivity.class)));
+        viewBinding.btnHeaderFooter.setOnClickListener(v -> startActivity(new Intent(getActivity(), HeaderFooterActivity.class)));
     }
 
 }

@@ -1,34 +1,26 @@
 package com.linxiao.quickdevframework.sample.adapter;
 
 import android.os.Bundle;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
-import com.linxiao.framework.architecture.BaseActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.databinding.ActivityHeaderFooterBinding;
+import com.linxiao.quickdevframework.main.SimpleViewBindingActivity;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-public class HeaderFooterActivity extends BaseActivity {
-
-    @BindView(R.id.rcvHeaderFooter)
-    RecyclerView rcvHeaderFooter;
+public class HeaderFooterActivity extends SimpleViewBindingActivity<ActivityHeaderFooterBinding> {
 
     SampleAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_header_footer);
-        ButterKnife.bind(this);
-
         mAdapter = new SampleAdapter(this);
-        rcvHeaderFooter.setAdapter(mAdapter);
-        rcvHeaderFooter.setItemAnimator(new DefaultItemAnimator());
-        rcvHeaderFooter.setLayoutManager(new LinearLayoutManager(this));
+        getViewBinding().rcvHeaderFooter.setAdapter(mAdapter);
+        getViewBinding().rcvHeaderFooter.setItemAnimator(new DefaultItemAnimator());
+        getViewBinding().rcvHeaderFooter.setLayoutManager(new LinearLayoutManager(this));
 
         View sampleHeader = getLayoutInflater().inflate(R.layout.header_sample, null);
         sampleHeader.setOnClickListener(new View.OnClickListener() {

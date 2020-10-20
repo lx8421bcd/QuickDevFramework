@@ -1,31 +1,28 @@
 package com.linxiao.quickdevframework.main;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
-import com.linxiao.framework.architecture.BaseActivity;
-import com.linxiao.framework.list.SingleItemAdapter;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.view.GravityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.linxiao.framework.common.ToastAlert;
+import com.linxiao.framework.list.SingleItemAdapter;
 import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.databinding.ActivityMainBinding;
+import com.linxiao.quickdevframework.databinding.ContentMainBinding;
 import com.linxiao.quickdevframework.sample.adapter.AdapterTestFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.ApplicationApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.DialogApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.FileApiFragment;
-import com.linxiao.quickdevframework.sample.frameworkapi.FileBrowserFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.NotificationApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.PermissionApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.ToastApiFragment;
@@ -36,38 +33,26 @@ import com.linxiao.quickdevframework.sample.widget.WidgetsGuideFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-public class MainActivity extends BaseActivity {
+public class MainActivity extends SimpleViewBindingActivity<ActivityMainBinding> {
 
     private static final String KEY_CURRENT_TAG = "CurrentTag";
     private static final String KEY_TAGS = "FragmentTags";
     private static final String KEY_CLASS_NAMES = "FragmentClassNames";
 
-    @BindView(R.id.drawer_main)
-    DrawerLayout mDrawerLayout;
-
-    @BindView(R.id.rcvApiSampleList)
-    RecyclerView rcvApiSampleList;
-
+    private ContentMainBinding contentBinding;
     private ArrayList<String> fragmentTags = new ArrayList<>();
     private ArrayList<String> fragmentClassNames = new ArrayList<>();
     private ArrayList<Fragment> fragments = new ArrayList<>();
 
     private FragmentManager mFragmentManager;
-
     private String currentTag;
-
     private long exitTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        contentBinding = getViewBinding().contentMain;
+        setSupportActionBar(getViewBinding().toolbar);
         mFragmentManager = getSupportFragmentManager();
         if (savedInstanceState != null) {
             restoreFragments(savedInstanceState);
@@ -75,11 +60,9 @@ public class MainActivity extends BaseActivity {
         else {
             initFragments();
         }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_main);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.app_name, R.string.app_name);
-        drawer.setDrawerListener(toggle);
+                this, contentBinding.drawerMain, getViewBinding().toolbar, R.string.app_name, R.string.app_name);
+        contentBinding.drawerMain.setDrawerListener(toggle);
         toggle.syncState();
 
         initApiSampleList();
@@ -93,7 +76,6 @@ public class MainActivity extends BaseActivity {
         apiSampleList.add(new ApiSampleObject("Toast API", "ToastApiFragment"));
         apiSampleList.add(new ApiSampleObject("Permission API", "PermissionApiFragment"));
         apiSampleList.add(new ApiSampleObject("File API", "FileApiFragment"));
-        apiSampleList.add(new ApiSampleObject("File Browser", "FileBrowserFragment"));
         apiSampleList.add(new ApiSampleObject("Network API", "NetTestFragment"));
         apiSampleList.add(new ApiSampleObject("Download Test", "DownloadTestFragment"));
         apiSampleList.add(new ApiSampleObject("Adapter API", "AdapterTestFragment"));
@@ -110,12 +92,12 @@ public class MainActivity extends BaseActivity {
                 if (getSupportActionBar() != null) {
                     getSupportActionBar().setTitle(object.getApiName());
                 }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                contentBinding.drawerMain.closeDrawer(GravityCompat.START);
             }
         });
-        rcvApiSampleList.setLayoutManager(new LinearLayoutManager(this));
-        rcvApiSampleList.setItemAnimator(new DefaultItemAnimator());
-        rcvApiSampleList.setAdapter(adapter);
+        contentBinding.rcvApiSampleList.setLayoutManager(new LinearLayoutManager(this));
+        contentBinding.rcvApiSampleList.setItemAnimator(new DefaultItemAnimator());
+        contentBinding.rcvApiSampleList.setAdapter(adapter);
     }
 
     private void initFragments() {
@@ -125,14 +107,13 @@ public class MainActivity extends BaseActivity {
         addFragment(new ToastApiFragment(), "ToastApiFragment");
         addFragment(new PermissionApiFragment(), "PermissionApiFragment");
         addFragment(new FileApiFragment(), "FileApiFragment");
-        addFragment(new FileBrowserFragment(), "FileBrowserFragment");
         addFragment(new NetTestFragment(), "NetTestFragment");
         addFragment(new DownloadTestFragment(), "DownloadTestFragment");
         addFragment(new AdapterTestFragment(), "AdapterTestFragment");
         addFragment(new WidgetsGuideFragment(), "WidgetsGuideFragment");
 
         currentTag = "DialogApiFragment";
-        switchFragment("AdapterTestFragment");
+        switchFragment(currentTag);
     }
 
     private void restoreFragments(@NonNull Bundle savedInstanceState) {

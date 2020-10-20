@@ -3,20 +3,16 @@ package com.linxiao.quickdevframework.sample.netapi;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.View;
 
-import com.linxiao.framework.architecture.BaseFragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.linxiao.framework.common.ContextProvider;
 import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.framework.net.SimpleDownloadTask;
-import com.linxiao.quickdevframework.R;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import com.linxiao.quickdevframework.databinding.FragmentDownloadTestBinding;
+import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
 
 /**
  * download test fragment
@@ -27,21 +23,14 @@ import butterknife.OnClick;
  * @author linxiao
  * @since 2019-12-07
  */
-public class DownloadTestFragment extends BaseFragment {
-
-
-    @BindView(R.id.etUrl)
-    EditText etUrl;
-    @BindView(R.id.btnStart)
-    Button btnStart;
+public class DownloadTestFragment extends SimpleViewBindingFragment<FragmentDownloadTestBinding> {
 
     ProgressDialog progressDialog;
     private SimpleDownloadTask downloadTask;
 
     @Override
-    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setContentView(R.layout.fragment_download_test, container);
-        ButterKnife.bind(this, getContentView());
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "cancel", (dialog, which) -> {
             if (downloadTask != null) {
@@ -49,13 +38,12 @@ public class DownloadTestFragment extends BaseFragment {
             }
             dialog.dismiss();
         });
-        etUrl.setText("https://pkg1.zhimg.com/zhihu/futureve-app-zhihuwap-ca40fb89fbd4fb3a3884429e1c897fe2-release-6.23.0(1778).apk");
+        getViewBinding().etUrl.setText("https://pkg1.zhimg.com/zhihu/futureve-app-zhihuwap-ca40fb89fbd4fb3a3884429e1c897fe2-release-6.23.0(1778).apk");
+        getViewBinding().btnStart.setOnClickListener(v -> onClickStart());
     }
 
-
-    @OnClick(R.id.btnStart)
     public void onClickStart() {
-        String url = etUrl.getText().toString();
+        String url = getViewBinding().etUrl.getText().toString();
         downloadTask = SimpleDownloadTask.newInstance(url)
         .setDownloadTo(ContextProvider.get().getExternalCacheDir().getPath(), "test.apk")
 //        .hideNotification()

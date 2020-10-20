@@ -42,8 +42,6 @@ public abstract class BaseFragment extends Fragment implements LifecycleProvider
 
     private final BehaviorSubject<FragmentEvent> lifecycleSubject = BehaviorSubject.create();
 
-    private View rootView;
-    
     public BaseFragment() {
         TAG = this.getClass().getSimpleName();
     }
@@ -79,15 +77,6 @@ public abstract class BaseFragment extends Fragment implements LifecycleProvider
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         lifecycleSubject.onNext(FragmentEvent.CREATE);
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if(rootView == null) {
-            onCreateContentView(inflater, container, savedInstanceState);
-        }
-
-        return rootView;
     }
 
     @Override
@@ -139,48 +128,6 @@ public abstract class BaseFragment extends Fragment implements LifecycleProvider
     }
     
     /**
-     * set the content view of this fragment by layout resource id
-     * <p>if the content view has been set before, this method will not work again</p>
-     * @param resId
-     * layout resource id of content view
-     * @param container
-     * parent ViewGroup of content view, get it in
-     * {@link #onCreateContentView(LayoutInflater, ViewGroup, Bundle)}
-     * */
-    protected void setContentView(@LayoutRes int resId, ViewGroup container) {
-        if (rootView != null) {
-            Log.w(TAG, "contentView has set already");
-            return;
-        }
-        rootView = LayoutInflater.from(getActivity()).inflate(resId, container, false);
-    }
-    
-    /**
-     * set the content view of this fragment by layout resource id
-     * <p>if the content view has been set before, this method will not work again</p>
-     *
-     * @param contentView content view of this fragment
-     * */
-    protected void setContentView(View contentView) {
-        if (rootView != null) {
-            Log.w(TAG, "contentView has set already");
-            return;
-        }
-        rootView = contentView;
-    }
-
-    protected View getContentView() {
-        return rootView;
-    }
-    
-    /**
-     * execute on method onCreateView(), put your code here which you want to do in onCreateView()<br>
-     * <strong>execute {@link #setContentView(int, ViewGroup)} or {@link #setContentView(View)} to
-     * set the root view of this fragment like activity</strong>
-     * */
-    protected abstract void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
-    
-    /**
      * get spanned string from xml resources
      * <p>use this method to get the text which include style labels in strings.xml,
      * support using format args</p>
@@ -191,12 +138,5 @@ public abstract class BaseFragment extends Fragment implements LifecycleProvider
     protected SpannedString getSpannedString(@StringRes int resId, Object... args) {
         return SpanFormatter.format(getText(resId), args);
     }
-    
-    protected int dp2px(float dpValue) {
-        return ScreenUtil.dp2px(dpValue);
-    }
-    
-    public static int px2dp(float pxValue) {
-        return ScreenUtil.px2dp(pxValue);
-    }
+
 }

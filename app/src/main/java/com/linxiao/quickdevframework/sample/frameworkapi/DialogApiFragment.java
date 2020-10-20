@@ -3,74 +3,58 @@ package com.linxiao.quickdevframework.sample.frameworkapi;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.core.content.ContextCompat;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
+import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.framework.dialog.AlertDialogBuilder;
 import com.linxiao.framework.dialog.AlertDialogManager;
-import com.linxiao.framework.architecture.BaseFragment;
-import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.databinding.FragmentDialogApiBinding;
+import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-public class DialogApiFragment extends BaseFragment {
-
-    @BindView(R.id.cbShowTitle)
-    CheckBox cbShowTitle;
-
-    @BindView(R.id.cbShowIcon)
-    CheckBox cbShowIcon;
-
-    @BindView(R.id.cbSetPositive)
-    CheckBox cbSetPositive;
-
-    @BindView(R.id.cbSetNegative)
-    CheckBox cbSetNegative;
-
-    @BindView(R.id.cbSetCancelAble)
-    CheckBox cbSetCancelAble;
+public class DialogApiFragment extends SimpleViewBindingFragment<FragmentDialogApiBinding> {
 
     @Override
-    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setContentView(R.layout.fragment_dialog_api, container);
-        ButterKnife.bind(this, getContentView());
-
-        cbShowIcon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getViewBinding().cbShowIcon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
-                    cbShowTitle.setChecked(true);
+                    getViewBinding().cbShowTitle.setChecked(true);
                 }
             }
         });
-        cbShowTitle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        getViewBinding().cbShowTitle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (!isChecked){
-                    cbShowIcon.setChecked(false);
+                    getViewBinding().cbShowIcon.setChecked(false);
                 }
             }
         });
+        getViewBinding().btnShowAlertDialog.setOnClickListener(this::onShowAlertDialogClick);
+        getViewBinding().btnShowSimpleDialog.setOnClickListener(this::onSimpleDialogClick);
+        getViewBinding().btnShowOnStartActivity.setOnClickListener(this::onShowStartActivityClick);
+        getViewBinding().btnShowBottomDialog.setOnClickListener(this::onShowBottomDialogClick);
+        getViewBinding().btnShowTopDialog.setOnClickListener(this::onShowTopDialogClick);
     }
 
-    @OnClick(R.id.btnShowAlertDialog)
     public void onShowAlertDialogClick(View v) {
         AlertDialogBuilder builder = AlertDialogManager.createAlertDialogBuilder();
         builder.setMessage(getString(R.string.sample_dialog_message));
-        if (cbShowTitle.isChecked()) {
+        if (getViewBinding().cbShowTitle.isChecked()) {
             builder.setTitle(getString(R.string.sample_dialog_title));
         }
-        if (cbShowIcon.isChecked()) {
+        if (getViewBinding().cbShowIcon.isChecked()) {
             builder.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_notify));
         }
-        if (cbSetPositive.isChecked()) {
+        if (getViewBinding().cbSetPositive.isChecked()) {
             builder.setPositiveText(getString(R.string.sample_positive));
             builder.setPositiveButton(new DialogInterface.OnClickListener() {
 
@@ -81,7 +65,7 @@ public class DialogApiFragment extends BaseFragment {
                 }
             });
         }
-        if (cbSetNegative.isChecked()) {
+        if (getViewBinding().cbSetNegative.isChecked()) {
             builder.setNegativeText(getString(R.string.sample_negative));
             builder.setNegativeButton(new DialogInterface.OnClickListener() {
                 @Override
@@ -91,7 +75,7 @@ public class DialogApiFragment extends BaseFragment {
                 }
             });
         }
-        if (cbSetCancelAble.isChecked()) {
+        if (getViewBinding().cbSetCancelAble.isChecked()) {
             builder.setCancelable(true);
         } else {
             builder.setCancelable(false);
@@ -99,24 +83,20 @@ public class DialogApiFragment extends BaseFragment {
         builder.show();
     }
 
-    @OnClick(R.id.btnShowSimpleDialog)
     public void onSimpleDialogClick(View v) {
         AlertDialogManager.showAlertDialog(getString(R.string.sample_dialog_message));
     }
 
-    @OnClick(R.id.btnShowOnStartActivity)
     public void onShowStartActivityClick(View v) {
         startActivity(new Intent(getActivity(), NotificationTargetActivity.class));
         AlertDialogManager.showAlertDialog( "dialog after start activity");
     }
 
-    @OnClick(R.id.btnShowTopDialog)
     public void onShowTopDialogClick(View v) {
         Intent backServiceIntent = new Intent(getActivity(), BackgroundService.class);
         getActivity().startService(backServiceIntent);
     }
 
-    @OnClick(R.id.btnShowBottomDialog)
     public void onShowBottomDialogClick(View v) {
         SampleBottomDialogFragment dialogFragment = new SampleBottomDialogFragment();
         dialogFragment.show(getFragmentManager(), "SampleDialog");

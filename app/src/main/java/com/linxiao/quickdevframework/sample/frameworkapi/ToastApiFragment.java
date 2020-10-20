@@ -2,46 +2,44 @@ package com.linxiao.quickdevframework.sample.frameworkapi;
 
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import com.linxiao.framework.architecture.BaseFragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.databinding.FragmentToastApiBinding;
+import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
 
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-public class ToastApiFragment extends BaseFragment {
+public class ToastApiFragment extends SimpleViewBindingFragment<FragmentToastApiBinding> {
 
     @Override
-    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setContentView(R.layout.fragment_toast_api, container);
-        ButterKnife.bind(this, getContentView());
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getViewBinding().btnTextShow.setOnClickListener(this::onBtnTextShowClick);
+        getViewBinding().btnTextIconShow.setOnClickListener(this::onBtnTextIconShowClick);
+        getViewBinding().btnTextEnqueue.setOnClickListener(this::onBtnTextEnqueueClick);
+        getViewBinding().btnTextIconEnqueue.setOnClickListener(this::onBtnTextIconEnqueueClick);
+        getViewBinding().btnPowerful.setOnClickListener(this::onBtnPowerfulClick);
     }
 
-    @OnClick(R.id.btnTextShow)
     public void onBtnTextShowClick(View v) {
         ToastAlert.show("show a text toast");
     }
 
-    @OnClick(R.id.btnTextIconShow)
     public void onBtnTextIconShowClick(View v) {
         ToastAlert.show("show a text toast with a icon", R.drawable.leak_canary_icon);
     }
 
-    @OnClick(R.id.btnTextEnqueue)
     public void onBtnTextEnqueueClick(View v) {
         ToastAlert.show("enqueue a text toast");
     }
 
-    @OnClick(R.id.btnTextIconEnqueue)
     public void onBtnTextIconEnqueueClick(View v) {
         ToastAlert.enqueue("enqueue a text toast with a icon", R.drawable.leak_canary_icon);
     }
 
-    @OnClick(R.id.btnPowerful)
     public void onBtnPowerfulClick(View v) {
         ToastAlert.create("powerful")
                 .iconResId(R.drawable.leak_canary_icon)

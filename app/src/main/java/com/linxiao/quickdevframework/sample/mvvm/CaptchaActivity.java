@@ -1,19 +1,15 @@
 package com.linxiao.quickdevframework.sample.mvvm;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+
+import androidx.lifecycle.ViewModelProviders;
 
 import com.linxiao.framework.common.ToastAlert;
-import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.databinding.ActivityCaptchaBinding;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
@@ -21,22 +17,17 @@ import io.reactivex.schedulers.Schedulers;
 
 public class CaptchaActivity extends BaseMVVMActivity {
     
-    @BindView(R.id.btn_request_captcha)
-    Button btnRequestCaptcha;
-    
-    @BindView(R.id.et_mobile)
-    EditText etMobile;
-    
+    ActivityCaptchaBinding binding;
     CaptchaViewModel captchaViewModel;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_captcha);
-        ButterKnife.bind(this);
+        binding = ActivityCaptchaBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         captchaViewModel = ViewModelProviders.of(this).get(CaptchaViewModel.class);
-        
-        etMobile.addTextChangedListener(new TextWatcher() {
+
+        binding.etMobile.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
     
@@ -48,6 +39,7 @@ public class CaptchaActivity extends BaseMVVMActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
+        binding.btnRequestCaptcha.setOnClickListener(this::onRequestCaptchaClick);
     }
     
     @Override
@@ -60,11 +52,11 @@ public class CaptchaActivity extends BaseMVVMActivity {
             @Override
             public void accept(@NonNull Integer remains) throws Exception {
                 if (remains > 0) {
-                    btnRequestCaptcha.setText(String.valueOf(remains));
+                    binding.btnRequestCaptcha.setText(String.valueOf(remains));
                 }
                 else {
-                    btnRequestCaptcha.setText("request");
-                    updateCaptchaState(etMobile.getText().toString());
+                    binding.btnRequestCaptcha.setText("request");
+                    updateCaptchaState(binding.etMobile.getText().toString());
                 }
                 
             }
@@ -75,7 +67,7 @@ public class CaptchaActivity extends BaseMVVMActivity {
         .subscribe(new Consumer<Boolean>() {
             @Override
             public void accept(@NonNull Boolean canRequest) throws Exception {
-                btnRequestCaptcha.setEnabled(canRequest);
+                binding.btnRequestCaptcha.setEnabled(canRequest);
             }
         }));
     }
@@ -84,9 +76,8 @@ public class CaptchaActivity extends BaseMVVMActivity {
         captchaViewModel.checkRequestEnabled(mobile);
     }
     
-    @OnClick(R.id.btn_request_captcha)
     void onRequestCaptchaClick(View v) {
-        captchaViewModel.requestSMSCaptcha(etMobile.getText().toString())
+        captchaViewModel.requestSMSCaptcha(binding.etMobile.getText().toString())
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Consumer<Boolean>() {

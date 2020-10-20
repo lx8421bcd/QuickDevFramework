@@ -33,27 +33,27 @@
 
 
 #### 已经实现/封装较为完善的功能
-* __RxJava2集成__，应用内集成了RxJava、RxAndroid、RxLifeCycle等内容，大量组件以RxJava为异步实现基础
+* __ViewBinding集成__，集成ViewBinding功能，并提供基于ViewBinding封装的相关简化工具。
+* __RxJava2集成__，应用内集成了RxJava、RxAndroid、RxLifeCycle等内容，大量组件以RxJava为异步实现基础。
 * __分层框架基类__（Activity、Fragment、DataManager、Dialog等），为整个项目的骨架，为需要使用Android组件相关功能和生命周期的SDK和模块提供支持，同时为派生类统一提供大量便利的方法。
 * __网络层封装__，基于OkHttp3和Retrofit2，提供快速构建RetrofitApi的方法、统一处理网络异常和数据解析、网络调用抓包、Cookie管理、SSL配置等功能。
 * __权限管理__，封装自Android 6.0以来的运行时权限管理，简化权限申请和回调配置。
 * __通知栏通知构建封装__，封装Notification构建，保证必须参数在构建时填入，同时封装Notification点击事件，提供唤起应用之前台，先启动应用再打开指定页面等功能。
 * __SharedPreferences__，封装SharedPreferences常用存取操作，简化调用，为不同等级的SharedPreferences对象提供构建方法。
 * __RecyclerViewAdapter封装__，封装了一个可以快速添加Header、Footer、LoadingView、EmptyView的RecyclerViewAdapter，提供了RecyclerView分页加载、Item等边距等常用功能的实现。
-* __Dialog封装__，提供透明Activity包裹的AlertDialog实现，使Dialog不会因Activity销毁而销毁
+* __Dialog封装__，提供透明Activity包裹的AlertDialog实现，使Dialog不会因Activity销毁而销毁。
 * __异步文件操作封装__，封装以File操作+AsyncTask为基础，封装剪切、复制、删除等文件异步操作，方便批量文件操作时使用。
 * __工具类合集__，开发过程中经常需要使用的工具方法归纳整理，也包含对于框架内一些SDK的优化方法，比如Gson反序列化优化。
 * __自定义控件合集__，整理应用开发中常用的自定义控件，比如下拉刷新、小红点、高亮引导等。
-* __MVVM架构演示示例__，[mvvm package](https://github.com/lx8421bcd/QuickDevFramework/tree/master/app/src/main/java/com/linxiao/quickdevframework/sample/mvvm)，包含了MVVM基类和基于RxJava的MVVM验证码交互简单实现示例，在想要使用MVVM架构时可以参考，也可以将基类放在Framework模块中
+* __MVVM架构演示示例__，[mvvm package](https://github.com/lx8421bcd/QuickDevFramework/tree/master/app/src/main/java/com/linxiao/quickdevframework/sample/mvvm)，包含了MVVM基类和基于RxJava的MVVM验证码交互简单实现示例，在想要使用MVVM架构时可以参考，也可以将基类放在Framework模块中。
 * __简易图片上传工具__，鉴于[Retrofit和OkHttp上传文件必带Content-Size导致某些服务端接收失败](https://github.com/square/okhttp/issues/2138)， 基于RxJava用HttpUrlConnection封装一个简易的图片上传工具，以应对应用中普遍存在的上传图片需求。
-* __简易下载工具__，基于DownloadManager开发，封装权限检查，文件检查，下载进度回调等功能，用于应对一般应用的简易下载需求，比如下载更新包
+* __简易下载工具__，基于DownloadManager开发，封装权限检查，文件检查，下载进度回调等功能，用于应对一般应用的简易下载需求，比如下载更新包。
 * __简易Logger__, 支持log输出超过单行最大值自动换行，提供打印当前线程信息，堆栈信息等工具方法。
 
 #### 开发中/规划内的功能
 * 升级RxJava至RxJava3
 * 重构AlertDialog工具组件，降低复杂度
 * 重构文件管理相关工具类
-* 使用kotlin语言改造framework框架
 * 基于当前项目框架，添加常用UI模板，如单列表界面等
 * 待续
 
@@ -176,14 +176,11 @@
   ```
 
 * **请勿提交为了封装而封装的代码**
+我见过有人写的工具类，versionCode判断Android版本都要封装成方法，外面调用从```if(versionCode >= XXX)``` 变成```if(VersionUtil.isXXX())```…… 还有更奇葩的连启动Service都要封装一下，变成```OSUtils.startService(context);```。这种封装除了增强框架的侵入性，提升修改成本之外还有其他意义吗？这种只是把调用方式换成“我看着舒服”的封装，在开发中要尽量避免。  
+这个项目最初立意是代码库+简易框架合集，一个目的是收集Android常见的业务无关的需求封装好拿来就用，另外一个目的依托提炼出来的分层框架方便做外包。我不希望framework变成一个无所不包的巨无霸module，内容应尽量精简，所以在往此项目里添加代码时十分谨慎。添加为了封装而封装的代码，将会严重破坏项目的价值。  
 
-如之前所言，我不希望framework变成一个无所不包的巨无霸项目，内容应尽量精简，所以在往此项目里添加代码时十分谨慎。添加为了封装而封装的代码，将会严重破坏项目的价值。
-
-我见过有人写的工具类，versionCode判断Android版本都要封装成方法，外面调用从```if(versionCode >= XXX)``` 变成```if(VersionUtil.isXXX())```…… 还有更奇葩的连启动Service都要封装一下，变成```OSUtils.startService(context);```。这种封装除了增强框架的侵入性，提升修改成本之外还有其他意义吗？这种只是把调用方式换成“我看着舒服”的封装，在开发中要尽量避免。
-
-这个项目最初立意是代码库+简易框架合集，一个目的是收集Android常见的业务无关的需求封装好拿来就用，另外一个目的依托提炼出来的分层框架方便做外包。
-
-之后可能会根据业务需求添加一些特定的module，如视频处理、直播、支付相关的SDK封装。可以根据业务需求集成，提升特定项目的开发速度，欢迎大家提出意见
+如果有普遍适用于某一行业的相关代码集合，建议以library module的形式放进codebase project，按需取用。  
+之后可能会根据业务需求添加一些特定的module，如视频处理、直播、支付相关的SDK封装。可以根据业务需求集成，提升特定项目的开发速度，欢迎大家提出意见。
 
 
 

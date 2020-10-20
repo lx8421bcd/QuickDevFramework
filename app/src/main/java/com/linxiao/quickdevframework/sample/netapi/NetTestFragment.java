@@ -2,18 +2,14 @@ package com.linxiao.quickdevframework.sample.netapi;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.linxiao.framework.architecture.BaseFragment;
+import androidx.annotation.Nullable;
+
 import com.linxiao.framework.rx.RxSubscriber;
-import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.databinding.FragmentNetTestBinding;
+import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -21,22 +17,17 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-public class NetTestFragment extends BaseFragment {
-
-
-    @BindView(R.id.tvResponse)
-    TextView tvResponse;
+public class NetTestFragment extends SimpleViewBindingFragment<FragmentNetTestBinding> {
     
     NetTestDataManager mDataManager;
 
     @Override
-    protected void onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setContentView(R.layout.fragment_net_test, container);
-        ButterKnife.bind(this, getContentView());
+    public void onViewCreated(@androidx.annotation.NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         mDataManager = new NetTestDataManager();
+        getViewBinding().btnRequestNet.setOnClickListener(this::onRequestTestClick);
     }
 
-    @OnClick(R.id.btnRequestNet)
     public void onRequestTestClick(View v) {
         requestApi();
     }
@@ -64,7 +55,7 @@ public class NetTestFragment extends BaseFragment {
             @Override
             public void onNext(@NonNull String responseBody) {
                 String result = "Response:\n " + responseBody;
-                tvResponse.setText(result);
+                getViewBinding().tvResponse.setText(result);
             }
         });
     }

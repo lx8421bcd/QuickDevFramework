@@ -1,28 +1,19 @@
 package com.linxiao.quickdevframework.sample.adapter;
 
-import android.os.Handler;
 import android.os.Bundle;
+import android.os.Handler;
+
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
 
-import com.linxiao.framework.architecture.BaseActivity;
 import com.linxiao.framework.common.ScreenUtil;
 import com.linxiao.framework.list.EquidistantDecoration;
-import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.databinding.ActivityEmptyTestBinding;
+import com.linxiao.quickdevframework.main.SimpleViewBindingActivity;
 
 import java.util.Arrays;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-public class EmptyTestActivity extends BaseActivity {
-
-    @BindView(R.id.rcvEmptySimple)
-    RecyclerView rcvEmptySimple;
+public class EmptyTestActivity extends SimpleViewBindingActivity<ActivityEmptyTestBinding> {
 
     SampleAdapter mAdapter;
 
@@ -33,13 +24,11 @@ public class EmptyTestActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_empty_test);
-        ButterKnife.bind(this);
         mAdapter = new SampleAdapter(this);
-        rcvEmptySimple.setAdapter(mAdapter);
-        rcvEmptySimple.setItemAnimator(new DefaultItemAnimator());
-        rcvEmptySimple.setLayoutManager(new GridLayoutManager(this, 3));
-        rcvEmptySimple.addItemDecoration(new EquidistantDecoration(3, ScreenUtil.dp2px(12)));
+        getViewBinding().rcvEmptySimple.setAdapter(mAdapter);
+        getViewBinding().rcvEmptySimple.setItemAnimator(new DefaultItemAnimator());
+        getViewBinding().rcvEmptySimple.setLayoutManager(new GridLayoutManager(this, 3));
+        getViewBinding().rcvEmptySimple.addItemDecoration(new EquidistantDecoration(3, ScreenUtil.dp2px(12)));
 
 //        View emptyView = getLayoutInflater().inflate(R.layout.empty_view, null);
 //        mAdapter.setEmptyView(emptyView);
@@ -61,15 +50,13 @@ public class EmptyTestActivity extends BaseActivity {
 //                refreshData();
 //            }
 //        });
-        refreshData();
-    }
-
-    @OnClick(R.id.btnRefresh)
-    public void onBtnRefreshClick(View v) {
-        showEmpty = true;
-        showError = false;
-        showData = false;
-        mAdapter.removeAll();
+        getViewBinding().btnRefresh.setOnClickListener(v -> {
+            showEmpty = true;
+            showError = false;
+            showData = false;
+            mAdapter.removeAll();
+            refreshData();
+        });
         refreshData();
     }
 

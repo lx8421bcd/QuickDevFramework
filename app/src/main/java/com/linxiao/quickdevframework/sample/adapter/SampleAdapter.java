@@ -5,13 +5,16 @@ import android.view.ViewGroup;
 
 import com.linxiao.framework.list.SingleItemAdapter;
 import com.linxiao.framework.list.BaseRecyclerViewHolder;
+import com.linxiao.framework.list.ViewBindingRecyclerHolder;
+import com.linxiao.framework.list.ViewBindingSingleItemAdapter;
 import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.databinding.ItemListSampleBinding;
 
 /**
  *
  * Created by linxiao on 2017/1/16.
  */
-public class SampleAdapter extends SingleItemAdapter<String, BaseRecyclerViewHolder> {
+public class SampleAdapter extends ViewBindingSingleItemAdapter<String, ItemListSampleBinding> {
 
 
     public SampleAdapter(Context context) {
@@ -19,12 +22,9 @@ public class SampleAdapter extends SingleItemAdapter<String, BaseRecyclerViewHol
     }
 
     @Override
-    protected void setData(BaseRecyclerViewHolder holder, int position, String data) {
-        //NO IMPLEMENTATION
+    protected void setData(ViewBindingRecyclerHolder<ItemListSampleBinding> holder, int position, String data) {
+        //DO NOTHING
     }
 
-    @Override
-    protected BaseRecyclerViewHolder onCreateDataViewHolder(ViewGroup parent, int viewType) {
-        return new BaseRecyclerViewHolder(inflateItemView(R.layout.item_list_sample, parent));
-    }
+
 }

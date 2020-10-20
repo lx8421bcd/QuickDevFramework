@@ -1,16 +1,14 @@
 package com.linxiao.quickdevframework.sample.frameworkapi;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.linxiao.framework.dialog.AlertDialogManager;
-import com.linxiao.framework.architecture.BaseFragment;
 import com.linxiao.framework.common.ToastAlert;
+import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.file.FileCopyTask;
 import com.linxiao.framework.file.FileDeleteTask;
 import com.linxiao.framework.file.FileModifyListener;
@@ -19,37 +17,20 @@ import com.linxiao.framework.file.FileUtil;
 import com.linxiao.framework.permission.PermissionManager;
 import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;
+import com.linxiao.quickdevframework.databinding.FragmentFileApiBinding;
+import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-public class FileApiFragment extends BaseFragment {
+public class FileApiFragment extends SimpleViewBindingFragment<FragmentFileApiBinding> {
     private String totalFilePath = FileUtil.extRoot() + File.separator + "QuickDevFramework";
 
-    @BindView(R.id.tvTotalSize)
-    TextView tvTotalSize;
-    @BindView(R.id.tvCurrentSize)
-    TextView tvCurrentSize;
-    @BindView(R.id.tvTotalSum)
-    TextView tvTotalSum;
-    @BindView(R.id.tvCurrentSum)
-    TextView tvCurrentSum;
-
-    @BindView(R.id.tvHasSDCard)
-    TextView tvHasSDCard;
-    @BindView(R.id.tvHasPermission)
-    TextView tvHasPermission;
-
     @Override
-    protected void onCreateContentView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setContentView(R.layout.fragment_file_api, container);
-        ButterKnife.bind(this, getContentView());
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         PermissionManager.createPermissionOperator()
         .requestSDCard()
         .perform(getActivity(), new RequestPermissionCallback() {
@@ -79,9 +60,11 @@ public class FileApiFragment extends BaseFragment {
                 AlertDialogManager.showAlertDialog("请授予文件管理权限");
             }
         });
+        getViewBinding().btnCopyFileSimple.setOnClickListener(v -> OnCopyFileSimple());
+        getViewBinding().btnCopyFolderSimple.setOnClickListener(v -> OnCopyFolderSimple());
+        getViewBinding().btnDeleteFolderSimple.setOnClickListener(v -> OnDeleteFolderSimple());
     }
 
-    @OnClick(R.id.btnCopyFileSimple)
     public void OnCopyFileSimple() {
         File src = new File(totalFilePath + File.separator + "text.txt");
         File target = new File(totalFilePath + File.separator + "Copy");
@@ -95,10 +78,10 @@ public class FileApiFragment extends BaseFragment {
 
             @Override
             public void onProgressUpdate(long totalCount, long finishedCount, long totalSize, long finishedSize) {
-                tvTotalSum.setText("totalSum:"  + totalCount + "");
-                tvCurrentSum.setText("currentSum:" + finishedCount + "");
-                tvTotalSize.setText("totalSize:" + FileSizeUtil.getFormattedSizeString(totalSize));
-                tvCurrentSize.setText("currentSize:" + FileSizeUtil.getFormattedSizeString(finishedSize));
+                getViewBinding().tvTotalSum.setText("totalSum:"  + totalCount + "");
+                getViewBinding().tvCurrentSum.setText("currentSum:" + finishedCount + "");
+                getViewBinding().tvTotalSize.setText("totalSize:" + FileSizeUtil.getFormattedSizeString(totalSize));
+                getViewBinding().tvCurrentSize.setText("currentSize:" + FileSizeUtil.getFormattedSizeString(finishedSize));
             }
 
             @Override
@@ -115,7 +98,6 @@ public class FileApiFragment extends BaseFragment {
         .execute();
     }
 
-    @OnClick(R.id.btnCopyFolderSimple)
     public void OnCopyFolderSimple() {
         try {
             new File(totalFilePath + File.separator + "FolderExample").mkdirs();
@@ -157,10 +139,10 @@ public class FileApiFragment extends BaseFragment {
 
             @Override
             public void onProgressUpdate(long totalCount, long finishedCount, long totalSize, long finishedSize) {
-                tvTotalSum.setText("totalSum:"  + totalCount + "");
-                tvCurrentSum.setText("currentSum:" + finishedCount + "");
-                tvTotalSize.setText("totalSize:" + FileSizeUtil.getFormattedSizeString(totalSize));
-                tvCurrentSize.setText("currentSize:" + FileSizeUtil.getFormattedSizeString(finishedSize));
+                getViewBinding().tvTotalSum.setText("totalSum:"  + totalCount + "");
+                getViewBinding().tvCurrentSum.setText("currentSum:" + finishedCount + "");
+                getViewBinding().tvTotalSize.setText("totalSize:" + FileSizeUtil.getFormattedSizeString(totalSize));
+                getViewBinding().tvCurrentSize.setText("currentSize:" + FileSizeUtil.getFormattedSizeString(finishedSize));
             }
 
             @Override
@@ -177,7 +159,6 @@ public class FileApiFragment extends BaseFragment {
         .execute();
     }
 
-    @OnClick(R.id.btnDeleteFolderSimple)
     public void OnDeleteFolderSimple() {
         FileDeleteTask.newInstance(new File(totalFilePath + File.separator + "FolderExample"))
         .setFileModifyListener(new FileModifyListener() {
@@ -188,10 +169,10 @@ public class FileApiFragment extends BaseFragment {
 
             @Override
             public void onProgressUpdate(long totalCount, long finishedCount, long totalSize, long finishedSize) {
-                tvTotalSum.setText("totalSum:"  + totalCount + "");
-                tvCurrentSum.setText("currentSum:" + finishedCount + "");
-                tvTotalSize.setText("totalSize:" + FileSizeUtil.getFormattedSizeString(totalSize));
-                tvCurrentSize.setText("currentSize:" + FileSizeUtil.getFormattedSizeString(finishedSize));
+                getViewBinding().tvTotalSum.setText("totalSum:"  + totalCount + "");
+                getViewBinding().tvCurrentSum.setText("currentSum:" + finishedCount + "");
+                getViewBinding().tvTotalSize.setText("totalSize:" + FileSizeUtil.getFormattedSizeString(totalSize));
+                getViewBinding().tvCurrentSize.setText("currentSize:" + FileSizeUtil.getFormattedSizeString(finishedSize));
             }
 
             @Override
@@ -206,8 +187,8 @@ public class FileApiFragment extends BaseFragment {
             }
         })
         .execute();
-        tvHasSDCard.setText(getString(R.string.is_exist_sd_card) + ": " + FileUtil.hasExt());
-        tvHasPermission.setText(getString(R.string.has_file_permission) + ": " + PermissionManager.hasSDCardPermission());
+        getViewBinding().tvHasSDCard.setText(getString(R.string.is_exist_sd_card) + ": " + FileUtil.hasExt());
+        getViewBinding().tvHasPermission.setText(getString(R.string.has_file_permission) + ": " + PermissionManager.hasSDCardPermission());
     }
 
 }

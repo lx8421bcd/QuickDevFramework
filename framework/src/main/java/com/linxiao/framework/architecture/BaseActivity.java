@@ -5,15 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.text.SpannedString;
+import android.util.Log;
+import android.view.LayoutInflater;
+
 import androidx.annotation.CheckResult;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-import android.text.SpannedString;
-import android.util.Log;
-import android.view.View;
+import androidx.viewbinding.ViewBinding;
 
 import com.linxiao.framework.common.ScreenUtil;
 import com.linxiao.framework.common.SpanFormatter;
@@ -23,6 +24,8 @@ import com.trello.rxlifecycle2.LifecycleTransformer;
 import com.trello.rxlifecycle2.RxLifecycle;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid;
+
+import java.lang.reflect.InvocationTargetException;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -40,15 +43,13 @@ import io.reactivex.subjects.BehaviorSubject;
  * @author linxiao
  * @since 2016-12-05
  */
-public abstract class BaseActivity extends AppCompatActivity  implements LifecycleProvider<ActivityEvent> {
-
-    public static final String ACTION_EXIT_APPLICATION = "exit_application";
+public abstract class BaseActivity extends AppCompatActivity implements LifecycleProvider<ActivityEvent> {
 
     protected String TAG;
+    public static final String ACTION_EXIT_APPLICATION = "exit_application";
 
     private boolean printLifeCycle = false;
     private ActivityBaseReceiver mReceiver;
-
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
     private final BehaviorSubject<Object> finishSubject = BehaviorSubject.create();
     private static final Object finishSignal = new Object();
@@ -82,7 +83,6 @@ public abstract class BaseActivity extends AppCompatActivity  implements Lifecyc
     public final <T> LifecycleTransformer<T> bindToLifecycle() {
         return RxLifecycleAndroid.bindActivity(lifecycleSubject);
     }
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
