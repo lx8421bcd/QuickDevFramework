@@ -10,7 +10,10 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * <p>
- * class usage summary
+ * RecyclerViewHolder built with ViewBinding
+ * the constructor method is private and use {@link #create(Class, ViewGroup)} method
+ * to create ViewHolder.
+ * use holder.getViewBinding.someView to get reference of View
  * </p>
  *
  * @author linxiao
@@ -38,7 +41,7 @@ public class ViewBindingRecyclerHolder<B extends ViewBinding> extends BaseRecycl
         return holder;
     }
 
-    public ViewBindingRecyclerHolder(View itemView) {
+    private ViewBindingRecyclerHolder(View itemView) {
         super(itemView);
     }
 

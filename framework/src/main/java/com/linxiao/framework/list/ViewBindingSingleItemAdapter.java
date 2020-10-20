@@ -6,10 +6,12 @@ import android.view.ViewGroup;
 import androidx.viewbinding.ViewBinding;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Objects;
 
 /**
  * <p>
- * class usage summary
+ * SingleItemAdapter with {@link ViewBindingRecyclerHolder}
+ * use this type to avoid to write the ViewHolder creation codes.
  * </p>
  *
  * @author linxiao
@@ -22,9 +24,10 @@ public abstract class ViewBindingSingleItemAdapter<T, B extends ViewBinding> ext
         super(context);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected ViewBindingRecyclerHolder<B> onCreateDataViewHolder(ViewGroup parent, int viewType) {
-        return ViewBindingRecyclerHolder.create((Class<B>) ((ParameterizedType) getClass()
-                .getGenericSuperclass()).getActualTypeArguments()[1], parent);
+        return ViewBindingRecyclerHolder.create((Class<B>) ((ParameterizedType) Objects.requireNonNull(getClass()
+                .getGenericSuperclass())).getActualTypeArguments()[1], parent);
     }
 }
