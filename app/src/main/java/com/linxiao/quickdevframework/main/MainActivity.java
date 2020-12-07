@@ -1,5 +1,6 @@
 package com.linxiao.quickdevframework.main;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -14,6 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.linxiao.framework.common.StatusBarUtil;
 import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.framework.list.SingleItemAdapter;
 import com.linxiao.quickdevframework.R;
@@ -51,6 +53,10 @@ public class MainActivity extends SimpleViewBindingActivity<ActivityMainBinding>
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setImmersiveMode(true);
+        StatusBarUtil.setStatusBarColor(this, Color.TRANSPARENT);
+        StatusBarUtil.setStatusBarLightMode(this, true);
+
         contentBinding = getViewBinding().contentMain;
         setSupportActionBar(getViewBinding().toolbar);
         mFragmentManager = getSupportFragmentManager();
@@ -66,6 +72,7 @@ public class MainActivity extends SimpleViewBindingActivity<ActivityMainBinding>
         toggle.syncState();
 
         initApiSampleList();
+
     }
 
     private void initApiSampleList() {

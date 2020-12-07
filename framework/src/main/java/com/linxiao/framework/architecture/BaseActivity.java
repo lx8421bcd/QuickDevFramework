@@ -4,10 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.text.SpannedString;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
@@ -168,6 +171,23 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionManager.handleCallback(this, requestCode, permissions, grantResults);
+    }
+
+    /**
+     * set activity to immersive mode without using fullscreen
+     * <p>
+     * in this mode, the window will extend to the status bar area,
+     * but the bottom will not extend to the bottom navigation bar area.
+     * </p>
+     * @param enabled enable immersive mode
+     */
+    protected void setImmersiveMode(boolean enabled) {
+        int mask = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+        int flags = enabled ? mask : 0;
+        Window window = getWindow();
+        int originStatus = window.getDecorView().getSystemUiVisibility();
+        int deStatus = (originStatus & ~mask) | (flags & mask);
+        window.getDecorView().setSystemUiVisibility(deStatus);
     }
     
     /**
