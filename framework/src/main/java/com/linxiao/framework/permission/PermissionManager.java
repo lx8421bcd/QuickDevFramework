@@ -71,12 +71,20 @@ public class PermissionManager {
     }
 
     /**
-     * 是否拥有日历权限
+     * 是否拥有相机权限
      */
-    public static boolean hasCalendarPermission() {
+    public static boolean hasCameraPermission() {
         return isPermissionsGranted(ContextProvider.get(),
-                Manifest.permission.READ_CALENDAR,
-                Manifest.permission.WRITE_CALENDAR
+                Manifest.permission.CAMERA
+        );
+    }
+
+    /**
+     * 是否拥有录音权限
+     */
+    public static boolean hasRecordAudioPermission() {
+        return isPermissionsGranted(ContextProvider.get(),
+                Manifest.permission.RECORD_AUDIO
         );
     }
 
@@ -126,6 +134,16 @@ public class PermissionManager {
             return Settings.System.canWrite(ContextProvider.get());
         }
         return true;
+    }
+
+    /**
+     * 是否拥有日历权限
+     */
+    public static boolean hasCalendarPermission() {
+        return isPermissionsGranted(ContextProvider.get(),
+                Manifest.permission.READ_CALENDAR,
+                Manifest.permission.WRITE_CALENDAR
+        );
     }
 
     /**
