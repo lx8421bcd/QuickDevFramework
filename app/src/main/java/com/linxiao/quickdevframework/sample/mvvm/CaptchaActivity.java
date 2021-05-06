@@ -5,14 +5,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.quickdevframework.databinding.ActivityCaptchaBinding;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class CaptchaActivity extends BaseMVVMActivity {
@@ -25,7 +23,7 @@ public class CaptchaActivity extends BaseMVVMActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityCaptchaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        captchaViewModel = ViewModelProviders.of(this).get(CaptchaViewModel.class);
+        captchaViewModel = new ViewModelProvider(this).get(CaptchaViewModel.class);
 
         binding.etMobile.addTextChangedListener(new TextWatcher() {
             @Override
@@ -48,28 +46,20 @@ public class CaptchaActivity extends BaseMVVMActivity {
         observe(captchaViewModel.captchaCountDown()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(@NonNull Integer remains) throws Exception {
-                if (remains > 0) {
-                    binding.btnRequestCaptcha.setText(String.valueOf(remains));
-                }
-                else {
-                    binding.btnRequestCaptcha.setText("request");
-                    updateCaptchaState(binding.etMobile.getText().toString());
-                }
-                
+        .subscribe(remains -> {
+            if (remains > 0) {
+                binding.btnRequestCaptcha.setText(String.valueOf(remains));
             }
+            else {
+                binding.btnRequestCaptcha.setText("request");
+                updateCaptchaState(binding.etMobile.getText().toString());
+            }
+
         }));
         observe(captchaViewModel.canRequestCaptcha()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Consumer<Boolean>() {
-            @Override
-            public void accept(@NonNull Boolean canRequest) throws Exception {
-                binding.btnRequestCaptcha.setEnabled(canRequest);
-            }
-        }));
+        .subscribe(canRequest -> binding.btnRequestCaptcha.setEnabled(canRequest)));
     }
     
     private void updateCaptchaState(String mobile) {
@@ -80,12 +70,9 @@ public class CaptchaActivity extends BaseMVVMActivity {
         captchaViewModel.requestSMSCaptcha(binding.etMobile.getText().toString())
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Consumer<Boolean>() {
-            @Override
-            public void accept(@NonNull Boolean result) throws Exception {
-                String strResult = result ? "请求成功" : "请求失败";
-                ToastAlert.showToast(CaptchaActivity.this, strResult);
-            }
+        .subscribe(result -> {
+            String strResult = result ? "请求成功" : "请求失败";
+            ToastAlert.showToast(CaptchaActivity.this, strResult);
         });
     }
 }
