@@ -11,7 +11,7 @@ import com.linxiao.framework.common.ApplicationUtil;
 import com.linxiao.framework.common.ContextProvider;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.FragmentApplicationApiBinding;
-import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
+import com.linxiao.framework.architecture.SimpleViewBindingFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

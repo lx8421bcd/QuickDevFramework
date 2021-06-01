@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.linxiao.quickdevframework.databinding.ActivityNotificationTargetBinding;
-import com.linxiao.quickdevframework.main.SimpleViewBindingActivity;
+import com.linxiao.framework.architecture.SimpleViewBindingActivity;
 
 public class NotificationTargetActivity extends SimpleViewBindingActivity<ActivityNotificationTargetBinding> {
 

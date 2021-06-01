@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.FragmentToastApiBinding;
-import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
+import com.linxiao.framework.architecture.SimpleViewBindingFragment;
 
 public class ToastApiFragment extends SimpleViewBindingFragment<FragmentToastApiBinding> {
 

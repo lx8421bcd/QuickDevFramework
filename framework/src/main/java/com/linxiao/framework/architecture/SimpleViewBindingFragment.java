@@ -1,12 +1,16 @@
-package com.linxiao.quickdevframework.main;
+package com.linxiao.framework.architecture;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 
 import com.linxiao.framework.architecture.BaseActivity;
+import com.linxiao.framework.architecture.BaseFragment;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -19,7 +23,7 @@ import java.lang.reflect.ParameterizedType;
  * @author linxiao
  * @since 2020-10-20
  */
-public abstract class SimpleViewBindingActivity<B extends ViewBinding> extends BaseActivity {
+public abstract class SimpleViewBindingFragment<B extends ViewBinding> extends BaseFragment {
 
     private B binding = null;
 
@@ -39,14 +43,14 @@ public abstract class SimpleViewBindingActivity<B extends ViewBinding> extends B
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
-        setContentView(binding.getRoot());
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setViewBinding((Class<B>) ((ParameterizedType) getClass()
                 .getGenericSuperclass()).getActualTypeArguments()[0]);
+        return binding.getRoot();
     }
+
 }

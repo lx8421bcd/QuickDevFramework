@@ -11,7 +11,7 @@ import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.framework.permission.PermissionManager;
 import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.databinding.FragmentPermissionApiBinding;
-import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
+import com.linxiao.framework.architecture.SimpleViewBindingFragment;
 
 public class PermissionApiFragment extends SimpleViewBindingFragment<FragmentPermissionApiBinding> {
 

@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat;
 import com.linxiao.framework.notification.NotificationManager;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.FragmentNotificationApiBinding;
-import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
+import com.linxiao.framework.architecture.SimpleViewBindingFragment;
 
 import java.util.Arrays;
 

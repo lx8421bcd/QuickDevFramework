@@ -15,7 +15,7 @@ import com.linxiao.framework.dialog.AlertDialogBuilder;
 import com.linxiao.framework.dialog.AlertDialogManager;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.FragmentDialogApiBinding;
-import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
+import com.linxiao.framework.architecture.SimpleViewBindingFragment;
 
 public class DialogApiFragment extends SimpleViewBindingFragment<FragmentDialogApiBinding> {
 

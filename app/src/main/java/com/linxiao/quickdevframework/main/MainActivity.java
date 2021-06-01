@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.linxiao.framework.architecture.SimpleViewBindingActivity;
 import com.linxiao.framework.common.StatusBarUtil;
 import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.framework.list.SingleItemAdapter;

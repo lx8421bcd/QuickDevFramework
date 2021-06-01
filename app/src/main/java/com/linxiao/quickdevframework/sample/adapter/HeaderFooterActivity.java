@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.ActivityHeaderFooterBinding;
-import com.linxiao.quickdevframework.main.SimpleViewBindingActivity;
+import com.linxiao.framework.architecture.SimpleViewBindingActivity;
 
 public class HeaderFooterActivity extends SimpleViewBindingActivity<ActivityHeaderFooterBinding> {
 

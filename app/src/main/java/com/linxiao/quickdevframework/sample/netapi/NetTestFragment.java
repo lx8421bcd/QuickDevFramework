@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import com.linxiao.framework.rx.RxSubscriber;
 import com.linxiao.quickdevframework.databinding.FragmentNetTestBinding;
-import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
+import com.linxiao.framework.architecture.SimpleViewBindingFragment;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;

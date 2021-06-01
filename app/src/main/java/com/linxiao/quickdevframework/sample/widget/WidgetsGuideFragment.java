@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.linxiao.framework.widget.TextDrawable;
 import com.linxiao.quickdevframework.databinding.FragmentWidgetsGuideBinding;
-import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
+import com.linxiao.framework.architecture.SimpleViewBindingFragment;
 import com.linxiao.quickdevframework.sample.mvvm.CaptchaActivity;
 
 /**

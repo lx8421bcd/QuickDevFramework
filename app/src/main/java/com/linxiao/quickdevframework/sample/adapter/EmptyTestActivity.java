@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.linxiao.framework.common.ScreenUtil;
 import com.linxiao.framework.list.EquidistantDecoration;
 import com.linxiao.quickdevframework.databinding.ActivityEmptyTestBinding;
-import com.linxiao.quickdevframework.main.SimpleViewBindingActivity;
+import com.linxiao.framework.architecture.SimpleViewBindingActivity;
 
 import java.util.Arrays;
 

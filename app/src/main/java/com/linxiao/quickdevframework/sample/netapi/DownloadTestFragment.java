@@ -12,7 +12,7 @@ import com.linxiao.framework.common.ContextProvider;
 import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.framework.net.SimpleDownloadTask;
 import com.linxiao.quickdevframework.databinding.FragmentDownloadTestBinding;
-import com.linxiao.quickdevframework.main.SimpleViewBindingFragment;
+import com.linxiao.framework.architecture.SimpleViewBindingFragment;
 
 /**
  * download test fragment
