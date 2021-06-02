@@ -5,9 +5,6 @@ import com.android.tools.idea.wizard.template.impl.activities.common.MIN_API
 import com.android.tools.idea.wizard.template.impl.activities.common.generateManifest
 import com.intellij.util.xml.DomManager
 
-
-
-
 val defaultPackageNameParameter
     get() = stringParameter {
         name = "Package name"
@@ -125,17 +122,15 @@ fun simpleViewBindingActivityXml(
     activityClass: String
 ) = """
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
-    <RelativeLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="${packageName}.${activityClass}Activity">
+<RelativeLayout 
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context="${packageName}.${activityClass}Activity">
     
     
     
 </RelativeLayout>
-</layout>
 """
