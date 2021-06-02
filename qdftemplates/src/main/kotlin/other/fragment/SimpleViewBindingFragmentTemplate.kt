@@ -92,8 +92,8 @@ import ${applicationPackage}.R
 import ${applicationPackage}.databinding.Fragment${FragmentClass}Binding
 class ${FragmentClass}Fragment : SimpleViewBindingFragment<Fragment${FragmentClass}Binding>() {
 
-     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initView()
         
     }

@@ -93,10 +93,6 @@ fun RecipeExecutor.simpleViewBindingActivityRecipe(
     save(xmlFile, resOut.resolve("layout/${layoutName}.xml"))
 }
 
-fun insertToManifest() {
-
-}
-
 /*-------------------- activity code generate function ----------------------*/
 fun simpleViewBindingActivityKt(
     applicationPackage:String?,
