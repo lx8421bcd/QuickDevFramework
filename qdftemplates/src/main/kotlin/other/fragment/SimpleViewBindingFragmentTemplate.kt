@@ -2,6 +2,7 @@ package other.fragment
 
 import com.android.tools.idea.wizard.template.*
 import com.android.tools.idea.wizard.template.impl.activities.common.MIN_API
+import other.humpToLine
 
 val defaultPackageNameParameter
     get() = stringParameter {
@@ -42,7 +43,7 @@ val SimpleViewBindingFragmentTemplate
             default = "Fragment_main"
             help = "请输入布局的名字"
             constraints = listOf(Constraint.LAYOUT, Constraint.UNIQUE, Constraint.NONEMPTY)
-            suggest = { fragmentToLayout(FragmentClass.value.toLowerCase()) }
+            suggest = { fragmentToLayout(humpToLine(FragmentClass.value)) }
         }
 
         val packageName = defaultPackageNameParameter
