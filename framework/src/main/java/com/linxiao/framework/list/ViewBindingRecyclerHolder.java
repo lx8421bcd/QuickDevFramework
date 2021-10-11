@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import androidx.viewbinding.ViewBinding;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 
 /**
  * <p>
@@ -23,22 +24,13 @@ public class ViewBindingRecyclerHolder<B extends ViewBinding> extends BaseRecycl
 
     private B binding = null;
 
-    @SuppressWarnings("unchecked")
     public static <B extends ViewBinding> ViewBindingRecyclerHolder<B> create(Class<B> bindingClass, ViewGroup parent) {
-        B binding = null;
-        try {
-            binding = (B) bindingClass.getMethod("inflate", LayoutInflater.class, ViewGroup.class, boolean.class)
-                    .invoke(null, LayoutInflater.from(parent.getContext()), parent, false);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-        ViewBindingRecyclerHolder<B> holder = new ViewBindingRecyclerHolder<>(binding.getRoot());
-        holder.binding = binding;
-        return holder;
+        return new ViewBindingRecyclerHolder<>(bindingClass, parent);
+    }
+
+    protected ViewBindingRecyclerHolder(Class<B> bindingClass, ViewGroup parent) {
+        this(inflateItemView(bindingClass, parent));
+        initViewBinding(bindingClass);
     }
 
     private ViewBindingRecyclerHolder(View itemView) {
@@ -49,4 +41,24 @@ public class ViewBindingRecyclerHolder<B extends ViewBinding> extends BaseRecycl
         return binding;
     }
 
+    @SuppressWarnings("unchecked")
+    private void initViewBinding(Class<B> bindingClass) {
+        try {
+            binding = (B) bindingClass.getMethod("bind", View.class).invoke(null, itemView);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <B extends ViewBinding> View inflateItemView(Class<B> bindingClass, ViewGroup parent) {
+        B binding = null;
+        try {
+            binding = (B) bindingClass.getMethod("inflate", LayoutInflater.class, ViewGroup.class, boolean.class)
+                    .invoke(null, LayoutInflater.from(parent.getContext()), parent, false);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return Objects.requireNonNull(binding).getRoot();
+    }
 }
