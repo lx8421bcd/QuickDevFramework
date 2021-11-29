@@ -33,7 +33,7 @@ public class RegexUtil {
      * @param qq qq号
      */
     public static boolean isValidQQNum(String qq) {
-       return qq != null && qq.matches("^[1-9][0-9]{4,12}\\$");
+       return qq != null && qq.matches("^[1-9][0-9]{4,12}$");
     }
 
     /**
