@@ -24,21 +24,29 @@ public class RegexUtil {
     /**
      * 检查是否为正确的手机号
      */
-    public static boolean checkPhoneNumberLegality(String phoneNumber) {
+    public static boolean isValidPhoneNum(String phoneNumber) {
         return phoneNumber != null && phoneNumber.matches("[1][3578]\\d{9}");
+    }
+
+    /**
+     * 检查是否为有效QQ号
+     * @param qq qq号
+     */
+    public static boolean isValidQQNum(String qq) {
+       return qq != null && qq.matches("^[1-9][0-9]{4,12}\\$");
     }
 
     /**
      * 检查是否为正确邮箱
      * */
-    public static boolean checkEmailLegality(String email) {
+    public static boolean isValidEmail(String email) {
         return !TextUtils.isEmpty(email) && email.matches("^([a-z0-9A-Z]+[-|.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$");
     }
 
     /**
      * 检查第二代身份证号合法性
      * */
-    public static boolean checkIdNumberLegality(String strIdNumber) {
+    public static boolean isValidIDCard(String strIdNumber) {
         if(strIdNumber == null) {
             return false;
         }
@@ -71,7 +79,7 @@ public class RegexUtil {
      * @return String yyyy-mm-dd 正确输出; null 身份证号非法或其它异常
      * */
     public static String getBirthdayFromIdNumber(String strIdNumber) {
-        if(!checkIdNumberLegality(strIdNumber)) {
+        if(!isValidIDCard(strIdNumber)) {
             return null;
         }
         String year;
@@ -94,7 +102,7 @@ public class RegexUtil {
      * @return 0: 非法输入, 1: 男, 2:女
      * */
     public static int getSexFromIdNumber(String strIdNumber) {
-        if(!checkIdNumberLegality(strIdNumber)) {
+        if(!isValidIDCard(strIdNumber)) {
             return 0;
         }
         int sexCode = strIdNumber.charAt(16) - '0';

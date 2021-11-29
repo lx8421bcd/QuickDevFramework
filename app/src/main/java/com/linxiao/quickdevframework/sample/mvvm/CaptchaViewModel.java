@@ -75,7 +75,7 @@ public class CaptchaViewModel extends ViewModel {
             subjectCanRequestCaptcha.onNext(false);
             return;
         }
-        if (!RegexUtil.checkPhoneNumberLegality(mobile)) {
+        if (!RegexUtil.isValidPhoneNum(mobile)) {
             subjectCanRequestCaptcha.onNext(false);
             return;
         }
@@ -89,7 +89,7 @@ public class CaptchaViewModel extends ViewModel {
         return Observable.create(new ObservableOnSubscribe<Boolean>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<Boolean> e) throws Exception {
-                if (RegexUtil.checkPhoneNumberLegality(mobile)) {
+                if (RegexUtil.isValidPhoneNum(mobile)) {
                     e.onNext(true);
                     e.onComplete();
                     return;
