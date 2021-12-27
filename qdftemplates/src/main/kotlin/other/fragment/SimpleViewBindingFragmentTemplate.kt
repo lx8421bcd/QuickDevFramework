@@ -15,11 +15,9 @@ val defaultPackageNameParameter
 
 val SimpleViewBindingFragmentTemplate
     get() = template {
-        revision = 1
         name = "Simple ViewBinding Fragment"
         description = "基于ViewBinding基类的Fragment模板"
         minApi = MIN_API
-        minBuildApi = MIN_API
 
         category = Category.Other
         formFactor = FormFactor.Mobile

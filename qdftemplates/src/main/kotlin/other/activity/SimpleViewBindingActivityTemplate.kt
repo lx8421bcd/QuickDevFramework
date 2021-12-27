@@ -17,11 +17,9 @@ val defaultPackageNameParameter
 
 val SimpleViewBindingActivityTemplate
     get() = template {
-        revision = 1
         name = "Simple ViewBinding Activity"
         description = "基于ViewBinding基类的Activity模板"
         minApi = MIN_API
-        minBuildApi = MIN_API
 
         category = Category.Other
         formFactor = FormFactor.Mobile
@@ -77,7 +75,6 @@ fun RecipeExecutor.simpleViewBindingActivityRecipe(
     generateManifest(
         moduleData = moduleData,
         activityClass = "${activityClass}Activity",
-        activityTitle = activityClass,
         packageName = packageName,
         isLauncher = false,
         hasNoActionBar = false,

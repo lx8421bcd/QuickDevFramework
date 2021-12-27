@@ -15,11 +15,9 @@ val defaultPackageNameParameter
 
 val SimpleViewBindingDialogTemplate
     get() = template {
-        revision = 1
         name = "Simple ViewBinding Dialog"
         description = "基于ViewBinding基类的Dialog模板"
         minApi = MIN_API
-        minBuildApi = MIN_API
 
         category = Category.Other
         formFactor = FormFactor.Mobile
