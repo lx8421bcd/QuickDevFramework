@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.linxiao.quickdevframework">
+    package="com.linxiao.quickdevframework">
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.SEND_SMS"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
@@ -18,24 +17,33 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".main.SplashActivity"
+            android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".main.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
 
-        <service android:name=".sample.frameworkapi.BackgroundService"/>
+        <service android:name=".sample.frameworkapi.BackgroundService" />
 
-        <activity android:name=".sample.frameworkapi.NotificationTargetActivity"/>
-        <activity android:name=".sample.adapter.EmptyTestActivity"/>
-        <activity android:name=".sample.adapter.HeaderFooterActivity"/>
-        <activity android:name=".sample.mvvm.CaptchaActivity">
-        </activity>
+        <activity
+            android:name=".sample.frameworkapi.NotificationTargetActivity"
+            android:exported="true" />
+        <activity
+            android:name=".sample.adapter.EmptyTestActivity"
+            android:exported="true" />
+        <activity
+            android:name=".sample.adapter.HeaderFooterActivity"
+            android:exported="true" />
+        <activity
+            android:name=".sample.mvvm.CaptchaActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
