@@ -34,7 +34,7 @@ public class ErrorMessageUtil {
         return e.getMessage();
     }
 
-    private static void setErrorMessageParser(Class<? extends Throwable> clazz, ErrorMessageParser parser) {
+    public static void setErrorMessageParser(Class<? extends Throwable> clazz, ErrorMessageParser parser) {
         if (parser == null) {
             return;
         }
