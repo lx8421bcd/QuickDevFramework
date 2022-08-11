@@ -22,7 +22,7 @@ import java.util.TimerTask;
 /**
  * simple download tool
  * <p>
- * a simple download tool based on {@link android.app.DownloadManager},
+ * a simple download tool based on {@link DownloadManager},
  * using to handle simple download demands like download update apk.
  * </p>
  *
@@ -220,11 +220,11 @@ public class SimpleDownloadTask {
                 }
                 if (cursor.moveToFirst()) {
 //                    String title = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
-                    int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    int status = cursor.getInt(Math.max(0, cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)));
 
-                    String localPath = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-                    int downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                    int total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                    String localPath = cursor.getString(Math.max(0, cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)));
+                    int downloaded = cursor.getInt(Math.max(0, cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)));
+                    int total = cursor.getInt(Math.max(0, cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)));
                     if (downloadListener != null) {
                         callbackHandler.post(() -> downloadListener.onProgress(total, downloaded));
                     }
