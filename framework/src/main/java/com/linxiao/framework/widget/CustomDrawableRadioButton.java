@@ -1,5 +1,6 @@
 package com.linxiao.framework.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
@@ -13,6 +14,7 @@ import com.linxiao.framework.R;
  * 
  * @author linxiao
  */
+@SuppressLint("AppCompatCustomView")
 public class CustomDrawableRadioButton extends RadioButton {
 
     private int drawableWidth;

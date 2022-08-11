@@ -1,5 +1,6 @@
 package com.linxiao.framework.widget;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -419,6 +420,7 @@ public class HorizontalNumberPicker extends LinearLayout {
         return (int) (dpValue * scale + 0.5f);
     }
 
+    @SuppressLint("AppCompatCustomView")
     class NumberPickerEditText extends EditText {
 
         public NumberPickerEditText(Context context) {

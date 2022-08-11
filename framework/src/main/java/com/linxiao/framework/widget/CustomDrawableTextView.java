@@ -1,5 +1,6 @@
 package com.linxiao.framework.widget;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -21,6 +22,7 @@ import com.linxiao.framework.R;
  * @author linxiao
  * @version 1.0
  */
+@SuppressLint("AppCompatCustomView")
 public class CustomDrawableTextView extends TextView {
 
     private int drawableWidth;
