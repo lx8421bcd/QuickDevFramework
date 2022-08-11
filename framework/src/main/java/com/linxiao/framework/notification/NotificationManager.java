@@ -10,6 +10,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -28,10 +30,18 @@ public class NotificationManager {
     public static String KEY_NOTIFICATION_EXTRA = "framework_notification_extra";
     public static final String KEY_TARGET_ACTIVITY_NAME = "key_dest_name";
 
-    public static final int DEFAULT_ICON = R.drawable.ic_notify_default;
-    private static String defaultTitle = ContextProvider.get().getString(R.string.app_name);
+    public static int defaultIcon = R.drawable.ic_notify_default;
+    private static String defaultTitle = " ";
 
     private NotificationManager() {}
+
+    public static void setDefaultTitle(String defaultTitle) {
+        NotificationManager.defaultTitle = defaultTitle;
+    }
+
+    public static void setDefaultIconRes(@DrawableRes int defaultIcon) {
+        NotificationManager.defaultIcon = defaultIcon;
+    }
 
     /**
      * get system NotificationManager
@@ -112,7 +122,7 @@ public class NotificationManager {
         createChannel(channelName, channelName);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(
                 ContextProvider.get(), channelName);
-        builder.setSmallIcon(DEFAULT_ICON)
+        builder.setSmallIcon(defaultIcon)
                 .setContentTitle(defaultTitle)
                 .setContentText(" ")
                 .setAutoCancel(true);
@@ -145,7 +155,7 @@ public class NotificationManager {
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(
                 ContextProvider.get(), channelName);
-        builder.setSmallIcon(DEFAULT_ICON)
+        builder.setSmallIcon(defaultIcon)
                 .setContentTitle(defaultTitle)
                 .setContentText(" ")
                 .setFullScreenIntent(null, true)
