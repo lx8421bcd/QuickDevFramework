@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.collection.ArrayMap;
 
 import com.google.gson.reflect.TypeToken;
-import com.linxiao.framework.net.RetrofitManager;
+import com.linxiao.framework.net.CommonApiProvider;
 import com.linxiao.framework.preferences.AppPreferences;
 import com.linxiao.framework.rx.RxSubscriber;
 
@@ -176,7 +176,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     }
 
     private Observable<Object> submitLog(Map<String, Object> info) {
-        return RetrofitManager.getCommonApi().jsonPost("", info)
+        return CommonApiProvider.getInstance().getApi().jsonPost("", info)
         .subscribeOn(Schedulers.io())
         .map(resp -> resp);
     }

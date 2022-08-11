@@ -4,7 +4,7 @@ import com.linxiao.framework.architecture.BaseDataManager;
 import com.linxiao.framework.net.HttpInfoCatchInterceptor;
 import com.linxiao.framework.net.HttpInfoCatchListener;
 import com.linxiao.framework.net.HttpInfoEntity;
-import com.linxiao.framework.net.RetrofitManager;
+import com.linxiao.framework.net.OkHttpClientHelper;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -39,7 +39,7 @@ public class NetTestDataManager extends BaseDataManager {
         OkHttpClient.Builder okBuilder = new OkHttpClient.Builder();
 //        okBuilder.cookieJar(RetrofitManager.());
         okBuilder.addInterceptor(infoCatchInterceptor);
-        RetrofitManager.configTrustAll(okBuilder);
+        OkHttpClientHelper.configTrustAll(okBuilder);
     
         Retrofit.Builder builder = new Retrofit.Builder();
         builder.baseUrl("http://www.weather.com.cn/")
