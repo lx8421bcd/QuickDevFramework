@@ -1,5 +1,4 @@
 import org.jetbrains.changelog.markdownToHTML
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 fun properties(key: String) = project.findProperty(key).toString()
 
@@ -7,9 +6,9 @@ plugins {
     // Java support
     id("java")
     // Kotlin support
-    id("org.jetbrains.kotlin.jvm") version "1.6.0"
+    id("org.jetbrains.kotlin.jvm") version "1.7.10"
     // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij") version "1.3.0"
+    id("org.jetbrains.intellij") version "1.8.0"
     // Gradle Changelog Plugin
     id("org.jetbrains.changelog") version "1.3.1"
     // Gradle Qodana Plugin
@@ -19,15 +18,23 @@ plugins {
 group = properties("pluginGroup")
 version = properties("pluginVersion")
 
-// Configure project's dependencies
+// Configure project's dependencieps
 repositories {
     mavenCentral()
 }
+
 dependencies {
     compileOnly(files("lib/wizard-template.jar"))
 }
 
-// Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
+// Set the JVM language level used to compile sources and generate files - Java 11 is required since 2020.3
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
+// Configure Gradle IntelliJ Plugin - read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
     pluginName.set(properties("pluginName"))
     version.set(properties("platformVersion"))
@@ -52,17 +59,6 @@ qodana {
 }
 
 tasks {
-    // Set the JVM compatibility versions
-    properties("javaVersion").let {
-        withType<JavaCompile> {
-            sourceCompatibility = it
-            targetCompatibility = it
-        }
-        withType<KotlinCompile> {
-            kotlinOptions.jvmTarget = it
-        }
-    }
-
     wrapper {
         gradleVersion = properties("gradleVersion")
     }

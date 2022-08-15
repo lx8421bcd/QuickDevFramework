@@ -4,6 +4,49 @@
 
 ## [Unreleased]
 ### Added
+- Use JVM toolchain for configuring source/target compilation compatibility
+- Make sure GitHub Actions release jobs have write permissions
+- Example implementation: Add `TODO()` with a hint to remove stale sample code
+- Exclude `.qodana` directory from Qodana analysis
+- Maximize disk space on GitHub Actions
+
+### Changed
+- Upgrade Gradle Wrapper to `7.5.1`
+- Update `platformVersion` to `2021.3.3`
+- Change since/until build to `213-222.*` (2021.3 - 2022.2)
+- Dependencies - upgrade `org.jetbrains.intellij` to `1.8.0`
+- Dependencies - upgrade `org.jetbrains.kotlin.jvm` to `1.7.10`
+- Dependencies (GitHub Actions) - upgrade `actions/checkout` to `3`
+- Dependencies (GitHub Actions) - upgrade `actions/cache` to `3`
+- Dependencies (GitHub Actions) - upgrade `actions/setup-java` to `3`
+- Dependencies (GitHub Actions) - upgrade `actions/upload-artifact` to `3`
+- Dependencies (GitHub Actions) - upgrade `JetBrains/qodana-action` to `v2022.2.1`
+
+### Fixed
+- Pass Plugin Signing secrets as environment variables in the Release workflow
+
+### Removed
+- Removed Gradle caching from GitHub Actions 
+
+## [1.1.2]
+### Changed
+- Update `platformVersion` to `2021.1.3` for compatibility with Apple M1
+- Change since/until build to `211-213.*` (2021.1 - 2021.3)
+- Upgrade Gradle Wrapper to `7.4`
+- Dependencies - upgrade `org.jetbrains.intellij` to `1.4.0`
+- Dependencies (GitHub Actions) - upgrade `JetBrains/qodana-action` to `4.2.5`
+
+## [1.1.1]
+### Changed
+- GitHub Actions - fixed duplicated `.zip` extension in artifact file's name of the build flow
+- Upgrade Gradle Wrapper to `7.3.3`
+- Dependencies - upgrade `org.jetbrains.intellij` to `1.3.1`
+- Dependencies - upgrade `org.jetbrains.kotlin.jvm` to `1.6.10`
+- Dependencies (GitHub Actions) - upgrade `JetBrains/qodana-action` to `4.2.3`
+- Dependencies (GitHub Actions) - upgrade `actions/cache` to `2.1.7`
+
+## [1.1.0]
+### Added
 - GitHub Actions: Collect Qodana/Tests/Plugin Verifier results as artifacts
 
 ### Changed
@@ -168,7 +211,7 @@
 
 ## [0.6.0]
 ### Added
-- Integration with [IntelliJ Plugin Verifier](https://github.com/JetBrains/intellij-plugin-verifier) through the [Gradle IntelliJ Plugin](https://github.com/JetBrains/gradle-intellij-plugin#plugin-verifier-dsl) `runPluginVerifier` task
+- Integration with [IntelliJ Plugin Verifier](https://github.com/JetBrains/intellij-plugin-verifier) through the [Gradle IntelliJ Plugin](https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html#runpluginverifier-task) `runPluginVerifier` task
 - Cache downloaded IDEs used by Plugin Verifier for the verification
 
 ### Changed
