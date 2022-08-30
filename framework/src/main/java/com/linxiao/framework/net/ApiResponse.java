@@ -21,16 +21,19 @@ import java.lang.reflect.Type;
  * Created by linxiao on 2016-07-27.
  */
 public class ApiResponse {
-    
-    private static final int SUCCESS = 0;
-    
-    @SerializedName("code")
+
+    private static final int SUCCESS = 200;
+    private static final String SERIALIZED_KEY_CODE = "code";
+    private static final String SERIALIZED_KEY_DESC = "desc";
+    private static final String SERIALIZED_KEY_BODY = "body";
+
+    @SerializedName(SERIALIZED_KEY_CODE)
     public int code;
 
-    @SerializedName("message")
+    @SerializedName(SERIALIZED_KEY_DESC)
     public String message;
 
-    @SerializedName("data")
+    @SerializedName(SERIALIZED_KEY_BODY)
     public String data;
 
     @Override
@@ -41,11 +44,11 @@ public class ApiResponse {
                 ", data='" + data + '\'' +
                 '}';
     }
-    
+
     public boolean success() {
-        return code == 0;
+        return code == SUCCESS;
     }
-    
+
     public <T> T getResponseData(Class<T> clazz) {
         try {
             return GsonParser.getParser().fromJson(data, clazz);
@@ -54,8 +57,8 @@ public class ApiResponse {
         }
         return null;
     }
-    
-    
+
+
     public <T> T getResponseData(Type t) {
         try {
             return GsonParser.getParser().fromJson(data, t);
@@ -64,7 +67,7 @@ public class ApiResponse {
         }
         return null;
     }
-    
+
     /**
      * ApiResponse Deserializer
      * <p>
@@ -77,13 +80,13 @@ public class ApiResponse {
             JsonObject obj = json.getAsJsonObject();
             ApiResponse response = new ApiResponse();
             try {
-                response.code = obj.get("code").getAsInt();
+                response.code = obj.get(SERIALIZED_KEY_CODE).getAsInt();
             } catch (Exception e) {
                 e.printStackTrace();
                 response.code = -1;
             }
             try {
-                JsonElement msgObj = obj.get("message");
+                JsonElement msgObj = obj.get(SERIALIZED_KEY_DESC);
                 if (msgObj != null) {
                     response.message = msgObj.getAsString();
                 }
@@ -95,7 +98,7 @@ public class ApiResponse {
                 response.message = "";
             }
             try {
-                response.data = String.valueOf(obj.get("data"));
+                response.data = String.valueOf(obj.get(SERIALIZED_KEY_BODY));
             } catch (Exception e) {
                 e.printStackTrace();
                 response.data = "";
@@ -104,3 +107,4 @@ public class ApiResponse {
         }
     }
 }
+

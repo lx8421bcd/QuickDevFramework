@@ -50,11 +50,25 @@ import retrofit2.Retrofit;
  */
 public class ApiConverterFactory extends Converter.Factory {
 
+    public interface ApiExceptionHandler {
+        void onApiException(ApiException e);
+    }
+
+    private ApiExceptionHandler globalHandler;
+
     public static ApiConverterFactory create() {
         return new ApiConverterFactory(GsonParser.getParser());
     }
 
     private final Gson gson;
+
+    public ApiExceptionHandler getGlobalApiExceptionHandler() {
+        return globalHandler;
+    }
+
+    public void setGlobalApiExceptionHandler(ApiExceptionHandler globalHandler) {
+        this.globalHandler = globalHandler;
+    }
 
     private ApiConverterFactory(Gson gson) {
         if (gson == null) throw new NullPointerException("gson == null");
@@ -99,7 +113,7 @@ public class ApiConverterFactory extends Converter.Factory {
      * ApiResponse返回体解析类
      */
     class ApiResponseConverter<T> implements Converter<ResponseBody, T> {
-        
+
         private final Gson gson;
         private final Type type;
 
