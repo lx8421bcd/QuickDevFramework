@@ -1,5 +1,7 @@
 package com.linxiao.framework.common;
 
+import android.text.TextUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,7 +26,7 @@ public class DateUtil {
 	public static final String HOUR_FORMAT_12 = "hh";
 	public static final String MINUTE = "mm";
 	public static final String SECOND = "ss";
-	public static final String MILLSECOND = "SSS";
+	public static final String MILLISECOND = "SSS";
 
 	/*常用时间单位毫秒数，到天，再往上没有意义了，请通过日历获取*/
 	/**一秒的毫秒数*/
@@ -35,8 +37,18 @@ public class DateUtil {
 	public static final long MS_ONE_HOUR = MS_ONE_MINUTE * 60;
 	/**一天的毫秒数*/
 	public static final long MS_ONE_DAY = MS_ONE_HOUR * 24;
+	/**一分钟的秒数*/
+	public static final long SEC_ONE_MINUTE = MS_ONE_MINUTE / MS_ONE_SECOND;
+	/**一小时的秒数*/
+	public static final long SEC_ONE_HOUR = MS_ONE_HOUR / MS_ONE_SECOND;
+	/**一天的秒数*/
+	public static final long SEC_ONE_DAY = MS_ONE_DAY / MS_ONE_SECOND;
 
-	public static long getZeroTimeOfToday() {
+	/**
+	 * 获取今日0点时间戳，单位毫秒
+	 * @return timestamp in milliseconds
+	 */
+	public static long getZeroTimeMillsOfToday() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
@@ -46,77 +58,54 @@ public class DateUtil {
 	}
 
 	/**
-	 * get current timestamp as millisecond
+	 * 获取今日0点时间戳，单位秒
+	 * @return timestamp in milliseconds
 	 */
+	public static long getZeroTimeSecOfToday() {
+		return getZeroTimeMillsOfToday() / 1000;
+	}
+
 	public static long currentTimeMillis() {
 		return System.currentTimeMillis();
 	}
 
-	/**
-	 * get current timestamp as second
-	 */
-	public static long currentTimeSecond() {
+	public static long currentTimeSec() {
 		return System.currentTimeMillis() / 1000;
 	}
 
-	/**
-	 * 当前时间字符串，按格式转换
-	 * @param format 格式
-	 */
 	public static String currentTimeString(String format) {
-		return formatDate(format, currentTimeMillis());
+		return timeMillsToDateString(format, currentTimeMillis());
 	}
 
-	/**
-	 * get current time as {@link Date} object
-	 */
 	public static Date currentDate() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getDefault());
 		return calendar.getTime();
 	}
 
-	/**
-	 * convert date string to {@link Date} object
-	 *
-	 * @param format date string format
-	 * @param strDate date string
-	 * @return {@link Date} object
-	 */
-	public static Date convertToDate(String format, String strDate) {
-		SimpleDateFormat sdf =  new SimpleDateFormat(format, Locale.getDefault());
-		try {
-			return sdf.parse(strDate);
-		} catch (ParseException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public static long getPastTimeMillsToday() {
+		return currentTimeMillis() - getZeroTimeMillsOfToday();
 	}
 
-	/**
-	 * convert {@link Date} object to timestamp
-	 *
-	 * @param date {@link Date} object
-	 * @return timestamp
-	 */
-	public static long convertToTimestamp(Date date) {
-		if (date == null) {
-			return 0;
-		}
-		return date.getTime();
+	public static long getPastTimeSecToday() {
+		return getPastTimeMillsToday() / 1000;
 	}
 
 	/**
 	 * convert date string to timestamp
 	 *
+	 * @param timeZone timezone, default using current timezone
 	 * @param format date string format
-	 * @param strDate date string
-	 * @return timestamp
+	 * @param dateString date string
+	 * @return timestamp in milliseconds
 	 */
-	public static long convertToTimestamp(String format, String strDate) {
+	public static long dateStringToTimeMills(String timeZone, String format, String dateString) {
 		SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
+		if (!TextUtils.isEmpty(timeZone)) {
+			sdf.setTimeZone(TimeZone.getTimeZone(timeZone));
+		}
 		try {
-			Date date = sdf.parse(strDate);
+			Date date = sdf.parse(dateString);
 			return date.getTime();
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -125,85 +114,46 @@ public class DateUtil {
 	}
 
 	/**
-	 * convert {@link Date} object to string
+	 * convert date string to timestamp
 	 *
 	 * @param format date string format
-	 * @param date date object
+	 * @param dateString date string
+	 * @return date string: timestamp in milliseconds; time string: past milliseconds from today
+	 */
+	public static long dateStringToTimeMills(String format, String dateString) {
+		// 日期格式的时间默认使用当前时区返回时间戳
+		if (format.contains(YEAR) || format.contains(MONTH) || format.contains(DAY) || format.contains(WEEK)) {
+			return dateStringToTimeMills(null, format, dateString);
+		}
+		return dateStringToTimeMills("GMT", format, dateString);
+	}
+
+	/**
+	 * convert date string to timestamp
+	 *
+	 * @param format date string format
+	 * @param dateString date string
+	 * @return date string: timestamp in seconds; time string: past seconds from today
+	 */
+	public static long dateStringToTimeSec(String format, String dateString) {
+		return dateStringToTimeMills(format, dateString) / 1000;
+	}
+
+	/**
+	 * convert timestamp in milliseconds to string
+	 *
+	 * @param format date string format
+	 * @param timeMills date object
 	 * @return date string
 	 */
-	public static String formatDate(String format, Date date) {
+	public static String timeMillsToDateString(String format, long timeMills) {
 		SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
 		try {
-			return sdf.format(date);
+			return sdf.format(new Date(timeMills));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	/**
-	 * convert timestamp object to string
-	 *
-	 * @param format date string format
-	 * @param timestamp date object
-	 * @return date string
-	 */
-	public static String formatDate(String format, long timestamp) {
-		SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
-		try {
-			return sdf.format(new Date(timestamp));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-
-	/**
-	 * check if the current time is within the defined time period
-	 * 当前是否在指定时间段内
-	 *
-	 * @param format 格式化字符串
-	 * @param start	开始时间戳
-	 * @param end	结束时间戳
-	 * @return true 在时间段内， false 不在时间段内
-	 */
-	public static boolean isInThePeriod(String format, long start, String end) {
-		return isInThePeriod(
-				start,
-				convertToTimestamp(format, end)
-		);
-	}
-
-	/**
-	 * check if the current time is within the defined time period
-	 * 当前是否在指定时间段内
-	 *
-	 * @param format 格式化字符串
-	 * @param start	开始时间戳
-	 * @param end	结束时间戳
-	 * @return true 在时间段内， false 不在时间段内
-	 */
-	public static boolean isInThePeriod(String format, String start, long end) {
-		return isInThePeriod(
-				convertToTimestamp(format, start),
-				end
-		);
-	}
-	/**
-	 * check if the current time is within the defined time period
-	 * 当前是否在指定时间段内
-	 *
-	 * @param format 格式化字符串
-	 * @param start	开始时间
-	 * @param end	结束时间
-	 * @return true 在时间段内， false 不在时间段内
-	 */
-	public static boolean isInThePeriod(String format, String start, String end) {
-		return isInThePeriod(
-				convertToTimestamp(format, start),
-				convertToTimestamp(format, end)
-		);
 	}
 
 	/**
@@ -219,117 +169,24 @@ public class DateUtil {
 		return start <= cur && cur <= end;
 	}
 
-	/**
-	 * 比较两个时间字符串的大小
-	 * @param format 格式化字符串
-	 * @param compared 开始时间
-	 * @param compareTo 结束时间
-	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
-	 */
-	public static int compareDate(String format, Date compared, Date compareTo) {
-		return compareDate(format, formatDate(format, compared), formatDate(format, compareTo));
+	public static boolean isInThePeriod(String format, long start, String end) {
+		return isInThePeriod(
+				start,
+				dateStringToTimeMills(format, end)
+		);
 	}
 
-	/**
-	 * 比较两个时间字符串的大小
-	 * @param compared 开始时间
-	 * @param compareTo 结束时间
-	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
-	 */
-	public static int compareDate(long compared, long compareTo) {
-		return Long.compare(compared, compareTo);
+	public static boolean isInThePeriod(String format, String start, long end) {
+		return isInThePeriod(
+				dateStringToTimeMills(format, start),
+				end
+		);
+	}
+	public static boolean isInThePeriod(String format, String start, String end) {
+		return isInThePeriod(
+				dateStringToTimeMills(format, start),
+				dateStringToTimeMills(format, end)
+		);
 	}
 
-	/**
-	 * 比较两个时间字符串的大小
-	 * @param format 格式化字符串
-	 * @param compared 开始时间
-	 * @param compareTo 结束时间
-	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
-	 */
-	public static int compareDate(String format, Date compared, long compareTo) {
-		return compareDate(format, formatDate(format, compared), formatDate(format, compareTo));
-	}
-
-	/**
-	 * 比较两个时间字符串的大小
-	 * @param format 格式化字符串
-	 * @param compared 开始时间
-	 * @param compareTo 结束时间
-	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
-	 */
-	public static int compareDate(String format, long compared, Date compareTo) {
-		return compareDate(format, formatDate(format, compared), formatDate(format, compareTo));
-	}
-
-	/**
-	 * 比较两个时间字符串的大小
-	 * @param format 格式化字符串
-	 * @param compared 开始时间
-	 * @param compareTo 结束时间
-	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
-	 */
-	public static int compareDate(String format, String compared, Date compareTo) {
-		return compareDate(format, compared, formatDate(format, compareTo));
-	}
-
-	/**
-	 * 比较两个时间字符串的大小
-	 * @param format 格式化字符串
-	 * @param compared 开始时间
-	 * @param compareTo 结束时间
-	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
-	 */
-	public static int compareDate(String format, String compared, long compareTo) {
-		return compareDate(format, compared, formatDate(format, compareTo));
-	}
-
-	/**
-	 * 比较两个时间字符串的大小
-	 * @param format 格式化字符串
-	 * @param compared 开始时间
-	 * @param compareTo 结束时间
-	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
-	 */
-	public static int compareDate(String format, long compared, String compareTo) {
-		return compareDate(format, formatDate(format, compared), compareTo);
-	}
-
-	/**
-	 * 比较两个时间字符串的大小
-	 * @param format 格式化字符串
-	 * @param compared 开始时间
-	 * @param compareTo 结束时间
-	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
-	 */
-	public static int compareDate(String format, Date compared, String compareTo) {
-		return compareDate(format, formatDate(format, compared), compareTo);
-	}
-
-	/**
-	 * 比较两个时间字符串的大小
-	 * @param format 格式化字符串
-	 * @param compared 开始时间
-	 * @param compareTo 结束时间
-	 * @return 1: compared > compareTo; 0: compared = compareTo; -1: compared < compareTo;
-	 */
-	public static int compareDate(String format, String compared, String compareTo){
-		int flag = 0;
-		SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
-		try {
-			long result = (sdf.parse(compared).getTime() - sdf.parse(compareTo).getTime());
-			if(result > 0) {
-				return 1;
-			}
-			else if(result < 0) {
-				return -1;
-			}
-			else {
-				return 0;
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return flag;
-	}
 }

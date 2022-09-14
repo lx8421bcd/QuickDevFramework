@@ -69,7 +69,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
         Map<String, Object> info = new HashMap<>();
         info.put("thread", t.getName());
-        info.put("time", DateUtil.formatDate("yyyy-MM-dd HH:mm:ss", System.currentTimeMillis()));
+        info.put("time", DateUtil.timeMillsToDateString("yyyy-MM-dd HH:mm:ss", System.currentTimeMillis()));
         info.put("app_info", collectAppVersionInfo());
         info.put("device_info", collectDeviceInfo());
         info.put("network_info", collectNetworkInfo());
