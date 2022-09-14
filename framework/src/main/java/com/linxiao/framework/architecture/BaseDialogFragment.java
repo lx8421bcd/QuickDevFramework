@@ -135,24 +135,6 @@ public abstract class BaseDialogFragment extends AppCompatDialogFragment impleme
         lifecycleSubject.onNext(FragmentEvent.DETACH);
         super.onDetach();
     }
-    /**
-     * get spanned string from xml resources
-     * <p>use this method to get the text which include style labels in strings.xml,
-     * support using format args</p>
-     * @param resId string resource id
-     * @param args format args
-     * @return SpannedString
-     */
-    protected SpannedString getSpannedString(@StringRes int resId, Object... args) {
-        return SpanFormatter.format(getText(resId), args);
-    }
-    
-    protected int dp2px(float dpValue) {
-        return ScreenUtil.dp2px(dpValue);
-    }
-    
-    public static int px2dp(float pxValue) {
-        return ScreenUtil.px2dp(pxValue);
-    }
+
 
 }

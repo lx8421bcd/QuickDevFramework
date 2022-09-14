@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.text.SpannedString;
@@ -19,6 +20,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewbinding.ViewBinding;
 
+import com.linxiao.framework.common.DensityHelper;
 import com.linxiao.framework.common.ScreenUtil;
 import com.linxiao.framework.common.SpanFormatter;
 import com.linxiao.framework.permission.PermissionManager;
@@ -189,27 +191,13 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         int deStatus = (originStatus & ~mask) | (flags & mask);
         window.getDecorView().setSystemUiVisibility(deStatus);
     }
-    
-    /**
-     * get spanned string from xml resources
-     * <p>use this method to get the text which include style labels in strings.xml,
-     * support using format args</p>
-     * @param resId string resource id
-     * @param args format args
-     * @return SpannedString
-     */
-    protected SpannedString getSpannedString(@StringRes int resId, Object... args) {
-        return SpanFormatter.format(getText(resId), args);
-    }
-    
-    protected int dp2px(float dpValue) {
-        return ScreenUtil.dp2px(dpValue);
-    }
-    
-    public static int px2dp(float pxValue) {
-        return ScreenUtil.px2dp(pxValue);
-    }
 
+    @Override
+    public Resources getResources() {
+        Resources resources = super.getResources();
+        DensityHelper.onActivityGetResources(resources);
+        return resources;
+    }
 
     /**
      * set is print activity lifecycle

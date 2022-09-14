@@ -6,6 +6,7 @@ import android.os.Handler;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.linxiao.framework.common.DensityHelper;
 import com.linxiao.framework.common.ScreenUtil;
 import com.linxiao.framework.list.EquidistantDecoration;
 import com.linxiao.quickdevframework.databinding.ActivityEmptyTestBinding;
@@ -28,7 +29,7 @@ public class EmptyTestActivity extends SimpleViewBindingActivity<ActivityEmptyTe
         getViewBinding().rcvEmptySimple.setAdapter(mAdapter);
         getViewBinding().rcvEmptySimple.setItemAnimator(new DefaultItemAnimator());
         getViewBinding().rcvEmptySimple.setLayoutManager(new GridLayoutManager(this, 3));
-        getViewBinding().rcvEmptySimple.addItemDecoration(new EquidistantDecoration(3, ScreenUtil.dp2px(12)));
+        getViewBinding().rcvEmptySimple.addItemDecoration(new EquidistantDecoration(3, DensityHelper.dp2px(12)));
 
 //        View emptyView = getLayoutInflater().inflate(R.layout.empty_view, null);
 //        mAdapter.setEmptyView(emptyView);
