@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="50dp"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    tools:parentTag="android.widget.RelativeLayout">
+
+    <TextView
+        android:id="@+id/item_switch_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        tools:text="Item Name" />
+
+    <CheckBox
+        android:id="@+id/item_switch_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:button="@drawable/sel_item_switch"
+        android:clickable="false"/>
+
+    <View
+        android:id="@+id/item_switch_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_alignParentBottom="true"
+        android:background="#F0F0F0"
+        android:visibility="visible" />
+
+</merge>
