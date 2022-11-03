@@ -1,7 +1,5 @@
 package com.linxiao.framework.widget;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -9,46 +7,35 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
 import android.os.Handler;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.LayoutInflater;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import com.linxiao.framework.R;
 
-
 /**
- * 水平方向数字选择器
- * <p>
- * TODO:需细调在缺少宽高设定情况下的默认宽高设置
- * TODO:设定在Orientation为Vertical的情况下布局处理
- * TODO:通过第三方输入法的收起键盘按钮收起键盘时取消当前EditText焦点
- * </p>
+ * 水平方向数字选择器>
  *
  * @author linxiao
  * @version 1.0.0
- * @since 2015-11-15
+ * Create on 2015-11-15
  */
-public class HorizontalNumberPicker extends LinearLayout {
+public class HorizontalNumberPicker extends RelativeLayout {
 
     private static final String TAG = HorizontalNumberPicker.class.getSimpleName();
 
     private InputMethodManager imm;
 
     public interface OnNumberChangeListener {
-        void onNumberCount(int number);
 
         void onNumberChange(int number);
 
@@ -59,10 +46,11 @@ public class HorizontalNumberPicker extends LinearLayout {
 
     public interface OnBtnClickListener {
         void OnAddClick();
-        void OnReduceClick();
+
+        void OnSubtractClick();
     }
 
-    public void setOnBtnClickListener(OnBtnClickListener listener){
+    public void setOnBtnClickListener(OnBtnClickListener listener) {
         onBtnClickListener = listener;
     }
 
@@ -70,20 +58,20 @@ public class HorizontalNumberPicker extends LinearLayout {
         onNumberChangeListener = listener;
     }
 
-    private NumberPickerEditText etNumber;
+    private TextView etNumber;
 
-    private TextView btnReduce;
+    private ImageView btnSubtract;
 
-    private TextView btnAdd;
+    private ImageView btnAdd;
 
     private int number = 0;
     private int min = 0;
     private int max = 999;
     private OnNumberChangeListener onNumberChangeListener;
-    private OnBtnClickListener onBtnClickListener ;
+    private OnBtnClickListener onBtnClickListener;
 
 
-    private boolean isAutoChangeNumber = true ;
+    private boolean isAutoChangeNumber = true;
 
     public HorizontalNumberPicker(Context context) {
         super(context);
@@ -103,19 +91,19 @@ public class HorizontalNumberPicker extends LinearLayout {
         initAttrs(context, attrs);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public HorizontalNumberPicker(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initView(context);
         initAttrs(context, attrs);
     }
 
-    public void allowInput(boolean isAllow){
-        if (!isAllow){
+    public void allowInput(boolean isAllow) {
+        if (!isAllow) {
             etNumber.setKeyListener(null);
         }
 
     }
+
     public boolean isAutoChangeNumber() {
         return isAutoChangeNumber;
     }
@@ -127,89 +115,51 @@ public class HorizontalNumberPicker extends LinearLayout {
     private void initView(Context context) {
         this.setFocusable(true);
         this.setFocusableInTouchMode(true);
+        LayoutInflater.from(context).inflate(R.layout.layout_number_picker, this, true);
         //初始化软件盘监听
         imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        //初始化 "-" 号
-        LayoutParams reduceParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-        btnReduce = new TextView(context);
-        btnReduce.setGravity(Gravity.CENTER);
-        btnReduce.setText("-");
-        btnReduce.setLayoutParams(reduceParams);
-        //初始化 "+" 号
-        LayoutParams addParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-        btnAdd = new TextView(context);
-        btnAdd.setGravity(Gravity.CENTER);
-        btnAdd.setText("+");
-        btnAdd.setLayoutParams(addParams);
-        //初始化数字框
-        LayoutParams etParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-        etNumber = new NumberPickerEditText(context);
-        etNumber.setText(String.valueOf(min));
-        etNumber.setInputType(InputType.TYPE_CLASS_NUMBER);
-        etNumber.setSingleLine(true);
-        etNumber.setGravity(Gravity.CENTER);
-        etNumber.setMinEms(2);
-        etNumber.setLayoutParams(etParams);
-        etNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8)});
-        etNumber.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        etNumber.setPadding(0, 0, 0, 0);
-
-        this.addView(btnReduce);
-        this.addView(etNumber);
-        this.addView(btnAdd);
+        btnSubtract = findViewById(R.id.btn_subtract);
+        btnAdd = findViewById(R.id.btn_add);
+        etNumber = findViewById(R.id.et_number);
 
         initListeners();
     }
 
     private void initAttrs(Context context, AttributeSet attrs) {
-        ColorStateList buttonTextColor = null;
-        Drawable buttonBackground = null;
         Drawable numberBackground = null;
-        float buttonTextSize = 12f;
+        Drawable addImage = null;
+        Drawable subtractImage = null;
         float numberTextSize = 12f;
         int contentMargin = 0;
         //设置属性
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.HorizontalNumberPicker);
-            int buttonWidth = typedArray.getDimensionPixelOffset(
-                    R.styleable.HorizontalNumberPicker_hnp_buttonWidth, 0);
+            int buttonWidth = typedArray.getDimensionPixelOffset(R.styleable.HorizontalNumberPicker_hnp_buttonWidth, 0);
+            int buttonHeight = typedArray.getDimensionPixelOffset(R.styleable.HorizontalNumberPicker_hnp_buttonHeight, 0);
             if (buttonWidth > 0) {
-                btnReduce.setWidth(buttonWidth);
-                btnAdd.setWidth(buttonWidth);
+                btnSubtract.getLayoutParams().width = buttonWidth;
+                btnAdd.getLayoutParams().width = buttonWidth;
             }
-            int buttonHeight = typedArray.getDimensionPixelOffset(
-                    R.styleable.HorizontalNumberPicker_hnp_buttonHeight, 0);
             if (buttonHeight > 0) {
-                btnReduce.setHeight(buttonHeight);
-                btnAdd.setHeight(buttonHeight);
+                btnSubtract.getLayoutParams().height = buttonHeight;
+                btnAdd.getLayoutParams().height = buttonHeight;
             }
-            int numberWidth = typedArray.getDimensionPixelOffset(
-                    R.styleable.HorizontalNumberPicker_hnp_numberWidth, 0);
+
+            int numberWidth = typedArray.getDimensionPixelOffset(R.styleable.HorizontalNumberPicker_hnp_numberWidth, 0);
+            int numberHeight = typedArray.getDimensionPixelOffset(R.styleable.HorizontalNumberPicker_hnp_numberHeight, 0);
             if (numberWidth > 0) {
                 etNumber.setWidth(numberWidth);
             }
-            int numberHeight = typedArray.getDimensionPixelOffset(
-                    R.styleable.HorizontalNumberPicker_hnp_numberHeight, 0);
             if (numberHeight > 0) {
                 etNumber.setHeight(numberHeight);
             }
-            buttonTextColor = typedArray.getColorStateList(
-                    R.styleable.HorizontalNumberPicker_hnp_buttonTextColor);
-            buttonBackground = typedArray.getDrawable(
-                    R.styleable.HorizontalNumberPicker_hnp_buttonBackground);
-            numberBackground = typedArray.getDrawable(
-                    R.styleable.HorizontalNumberPicker_hnp_numberBackground);
-            buttonTextSize = typedArray.getDimensionPixelSize(
-                    R.styleable.HorizontalNumberPicker_hnp_buttonTextSize, 14);
-            numberTextSize = typedArray.getDimensionPixelSize(
-                    R.styleable.HorizontalNumberPicker_hnp_numberTextSize, 14);
-            contentMargin = typedArray.getDimensionPixelOffset(
-                    R.styleable.HorizontalNumberPicker_hnp_contentMargin, 0);
-            ColorStateList numberColor = typedArray.getColorStateList(
-                    R.styleable.HorizontalNumberPicker_hnp_numberTextColor);
+            addImage = typedArray.getDrawable(R.styleable.HorizontalNumberPicker_hnp_addImage);
+            subtractImage = typedArray.getDrawable(R.styleable.HorizontalNumberPicker_hnp_subtractImage);
+
+            numberBackground = typedArray.getDrawable(R.styleable.HorizontalNumberPicker_hnp_numberBackground);
+            numberTextSize = typedArray.getDimensionPixelSize(R.styleable.HorizontalNumberPicker_hnp_numberTextSize, 14);
+            contentMargin = typedArray.getDimensionPixelOffset(R.styleable.HorizontalNumberPicker_hnp_contentMargin, 0);
+            ColorStateList numberColor = typedArray.getColorStateList(R.styleable.HorizontalNumberPicker_hnp_numberTextColor);
             if (numberColor != null) {
                 etNumber.setTextColor(numberColor);
             } else {
@@ -217,27 +167,22 @@ public class HorizontalNumberPicker extends LinearLayout {
             }
             typedArray.recycle();
         }
-        if (buttonBackground == null) {
-            buttonBackground = provideDefaultBackground();
-        }
-        if (buttonTextColor == null) {
-            buttonTextColor = provideDefaultTextColorList();
-        }
         if (numberBackground == null) {
             numberBackground = provideDefaultBackground();
         }
+        if (addImage == null) {
+            addImage = ContextCompat.getDrawable(context, R.drawable.ic_hnp_add_default);
+        }
+        if (subtractImage == null) {
+            subtractImage = ContextCompat.getDrawable(context, R.drawable.ic_hnp_sub_default);
+        }
         etNumber.setBackgroundDrawable(numberBackground);
         etNumber.setTextSize(TypedValue.COMPLEX_UNIT_PX, numberTextSize);
-        btnReduce.setBackgroundDrawable(buttonBackground);
-        btnAdd.setBackgroundDrawable(buttonBackground);
-        btnReduce.setTextColor(buttonTextColor);
-        btnAdd.setTextColor(buttonTextColor);
-        btnReduce.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonTextSize);
-        btnReduce.setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonTextSize);
         if (contentMargin > 0) {
             ((LayoutParams) etNumber.getLayoutParams()).setMargins(contentMargin, 0, contentMargin, 0);
         }
-
+        btnAdd.setImageDrawable(addImage);
+        btnSubtract.setImageDrawable(subtractImage);
     }
 
     private Drawable provideDefaultBackground() {
@@ -258,8 +203,8 @@ public class HorizontalNumberPicker extends LinearLayout {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-//        if(btnReduce.getLayoutParams().width < h) {
-//            btnReduce.setWidth(h);
+//        if(btnSubtract.getLayoutParams().width < h) {
+//            btnSubtract.setWidth(h);
 //            btnAdd.setWidth(h);
 //        }
     }
@@ -268,8 +213,8 @@ public class HorizontalNumberPicker extends LinearLayout {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         int h = b - t, w = r - l;
-//        if(btnReduce.getLayoutParams().width < h) {
-//            btnReduce.getLayoutParams().width = h;
+//        if(btnSubtract.getLayoutParams().width < h) {
+//            btnSubtract.getLayoutParams().width = h;
 //            btnAdd.getLayoutParams().width = h;
 //        }
 //        this.invalidate();
@@ -277,52 +222,43 @@ public class HorizontalNumberPicker extends LinearLayout {
 
 
     private void initListeners() {
-        btnReduce.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onBtnClickListener != null) {
-                    onBtnClickListener.OnReduceClick();
-                }
-                if (number > min && isAutoChangeNumber) {
-                    number--;
-                    setNumber(number);
-                }
+        btnSubtract.setOnClickListener(v -> {
+            if (onBtnClickListener != null) {
+                onBtnClickListener.OnSubtractClick();
+            }
+            if (number > min && isAutoChangeNumber) {
+                number--;
+                setNumber(number);
             }
         });
 
-        btnAdd.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onBtnClickListener != null) {
-                    onBtnClickListener.OnAddClick();
-                }
-                if (number < max && isAutoChangeNumber) {
-                    number++;
-                    setNumber(number);
-                }
+        btnAdd.setOnClickListener(v -> {
+            if (onBtnClickListener != null) {
+                onBtnClickListener.OnAddClick();
+            }
+            if (number < max && isAutoChangeNumber) {
+                number++;
+                setNumber(number);
             }
         });
 
-        etNumber.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    if (etNumber.getText().length() == 0) {
-                        etNumber.setText(String.valueOf(min));
-                    } else {
-                        setNumber(Integer.parseInt(etNumber.getText().toString()));
-                    }
-                    // 在失去焦点后如果软键盘开启则关闭软键盘
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (imm.isActive(etNumber)) {
-                                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT,
-                                        InputMethodManager.HIDE_NOT_ALWAYS);
-                            }
+        etNumber.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                if (etNumber.getText().length() == 0) {
+                    etNumber.setText(String.valueOf(min));
+                } else {
+                    setNumber(Integer.parseInt(etNumber.getText().toString()));
+                }
+                // 在失去焦点后如果软键盘开启则关闭软键盘
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (imm.isActive(etNumber)) {
+                            imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT,
+                                    InputMethodManager.HIDE_NOT_ALWAYS);
                         }
-                    }, 200);
-                }
+                    }
+                }, 200);
             }
         });
 
@@ -335,12 +271,7 @@ public class HorizontalNumberPicker extends LinearLayout {
                 return false;
             }
         });
-        etNumber.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return false;
-            }
-        });
+        etNumber.setOnTouchListener((v, event) -> false);
     }
 
     @Override
@@ -359,16 +290,18 @@ public class HorizontalNumberPicker extends LinearLayout {
         return super.dispatchKeyEventPreIme(event);
     }
 
+    public void setEditable(boolean editable) {
+        btnAdd.setEnabled(editable);
+        btnSubtract.setEnabled(editable);
+        btnAdd.setAlpha(editable ? 1f : 0.5f);
+        btnSubtract.setAlpha(editable ? 1f : 0.5f);
+    }
+
     /**
      * 发送延时事件,在软键盘收起后清除EditText焦点
      */
     public void clearNumberFocus() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                etNumber.clearFocus();
-            }
-        }, 200);
+        new Handler().postDelayed(() -> etNumber.clearFocus(), 200);
     }
 
     /**
@@ -388,24 +321,25 @@ public class HorizontalNumberPicker extends LinearLayout {
      * @param num 设置数字
      */
     public void setNumber(int num) {
+        btnAdd.setEnabled(true);
+        btnSubtract.setEnabled(true);
         if (num > max) {
             if (onNumberChangeListener != null) {
                 onNumberChangeListener.onReachMaximum(max);
             }
             number = max;
+            btnAdd.setEnabled(false);
         } else if (num < min) {
             if (onNumberChangeListener != null) {
                 onNumberChangeListener.onReachMinimum(min);
             }
             number = min;
+            btnSubtract.setEnabled(false);
         } else {
-            if (num != number && onNumberChangeListener != null) {
-                onNumberChangeListener.onNumberChange(num);
-            }
             number = num;
         }
         if (onNumberChangeListener != null) {
-            onNumberChangeListener.onNumberCount(number);
+            onNumberChangeListener.onNumberChange(number);
 
         }
         etNumber.setText(String.valueOf(number));
@@ -418,21 +352,6 @@ public class HorizontalNumberPicker extends LinearLayout {
     public static int dip2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
-    }
-
-    @SuppressLint("AppCompatCustomView")
-    class NumberPickerEditText extends EditText {
-
-        public NumberPickerEditText(Context context) {
-            super(context);
-        }
-
-        @Override
-        public boolean onKeyDown(int keyCode, KeyEvent event) {
-            return super.onKeyDown(keyCode, event);
-        }
-
-
     }
 
 }

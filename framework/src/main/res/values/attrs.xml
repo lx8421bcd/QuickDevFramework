@@ -40,11 +40,10 @@
     <declare-styleable name="HorizontalNumberPicker">
         <attr name="hnp_buttonWidth" format="dimension"/>
         <attr name="hnp_buttonHeight" format="dimension" />
+        <attr name="hnp_addImage" format="reference" />
+        <attr name="hnp_subtractImage" format="reference" />
         <attr name="hnp_numberWidth" format="dimension" />
         <attr name="hnp_numberHeight" format="dimension" />
-        <attr name="hnp_buttonTextColor" format="reference" />
-        <attr name="hnp_buttonBackground" format="reference" />
-        <attr name="hnp_buttonTextSize" format="dimension" />
         <attr name="hnp_numberTextSize" format="dimension" />
         <attr name="hnp_numberTextColor" format="reference" />
         <attr name="hnp_numberBackground" format="reference" />
