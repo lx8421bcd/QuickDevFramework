@@ -50,7 +50,7 @@
         <attr name="hnp_contentMargin" format="dimension" />
     </declare-styleable>
 
-    <declare-styleable name="LoadingLayout" >
+    <declare-styleable name="LoadingView" >
         <attr name="l_emptyView" format="reference" />
         <attr name="l_loadingView" format="reference" />
         <attr name="l_errorView" format="reference" />
