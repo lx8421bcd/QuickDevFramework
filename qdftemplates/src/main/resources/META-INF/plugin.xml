@@ -19,7 +19,7 @@
                   topic="com.intellij.openapi.project.ProjectManagerListener"/>
     </applicationListeners>
 
-    <extensions defaultExtensionNs="com.android.tools.idea.wizard.template">1.
+    <extensions defaultExtensionNs="com.android.tools.idea.wizard.template">
         <wizardTemplateProvider implementation="other.QDFPluginTemplateProviderImpl" />
     </extensions>
 

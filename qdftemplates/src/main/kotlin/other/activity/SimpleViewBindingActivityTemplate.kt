@@ -3,8 +3,10 @@ package other.activity
 import com.android.tools.idea.wizard.template.*
 import com.android.tools.idea.wizard.template.impl.activities.common.MIN_API
 import com.android.tools.idea.wizard.template.impl.activities.common.generateManifest
-import com.intellij.util.xml.DomManager
+import other.CodeLanguage
+import other.defBaseActivityPath
 import other.humpToLine
+import other.titleComments
 
 val defaultPackageNameParameter
     get() = stringParameter {
@@ -29,16 +31,24 @@ val SimpleViewBindingActivityTemplate
             WizardUiContext.NewModule
         )
 
-        lateinit var layoutName: StringParameter
-
+        val codeLanguage = enumParameter<CodeLanguage> {
+            name = "source file language"
+            default = CodeLanguage.Java
+            help = "选择语言"
+        }
+        val parentClass = stringParameter {
+            name = "Parent Class PATH"
+            default = defBaseActivityPath
+            help = "输入基类完整路径"
+            constraints = listOf(Constraint.NONEMPTY)
+        }
         val activityClass = stringParameter {
             name = "Activity Name(不包含\"Activity\")"
             default = "Main"
             help = "只输入名字，不要包含Activity"
             constraints = listOf(Constraint.NONEMPTY)
         }
-
-        layoutName = stringParameter {
+        val layoutName = stringParameter {
             name = "Layout Name"
             default = "activity_main"
             help = "请输入布局的名字"
@@ -49,6 +59,8 @@ val SimpleViewBindingActivityTemplate
         val packageName = defaultPackageNameParameter
 
         widgets(
+            EnumWidget(codeLanguage),
+            TextFieldWidget(parentClass),
             TextFieldWidget(activityClass),
             TextFieldWidget(layoutName),
             PackageNameWidget(packageName)
@@ -57,6 +69,8 @@ val SimpleViewBindingActivityTemplate
         recipe = { data: TemplateData ->
             simpleViewBindingActivityRecipe(
                 data as ModuleTemplateData,
+                codeLanguage.value,
+                parentClass.value,
                 activityClass.value,
                 layoutName.value,
                 packageName.value)
@@ -65,12 +79,13 @@ val SimpleViewBindingActivityTemplate
 
 fun RecipeExecutor.simpleViewBindingActivityRecipe(
     moduleData: ModuleTemplateData,
+    codeLanguage: CodeLanguage,
+    parentClass: String,
     activityClass: String,
     layoutName: String,
     packageName: String
 ) {
     val (projectData, srcOut, resOut) = moduleData
-    val ktOrJavaExt = projectData.language.extension
     // 插入manifest声明
     generateManifest(
         moduleData = moduleData,
@@ -81,8 +96,22 @@ fun RecipeExecutor.simpleViewBindingActivityRecipe(
         generateActivityTitle = false,
     )
     //生成activity文件
-    val activityFile = simpleViewBindingActivityKt(projectData.applicationPackage, activityClass, packageName)
-    save(activityFile, srcOut.resolve("${activityClass}Activity.${ktOrJavaExt}"))
+    if (codeLanguage == CodeLanguage.Kotlin) {
+        val activityFile = simpleViewBindingActivityKt(
+            projectData.applicationPackage,
+            parentClass,
+            activityClass,
+            packageName)
+        save(activityFile, srcOut.resolve("${activityClass}Activity.kt"))
+    }
+    else {
+        val activityFile = simpleViewBindingActivityJava(
+            projectData.applicationPackage,
+            parentClass,
+            activityClass,
+            packageName)
+        save(activityFile, srcOut.resolve("${activityClass}Activity.java"))
+    }
     // 保存xml
     val xmlFile = simpleViewBindingActivityXml(packageName, activityClass)
     save(xmlFile, resOut.resolve("layout/${layoutName}.xml"))
@@ -91,23 +120,68 @@ fun RecipeExecutor.simpleViewBindingActivityRecipe(
 /*-------------------- activity code generate function ----------------------*/
 fun simpleViewBindingActivityKt(
     applicationPackage:String?,
+    parentClass:String,
     activityClass:String,
     packageName:String
 )="""
 package $packageName
+
 import android.os.Bundle
-import com.linxiao.framework.architecture.SimpleViewBindingActivity
+import android.content.Context
+
+import $parentClass
 import ${applicationPackage}.R
 import ${applicationPackage}.databinding.Activity${activityClass}Binding
-class ${activityClass}Activity : SimpleViewBindingActivity<Activity${activityClass}Binding>() {
 
-     override fun onCreate(savedInstanceState: Bundle?) {
+${titleComments("author")}
+class ${activityClass}Activity : ${parentClass.split(".").last()}() {
+
+    private var viewBinding: Activity${activityClass}Binding? = null;
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initView()
+        viewBinding = Activity${activityClass}Binding.inflate(layoutInflater)
+        setContentView(viewBinding!!.root)
+        initViews()
         
     }
 
-    private fun initView() {
+    private fun initViews() {
+
+    }
+} 
+"""
+
+fun simpleViewBindingActivityJava(
+    applicationPackage:String?,
+    parentClass:String,
+    activityClass:String,
+    packageName:String
+)="""
+package $packageName
+
+import android.os.Bundle;
+import android.content.Context;
+
+import ${parentClass};
+import ${applicationPackage}.R;
+import ${applicationPackage}.databinding.Activity${activityClass}Binding;
+
+${titleComments("author")}
+public class ${activityClass}Activity extends ${parentClass.split(".").last()} {
+
+     private Activity${activityClass}Binding viewBinding = null
+
+     @Override
+     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewBinding = Activity${activityClass}Binding.inflate(getLayoutInflater());
+        setContentView(viewBinding.getRoot());
+        initViews();
+        
+    }
+
+    private void initViews() {
 
     }
 } 

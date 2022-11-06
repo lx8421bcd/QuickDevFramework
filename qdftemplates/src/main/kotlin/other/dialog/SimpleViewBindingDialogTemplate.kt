@@ -2,7 +2,7 @@ package other.dialog
 
 import com.android.tools.idea.wizard.template.*
 import com.android.tools.idea.wizard.template.impl.activities.common.MIN_API
-import other.humpToLine
+import other.*
 
 val defaultPackageNameParameter
     get() = stringParameter {
@@ -27,8 +27,17 @@ val SimpleViewBindingDialogTemplate
             WizardUiContext.NewModule
         )
 
-        lateinit var layoutName: StringParameter
-
+        val codeLanguage = enumParameter<CodeLanguage> {
+            name = "source file language"
+            default = CodeLanguage.Java
+            help = "选择语言"
+        }
+        val parentClass = stringParameter {
+            name = "Parent Class PATH"
+            default = defBaseDialogPath
+            help = "输入基类完整路径"
+            constraints = listOf(Constraint.NONEMPTY)
+        }
         val dialogClass = stringParameter {
             name = "Dialog Name(不包含\"Dialog\")"
             default = "Main"
@@ -36,7 +45,7 @@ val SimpleViewBindingDialogTemplate
             constraints = listOf(Constraint.NONEMPTY)
         }
 
-        layoutName = stringParameter {
+        val layoutName = stringParameter {
             name = "Layout Name"
             default = "Dialog_main"
             help = "请输入布局的名字"
@@ -47,6 +56,8 @@ val SimpleViewBindingDialogTemplate
         val packageName = defaultPackageNameParameter
 
         widgets(
+            EnumWidget(codeLanguage),
+            TextFieldWidget(parentClass),
             TextFieldWidget(dialogClass),
             TextFieldWidget(layoutName),
             PackageNameWidget(packageName)
@@ -55,6 +66,8 @@ val SimpleViewBindingDialogTemplate
         recipe = { data: TemplateData ->
             simpleViewBindingDialogRecipe(
                 data as ModuleTemplateData,
+                codeLanguage.value,
+                parentClass.value,
                 dialogClass.value,
                 layoutName.value,
                 packageName.value)
@@ -63,7 +76,9 @@ val SimpleViewBindingDialogTemplate
 
 fun RecipeExecutor.simpleViewBindingDialogRecipe(
     moduleData: ModuleTemplateData,
-    DialogClass: String,
+    codeLanguage: CodeLanguage,
+    parentClass: String,
+    dialogClass: String,
     layoutName: String,
     packageName: String
 ) {
@@ -71,33 +86,94 @@ fun RecipeExecutor.simpleViewBindingDialogRecipe(
     val ktOrJavaExt = projectData.language.extension
 
     //生成Dialog文件
-    val dialogFile = simpleViewBindingDialogKt(projectData.applicationPackage, DialogClass, packageName)
-    save(dialogFile, srcOut.resolve("${DialogClass}Dialog.${ktOrJavaExt}"))
+    if (codeLanguage == CodeLanguage.Kotlin) {
+        val dialogFile = simpleViewBindingDialogKt(
+            projectData.applicationPackage,
+            parentClass,
+            dialogClass,
+            packageName)
+        save(dialogFile, srcOut.resolve("${dialogClass}Dialog.kt"))
+    }
+    else {
+        val dialogFile = simpleViewBindingDialogJava(
+            projectData.applicationPackage,
+            parentClass,
+            dialogClass,
+            packageName)
+        save(dialogFile, srcOut.resolve("${dialogClass}Dialog.java"))
+    }
+
     // 保存xml
-    val xmlFile = simpleViewBindingDialogXml(packageName, DialogClass)
+    val xmlFile = simpleViewBindingDialogXml(packageName, dialogClass)
     save(xmlFile, resOut.resolve("layout/${layoutName}.xml"))
 }
 
 /*-------------------- Dialog code generate function ----------------------*/
 fun simpleViewBindingDialogKt(
     applicationPackage:String?,
-    DialogClass:String,
+    parentClass:String,
+    dialogClass:String,
     packageName:String
 )="""
 package $packageName
-import android.os.Bundle
-import com.linxiao.framework.architecture.SimpleViewBindingDialog
-import ${applicationPackage}.R
-import ${applicationPackage}.databinding.Dialog${DialogClass}Binding
-class ${DialogClass}Dialog : SimpleViewBindingDialog<Dialog${DialogClass}Binding>() {
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initView()
+import android.os.Bundle
+
+import $parentClass
+import ${applicationPackage}.R
+import ${applicationPackage}.databinding.Dialog${dialogClass}Binding
+
+${titleComments("author")}
+class ${dialogClass}Dialog(context: Context) : ${parentClass.split(".").last()}(context) {
+
+    private var viewBinding: Dialog${dialogClass}Binding? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewBinding = Dialog${dialogClass}Binding.inflate(layoutInflater)
+        setContentView(viewBinding!!.root)
+        initViews()
         
     }
 
-    private fun initView() {
+    private fun initViews() {
+
+    }
+} 
+"""
+
+fun simpleViewBindingDialogJava(
+    applicationPackage:String?,
+    parentClass:String,
+    dialogClass:String,
+    packageName:String
+)="""
+package $packageName
+
+import android.os.Bundle;
+import ${parentClass};
+import ${applicationPackage}.R;
+import ${applicationPackage}.databinding.Dialog${dialogClass}Binding;
+
+${titleComments("author")}
+public class ${dialogClass}Dialog extends ${parentClass.split(".").last()} {
+
+    private Dialog${dialogClass}Binding viewBinding = null;
+
+    public ${dialogClass}Dialog(@NonNull Context context) {
+        super(context);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewBinding = Dialog${dialogClass}Binding.inflate(getLayoutInflater());
+        setContentView(viewBinding.getRoot());
+        initViews();
+        
+    }
+
+    private void initViews() {
 
     }
 } 
