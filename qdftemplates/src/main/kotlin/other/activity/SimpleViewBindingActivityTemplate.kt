@@ -158,7 +158,7 @@ fun simpleViewBindingActivityJava(
     activityClass:String,
     packageName:String
 )="""
-package $packageName
+package $packageName;
 
 import android.os.Bundle;
 import android.content.Context;
@@ -170,7 +170,7 @@ import ${applicationPackage}.databinding.Activity${activityClass}Binding;
 ${titleComments("author")}
 public class ${activityClass}Activity extends ${parentClass.split(".").last()} {
 
-     private Activity${activityClass}Binding viewBinding = null
+     private Activity${activityClass}Binding viewBinding = null;
 
      @Override
      public void onCreate(Bundle savedInstanceState) {

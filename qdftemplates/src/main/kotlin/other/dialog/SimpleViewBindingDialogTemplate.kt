@@ -148,7 +148,7 @@ fun simpleViewBindingDialogJava(
     dialogClass:String,
     packageName:String
 )="""
-package $packageName
+package $packageName;
 
 import android.os.Bundle;
 import ${parentClass};

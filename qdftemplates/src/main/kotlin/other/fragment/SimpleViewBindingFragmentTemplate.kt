@@ -163,7 +163,7 @@ fun simpleViewBindingFragmentJava(
     fragmentClass:String,
     packageName:String
 )="""
-package $packageName
+package $packageName;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
