@@ -1,9 +1,9 @@
 package com.linxiao.framework.net;
 
 import com.google.gson.reflect.TypeToken;
+import com.linxiao.framework.common.GsonParser;
 
-import java.io.IOException;
-import java.util.List;
+import java.lang.reflect.Type;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -16,12 +16,32 @@ import io.reactivex.functions.Function;
  * create on 2018-08-20
  */
 public class ApiResponseParseFunction<T> implements Function<ApiResponse, ObservableSource<T>> {
+
+    private Type type = Object.class;
+
+    public ApiResponseParseFunction() {
+    }
+
+    public ApiResponseParseFunction(Class<T> clazz) {
+        type = clazz;
+    }
+    public ApiResponseParseFunction(TypeToken<T> token) {
+        type = token.getType();
+    }
     @Override
     public ObservableSource<T> apply(ApiResponse apiResponse) throws Exception {
-        T obj = apiResponse.getResponseData(new TypeToken<List<T>>() {}.getType());
-        if (obj == null) {
-            return Observable.error(new IOException("data parse error"));
+        T ret;
+        if (!apiResponse.success()) {
+            return Observable.error(new ApiException(apiResponse));
         }
-        return Observable.just(obj);
+        try {
+            ret = GsonParser.getParser().fromJson(apiResponse.data, type);
+        } catch (Exception e) {
+            return Observable.error(e);
+        }
+        if (ret == null) {
+            return Observable.error(new ApiException(apiResponse));
+        }
+        return Observable.just(ret);
     }
 }

@@ -24,7 +24,7 @@ public class RxJavaUtil {
     public static Observable<Integer> countDown(final int seconds) {
         return Observable.interval(0, 1, TimeUnit.SECONDS)
         .subscribeOn(Schedulers.newThread())
-        .take(seconds)
+        .take(seconds + 1)
         .map(increaseTime -> seconds - increaseTime.intValue());
     }
     

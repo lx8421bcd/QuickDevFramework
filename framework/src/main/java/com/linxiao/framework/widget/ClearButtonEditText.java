@@ -70,7 +70,6 @@ public class ClearButtonEditText extends EditText {
         this.addTextChangedListener(watcher);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public ClearButtonEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initView(context);
@@ -83,17 +82,12 @@ public class ClearButtonEditText extends EditText {
         cachedDrawable = clearButtonDrawable;
         int length = (int) this.getTextSize();
         clearButtonDrawable.setBounds(0, 0, length, length);
-        this.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus && getText().length() > 0) {
-                    showClearButton(true);
-                }
-                else {
-                    showClearButton(false);
-                }
-            }
-        });
+    }
+
+    @Override
+    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
+        super.onFocusChanged(focused, direction, previouslyFocusedRect);
+        showClearButton(focused && getText().length() > 0);
     }
 
     private void showClearButton(boolean isShow) {
