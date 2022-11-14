@@ -187,7 +187,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         startActivityForResult(intent, requestCode);
     }
 
-    public void addActivityResultCallback(int requestCode, ActivityResultListener callback) {
+    public void removeActivityResultCallback(int requestCode, ActivityResultListener callback) {
         if (callback == null) {
             return;
         }
