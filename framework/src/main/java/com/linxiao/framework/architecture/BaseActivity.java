@@ -7,8 +7,10 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
@@ -17,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.collection.ArrayMap;
 
 import com.linxiao.framework.common.DensityHelper;
+import com.linxiao.framework.common.KeyboardUtil;
 import com.linxiao.framework.permission.PermissionManager;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.trello.rxlifecycle2.LifecycleTransformer;
@@ -53,7 +56,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     private final BehaviorSubject<Object> finishSubject = BehaviorSubject.create();
     private static final Object finishSignal = new Object();
     private final Map<Integer, ActivityResultListener> activityCallbackMap = new ArrayMap<>();
-
+    private boolean hideKeyboardOnTouchOutside = false;
 
     @Override
     @NonNull
@@ -196,6 +199,36 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
 
     private void addActivityResultCallback(int requestCode) {
         activityCallbackMap.remove(requestCode);
+    }
+
+    public void setHideKeyboardOnTouchOutside(boolean hideKeyboardOnTouchOutside) {
+        this.hideKeyboardOnTouchOutside = hideKeyboardOnTouchOutside;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (hideKeyboardOnTouchOutside) {
+            if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+                View v = getCurrentFocus();
+                if (shouldHideInput(v, ev)) {
+                    KeyboardUtil.hideKeyboard(getWindow().getDecorView());
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    private boolean shouldHideInput(View v, MotionEvent ev) {
+        if (v instanceof EditText) {
+            int[] l = new int[]{0, 0};
+            v.getLocationInWindow(l);
+            int left = l[0];
+            int top = l[1];
+            int right = left + v.getWidth();
+            int bottom = top + v.getHeight();
+            return !(ev.getX() > left && ev.getX() < right && ev.getY() > top && ev.getY() < bottom);
+        }
+        return false;
     }
 
     /**
