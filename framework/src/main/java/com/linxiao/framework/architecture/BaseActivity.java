@@ -5,24 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
-import android.graphics.PixelFormat;
 import android.os.Bundle;
-import android.text.SpannedString;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewbinding.ViewBinding;
+import androidx.collection.ArrayMap;
 
 import com.linxiao.framework.common.DensityHelper;
-import com.linxiao.framework.common.ScreenUtil;
-import com.linxiao.framework.common.SpanFormatter;
 import com.linxiao.framework.permission.PermissionManager;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.trello.rxlifecycle2.LifecycleTransformer;
@@ -30,7 +24,7 @@ import com.trello.rxlifecycle2.RxLifecycle;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -58,6 +52,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
     private final BehaviorSubject<Object> finishSubject = BehaviorSubject.create();
     private static final Object finishSignal = new Object();
+    private final Map<Integer, ActivityResultListener> activityCallbackMap = new ArrayMap<>();
+
 
     @Override
     @NonNull
@@ -150,6 +146,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        activityCallbackMap.clear();
         lifecycleSubject.onNext(ActivityEvent.DESTROY);
         if (printLifeCycle) {
             Log.d(TAG, "onDestroy");
@@ -167,12 +164,38 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         PermissionManager.onActivityResult(this, requestCode, resultCode, data);
+        ActivityResultListener listener = activityCallbackMap.get(requestCode);
+        if (listener != null) {
+            listener.onResultCallback(resultCode, data);
+            activityCallbackMap.remove(requestCode);
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionManager.handleCallback(this, requestCode, permissions, grantResults);
+    }
+
+    public void startActivityForCallback(Intent intent, ActivityResultListener callback) {
+        if (callback == null) {
+            return;
+        }
+        long time = System.currentTimeMillis();
+        int requestCode = (int) (time - time / 1000 * 1000);
+        activityCallbackMap.put(requestCode, callback);
+        startActivityForResult(intent, requestCode);
+    }
+
+    public void addActivityResultCallback(int requestCode, ActivityResultListener callback) {
+        if (callback == null) {
+            return;
+        }
+        activityCallbackMap.put(requestCode, callback);
+    }
+
+    private void addActivityResultCallback(int requestCode) {
+        activityCallbackMap.remove(requestCode);
     }
 
     /**
