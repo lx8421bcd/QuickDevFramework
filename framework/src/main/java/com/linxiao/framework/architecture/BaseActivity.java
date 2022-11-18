@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.collection.ArrayMap;
 
+import com.linxiao.framework.common.AppLanguageHelper;
 import com.linxiao.framework.common.DensityHelper;
 import com.linxiao.framework.common.KeyboardUtil;
 import com.linxiao.framework.permission.PermissionManager;
@@ -26,6 +27,10 @@ import com.trello.rxlifecycle2.LifecycleTransformer;
 import com.trello.rxlifecycle2.RxLifecycle;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Map;
 
@@ -100,6 +105,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         filter.addAction(ACTION_EXIT_APPLICATION);
         mReceiver = new ActivityBaseReceiver();
         registerReceiver(mReceiver, filter);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -155,6 +161,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
             Log.d(TAG, "onDestroy");
         }
         unregisterReceiver(mReceiver);
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -251,8 +258,16 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     @Override
     public Resources getResources() {
         Resources resources = super.getResources();
+        // update density
         DensityHelper.onActivityGetResources(resources);
+        // update language config
+        AppLanguageHelper.doOnContextGetResources(resources);
         return resources;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(AppLanguageHelper.LanguageChangedEvent event) {
+        this.recreate();
     }
 
     /**
