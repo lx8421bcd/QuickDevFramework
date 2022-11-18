@@ -25,6 +25,15 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    android.applicationVariants.all{ variant ->
+        variant.outputs.all{
+            def appName = "QuickDevFramework"
+            def packagingTime = new Date().format("yyyyMMddHHmmss", TimeZone.getTimeZone("GMT+08:00"))
+            def fileName = "${appName}_${buildType.name}_v${defaultConfig.versionName}_${packagingTime}.apk"
+            outputFileName = fileName
+        }
+    }
 }
 
 dependencies {
