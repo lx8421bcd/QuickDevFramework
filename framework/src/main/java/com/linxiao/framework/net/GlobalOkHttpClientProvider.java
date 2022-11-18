@@ -43,22 +43,31 @@ public class GlobalOkHttpClientProvider {
         return instance;
     }
 
-    private ClearableCookieJar cookieJar;
-    private HttpInfoCatchInterceptor infoCatchInterceptor;
+    private final ClearableCookieJar cookieJar;
+    private final HttpInfoCatchInterceptor infoCatchInterceptor;
     private final List<GlobalBuilderInterceptor> globalBuilderInterceptorList = new ArrayList<>();
     private OkHttpClient globalOKHttpClient;
     private final Scheduler logoutScheduler = Schedulers.newThread();
-    private final HttpInfoCatchListener infoCatchListener = entity -> {
-        if (entity == null) {
-            return;
+    private HttpInfoCatchListener infoCatchListener = entity -> {
+        if (entity != null) {
+            Observable.just(entity)
+            .subscribeOn(logoutScheduler)
+            .doOnNext(HttpInfoEntity::logOut)
+            .subscribe(new RxSubscriber<>());
         }
-        Observable.just(entity)
-                .subscribeOn(logoutScheduler)
-                .doOnNext(HttpInfoEntity::logOut)
-                .subscribe(new RxSubscriber<>());
     };
 
-    private GlobalOkHttpClientProvider() {}
+    private GlobalOkHttpClientProvider() {
+        // config cookie persistent storage
+        cookieJar = new PersistentCookieJar(
+                new SetCookieCache(),
+                new SharedPrefsCookiePersistor(ContextProvider.get())
+        );
+        // config http request and response catch
+        infoCatchInterceptor = new HttpInfoCatchInterceptor();
+        infoCatchInterceptor.setHttpInfoCatchListener(infoCatchListener);
+        infoCatchInterceptor.setCatchEnabled(true);
+    }
 
     public synchronized void addGlobalBuilderInterceptor(GlobalBuilderInterceptor interceptor) {
         if (interceptor != null && !globalBuilderInterceptorList.contains(interceptor)) {
@@ -73,6 +82,36 @@ public class GlobalOkHttpClientProvider {
             buildClient();
         }
     }
+
+    public OkHttpClient.Builder getGlobalBuilder() {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        // append global settings
+        builder.cookieJar(cookieJar);
+        // DNS配置，灰度测试用
+//        builder.dns(OkHttpDns.getInstance());
+
+        // Https trust config, you can use trust all
+        // in debug mode to catch http info more easier
+//        configTrustAll(builder);
+
+        // timeout
+//        builder.connectTimeout(5, TimeUnit.SECONDS);
+
+        // add global header example
+//        builder.addNetworkInterceptor(chain -> {
+//            Request.Builder headerBuilder = chain.request().newBuilder();
+//            headerBuilder.addHeader("User-Agent", "USER_AGENT");
+//            Request request = headerBuilder.build();
+//
+//            return chain.proceed(request);
+//        });
+        // more extra builder configs
+        for (GlobalBuilderInterceptor interceptor : globalBuilderInterceptorList) {
+            interceptor.onBuild(builder);
+        }
+        return builder;
+    }
+
 
     /**
      * get default OkHttpClient instance
@@ -139,46 +178,27 @@ public class GlobalOkHttpClientProvider {
     }
 
     /**
-     * get default OkHttpClient Builder
-     * <p>see method implementation for more details</p>
+     * add network info catch interceptor for an OkHttpClient
+     * <p>
+     * this interceptor needs to added as the last of all interceptors during building an OkHttpClient,
+     * if not, the log will not print completely when request chain was changed by the interceptors register behind
+     * </p>
+     *
      */
+    public HttpInfoCatchInterceptor getInfoCatchInterceptor() {
+        return infoCatchInterceptor;
+    }
+
+    public void setInfoCatchListener(HttpInfoCatchListener infoCatchListener) {
+        this.infoCatchListener = infoCatchListener;
+    }
+
     private synchronized void buildClient() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        // config cookie persistent storage
-        cookieJar = new PersistentCookieJar(
-                new SetCookieCache(),
-                new SharedPrefsCookiePersistor(ContextProvider.get())
-        );
-        builder.cookieJar(cookieJar);
-        // DNS配置，灰度测试用
-//        builder.dns(OkHttpDns.getInstance());
-
-        // Https trust config, you can use trust all
-        // in debug mode to catch http info more easier
-//        configTrustAll(builder);
-
-        // timeout
-        builder.connectTimeout(5, TimeUnit.SECONDS);
-
-        // if you want to do some custom header modification before request and effect on global,
-        // you should do it at here
-        builder.addNetworkInterceptor(chain -> {
-            Request.Builder builder1 = chain.request().newBuilder();
-//            builder.addHeader("User-Agent", USER_AGENT);
-            Request request = builder1.build();
-
-            return chain.proceed(request);
-        });
-        // more extra builder configs
-        for (GlobalBuilderInterceptor interceptor : globalBuilderInterceptorList) {
-            interceptor.onBuild(builder);
-        }
-        // config http request and response catch
-        infoCatchInterceptor = new HttpInfoCatchInterceptor();
-        infoCatchInterceptor.setHttpInfoCatchListener(infoCatchListener);
-        infoCatchInterceptor.setCatchEnabled(true);
+        OkHttpClient.Builder builder = getGlobalBuilder();
         //注意这里必须使用addNetworkInterceptor，否则无法打印完整信息
+        // InfoCatchInterceptor 必须最后添加，否则无法打印之后添加的interceptor对request chain修改而产生的变更
         builder.addNetworkInterceptor(infoCatchInterceptor);
         globalOKHttpClient = builder.build();
     }
+
 }
