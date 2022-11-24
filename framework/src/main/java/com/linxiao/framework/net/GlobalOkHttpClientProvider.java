@@ -10,7 +10,6 @@ import com.linxiao.framework.rx.RxSubscriber;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
@@ -19,7 +18,6 @@ import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 /**
  * global okhttpClient management class
@@ -72,14 +70,14 @@ public class GlobalOkHttpClientProvider {
     public synchronized void addGlobalBuilderInterceptor(GlobalBuilderInterceptor interceptor) {
         if (interceptor != null && !globalBuilderInterceptorList.contains(interceptor)) {
             globalBuilderInterceptorList.add(interceptor);
-            buildClient();
+            buildDefaultClient();
         }
     }
 
     public synchronized void removeGlobalBuilderInterceptor(GlobalBuilderInterceptor interceptor) {
         if (globalBuilderInterceptorList.size() > 0 && globalBuilderInterceptorList.contains(interceptor)) {
             globalBuilderInterceptorList.remove(interceptor);
-            buildClient();
+            buildDefaultClient();
         }
     }
 
@@ -119,7 +117,7 @@ public class GlobalOkHttpClientProvider {
      */
     public synchronized OkHttpClient getClient() {
         if (globalOKHttpClient == null) {
-            buildClient();
+            buildDefaultClient();
         }
         return globalOKHttpClient;
     }
@@ -185,6 +183,12 @@ public class GlobalOkHttpClientProvider {
      * </p>
      *
      */
+    public void appendHttpInfoCatchInterceptor(OkHttpClient.Builder builder) {
+        //注意这里必须使用addNetworkInterceptor，否则无法打印完整信息
+        // InfoCatchInterceptor 必须最后添加，否则无法打印之后添加的interceptor对request chain修改而产生的变更
+        builder.addNetworkInterceptor(infoCatchInterceptor);
+    }
+
     public HttpInfoCatchInterceptor getInfoCatchInterceptor() {
         return infoCatchInterceptor;
     }
@@ -193,11 +197,9 @@ public class GlobalOkHttpClientProvider {
         this.infoCatchListener = infoCatchListener;
     }
 
-    private synchronized void buildClient() {
+    private synchronized void buildDefaultClient() {
         OkHttpClient.Builder builder = getGlobalBuilder();
-        //注意这里必须使用addNetworkInterceptor，否则无法打印完整信息
-        // InfoCatchInterceptor 必须最后添加，否则无法打印之后添加的interceptor对request chain修改而产生的变更
-        builder.addNetworkInterceptor(infoCatchInterceptor);
+        appendHttpInfoCatchInterceptor(builder);
         globalOKHttpClient = builder.build();
     }
 
