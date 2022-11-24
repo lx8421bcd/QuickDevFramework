@@ -27,19 +27,28 @@ import android.text.SpannedString;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
+
 /**
  * Provides {@link String#format} style functions that work with {@link Spanned} strings and preserve formatting.
  * 
  * @author George T. Steel
  *
  * remark by linxiao
+ * @since 2018-04-19
  */
 public class SpanFormatter {
 	
 	private static final Pattern FORMAT_SEQUENCE	= Pattern.compile("%([0-9]+\\$|<?)([^a-zA-z%]*)([[a-zA-Z%]&&[^tT]]|[tT][a-zA-Z])");
 	
 	private SpanFormatter(){}
-	
+
+
+	public static SpannedString getText(@StringRes int resId, Object... args) {
+		return format(ContextProvider.get().getText(resId), args);
+	}
+
 	/**
      * Version of {@link String#format(String, Object...)} that works on {@link Spanned} strings to preserve rich text formatting.
 	 * Both the {@code format} as well as any {@code %s args} can be Spanned and will have their formatting preserved.
