@@ -23,9 +23,9 @@ import java.lang.reflect.Type;
 public class ApiResponse {
 
     private static final int SUCCESS = 200;
-    private static final String SERIALIZED_KEY_CODE = "code";
-    private static final String SERIALIZED_KEY_DESC = "desc";
-    private static final String SERIALIZED_KEY_BODY = "body";
+    public static final String SERIALIZED_KEY_CODE = "code";
+    public static final String SERIALIZED_KEY_DESC = "desc";
+    public static final String SERIALIZED_KEY_BODY = "body";
 
     @SerializedName(SERIALIZED_KEY_CODE)
     public int code;
