@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -60,7 +62,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
     private final BehaviorSubject<Object> finishSubject = BehaviorSubject.create();
     private static final Object finishSignal = new Object();
-    private final Map<Integer, ActivityResultListener> activityCallbackMap = new ArrayMap<>();
     private boolean hideKeyboardOnTouchOutside = false;
 
     @Override
@@ -155,7 +156,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        activityCallbackMap.clear();
         lifecycleSubject.onNext(ActivityEvent.DESTROY);
         if (printLifeCycle) {
             Log.d(TAG, "onDestroy");
@@ -171,41 +171,13 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        PermissionManager.onActivityResult(this, requestCode, resultCode, data);
-        ActivityResultListener listener = activityCallbackMap.get(requestCode);
-        if (listener != null) {
-            listener.onResultCallback(resultCode, data);
-            activityCallbackMap.remove(requestCode);
-        }
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionManager.handleCallback(this, requestCode, permissions, grantResults);
     }
 
-    public void startActivityForCallback(Intent intent, ActivityResultListener callback) {
-        if (callback == null) {
-            return;
-        }
-        long time = System.currentTimeMillis();
-        int requestCode = (int) (time - time / 1000 * 1000);
-        activityCallbackMap.put(requestCode, callback);
-        startActivityForResult(intent, requestCode);
-    }
-
-    public void removeActivityResultCallback(int requestCode, ActivityResultListener callback) {
-        if (callback == null) {
-            return;
-        }
-        activityCallbackMap.put(requestCode, callback);
-    }
-
-    private void addActivityResultCallback(int requestCode) {
-        activityCallbackMap.remove(requestCode);
+    public void startActivityForCallback(Intent intent, ActivityResultCallback<ActivityResult> callback) {
+        ActivityResultHolderFragment.startActivityForCallback(this, intent, callback, null);
     }
 
     public void setHideKeyboardOnTouchOutside(boolean hideKeyboardOnTouchOutside) {
@@ -219,6 +191,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
                 View v = getCurrentFocus();
                 if (shouldHideInput(v, ev)) {
                     KeyboardUtil.hideKeyboard(getWindow().getDecorView());
+                    v.clearFocus();
                 }
             }
         }

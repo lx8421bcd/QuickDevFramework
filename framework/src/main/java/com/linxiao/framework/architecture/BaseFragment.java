@@ -1,6 +1,10 @@
 package com.linxiao.framework.architecture;
 
+import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.annotation.CheckResult;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
@@ -44,6 +48,10 @@ public abstract class BaseFragment extends Fragment implements LifecycleProvider
 
     public BaseFragment() {
         TAG = this.getClass().getSimpleName();
+    }
+
+    public void startActivityForCallback(Intent intent, ActivityResultCallback<ActivityResult> callback) {
+        ActivityResultHolderFragment.startActivityForCallback(this, intent, callback, null);
     }
 
     @Override
@@ -125,18 +133,6 @@ public abstract class BaseFragment extends Fragment implements LifecycleProvider
     public void onDetach() {
         lifecycleSubject.onNext(FragmentEvent.DETACH);
         super.onDetach();
-    }
-    
-    /**
-     * get spanned string from xml resources
-     * <p>use this method to get the text which include style labels in strings.xml,
-     * support using format args</p>
-     * @param resId string resource id
-     * @param args format args
-     * @return SpannedString
-     */
-    protected SpannedString getSpannedString(@StringRes int resId, Object... args) {
-        return SpanFormatter.format(getText(resId), args);
     }
 
 }
