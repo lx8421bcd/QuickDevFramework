@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.security.SecureRandom;
@@ -207,7 +208,7 @@ public class SimpleImageUploader {
                 int code = connection.getResponseCode();
                 Log.d(TAG, "code: " + code);
                 if (code != 200) {
-                    emitter.onError(new ApiException(code, ""));
+                    emitter.onError(new IOException("upload failed(" + code + ")"));
                     return;
                 }
                 InputStream input = connection.getInputStream();

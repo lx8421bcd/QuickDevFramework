@@ -42,7 +42,7 @@ public abstract class RetrofitApiProvider<T> {
     }
 
     protected OkHttpClient getOkHttpClient() {
-        return GlobalOkHttpClientProvider.getInstance().getClient();
+        return GlobalOkHttpClientHelper.INSTANCE.getDefaultClient();
     }
 
     protected Converter.Factory getConverterFactory() {

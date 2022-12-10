@@ -60,8 +60,7 @@ public final class GsonParser {
         .registerTypeAdapter(Integer.class, new IntegerDeserializer())
         .registerTypeAdapter(String.class, new StringDeserializer())
         .registerTypeAdapter(JSONObject.class, new JSONObjectDeserializer())
-        .registerTypeAdapter(JSONArray.class, new JSONArrayDeserializer())
-        .registerTypeAdapter(ApiResponse.class, new ApiResponse.GsonDeserializer());
+        .registerTypeAdapter(JSONArray.class, new JSONArrayDeserializer());
         return builder;
     }
     

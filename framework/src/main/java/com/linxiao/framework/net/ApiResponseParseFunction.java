@@ -10,7 +10,7 @@ import io.reactivex.ObservableSource;
 import io.reactivex.functions.Function;
 /**
  * flatMap function to parse data in ApiResponse to data object
- * <p> usage：.flatMap&lt new JsonObjectParseFunction() &gt </p>
+ * <p> usage：.flatMap&lt new ApiResponseParseFunction() &gt </p>
  *
  * @author linxiao
  * create on 2018-08-20
@@ -22,17 +22,17 @@ public class ApiResponseParseFunction<T> implements Function<ApiResponse, Observ
     public ApiResponseParseFunction() {
     }
 
-    public ApiResponseParseFunction(Class<T> clazz) {
+    public ApiResponseParseFunction(int businessSuccessCode, Class<T> clazz) {
         type = clazz;
     }
-    public ApiResponseParseFunction(TypeToken<T> token) {
+    public ApiResponseParseFunction(int businessSuccessCode, TypeToken<T> token) {
         type = token.getType();
     }
     @Override
-    public ObservableSource<T> apply(ApiResponse apiResponse) throws Exception {
+    public ObservableSource<T> apply(ApiResponse apiResponse) {
         T ret;
-        if (!apiResponse.success()) {
-            return Observable.error(new ApiException(apiResponse));
+        if (apiResponse.isSuccess()) {
+            return Observable.error(new ApiResponse.ApiException(apiResponse));
         }
         try {
             ret = GsonParser.getParser().fromJson(apiResponse.data, type);
@@ -40,7 +40,7 @@ public class ApiResponseParseFunction<T> implements Function<ApiResponse, Observ
             return Observable.error(e);
         }
         if (ret == null) {
-            return Observable.error(new ApiException(apiResponse));
+            return Observable.error(new ApiResponse.ApiException(apiResponse));
         }
         return Observable.just(ret);
     }

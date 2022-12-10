@@ -1,5 +1,7 @@
 package com.linxiao.framework.net;
 
+import android.text.TextUtils;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -8,32 +10,45 @@ import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
 import com.linxiao.framework.common.GsonParser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.lang.reflect.Type;
 
 /**
  * entity data responses from server
- * <p>
- * this is a usual structure sample, you can change it to
- * any structure you need, just don't forget to modify deserialize method
- * in the {@link GsonDeserializer}
- * </p>
  *
- * Created by linxiao on 2016-07-27.
+ * @author lx8421bcd
+ * @since 2016-07-27
  */
 public class ApiResponse {
 
-    private static final int SUCCESS = 200;
-    public static final String SERIALIZED_KEY_CODE = "code";
-    public static final String SERIALIZED_KEY_DESC = "desc";
-    public static final String SERIALIZED_KEY_BODY = "body";
+    public static class ApiException extends IOException {
 
-    @SerializedName(SERIALIZED_KEY_CODE)
+        private final ApiResponse response;
+        public ApiException(ApiResponse response) {
+            super("(" + response.code +")");
+            this.response = response;
+        }
+
+        public ApiResponse getResponse() {
+            return response;
+        }
+    }
+
+    /**
+     * 业务请求成功code
+     */
+    public static int businessSuccessCode = 0;
+
+    @SerializedName(value = "code", alternate = {"code"})
     public int code;
 
-    @SerializedName(SERIALIZED_KEY_DESC)
+    @SerializedName(value = "desc", alternate = {"message", "msg"})
     public String message;
 
-    @SerializedName(SERIALIZED_KEY_BODY)
+    @SerializedName(value = "body", alternate = {"data"})
     public String data;
 
     @Override
@@ -45,8 +60,26 @@ public class ApiResponse {
                 '}';
     }
 
-    public boolean success() {
-        return code == SUCCESS;
+    public static boolean isApiResponseString(String responseString) {
+        if (TextUtils.isEmpty(responseString)) {
+            return false;
+        }
+        if (!(responseString.startsWith("{") && responseString.endsWith("}"))) {
+            return false;
+        }
+        try {
+            JSONObject respObj = new JSONObject(responseString);
+            return  respObj.has("code") &&
+                    (respObj.has("desc") || respObj.has("message") || respObj.has("msg")) &&
+                    (respObj.has("body") || respObj.has("data"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isSuccess() {
+        return code == businessSuccessCode;
     }
 
     public <T> T getResponseData(Class<T> clazz) {
@@ -66,45 +99,6 @@ public class ApiResponse {
             e.printStackTrace();
         }
         return null;
-    }
-
-    /**
-     * ApiResponse Deserializer
-     * <p>
-     * used to customize response deserialize rules
-     * </p>
-     */
-    public static class GsonDeserializer implements JsonDeserializer<ApiResponse> {
-        @Override
-        public ApiResponse deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            JsonObject obj = json.getAsJsonObject();
-            ApiResponse response = new ApiResponse();
-            try {
-                response.code = obj.get(SERIALIZED_KEY_CODE).getAsInt();
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.code = -1;
-            }
-            try {
-                JsonElement msgObj = obj.get(SERIALIZED_KEY_DESC);
-                if (msgObj != null) {
-                    response.message = msgObj.getAsString();
-                }
-                else {
-                    response.message = "";
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.message = "";
-            }
-            try {
-                response.data = String.valueOf(obj.get(SERIALIZED_KEY_BODY));
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.data = "";
-            }
-            return response;
-        }
     }
 }
 

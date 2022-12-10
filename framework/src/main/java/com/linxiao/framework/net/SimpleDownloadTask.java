@@ -51,7 +51,7 @@ public class SimpleDownloadTask {
     private long downloadId = 0;
     private Timer timer;
     private TimerTask task;
-    private Handler callbackHandler = new Handler();
+    private final Handler callbackHandler = new Handler();
     private int updatePeriod = MIN_UPDATE_PERIOD;
 
     private DownloadListener downloadListener;
@@ -159,7 +159,7 @@ public class SimpleDownloadTask {
      * @param period query period
      */
     public SimpleDownloadTask setProgressUpdatePeriod(int period) {
-        updatePeriod = period < MIN_UPDATE_PERIOD ? MIN_UPDATE_PERIOD : period;
+        updatePeriod = Math.max(period, MIN_UPDATE_PERIOD);
         return this;
     }
 

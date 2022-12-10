@@ -16,7 +16,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -37,37 +37,24 @@ import retrofit2.Retrofit;
  *    and return its instance <br/>
  *
  * 3. if conversion is failed or conversion result is null or
- *    result of method {@link ApiResponse#success()} is false,
- *    converter will return a {@link ApiException} <br/>
+ *    result of method {@link ApiResponse#isSuccess()} ()} is false,
+ *    converter will return a {@link ApiResponse.ApiException} <br/>
  *
  * 4. other response type definitions will be treated as definitions of
  *    response data, converter will call {@link ApiResponse#getResponseData(Type)} ()}
  *    method to get converted response data and return,
- *    empty converted value will cause {@link ApiException}
+ *    empty converted value will cause {@link ApiResponse.ApiException}
  *
  * </p>
  * Created by linxiao on 2016-08-09.
  */
 public class ApiConverterFactory extends Converter.Factory {
 
-    public interface ApiExceptionHandler {
-        void onApiException(ApiException e);
-    }
-
-    private ApiExceptionHandler globalHandler;
-
-    public static ApiConverterFactory create() {
-        return new ApiConverterFactory(GsonParser.getParser());
-    }
-
     private final Gson gson;
 
-    public ApiExceptionHandler getGlobalApiExceptionHandler() {
-        return globalHandler;
-    }
-
-    public void setGlobalApiExceptionHandler(ApiExceptionHandler globalHandler) {
-        this.globalHandler = globalHandler;
+    public static ApiConverterFactory create() {
+        ApiConverterFactory factory = new ApiConverterFactory(GsonParser.getParser());
+        return factory;
     }
 
     private ApiConverterFactory(Gson gson) {
@@ -76,19 +63,27 @@ public class ApiConverterFactory extends Converter.Factory {
     }
 
     @Override
-    public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
+    public Converter<ResponseBody, ?> responseBodyConverter(
+            @NonNull Type type,
+            @NonNull Annotation[] annotations,
+            @NonNull Retrofit retrofit
+    ) {
         return new ApiResponseConverter<>(gson, type);
     }
 
     @Override
-    public Converter<?, RequestBody> requestBodyConverter(Type type, Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
+    public Converter<?, RequestBody> requestBodyConverter(
+            @NonNull Type type,
+            @NonNull Annotation[] parameterAnnotations,
+            @NonNull Annotation[] methodAnnotations,
+            @NonNull Retrofit retrofit
+    ) {
         TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
         return new GsonRequestBodyConverter<>(gson, adapter);
     }
 
-    private final class GsonRequestBodyConverter<T> implements Converter<T, RequestBody> {
+    private static final class GsonRequestBodyConverter<T> implements Converter<T, RequestBody> {
         private final MediaType MEDIA_TYPE = MediaType.parse("application/json; charset=UTF-8");
-        private final Charset UTF_8 = Charset.forName("UTF-8");
 
         private final Gson gson;
         private final TypeAdapter<T> adapter;
@@ -101,7 +96,7 @@ public class ApiConverterFactory extends Converter.Factory {
         @Override
         public RequestBody convert(@NonNull T value) throws IOException {
             Buffer buffer = new Buffer();
-            Writer writer = new OutputStreamWriter(buffer.outputStream(), UTF_8);
+            Writer writer = new OutputStreamWriter(buffer.outputStream(), StandardCharsets.UTF_8);
             JsonWriter jsonWriter = gson.newJsonWriter(writer);
             adapter.write(jsonWriter, value);
             jsonWriter.close();
@@ -109,10 +104,7 @@ public class ApiConverterFactory extends Converter.Factory {
         }
     }
 
-    /**
-     * ApiResponse返回体解析类
-     */
-    class ApiResponseConverter<T> implements Converter<ResponseBody, T> {
+    static class ApiResponseConverter<T> implements Converter<ResponseBody, T> {
 
         private final Gson gson;
         private final Type type;
@@ -130,17 +122,17 @@ public class ApiConverterFactory extends Converter.Factory {
                 return gson.fromJson(response, type);
             }
             // 非标准接口Response数据直接返回接口声明类型
-            if (!response.contains("\"code\":")) {
+            if (!ApiResponse.isApiResponseString(response)) {
                 return gson.fromJson(response, type);
             }
             // 标准接口Response数据：{"code": number, "message": string, "data":object}
             // 先解析成ApiResponse再向上层返回body
             ApiResponse apiResponse = gson.fromJson(response, ApiResponse.class);
             if (apiResponse == null) {
-                throw new ApiException(-1, "empty response");
+                throw new IOException("response parse failed, response: " + response);
             }
-            if (!apiResponse.success()) {
-                throw new ApiException(apiResponse);
+            if (!apiResponse.isSuccess()) {
+                throw new ApiResponse.ApiException(apiResponse);
             }
             // 如果声明要求直接返回ApiResponse类型则直接向上层返回ApiResponse类型
             if (type.equals(ApiResponse.class)) {
@@ -156,7 +148,8 @@ public class ApiConverterFactory extends Converter.Factory {
                 if (new TypeToken<JSONArray>(){}.getType().equals(type)) {
                     return (T) new JSONArray();
                 }
-                throw new ApiException(-1, "empty data");
+                throw new IOException("expected [" + type.getClass().getSimpleName() + "] " +
+                        "body but got null, response: " + apiResponse);
             }
             return (T) body;
         }

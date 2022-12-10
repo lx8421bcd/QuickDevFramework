@@ -1,14 +1,10 @@
 package com.linxiao.framework.net;
 
-import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.linxiao.framework.common.GsonParser;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -79,7 +75,7 @@ public class ApiResponseInterceptor implements Interceptor {
             MediaType contentType = responseBody.contentType();
             Charset charset = contentType == null ? StandardCharsets.UTF_8 : contentType.charset(StandardCharsets.UTF_8);
             String responseString = charset == null ? "" :  buffer.clone().readString(charset);
-            if (isApiResponseString(responseString)) {
+            if (ApiResponse.isApiResponseString(responseString)) {
                 ApiResponse apiResponse = GsonParser.fromJSONObject(responseString, ApiResponse.class);
                 if (apiResponse != null) {
                     for (OnApiResponseInterceptCallback callback : apiResponseCallbackList) {
@@ -111,23 +107,5 @@ public class ApiResponseInterceptor implements Interceptor {
         } catch (Exception e) {
             return false; // Truncated UTF-8 sequence.
         }
-    }
-
-    private static boolean isApiResponseString(String responseString) {
-        if (TextUtils.isEmpty(responseString)) {
-            return false;
-        }
-        if (!(responseString.startsWith("{") && responseString.endsWith("}"))) {
-            return false;
-        }
-        try {
-            JSONObject respObj = new JSONObject(responseString);
-            return  respObj.has(ApiResponse.SERIALIZED_KEY_CODE) &&
-                    respObj.has(ApiResponse.SERIALIZED_KEY_DESC) &&
-                    respObj.has(ApiResponse.SERIALIZED_KEY_BODY);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 }

@@ -63,9 +63,7 @@ public final class SSLHelper {
             CertificateFactory f = CertificateFactory.getInstance("X.509");
             X509Certificate certificate = (X509Certificate)f.generateCertificate(fin);
             return certificate.getPublicKey();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
+        } catch (FileNotFoundException | CertificateException e) {
             e.printStackTrace();
         }
         return null;
@@ -75,6 +73,7 @@ public final class SSLHelper {
      * generate a instance of {@link X509TrustManager} config as trust all
      * @return instance of X509TrustManager
      */
+    @SuppressLint("CustomX509TrustManager")
     public static TrustManager createTrustAllTrustManager() {
         return new X509TrustManager() {
             public X509Certificate[] getAcceptedIssuers() {
@@ -97,13 +96,12 @@ public final class SSLHelper {
      */
     public static HostnameVerifier getHostnameVerifier(final String[] hostUrls) {
         return (hostname, session) -> {
-            boolean ret = false;
             for (String host : hostUrls) {
                 if (host.equalsIgnoreCase(hostname)) {
-                    ret = true;
+                    return true;
                 }
             }
-            return ret;
+            return false;
         };
     }
 
