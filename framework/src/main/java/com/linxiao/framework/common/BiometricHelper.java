@@ -3,6 +3,7 @@ package com.linxiao.framework.common;
 import androidx.annotation.NonNull;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import java.io.IOException;
@@ -79,12 +80,26 @@ public class BiometricHelper {
         return checkResult == BiometricManager.BIOMETRIC_SUCCESS;
     }
 
+    public Observable<BiometricPrompt.AuthenticationResult> getAuthorization(
+            Fragment fragment,
+            BiometricPrompt.PromptInfo promptInfo
+    ){
+        return execAuthorization(fragment, promptInfo);
+    }
+
+    public Observable<BiometricPrompt.AuthenticationResult> getAuthorization(
+            FragmentActivity activity,
+            BiometricPrompt.PromptInfo promptInfo
+    ){
+        return execAuthorization(activity, promptInfo);
+    }
+
     /**
      * start biometric authorization dialog and get authorization result after dialog close
      *
      * @return callback subject
      */
-    public Observable<BiometricPrompt.AuthenticationResult> getAuthorization(FragmentActivity activity, BiometricPrompt.PromptInfo promptInfo) {
+    private Observable<BiometricPrompt.AuthenticationResult> execAuthorization(Object context, BiometricPrompt.PromptInfo promptInfo) {
         int checkResult =  BiometricManager.from(ContextProvider.get()).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK);
         if (checkResult == BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE) {
             return Observable.error(new BiometricException(BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE));
@@ -96,7 +111,7 @@ public class BiometricHelper {
             return Observable.error(new BiometricException(BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED));
         }
         BehaviorSubject<BiometricPrompt.AuthenticationResult> callbackSubject = BehaviorSubject.create();
-        BiometricPrompt biometricPrompt = new BiometricPrompt(activity, new BiometricPrompt.AuthenticationCallback() {
+        BiometricPrompt.AuthenticationCallback authenticationCallback = new BiometricPrompt.AuthenticationCallback() {
             @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
@@ -115,7 +130,14 @@ public class BiometricHelper {
                 super.onAuthenticationFailed();
                 // Called when a biometric is valid but not recognized.
             }
-        });
+        };
+        BiometricPrompt biometricPrompt;
+        if (context instanceof FragmentActivity) {
+            biometricPrompt = new BiometricPrompt((FragmentActivity) context, authenticationCallback);
+        }
+        else {
+            biometricPrompt = new BiometricPrompt((Fragment) context, authenticationCallback);
+        }
         biometricPrompt.authenticate(promptInfo);
         return callbackSubject;
     }
