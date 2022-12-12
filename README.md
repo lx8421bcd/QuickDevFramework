@@ -3,8 +3,8 @@
 
 * [项目简介](#项目简介) 
 * [项目概况](#项目概况)
-  * [已经实现/封装较为完善的功能](#已经实现/封装较为完善的功能)
-  * [开发中/规划内的功能](#开发中/规划内的功能)
+  * [已经实现的功能](#已经实现的功能)
+  * [开发中的功能](#开发中的功能)
   * [项目分支](#项目分支)
 * [如何使用](#如何使用)
   * [搭建新项目](#搭建新项目)
@@ -32,7 +32,7 @@
 </p>
 
 
-#### 已经实现/封装较为完善的功能
+#### 已经实现的功能
 * __ViewBinding集成__，集成ViewBinding功能，并提供基于ViewBinding封装的相关简化工具。
 * __RxJava2集成__，应用内集成了RxJava、RxAndroid、RxLifeCycle等内容，大量组件以RxJava为异步实现基础。
 * __分层框架基类__（Activity、Fragment、DataManager、Dialog等），为整个项目的骨架，为需要使用Android组件相关功能和生命周期的SDK和模块提供支持，同时为派生类统一提供大量便利的方法。
@@ -49,9 +49,13 @@
 * __简易图片上传工具__，鉴于[Retrofit和OkHttp上传文件必带Content-Size导致某些服务端接收失败](https://github.com/square/okhttp/issues/2138)， 基于RxJava用HttpUrlConnection封装一个简易的图片上传工具，以应对应用中普遍存在的上传图片需求。
 * __简易下载工具__，基于DownloadManager开发，封装权限检查，文件检查，下载进度回调等功能，用于应对一般应用的简易下载需求，比如下载更新包。
 * __简易Logger__, 支持log输出超过单行最大值自动换行，提供打印当前线程信息，堆栈信息等工具方法。
+* __语言切换工具__, 封装了常用语言切换需求，配合EventBus可以做到不重启应用切换语言
+* __生物信息授权工具__, 封装了获取指纹/面容授权调用方法，以及常用判断方法
+* __常用开发模板__, 位于qdftemplates目录下，以Intellij Plugin的形式安装，用于快速生成Activity，Fragment，Dialog等
 
-#### 开发中/规划内的功能
-* 升级RxJava至RxJava3
+#### 开发中的功能
+* 主体框架切换至kotlin
+* 优化开发模板，添加更多常见类型模板
 * 重构AlertDialog工具组件，降低复杂度
 * 重构文件管理相关工具类
 * 基于当前项目框架，添加常用UI模板，如单列表界面等
@@ -148,7 +152,7 @@
 
 * **提交class请遵循以下格式在class添加javadoc，方便使用者了其概况**
 
-  ```java
+```java
   /**
    * 一句话简介
    * <p>
@@ -169,11 +173,11 @@
        * @param param 入参说明
        * @return 如果返回参数不能明显判断出意义，请添加此项补充说明
        */
-      public static SomeObject boolean someMethods(SomeParam param) {
+      public static SomeObject someMethods(SomeParam param) {
           return someInstance;
       }
   }
-  ```
+```
 
 * **请勿提交为了封装而封装的代码**  
 我见过有人写的工具类，versionCode判断Android版本都要封装成方法，外面调用从```if(versionCode >= XXX)``` 变成```if(VersionUtil.isXXX())```…… 还有更奇葩的连启动Service都要封装一下，变成```OSUtils.startService(context);```。这种封装除了增强框架的侵入性，提升修改成本之外还有其他意义吗？这种只是把调用方式换成“我看着舒服”的封装，在开发中要尽量避免。  
