@@ -5,43 +5,36 @@ import com.linxiao.framework.common.GsonParser;
 
 import java.lang.reflect.Type;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.functions.Function;
 /**
  * flatMap function to parse data in ApiResponse to data object
- * <p> usage：.flatMap&lt new ApiResponseParseFunction() &gt </p>
  *
  * @author linxiao
- * create on 2018-08-20
+ * @since 2018-08-20
  */
-public class ApiResponseParseFunction<T> implements Function<ApiResponse, ObservableSource<T>> {
+public class ApiResponseParseFunction<T> implements Function<ApiResponse, T> {
 
     private Type type = Object.class;
 
     public ApiResponseParseFunction() {
     }
 
-    public ApiResponseParseFunction(int businessSuccessCode, Class<T> clazz) {
+    public ApiResponseParseFunction(Class<T> clazz) {
         type = clazz;
     }
-    public ApiResponseParseFunction(int businessSuccessCode, TypeToken<T> token) {
+    public ApiResponseParseFunction(TypeToken<T> token) {
         type = token.getType();
     }
     @Override
-    public ObservableSource<T> apply(ApiResponse apiResponse) {
+    public T apply(ApiResponse apiResponse) throws Exception {
         T ret;
-        if (apiResponse.isSuccess()) {
-            return Observable.error(new ApiResponse.ApiException(apiResponse));
+        if (!apiResponse.isSuccess()) {
+            throw new ApiResponse.ApiException(apiResponse);
         }
-        try {
-            ret = GsonParser.getParser().fromJson(apiResponse.data, type);
-        } catch (Exception e) {
-            return Observable.error(e);
-        }
+        ret = GsonParser.getParser().fromJson(apiResponse.data, type);
         if (ret == null) {
-            return Observable.error(new ApiResponse.ApiException(apiResponse));
+            throw new ApiResponse.ApiException(apiResponse);
         }
-        return Observable.just(ret);
+        return ret;
     }
 }
