@@ -21,9 +21,12 @@ public class ApiResponseParseFunction<T> implements Function<ApiResponse, T> {
     public ApiResponseParseFunction(Class<T> clazz) {
         type = clazz;
     }
+
     public ApiResponseParseFunction(Type type) {
         this.type = type;
     }
+
+    @SuppressWarnings("unchecked")
     @Override
     public T apply(ApiResponse apiResponse) throws Exception {
         T ret;
@@ -32,6 +35,9 @@ public class ApiResponseParseFunction<T> implements Function<ApiResponse, T> {
         }
         ret = GsonParser.getParser().fromJson(apiResponse.data, type);
         if (ret == null) {
+            if (type == Object.class) {
+                return (T) apiResponse;
+            }
             throw new ApiResponse.ApiException(apiResponse);
         }
         return ret;
