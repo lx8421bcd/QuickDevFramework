@@ -1,6 +1,5 @@
 package com.linxiao.framework.net;
 
-import com.google.gson.reflect.TypeToken;
 import com.linxiao.framework.common.GsonParser;
 
 import java.lang.reflect.Type;
@@ -22,8 +21,8 @@ public class ApiResponseParseFunction<T> implements Function<ApiResponse, T> {
     public ApiResponseParseFunction(Class<T> clazz) {
         type = clazz;
     }
-    public ApiResponseParseFunction(TypeToken<T> token) {
-        type = token.getType();
+    public ApiResponseParseFunction(Type type) {
+        this.type = type;
     }
     @Override
     public T apply(ApiResponse apiResponse) throws Exception {
