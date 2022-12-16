@@ -1,5 +1,8 @@
 package other
 
+import com.android.tools.idea.wizard.template.Constraint
+import com.android.tools.idea.wizard.template.enumParameter
+import com.android.tools.idea.wizard.template.stringParameter
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Matcher
@@ -16,8 +19,8 @@ fun humpToLine(str: String): String {
     while (matcher.find()) {
         matcher.appendReplacement(
             sb,
-            if (sb.isEmpty()) matcher.group(0).toLowerCase()
-            else "_${matcher.group(0).toLowerCase()}"
+            if (sb.isEmpty()) matcher.group(0).lowercase()
+            else "_${matcher.group(0).lowercase()}"
         )
     }
     matcher.appendTail(sb)
@@ -45,3 +48,22 @@ fun timeMillsToDateString(format: String, timeMills: Long): String {
         return ""
     }
 }
+
+/**
+ * 默认包名选择配置
+ */
+val defaultPackageNameParameter
+    get() = stringParameter {
+        name = "Package name"
+        visible = { !isNewModule }
+        default = "com.lx8421bcd.example"
+        constraints = listOf(Constraint.PACKAGE)
+        suggest = { packageName }
+    }
+
+val defaultLanguageSelectParameter
+    get() = enumParameter<CodeLanguage> {
+        name = "source file language"
+        default = CodeLanguage.Java
+        help = "选择语言"
+    }

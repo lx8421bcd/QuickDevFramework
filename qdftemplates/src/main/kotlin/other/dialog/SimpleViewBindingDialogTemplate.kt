@@ -4,15 +4,6 @@ import com.android.tools.idea.wizard.template.*
 import com.android.tools.idea.wizard.template.impl.activities.common.MIN_API
 import other.*
 
-val defaultPackageNameParameter
-    get() = stringParameter {
-        name = "Package name"
-        visible = { !isNewModule }
-        default = "com.lx8421bcd.example"
-        constraints = listOf(Constraint.PACKAGE)
-        suggest = { packageName }
-    }
-
 val SimpleViewBindingDialogTemplate
     get() = template {
         name = "Simple ViewBinding Dialog"
@@ -27,11 +18,7 @@ val SimpleViewBindingDialogTemplate
             WizardUiContext.NewModule
         )
 
-        val codeLanguage = enumParameter<CodeLanguage> {
-            name = "source file language"
-            default = CodeLanguage.Java
-            help = "选择语言"
-        }
+        val codeLanguage = defaultLanguageSelectParameter
         val parentClass = stringParameter {
             name = "Parent Class PATH"
             default = defBaseDialogPath
@@ -49,7 +36,11 @@ val SimpleViewBindingDialogTemplate
             name = "Layout Name"
             default = "Dialog_main"
             help = "请输入布局的名字"
-            constraints = listOf(Constraint.LAYOUT, Constraint.UNIQUE, Constraint.NONEMPTY)
+            constraints = listOf(
+                Constraint.LAYOUT,
+                Constraint.UNIQUE,
+                Constraint.NONEMPTY
+            )
             suggest = { "dialog_${humpToLine(dialogClass.value)}" }
         }
 
@@ -126,12 +117,13 @@ import ${applicationPackage}.databinding.Dialog${dialogClass}Binding
 ${titleComments("author")}
 class ${dialogClass}Dialog(context: Context) : ${parentClass.split(".").last()}(context) {
 
-    private var viewBinding: Dialog${dialogClass}Binding? = null
+    private val viewBinding by lazy {
+        return@lazy Dialog${dialogClass}Binding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewBinding = Dialog${dialogClass}Binding.inflate(layoutInflater)
-        setContentView(viewBinding!!.root)
+        setContentView(viewBinding.root)
         initViews()
         
     }

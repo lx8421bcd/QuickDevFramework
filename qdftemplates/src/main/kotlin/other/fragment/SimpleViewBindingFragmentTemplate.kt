@@ -2,19 +2,7 @@ package other.fragment
 
 import com.android.tools.idea.wizard.template.*
 import com.android.tools.idea.wizard.template.impl.activities.common.MIN_API
-import other.CodeLanguage
-import other.defBaseFragmentPath
-import other.humpToLine
-import other.titleComments
-
-val defaultPackageNameParameter
-    get() = stringParameter {
-        name = "Package name"
-        visible = { !isNewModule }
-        default = "com.lx8421bcd.example"
-        constraints = listOf(Constraint.PACKAGE)
-        suggest = { packageName }
-    }
+import other.*
 
 val SimpleViewBindingFragmentTemplate
     get() = template {
@@ -30,11 +18,7 @@ val SimpleViewBindingFragmentTemplate
             WizardUiContext.NewModule
         )
 
-        val codeLanguage = enumParameter<CodeLanguage> {
-            name = "Source file language"
-            default = CodeLanguage.Java
-            help = "选择语言"
-        }
+        val codeLanguage = defaultLanguageSelectParameter
         val parentClass = stringParameter {
             name = "Parent class PATH"
             default = defBaseFragmentPath
@@ -52,7 +36,11 @@ val SimpleViewBindingFragmentTemplate
             name = "Layout name"
             default = "Fragment_main"
             help = "请输入布局的名字"
-            constraints = listOf(Constraint.LAYOUT, Constraint.UNIQUE, Constraint.NONEMPTY)
+            constraints = listOf(
+                Constraint.LAYOUT,
+                Constraint.UNIQUE,
+                Constraint.NONEMPTY
+            )
             suggest = { fragmentToLayout(humpToLine(fragmentClass.value)) }
         }
 
@@ -134,15 +122,16 @@ import ${applicationPackage}.databinding.Fragment${fragmentClass}Binding
 ${titleComments("author")}
 class ${fragmentClass}Fragment : ${parentClass.split(".").last()}() {
 
-    private var viewBinding: Fragment${fragmentClass}Binding? = null
+    private val viewBinding by lazy {
+        return@lazy Fragment${fragmentClass}Binding.inflate(inflater)
+    }
     
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewBinding = Fragment${fragmentClass}Binding.inflate(inflater)
-        return viewBinding!!.root
+        return viewBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

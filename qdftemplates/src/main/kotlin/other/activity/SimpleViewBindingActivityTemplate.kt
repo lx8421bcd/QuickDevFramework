@@ -3,19 +3,7 @@ package other.activity
 import com.android.tools.idea.wizard.template.*
 import com.android.tools.idea.wizard.template.impl.activities.common.MIN_API
 import com.android.tools.idea.wizard.template.impl.activities.common.generateManifest
-import other.CodeLanguage
-import other.defBaseActivityPath
-import other.humpToLine
-import other.titleComments
-
-val defaultPackageNameParameter
-    get() = stringParameter {
-        name = "Package name"
-        visible = { !isNewModule }
-        default = "com.lx8421bcd.example"
-        constraints = listOf(Constraint.PACKAGE)
-        suggest = { packageName }
-    }
+import other.*
 
 val SimpleViewBindingActivityTemplate
     get() = template {
@@ -31,11 +19,7 @@ val SimpleViewBindingActivityTemplate
             WizardUiContext.NewModule
         )
 
-        val codeLanguage = enumParameter<CodeLanguage> {
-            name = "source file language"
-            default = CodeLanguage.Java
-            help = "选择语言"
-        }
+        val codeLanguage = defaultLanguageSelectParameter
         val parentClass = stringParameter {
             name = "Parent Class PATH"
             default = defBaseActivityPath
@@ -52,7 +36,11 @@ val SimpleViewBindingActivityTemplate
             name = "Layout Name"
             default = "activity_main"
             help = "请输入布局的名字"
-            constraints = listOf(Constraint.LAYOUT, Constraint.UNIQUE, Constraint.NONEMPTY)
+            constraints = listOf(
+                Constraint.LAYOUT,
+                Constraint.UNIQUE,
+                Constraint.NONEMPTY
+            )
             suggest = { activityToLayout(humpToLine(activityClass.value)) }
         }
 
@@ -136,12 +124,13 @@ import ${applicationPackage}.databinding.Activity${activityClass}Binding
 ${titleComments("author")}
 class ${activityClass}Activity : ${parentClass.split(".").last()}() {
 
-    private var viewBinding: Activity${activityClass}Binding? = null;
+    private val viewBinding by lazy {
+        return@lazy Activity${activityClass}Binding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewBinding = Activity${activityClass}Binding.inflate(layoutInflater)
-        setContentView(viewBinding!!.root)
+        setContentView(viewBinding.root)
         initViews()
         
     }
