@@ -40,7 +40,7 @@ public class RegexUtil {
      * 检查是否为正确邮箱
      * */
     public static boolean isValidEmail(String email) {
-        return !TextUtils.isEmpty(email) && email.matches("^([a-z0-9A-Z]+[-|.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$");
+        return !TextUtils.isEmpty(email) && email.matches("^([a-z0-9A-Z]+[-_.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$");
     }
 
     /**
