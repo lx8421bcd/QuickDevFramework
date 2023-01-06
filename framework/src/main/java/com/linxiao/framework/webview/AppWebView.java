@@ -157,30 +157,32 @@ public class AppWebView extends WebView {
 
     @SuppressLint("SetJavaScriptEnabled")
     private void init() {
-        super.setWebViewClient(new WebViewClientWrapper() {
+        if (!isInEditMode()) {
+            super.setWebViewClient(new WebViewClientWrapper() {
 
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-            }
+                @Override
+                public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                    super.onPageStarted(view, url, favicon);
+                }
 
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-            }
-        });
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    super.onPageFinished(view, url);
+                }
+            });
 //        getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 //        getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        getSettings().setAllowFileAccess(true);// 设置允许访问文件数据
-        getSettings().setSupportZoom(false);
-        getSettings().setBuiltInZoomControls(false);
-        getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        getSettings().setDomStorageEnabled(true);
-        getSettings().setDatabaseEnabled(true);
-        if (!TextUtils.isEmpty(defaultUserAgent)) {
-            getSettings().setUserAgentString(defaultUserAgent);
+            getSettings().setAllowFileAccess(true);// 设置允许访问文件数据
+            getSettings().setSupportZoom(false);
+            getSettings().setBuiltInZoomControls(false);
+            getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+            getSettings().setDomStorageEnabled(true);
+            getSettings().setDatabaseEnabled(true);
+            if (!TextUtils.isEmpty(defaultUserAgent)) {
+                getSettings().setUserAgentString(defaultUserAgent);
+            }
+            addJSInterface(DEFAULT_JS_INTERFACE, new JSInterface(this));
         }
-        addJSInterface(DEFAULT_JS_INTERFACE, new JSInterface(this));
     }
 
 
