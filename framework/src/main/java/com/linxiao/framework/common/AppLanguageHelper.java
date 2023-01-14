@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.Locale;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -24,12 +25,18 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class AppLanguageHelper {
 
+    public static class LanguageChangedEvent {
+
+    }
+
     public static class LanguageOption implements Serializable {
 
         private static final long serialVersionUID = 437485L;
 
+        private static final String ID_FOLLOWING_SYSTEM = "FOLLOWING_SYSTEM";
+
         private String id;
-        private final String displayName;
+        private String displayName;
         private final Locale locale;
 
         public static String generateId(Locale locale) {
@@ -38,7 +45,8 @@ public class AppLanguageHelper {
 
         public static LanguageOption followingSystem() {
             LanguageOption option = new LanguageOption(Resources.getSystem().getConfiguration().locale);
-            option.id = FOLLOWING_SYSTEM;
+            option.id = ID_FOLLOWING_SYSTEM;
+            option.displayName = "System";
             return option;
         }
 
@@ -74,37 +82,20 @@ public class AppLanguageHelper {
         }
     }
 
-    public static class LanguageChangedEvent {
+    private static final String PREF_SELECTED_LOCALE = "SELECTED_LOCALE";
 
-    }
-
-    public static final String DEFAULT_APP_LANGUAGE = "English";
     public static final LanguageOption[] SUPPORTED_LANGUAGES = {
             new LanguageOption(Locale.SIMPLIFIED_CHINESE, "简体中文"),
             new LanguageOption(Locale.ENGLISH, "English"),
 
     };
-    private static final String FOLLOWING_SYSTEM = "FOLLOWING_SYSTEM";
-    private static final String SELECTED_LOCALE = "SELECTED_LOCALE";
-
-
-    public static String getCurrentLangeName() {
-        LanguageOption currentOption = getCurrentLanguageOption();
-        String localId = LanguageOption.generateId(currentOption.locale);
-        for (LanguageOption option : SUPPORTED_LANGUAGES) {
-            if (option.getId().equals(localId)) {
-                return option.displayName;
-            }
-        }
-        return DEFAULT_APP_LANGUAGE;
-    }
 
     public static LanguageOption getFollowingSystemOption() {
         return LanguageOption.followingSystem();
     }
 
     public synchronized static LanguageOption getCurrentLanguageOption() {
-        LanguageOption cachedLocale = AppPreferences.getDefault().getSerializable(SELECTED_LOCALE);
+        LanguageOption cachedLocale = AppPreferences.getDefault().getSerializable(PREF_SELECTED_LOCALE);
         if (cachedLocale != null) {
             for (LanguageOption locale : SUPPORTED_LANGUAGES) {
                 if (locale.getId().equals(cachedLocale.getId())) {
@@ -112,7 +103,7 @@ public class AppLanguageHelper {
                 }
             }
         }
-        return LanguageOption.followingSystem();
+        return getFollowingSystemOption();
     }
 
     public synchronized static void setLanguageFollowingSystem() {
@@ -126,10 +117,10 @@ public class AppLanguageHelper {
 
     public synchronized static void setLanguageWithRestart(LanguageOption option) {
         setLanguage(option);
-        Observable.just(0)
+        Single.just(0)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .doOnNext(o -> {
+        .doOnSuccess(o -> {
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(0);
         })
@@ -137,7 +128,7 @@ public class AppLanguageHelper {
     }
 
     public synchronized static void setLanguage(LanguageOption option) {
-        AppPreferences.getDefault().put(SELECTED_LOCALE, option);
+        AppPreferences.getDefault().put(PREF_SELECTED_LOCALE, option);
         Resources res = ContextProvider.get().getResources();
         changeResourcesConfig(res);
     }
