@@ -1,0 +1,26 @@
+package ${packageName}
+
+import android.os.Bundle
+
+import ${parentClassPath}
+import ${applicationPackage}.R
+import ${applicationPackage}.databinding.Dialog${noTypeClassName}Binding
+
+${classHeader}
+class ${noTypeClassName}Dialog(context: Context) : ${parentClassName}(context) {
+
+    private val viewBinding by lazy {
+        return@lazy Dialog${noTypeClassName}Binding.inflate(layoutInflater)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(viewBinding.root)
+        initViews()
+        
+    }
+
+    private fun initViews() {
+
+    }
+} 

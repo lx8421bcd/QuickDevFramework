@@ -20,7 +20,7 @@
     </applicationListeners>
 
     <extensions defaultExtensionNs="com.android.tools.idea.wizard.template">
-        <wizardTemplateProvider implementation="other.QDFPluginTemplateProviderImpl" />
+        <wizardTemplateProvider implementation="com.lx8421bcd.qdftemplates.QDFPluginTemplateProviderImpl" />
     </extensions>
 
 </idea-plugin>

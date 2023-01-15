@@ -1,0 +1,27 @@
+package ${packageName}
+
+import android.os.Bundle
+import android.content.Context
+
+import ${parentClassPath}
+import ${applicationPackage}.R
+import ${applicationPackage}.databinding.Activity${noTypeClassName}Binding
+
+${classHeader}
+class ${noTypeClassName}Activity : ${parentClassName}() {
+
+    private val viewBinding by lazy {
+        return@lazy Activity${noTypeClassName}Binding.inflate(layoutInflater)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(viewBinding.root)
+        initViews()
+        
+    }
+
+    private fun initViews() {
+
+    }
+} 

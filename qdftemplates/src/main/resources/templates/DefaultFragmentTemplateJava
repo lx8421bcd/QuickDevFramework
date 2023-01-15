@@ -1,0 +1,36 @@
+package ${packageName};
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import ${parentClassPath};
+import ${applicationPackage}.R;
+import ${applicationPackage}.databinding.Fragment${noTypeClassName}Binding;
+
+${classHeader}
+public class ${noTypeClassName}Fragment extends ${parentClassName} {
+
+    private Fragment${noTypeClassName}Binding viewBinding = null;
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        viewBinding = Fragment${noTypeClassName}Binding.inflate(inflater);
+        return viewBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initViews();
+        
+    }
+
+    private void initViews() {
+
+    }
+} 

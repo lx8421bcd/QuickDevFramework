@@ -1,0 +1,27 @@
+package ${packageName};
+
+import android.os.Bundle;
+import android.content.Context;
+
+import ${parentClassPath};
+import ${applicationPackage}.R;
+import ${applicationPackage}.databinding.Activity${noTypeClassName}Binding;
+
+${classHeader}
+public class ${noTypeClassName}Activity extends ${parentClassName} {
+
+    private Activity${noTypeClassName}Binding viewBinding = null;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewBinding = Activity${activityClass}Binding.inflate(getLayoutInflater());
+        setContentView(viewBinding.getRoot());
+        initViews();
+
+    }
+
+    private void initViews() {
+
+    }
+}
