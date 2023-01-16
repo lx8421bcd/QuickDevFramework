@@ -5,22 +5,17 @@ import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-val packageNameHolder = "\${packageName}"
-val applicationPackageHolder = "\${applicationPackage}"
-val parentClassPathHolder = "\${parentClassPath}"
-val parentClassNameHolder = "\${parentClassName}"
-val fullClassNameHolder = "\${fullClassName}"
-val noTypeClassNameHolder = "\${noTypeClassName}"
-val classHeaderHolder = "\${classHeader}"
+const val HOLDER_PACKAGE_NAME = "\${packageName}"
+const val HOLDER_APPLICATION_PACKAGE = "\${applicationPackage}"
+const val HOLDER_PARENT_CLASS_PATH = "\${parentClassPath}"
+const val HOLDER_PARENT_CLASS_NAME = "\${parentClassName}"
+const val HOLDER_FULL_CLASS_NAME = "\${fullClassName}"
+const val HOLDER_NO_TYPE_CLASS_NAME = "\${noTypeClassName}"
+const val HOLDER_CLASS_HEADER = "\${classHeader}"
 
 
-val defBaseActivityPath = "androidx.appcompat.app.AppCompatActivity"
-val defBaseFragmentPath = "androidx.fragment.app.Fragment"
-val defBaseDialogPath = "android.app.Dialog"
-
-private val humpPattern: Pattern = Pattern.compile("[A-Z]")
 fun humpToLine(str: String): String {
-    val matcher: Matcher = humpPattern.matcher(str)
+    val matcher: Matcher = Pattern.compile("[A-Z]").matcher(str)
     val sb = StringBuffer()
     while (matcher.find()) {
         matcher.appendReplacement(
