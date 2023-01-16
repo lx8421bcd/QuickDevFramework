@@ -1,6 +1,6 @@
 package com.lx8421bcd.qdftemplates
 
-enum class TemplateType(
+enum class ComponentType(
     val classSuffix: String,
     val layoutPrefix: String,
     val defaultBaseClass: String,

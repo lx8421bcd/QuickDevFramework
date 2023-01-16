@@ -4,14 +4,14 @@ import com.android.tools.idea.wizard.template.*
 import com.android.tools.idea.wizard.template.impl.activities.common.MIN_API
 import com.android.tools.idea.wizard.template.impl.activities.common.generateManifest
 
-fun getNoTypeClassName(type: TemplateType, fullClassName: String): String {
+fun getNoTypeClassName(type: ComponentType, fullClassName: String): String {
     var className = fullClassName
     if (className.endsWith(type.classSuffix)) {
         className = className.substring(0, className.lastIndexOf(type.classSuffix))
     }
     return className
 }
-fun generateLayoutName(type: TemplateType, fullClassName: String): String {
+fun generateLayoutName(type: ComponentType, fullClassName: String): String {
     return "${type.layoutPrefix}_${humpToLine(getNoTypeClassName(type, fullClassName))}"
 }
 
@@ -31,10 +31,10 @@ val defaultLanguageSelectParameter
         help = "选择语言"
     }
 
-val defaultTemplateTypeSelectParameter
-    get() = enumParameter<TemplateType> {
+val defaultComponentTypeSelectParameter
+    get() = enumParameter<ComponentType> {
         name = "Component type"
-        default = TemplateType.Activity
+        default = ComponentType.Activity
         help = "选择组件类型"
     }
 
@@ -52,7 +52,7 @@ val QDFComponentTemplate
             WizardUiContext.NewModule
         )
         val codeLanguageParameter = defaultLanguageSelectParameter
-        val templateTypeParameter = defaultTemplateTypeSelectParameter
+        val templateTypeParameter = defaultComponentTypeSelectParameter
         val parentClassParameter = stringParameter {
             name = "Parent class path"
             default = templateTypeParameter.value.defaultBaseClass
@@ -103,16 +103,16 @@ val QDFComponentTemplate
 fun RecipeExecutor.qdfComponentRecipe(
     moduleData: ModuleTemplateData,
     codeLanguage: CodeLanguage,
-    templateType: TemplateType,
+    componentType: ComponentType,
     parentClassPath: String,
     fullClassName: String,
     layoutName: String,
     packageName: String,
-    srcString: String = getDefaultTemplateFile(codeLanguage, templateType),
+    srcString: String = getDefaultTemplateFile(codeLanguage, componentType),
     xmlString: String = getDefaultLayoutXml()
 ) {
     // insert manifest if needed
-    if (templateType == TemplateType.Activity) {
+    if (componentType == ComponentType.Activity) {
         generateManifest(
             moduleData = moduleData,
             activityClass = fullClassName,
@@ -131,9 +131,9 @@ fun RecipeExecutor.qdfComponentRecipe(
         .replace(HOLDER_PARENT_CLASS_NAME, parentClassName)
         .replace(HOLDER_APPLICATION_PACKAGE, applicationPackageName)
         .replace(HOLDER_FULL_CLASS_NAME, fullClassName)
-        .replace(HOLDER_NO_TYPE_CLASS_NAME, getNoTypeClassName(templateType, fullClassName))
+        .replace(HOLDER_NO_TYPE_CLASS_NAME, getNoTypeClassName(componentType, fullClassName))
         .replace(HOLDER_CLASS_HEADER, titleComments(System.getProperty("user.name")))
-    val srcFileName = getNoTypeClassName(templateType, fullClassName) + templateType.classSuffix
+    val srcFileName = getNoTypeClassName(componentType, fullClassName) + componentType.classSuffix
     save(saveSrc, moduleData.srcDir.resolve("${srcFileName}.${codeLanguage.suffix}"))
     // save layout xml
     val saveXml = xmlString.trimIndent()

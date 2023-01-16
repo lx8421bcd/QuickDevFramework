@@ -50,19 +50,19 @@ fun timeMillsToDateString(format: String, timeMills: Long): String {
     }
 }
 
-fun getDefaultTemplateFile(codeLanguage: CodeLanguage, templateType: TemplateType): String {
+fun getDefaultTemplateFile(codeLanguage: CodeLanguage, componentType: ComponentType): String {
     val filePath = if (codeLanguage == CodeLanguage.Kotlin) {
-        when(templateType) {
-            TemplateType.Activity -> "/templates/DefaultActivityTemplateKt"
-            TemplateType.Fragment -> "/templates/DefaultFragmentTemplateKt"
-            TemplateType.Dialog -> "/templates/DefaultDialogTemplateKt"
+        when(componentType) {
+            ComponentType.Activity -> "/templates/DefaultActivityTemplateKt"
+            ComponentType.Fragment -> "/templates/DefaultFragmentTemplateKt"
+            ComponentType.Dialog -> "/templates/DefaultDialogTemplateKt"
         }
     }
     else {
-        when(templateType) {
-            TemplateType.Activity -> "/templates/DefaultActivityTemplateJava"
-            TemplateType.Fragment -> "/templates/DefaultFragmentTemplateJava"
-            TemplateType.Dialog -> "/templates/DefaultDialogTemplateJava"
+        when(componentType) {
+            ComponentType.Activity -> "/templates/DefaultActivityTemplateJava"
+            ComponentType.Fragment -> "/templates/DefaultFragmentTemplateJava"
+            ComponentType.Dialog -> "/templates/DefaultDialogTemplateJava"
         }
     }
     return PluginFileTools.loadStringFromResource(filePath)
