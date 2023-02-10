@@ -1,12 +1,16 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion '33.0.0'
+    compileSdkVersion 33
+    buildToolsVersion '33.0.1'
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'proguard-rules.pro'
@@ -24,6 +28,7 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    namespace 'com.linxiao.framework'
 }
 
 dependencies {
