@@ -73,6 +73,9 @@ public class LanguageOption implements Serializable {
     }
 
     public Locale getLocale() {
+        if (isFollowingSystemOption()) {
+            return AppLanguageHelper.getSystemCurrentLocale();
+        }
         return locale;
     }
 
