@@ -46,6 +46,7 @@ dependencies {
     api "androidx.preference:preference:1.2.0"
     api "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
     api "androidx.biometric:biometric:1.1.0"
+    api 'androidx.multidex:multidex:2.0.1'
 
     api 'com.google.code.gson:gson:2.10'
 

@@ -1,18 +1,19 @@
-package com.linxiao.framework.common;
+package com.linxiao.framework.language;
 
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
+import com.linxiao.framework.common.ContextProvider;
 import com.linxiao.framework.preferences.AppPreferences;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -25,76 +26,31 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class AppLanguageHelper {
 
-    public static class LanguageChangedEvent {
+    public static final List<LanguageOption> SUPPORTED_LANGUAGES = new ArrayList<>();
 
+    static {
+        initSupportLanguages();
     }
 
-    public static class LanguageOption implements Serializable {
-
-        private static final long serialVersionUID = 437485L;
-
-        private static final String ID_FOLLOWING_SYSTEM = "FOLLOWING_SYSTEM";
-
-        private String id;
-        private String displayName;
-        private final Locale locale;
-
-        public static String generateId(Locale locale) {
-            return locale.getLanguage() + locale.getCountry();
-        }
-
-        public static LanguageOption followingSystem() {
-            LanguageOption option = new LanguageOption(Resources.getSystem().getConfiguration().locale);
-            option.id = ID_FOLLOWING_SYSTEM;
-            option.displayName = "System";
-            return option;
-        }
-
-        public LanguageOption(Locale locale) {
-            this(locale, locale.getDisplayName());
-        }
-
-        public LanguageOption(Locale locale, String displayName) {
-            this.id = generateId(locale);
-            this.displayName = displayName;
-            this.locale = locale;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        public Locale getLocale() {
-            return locale;
-        }
-
-        @Override
-        public String toString() {
-            return "LanguageOption{" +
-                    "id='" + id + '\'' +
-                    ", displayName='" + displayName + '\'' +
-                    ", locale=" + locale +
-                    '}';
-        }
+    public static void initSupportLanguages() {
+        SUPPORTED_LANGUAGES.clear();
+        SUPPORTED_LANGUAGES.add(new LanguageOption(Locale.ENGLISH, "English"));
+        SUPPORTED_LANGUAGES.add(new LanguageOption(Locale.TRADITIONAL_CHINESE, "简体中文"));
     }
 
     private static final String PREF_SELECTED_LOCALE = "SELECTED_LOCALE";
 
-    public static final LanguageOption[] SUPPORTED_LANGUAGES = {
-            new LanguageOption(Locale.SIMPLIFIED_CHINESE, "简体中文"),
-            new LanguageOption(Locale.ENGLISH, "English"),
+    private static LanguageOption currentLanguageOption = null;
 
-    };
+    public static Locale getSystemCurrentLocale() {
+        return Resources.getSystem().getConfiguration().locale;
+    }
 
     public static LanguageOption getFollowingSystemOption() {
         return LanguageOption.followingSystem();
     }
 
-    public synchronized static LanguageOption getCurrentLanguageOption() {
+    private synchronized static LanguageOption getCachedLanguageOption() {
         LanguageOption cachedLocale = AppPreferences.getDefault().getSerializable(PREF_SELECTED_LOCALE);
         if (cachedLocale != null) {
             for (LanguageOption locale : SUPPORTED_LANGUAGES) {
@@ -104,6 +60,13 @@ public class AppLanguageHelper {
             }
         }
         return getFollowingSystemOption();
+    }
+
+    public synchronized static LanguageOption getCurrentLanguageOption() {
+        if (currentLanguageOption == null) {
+            currentLanguageOption = getCachedLanguageOption();
+        }
+        return currentLanguageOption;
     }
 
     public synchronized static void setLanguageFollowingSystem() {
@@ -129,6 +92,7 @@ public class AppLanguageHelper {
 
     public synchronized static void setLanguage(LanguageOption option) {
         AppPreferences.getDefault().put(PREF_SELECTED_LOCALE, option);
+        currentLanguageOption = option;
         Resources res = ContextProvider.get().getResources();
         changeResourcesConfig(res);
     }
@@ -142,10 +106,9 @@ public class AppLanguageHelper {
     }
 
     private synchronized static void changeResourcesConfig(Resources res) {
-        LanguageOption option = getCurrentLanguageOption();
         DisplayMetrics dm = res.getDisplayMetrics();
         Configuration conf = res.getConfiguration();
-        conf.locale = option.locale;
+        conf.locale = getCurrentLanguageOption().getLocale();
         res.updateConfiguration(conf, dm);
     }
 }
