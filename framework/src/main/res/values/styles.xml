@@ -16,10 +16,22 @@
     </style>
 
 
-    <style name="SplashTheme" parent="AppTheme.Base">
+    <style name="SplashTheme.Base" parent="Theme.SplashScreen">
         <item name="android:windowFullscreen">true</item>
         <!-- 将启动Activity的背景设置为应用主题颜色，可以让启动效果更好 -->
         <!--<item name="android:windowBackground">@color/white</item>-->
+        <!-- Set the splash screen background, animated icon, and animation duration. -->
+        <item name="windowSplashScreenBackground">@color/white</item>
+
+        <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
+             animated drawable. One of these is required. -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_btn_clear</item>
+        <!-- Required for animated icons -->
+        <item name="windowSplashScreenAnimationDuration">500</item>
+
+        <!-- Set the theme of the Activity that directly follows your splash screen. -->
+        <!-- Required -->
+        <item name="postSplashScreenTheme">@style/AppTheme.Base</item>
     </style>
 
     <!-- 应用对话框样式 注意此处的parent,这个parent保证了dialog默认为material design规范的大小 -->
