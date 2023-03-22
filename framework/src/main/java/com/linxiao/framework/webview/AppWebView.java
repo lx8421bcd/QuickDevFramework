@@ -2,7 +2,6 @@ package com.linxiao.framework.webview;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Build;
@@ -22,9 +21,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import androidx.annotation.RequiresApi;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,12 +60,6 @@ public class AppWebView extends WebView {
          *         true: 执行WebView内部的处理流程
          */
         boolean onJSCall(AppWebView webView, String method, String body);
-    }
-
-    public interface GlobalJSCallHandler extends JSCallHandler {
-
-        boolean onOwnerActivityResult(AppWebView webView, int requestCode, int resultCode, Intent data);
-
     }
 
     /**
@@ -259,22 +249,6 @@ public class AppWebView extends WebView {
     }
 
     /**
-     * 用于触发{@link GlobalJSCallHandler}的onOwnerActivityResult回调
-     * <p>在对应Activity的onActivityResult()方法中调用此方法</p>
-     */
-    public void onOwnerActivityResult(int requestCode, int resultCode, Intent data) {
-        for (JSCallHandler handler : globalJSCallHandlers) {
-            if (handler instanceof GlobalJSCallHandler) {
-                boolean consumed = ((GlobalJSCallHandler) handler)
-                        .onOwnerActivityResult(this, requestCode, resultCode, data);
-                if (consumed) {
-                    return;
-                }
-            }
-        }
-    }
-
-    /**
      * 由ChildWebViewClient代理对外的WebViewClient设置，此类用于处理WebView内部的回调
      */
     private class WebViewClientWrapper extends WebViewClient {
@@ -330,7 +304,6 @@ public class AppWebView extends WebView {
         }
 
 
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
             if (mWebViewClient != null) {
@@ -397,7 +370,6 @@ public class AppWebView extends WebView {
             }
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public void onReceivedClientCertRequest(WebView view, ClientCertRequest request) {
             super.onReceivedClientCertRequest(view, request);
