@@ -2,25 +2,11 @@ package com.linxiao.framework.webview;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.net.http.SslError;
-import android.os.Build;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.webkit.ClientCertRequest;
-import android.webkit.HttpAuthHandler;
 import android.webkit.JavascriptInterface;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-
-import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +79,6 @@ public class AppWebView extends WebView {
     private static final List<JSCallHandler> globalJSCallHandlers = new ArrayList<>();
     private static String defaultUserAgent;
 
-    private WebViewClient mWebViewClient;
     private String defaultNativeToJsMethod = "";
     private JSCallHandler jsCallHandler;
 
@@ -140,26 +125,9 @@ public class AppWebView extends WebView {
         init();
     }
 
-    @Override
-    public void setWebViewClient(WebViewClient client) {
-        mWebViewClient = client;
-    }
-
     @SuppressLint("SetJavaScriptEnabled")
     private void init() {
         if (!isInEditMode()) {
-            super.setWebViewClient(new WebViewClientWrapper() {
-
-                @Override
-                public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                    super.onPageStarted(view, url, favicon);
-                }
-
-                @Override
-                public void onPageFinished(WebView view, String url) {
-                    super.onPageFinished(view, url);
-                }
-            });
 //        getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 //        getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
             getSettings().setAllowFileAccess(true);// 设置允许访问文件数据
@@ -246,177 +214,6 @@ public class AppWebView extends WebView {
         }
 
         Log.i(TAG, "onInvokeJSMethod: receive call from javascript but no method handled, method = " + method);
-    }
-
-    /**
-     * 由ChildWebViewClient代理对外的WebViewClient设置，此类用于处理WebView内部的回调
-     */
-    private class WebViewClientWrapper extends WebViewClient {
-
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (mWebViewClient != null) {
-                return mWebViewClient.shouldOverrideUrlLoading(view, url);
-            }
-            return super.shouldOverrideUrlLoading(view, url);
-        }
-
-        @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);
-            if (mWebViewClient != null) {
-                mWebViewClient.onPageStarted(view, url, favicon);
-            }
-        }
-
-        @Override
-        public void onPageFinished(WebView view, String url) {
-            super.onPageFinished(view, url);
-            if (mWebViewClient != null) {
-                mWebViewClient.onPageFinished(view, url);
-            }
-        }
-
-        @Override
-        public void onLoadResource(WebView view, String url) {
-            super.onLoadResource(view, url);
-            if (mWebViewClient != null) {
-                mWebViewClient.onLoadResource(view, url);
-            }
-        }
-
-
-        @RequiresApi(api = Build.VERSION_CODES.M)
-        @Override
-        public void onPageCommitVisible(WebView view, String url) {
-            super.onPageCommitVisible(view, url);
-            if (mWebViewClient != null) {
-                mWebViewClient.onPageCommitVisible(view, url);
-            }
-        }
-
-        @Override
-        public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-            if (mWebViewClient != null) {
-                return mWebViewClient.shouldInterceptRequest(view, url);
-            }
-            return super.shouldInterceptRequest(view, url);
-        }
-
-
-        @Override
-        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-            if (mWebViewClient != null) {
-                return mWebViewClient.shouldInterceptRequest(view, request);
-            }
-            return super.shouldInterceptRequest(view, request);
-        }
-
-        @Override
-        public void onTooManyRedirects(WebView view, Message cancelMsg, Message continueMsg) {
-            super.onTooManyRedirects(view, cancelMsg, continueMsg);
-            if (mWebViewClient != null) {
-                mWebViewClient.onTooManyRedirects(view, cancelMsg, continueMsg);
-            }
-        }
-
-        @Override
-        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-            super.onReceivedError(view, errorCode, description, failingUrl);
-            if (mWebViewClient != null) {
-                mWebViewClient.onReceivedError(view, errorCode, description, failingUrl);
-            }
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.M)
-        @Override
-        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-            super.onReceivedError(view, request, error);
-            if (mWebViewClient != null) {
-                mWebViewClient.onReceivedError(view, request, error);
-            }
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.M)
-        @Override
-        public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
-            super.onReceivedHttpError(view, request, errorResponse);
-            if (mWebViewClient != null) {
-                mWebViewClient.onReceivedHttpError(view, request, errorResponse);
-            }
-        }
-
-        @Override
-        public void onFormResubmission(WebView view, Message dontResend, Message resend) {
-            super.onFormResubmission(view, dontResend, resend);
-            if (mWebViewClient != null) {
-                mWebViewClient.onFormResubmission(view, dontResend, resend);
-            }
-        }
-
-        @Override
-        public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
-            super.doUpdateVisitedHistory(view, url, isReload);
-            if (mWebViewClient != null) {
-                mWebViewClient.doUpdateVisitedHistory(view, url, isReload);
-            }
-        }
-
-        @Override
-        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-            super.onReceivedSslError(view, handler, error);
-            if (mWebViewClient != null) {
-                mWebViewClient.onReceivedSslError(view, handler, error);
-            }
-        }
-
-        @Override
-        public void onReceivedClientCertRequest(WebView view, ClientCertRequest request) {
-            super.onReceivedClientCertRequest(view, request);
-            if (mWebViewClient != null) {
-                mWebViewClient.onReceivedClientCertRequest(view, request);
-            }
-        }
-
-        @Override
-        public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
-            super.onReceivedHttpAuthRequest(view, handler, host, realm);
-            if (mWebViewClient != null) {
-                mWebViewClient.onReceivedHttpAuthRequest(view, handler, host, realm);
-            }
-        }
-
-        @Override
-        public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
-            if (mWebViewClient != null) {
-                return mWebViewClient.shouldOverrideKeyEvent(view, event);
-            }
-            return super.shouldOverrideKeyEvent(view, event);
-        }
-
-        @Override
-        public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
-            super.onUnhandledKeyEvent(view, event);
-            if (mWebViewClient != null) {
-                mWebViewClient.onUnhandledKeyEvent(view, event);
-            }
-        }
-
-        @Override
-        public void onScaleChanged(WebView view, float oldScale, float newScale) {
-            super.onScaleChanged(view, oldScale, newScale);
-            if (mWebViewClient != null) {
-                mWebViewClient.onScaleChanged(view, oldScale, newScale);
-            }
-        }
-
-        @Override
-        public void onReceivedLoginRequest(WebView view, String realm, String account, String args) {
-            super.onReceivedLoginRequest(view, realm, account, args);
-            if (mWebViewClient != null) {
-                mWebViewClient.onReceivedLoginRequest(view, realm, account, args);
-            }
-        }
     }
 
 }
