@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_arrow_right_default" />
+        android:src="@drawable/ic_arrow_base" />
 
     <TextView
         android:id="@+id/tv_info"
