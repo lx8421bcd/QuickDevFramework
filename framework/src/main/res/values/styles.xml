@@ -15,7 +15,7 @@
         <!--<item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless</item>-->
     </style>
 
-
+    <!-- 启动屏基础样式 -->
     <style name="SplashTheme.Base" parent="Theme.SplashScreen">
         <item name="android:windowFullscreen">true</item>
         <!-- 将启动Activity的背景设置为应用主题颜色，可以让启动效果更好 -->
@@ -47,32 +47,14 @@
 
     </style>
 
-
-
-    <style name="TopDialogActivityTheme" parent="Theme.AppCompat.Light">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <!--<item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>-->
-        <item name="android:windowAnimationStyle">@style/TopDialogActivityAnimation</item>
-        <item name="android:windowExitAnimation">@null</item>
+    <!-- Dialog容器Activity样式 (背景透明，没有切换动画)  -->
+    <!-- 具体如果页面非透明（有ContentView）关闭动画需要手动设置setOverridePendingTransaction(false) -->
+    <style name="TopDialogActivityTheme" parent="AppTheme.Base">
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
         <item name="alertDialogTheme">@style/AppDialogTheme</item>
-    </style>
-
-    <style name="TopDialogActivityAnimation">
-        <item name="android:activityOpenEnterAnimation">@null</item>
-        <item name="android:activityOpenExitAnimation">@null</item>
-        <item name="android:activityCloseEnterAnimation">@null</item>
-        <item name="android:activityCloseExitAnimation">@null</item>
-        <item name="android:taskOpenEnterAnimation">@null</item>
-        <item name="android:taskOpenExitAnimation">@null</item>
-        <item name="android:taskCloseEnterAnimation">@null</item>
-        <item name="android:taskCloseExitAnimation">@null</item>
-        <item name="android:taskToFrontEnterAnimation">@null</item>
-        <item name="android:taskToFrontExitAnimation">@null</item>
-        <item name="android:taskToBackEnterAnimation">@null</item>
-        <item name="android:taskToBackExitAnimation">@null</item>
     </style>
 
     <!-- 底部弹出对话框基本样式 -->
