@@ -1,4 +1,4 @@
-package com.linxiao.framework.common.encyrpt;
+package com.linxiao.framework.common.encrypt;
 
 import android.util.Base64;
 
