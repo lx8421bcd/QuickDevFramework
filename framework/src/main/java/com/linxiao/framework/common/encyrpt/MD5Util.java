@@ -1,4 +1,4 @@
-package com.linxiao.framework.common;
+package com.linxiao.framework.common.encyrpt;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

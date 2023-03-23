@@ -37,7 +37,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testImplementation 'junit:junit:4.13.2'
-
+    // Android基础库
     api 'androidx.core:core-ktx:1.9.0'
     api 'androidx.appcompat:appcompat:1.6.1'
     api 'com.google.android.material:material:1.8.0'
@@ -49,23 +49,25 @@ dependencies {
     api "androidx.biometric:biometric:1.1.0"
     api 'androidx.multidex:multidex:2.0.1'
     api 'androidx.core:core-splashscreen:1.0.0'
-
+    // JSON解析
     api 'com.google.code.gson:gson:2.10'
-
+    // OKHttp
     api 'com.squareup.okhttp3:okhttp:4.9.0'
     api 'com.squareup.okio:okio:2.8.0'
     api 'com.squareup.okhttp3:okhttp-urlconnection:3.12.0'
     api 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
-
+    // Retrofit
     api 'com.squareup.retrofit2:retrofit:2.9.0'
     api 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
     api 'com.squareup.retrofit2:converter-gson:2.9.0'
-
+    // RxJava
     api 'io.reactivex.rxjava2:rxjava:2.2.21'
     api 'io.reactivex.rxjava2:rxandroid:2.1.1'
-
     api 'com.trello.rxlifecycle2:rxlifecycle:2.2.2'
     api 'com.trello.rxlifecycle2:rxlifecycle-components:2.2.1'
-
+    // Eventbus
     api 'org.greenrobot:eventbus:3.3.1'
+    // 加密算法库
+    api 'org.bouncycastle:bcprov-jdk15on:1.68'
+
 }
