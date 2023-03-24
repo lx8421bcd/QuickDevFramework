@@ -11,6 +11,7 @@ import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.io.File
 import java.security.SecureRandom
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSession
@@ -28,14 +29,11 @@ object GlobalOkHttpClientHelper {
     val globalHeaderMap = HashMap<String, String>()
     val globalOnApiResponseCallbackList = HashSet<OnApiResponseInterceptCallback>()
 
-    private val logoutScheduler = Schedulers.newThread()
-    var globalInfoCatchListener = HttpInfoCatchListener {
-        Observable.just(it)
-            .observeOn(logoutScheduler)
-            .doOnNext { entity ->
-                entity.logOut()
-            }
-            .subscribe()
+    private val logoutExecutor = Executors.newSingleThreadExecutor()
+    var globalInfoCatchListener = HttpInfoCatchListener { entity ->
+        Observable.fromCallable { entity.logOut() }
+        .subscribeOn(Schedulers.from(logoutExecutor))
+        .subscribe()
     }
 
     private val httpInfoCatchInterceptor: HttpInfoCatchInterceptor by lazy {
