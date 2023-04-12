@@ -1,15 +1,19 @@
 package com.linxiao.framework.architecture;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 import androidx.activity.result.ActivityResult;
@@ -260,5 +264,22 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
                 finish();
             }
         }
+    }
+
+    protected boolean isTranslucent(Activity activity) {
+        Window window = activity.getWindow();
+        WindowManager.LayoutParams attributes = window.getAttributes();
+        int flagTranslucentStatus = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+        int flagTranslucentNavigation = WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
+        if ((attributes.flags & flagTranslucentStatus) == flagTranslucentStatus ||
+            (attributes.flags & flagTranslucentNavigation) == flagTranslucentNavigation
+        ) {
+            return true;
+        }
+        Drawable background = window.getDecorView().getBackground();
+        if (background != null && background.getOpacity() == PixelFormat.OPAQUE) {
+            return false;
+        }
+        return true;
     }
 }
