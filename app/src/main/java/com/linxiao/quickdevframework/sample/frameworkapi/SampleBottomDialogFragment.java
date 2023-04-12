@@ -1,7 +1,13 @@
 package com.linxiao.quickdevframework.sample.frameworkapi;
 
 import android.app.Dialog;
+import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.linxiao.framework.architecture.BaseBottomDialogFragment;
 import com.linxiao.quickdevframework.R;
@@ -12,20 +18,16 @@ import com.linxiao.quickdevframework.R;
  */
 public class SampleBottomDialogFragment extends BaseBottomDialogFragment {
 
+
+    @Nullable
     @Override
-    protected int configureContentViewRes() {
-        return R.layout.dialog_bottom_sample;
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.dialog_bottom_sample, container);
     }
 
     @Override
-    protected void configureDialog(final Dialog dialog, View contentView) {
-        contentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getDialog().findViewById(R.id.root_view).setOnClickListener(v -> dismiss());
     }
-
-
 }
