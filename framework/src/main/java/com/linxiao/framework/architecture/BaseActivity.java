@@ -59,12 +59,16 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     protected String TAG;
     public static final String ACTION_EXIT_APPLICATION = "exit_application";
 
-    private boolean printLifeCycle = false;
-    private ActivityBaseReceiver mReceiver;
+    private boolean printLifecycle = false;
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
     private final BehaviorSubject<Object> finishSubject = BehaviorSubject.create();
     private static final Object finishSignal = new Object();
     private boolean hideKeyboardOnTouchOutside = false;
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(LanguageChangedEvent event) {
+        this.recreate();
+    }
 
     @Override
     @NonNull
@@ -80,9 +84,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         return RxLifecycle.bindUntilEvent(lifecycleSubject, event);
     }
 
-    /**
-     * notify subscriber once {@link #finish()} has been called
-     */
     @NonNull
     @CheckResult
     public final <T> LifecycleTransformer<T> bindUntilFinish() {
@@ -96,18 +97,22 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         return RxLifecycleAndroid.bindActivity(lifecycleSubject);
     }
 
+    public void printLifecycle(boolean print) {
+        this.printLifecycle = print;
+    }
+
+    public void setHideKeyboardOnTouchOutside(boolean hideKeyboardOnTouchOutside) {
+        this.hideKeyboardOnTouchOutside = hideKeyboardOnTouchOutside;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TAG = this.getClass().getSimpleName();
         lifecycleSubject.onNext(ActivityEvent.CREATE);
-        if (printLifeCycle) {
+        if (printLifecycle) {
             Log.d(TAG, "onCreate");
         }
-        TAG = this.getClass().getSimpleName();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_EXIT_APPLICATION);
-        mReceiver = new ActivityBaseReceiver();
-        registerReceiver(mReceiver, filter);
         EventBus.getDefault().register(this);
     }
 
@@ -115,7 +120,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     protected void onStart() {
         super.onStart();
         lifecycleSubject.onNext(ActivityEvent.START);
-        if (printLifeCycle) {
+        if (printLifecycle) {
             Log.d(TAG, "onStart");
         }
     }
@@ -124,7 +129,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     protected void onResume() {
         super.onResume();
         lifecycleSubject.onNext(ActivityEvent.RESUME);
-        if (printLifeCycle) {
+        if (printLifecycle) {
             Log.d(TAG, "onResume");
         }
     }
@@ -133,7 +138,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     protected void onPause() {
         super.onPause();
         lifecycleSubject.onNext(ActivityEvent.PAUSE);
-        if (printLifeCycle) {
+        if (printLifecycle) {
             Log.d(TAG, "onPause");
         }
     }
@@ -142,7 +147,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     protected void onStop() {
         super.onStop();
         lifecycleSubject.onNext(ActivityEvent.STOP);
-        if (printLifeCycle) {
+        if (printLifecycle) {
             Log.d(TAG, "onStop");
         }
     }
@@ -150,7 +155,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     @Override
     protected void onRestart() {
         super.onRestart();
-       if (printLifeCycle) {
+       if (printLifecycle) {
            Log.d(TAG, "onRestart");
        }
     }
@@ -159,10 +164,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     protected void onDestroy() {
         super.onDestroy();
         lifecycleSubject.onNext(ActivityEvent.DESTROY);
-        if (printLifeCycle) {
+        if (printLifecycle) {
             Log.d(TAG, "onDestroy");
         }
-        unregisterReceiver(mReceiver);
         EventBus.getDefault().unregister(this);
     }
 
@@ -182,14 +186,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         ActivityResultHolderFragment.startActivityForCallback(this, intent, callback, null);
     }
 
-    public void setHideKeyboardOnTouchOutside(boolean hideKeyboardOnTouchOutside) {
-        this.hideKeyboardOnTouchOutside = hideKeyboardOnTouchOutside;
-    }
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (hideKeyboardOnTouchOutside) {
-            if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            if (hideKeyboardOnTouchOutside) {
                 View v = getCurrentFocus();
                 if (shouldHideInput(v, ev)) {
                     KeyboardUtil.hideKeyboard(getWindow().getDecorView());
@@ -240,32 +240,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         return resources;
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(LanguageChangedEvent event) {
-        this.recreate();
-    }
-
-    /**
-     * set is print activity lifecycle
-     * <p>if true, activity will log out life cycle</p>
-     * */
-    public void printLifecycle(boolean printLifeCycle) {
-        this.printLifeCycle = printLifeCycle;
-    }
-
-    /**
-     * 基础类Activity的BroadcastReceiver
-     */
-    protected class ActivityBaseReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(ACTION_EXIT_APPLICATION)) {
-                finish();
-            }
-        }
-    }
-
     protected boolean isTranslucent(Activity activity) {
         Window window = activity.getWindow();
         WindowManager.LayoutParams attributes = window.getAttributes();
@@ -277,9 +251,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
             return true;
         }
         Drawable background = window.getDecorView().getBackground();
-        if (background != null && background.getOpacity() == PixelFormat.OPAQUE) {
-            return false;
-        }
-        return true;
+        return background == null || background.getOpacity() != PixelFormat.OPAQUE;
     }
 }
