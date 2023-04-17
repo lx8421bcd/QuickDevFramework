@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_round_corner_8"
+    android:backgroundTintMode="src_over"
+    android:orientation="vertical"
+    android:padding="40dp"
+    tools:context=".dialog.LoadingDialogFragment"
+    tools:layout_gravity="center">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="12dp"
+        android:gravity="center_horizontal"
+        android:maxWidth="160dp"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:visibility="gone"
+        tools:text="title"
+        tools:visibility="visible" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:indeterminateTint="@color/colorPrimary"/>
+
+    <TextView
+        android:id="@+id/tv_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:maxWidth="160dp"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:visibility="gone"
+        tools:text="progress text"
+        tools:visibility="visible" />
+
+</LinearLayout>
