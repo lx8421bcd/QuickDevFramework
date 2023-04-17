@@ -6,13 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 
-import com.linxiao.framework.architecture.BaseActivity;
-import com.linxiao.framework.architecture.BaseFragment;
-
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 
 /**
@@ -36,11 +31,7 @@ public abstract class SimpleViewBindingFragment<B extends ViewBinding> extends B
         try {
             binding = (B) bindingClass.getMethod("inflate", LayoutInflater.class)
                     .invoke(null, getLayoutInflater());
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -48,8 +39,7 @@ public abstract class SimpleViewBindingFragment<B extends ViewBinding> extends B
     @SuppressWarnings("unchecked")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setViewBinding((Class<B>) ((ParameterizedType) getClass()
-                .getGenericSuperclass()).getActualTypeArguments()[0]);
+        setViewBinding((Class<B>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
         return binding.getRoot();
     }
 

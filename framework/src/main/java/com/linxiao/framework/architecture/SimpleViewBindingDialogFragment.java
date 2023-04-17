@@ -1,22 +1,18 @@
 package com.linxiao.framework.architecture;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.viewbinding.ViewBinding;
 
 import java.lang.reflect.ParameterizedType;
 
-/**
- * <p>
- * class usage summary
- * </p>
- *
- * @author linxiao
- * @since 2020-10-20
- */
-public abstract class SimpleViewBindingActivity<B extends ViewBinding> extends BaseActivity {
+public abstract class SimpleViewBindingDialogFragment<B extends ViewBinding> extends BaseDialogFragment {
 
     private B binding = null;
 
@@ -32,13 +28,18 @@ public abstract class SimpleViewBindingActivity<B extends ViewBinding> extends B
         } catch (Exception e) {
             e.printStackTrace();
         }
-        setContentView(binding.getRoot());
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setViewBinding((Class<B>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 }

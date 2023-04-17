@@ -4,8 +4,8 @@ import android.content.res.Resources;
 
 import androidx.multidex.MultiDexApplication;
 
-import com.linxiao.framework.language.AppLanguageHelper;
 import com.linxiao.framework.common.DensityHelper;
+import com.linxiao.framework.language.AppLanguageHelper;
 
 /**
  * Base Application class in framework
