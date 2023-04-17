@@ -1,13 +1,11 @@
 package com.linxiao.framework.architecture;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -23,9 +21,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.linxiao.framework.language.AppLanguageHelper;
 import com.linxiao.framework.common.DensityHelper;
 import com.linxiao.framework.common.KeyboardUtil;
+import com.linxiao.framework.language.AppLanguageHelper;
 import com.linxiao.framework.language.LanguageChangedEvent;
 import com.linxiao.framework.permission.PermissionManager;
 import com.trello.rxlifecycle2.LifecycleProvider;
@@ -57,7 +55,6 @@ import io.reactivex.subjects.BehaviorSubject;
 public abstract class BaseActivity extends AppCompatActivity implements LifecycleProvider<ActivityEvent> {
 
     protected String TAG;
-    public static final String ACTION_EXIT_APPLICATION = "exit_application";
 
     private boolean printLifecycle = false;
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
@@ -182,6 +179,17 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         PermissionManager.handleCallback(this, requestCode, permissions, grantResults);
     }
 
+    @Override
+    public void setRequestedOrientation(int requestedOrientation) {
+        if (isTranslucent() && Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+            if (requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+                // return to avoid crash in Android O
+                return;
+            }
+        }
+        super.setRequestedOrientation(requestedOrientation);
+    }
+
     public void startActivityForCallback(Intent intent, ActivityResultCallback<ActivityResult> callback) {
         ActivityResultHolderFragment.startActivityForCallback(this, intent, callback, null);
     }
@@ -240,9 +248,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         return resources;
     }
 
-    protected boolean isTranslucent(Activity activity) {
-        Window window = activity.getWindow();
-        WindowManager.LayoutParams attributes = window.getAttributes();
+    protected boolean isTranslucent() {
+        WindowManager.LayoutParams attributes = getWindow().getAttributes();
         int flagTranslucentStatus = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
         int flagTranslucentNavigation = WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
         if ((attributes.flags & flagTranslucentStatus) == flagTranslucentStatus ||
@@ -250,7 +257,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         ) {
             return true;
         }
-        Drawable background = window.getDecorView().getBackground();
+        Drawable background = getWindow().getDecorView().getBackground();
         return background == null || background.getOpacity() != PixelFormat.OPAQUE;
     }
 }
