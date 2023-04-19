@@ -13,9 +13,10 @@ import io.reactivex.functions.Function;
  */
 public class ApiResponseParseFunction<T> implements Function<ApiResponse, T> {
 
-    private Type type = Object.class;
+    private final Type type;
 
     public ApiResponseParseFunction() {
+        type = Object.class;
     }
 
     public ApiResponseParseFunction(Class<T> clazz) {
@@ -33,11 +34,11 @@ public class ApiResponseParseFunction<T> implements Function<ApiResponse, T> {
         if (!apiResponse.isSuccess()) {
             throw new ApiResponse.ApiException(apiResponse);
         }
+        if (type == Object.class) {
+            return (T) (apiResponse.data == null ? "" : apiResponse.data);
+        }
         ret = GsonParser.getParser().fromJson(apiResponse.data, type);
         if (ret == null) {
-            if (type == Object.class) {
-                return (T) apiResponse;
-            }
             throw new ApiResponse.ApiException(apiResponse);
         }
         return ret;
