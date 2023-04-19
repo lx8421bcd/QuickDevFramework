@@ -3,7 +3,7 @@ package com.linxiao.quickdevframework.sample.frameworkapi;
 import android.app.IntentService;
 import android.content.Intent;
 
-import com.linxiao.framework.dialog.AlertDialogManager;
+import com.linxiao.framework.dialog.DialogExtensionsKt;
 
 
 /**
@@ -19,6 +19,6 @@ public class BackgroundService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        AlertDialogManager.showAlertDialog("this is top dialog from service");
+        DialogExtensionsKt.showAlert("this is top dialog from service");
     }
 }

@@ -9,11 +9,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentActivity;
+
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.linxiao.framework.common.ApplicationUtil;
-import com.linxiao.framework.dialog.AlertDialogManager;
+import com.linxiao.framework.dialog.AlertDialogFragment;
 
 import java.util.ArrayList;
 
@@ -119,7 +121,7 @@ public class PermissionOperator {
      * @param activity 执行代码的Activity，局部变量，用于执行申请权限方法
      * @param callback 权限检查/申请后的回调监听
      * */
-    public void perform(final Activity activity, RequestPermissionCallback callback) {
+    public void perform(final FragmentActivity activity, RequestPermissionCallback callback) {
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (requestPermissions == null || requestPermissions.isEmpty()) {
                 callback.onGranted();
@@ -152,7 +154,7 @@ public class PermissionOperator {
             execRequest(activity, callback);
             return;
         }
-        AlertDialogManager.createAlertDialogBuilder()
+        new AlertDialogFragment()
         .setMessage(requestDesc)
         .setPositiveButton((dialog, which) -> {
             execRequest(activity, callback);
@@ -163,11 +165,11 @@ public class PermissionOperator {
             dialog.dismiss();
             currCallback.onDenied();
         })
-        .setCancelable(false)
-        .show();
+        .setDialogCancelable(false)
+        .show(activity.getSupportFragmentManager());
     }
 
-    public Observable<Object> performRx(final Activity activity) {
+    public Observable<Object> performRx(final FragmentActivity activity) {
         return Observable.create(emitter -> perform(activity, new RequestPermissionCallback() {
             @Override
             public void onGranted() {

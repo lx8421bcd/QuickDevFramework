@@ -11,12 +11,14 @@ import android.os.Build;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentActivity;
+
 import android.util.Log;
 
 import com.linxiao.framework.R;
 import com.linxiao.framework.common.ApplicationUtil;
 import com.linxiao.framework.common.ContextProvider;
-import com.linxiao.framework.dialog.AlertDialogManager;
+import com.linxiao.framework.dialog.AlertDialogFragment;
 
 /**
  * 权限管理类
@@ -234,17 +236,18 @@ public class PermissionManager {
     /**
      * 当权限申请Dialog被用户禁止弹出时使用，引导用户前往应用权限页面开启权限
      */
-    public static void showPermissionProhibitedDialog(final Activity context, String permission) {
+    public static void showPermissionProhibitedDialog(final FragmentActivity context, String permission) {
         String permissionGroupName = PermissionManager.getPermissionGroupName(context, permission);
         String message = permissionGroupName + context.getString(R.string.toast_permission_denied);
-        AlertDialogManager.createAlertDialogBuilder()
-        .setMessage(message)
+        AlertDialogFragment dialogFragment = new AlertDialogFragment();
+        dialogFragment.setMessage(message)
         .setPositiveButton((dialog, which) -> {
             // jump to application detail
             ApplicationUtil.openAppDetail(context);
+            dialog.dismiss();
         })
         .setNegativeButton((dialog, which) -> dialog.dismiss())
-        .show();
+        .show(context.getSupportFragmentManager());
     }
 
     /**

@@ -7,56 +7,47 @@
     android:orientation="vertical"
     tools:context=".sample.frameworkapi.DialogApiFragment">
 
-    <LinearLayout
-        android:id="@+id/llSimpleAlert"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:padding="12dp"
+        android:text="Alert content type"/>
 
-        <CheckBox
-            android:id="@+id/cbShowTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="show title" />
+    <RadioGroup
+        android:id="@+id/rg_content_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <CheckBox
-            android:id="@+id/cbShowIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="show icon" />
-
-        <CheckBox
-            android:id="@+id/cbSetPositive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="set positive button" />
-
-        <CheckBox
-            android:id="@+id/cbSetNegative"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="set negative button" />
-
-        <CheckBox
-            android:id="@+id/cbSetCancelAble"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="set cancelable" />
-
-
-        <Button
-            android:id="@+id/btnShowAlertDialog"
+        <RadioButton
+            android:id="@+id/rb_type_string"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="show alert dialog" />
+            android:checked="true"
+            android:text="string text"/>
 
-    </LinearLayout>
+        <RadioButton
+            android:id="@+id/rb_type_html_string"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="html content"/>
+
+        <RadioButton
+            android:id="@+id/rb_type_html_link"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="html link"/>
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnShowAlertDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="show alert dialog" />
 
     <View
         style="@style/HorizontalDivider"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="16dp" />
+        android:layout_margin="12dp"/>
 
     <Button
         android:id="@+id/btnShowSimpleDialog"

@@ -54,9 +54,9 @@ public class MainActivity extends SimpleViewBindingActivity<ActivityMainBinding>
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setImmersiveMode(true);
-        StatusBarUtil.setStatusBarColor(this, Color.TRANSPARENT);
-        StatusBarUtil.setStatusBarLightMode(this, true);
+//        setImmersiveMode(true);
+//        StatusBarUtil.setStatusBarColor(this, Color.TRANSPARENT);
+//        StatusBarUtil.setStatusBarLightMode(this, true);
 
         contentBinding = getViewBinding().contentMain;
         setSupportActionBar(getViewBinding().toolbar);

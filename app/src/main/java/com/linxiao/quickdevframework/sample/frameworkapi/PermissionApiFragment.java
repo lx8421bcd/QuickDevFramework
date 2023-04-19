@@ -7,7 +7,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.linxiao.framework.dialog.AlertDialogManager;
+import com.linxiao.framework.dialog.DialogExtensionsKt;
 import com.linxiao.framework.permission.PermissionManager;
 import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.databinding.FragmentPermissionApiBinding;
@@ -31,12 +31,12 @@ public class PermissionApiFragment extends SimpleViewBindingFragment<FragmentPer
         .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
-                AlertDialogManager.showAlertDialog("权限已授予");
+                DialogExtensionsKt.showAlert("权限已授予");
             }
 
             @Override
             public void onDenied() {
-                AlertDialogManager.showAlertDialog("未授予权限");
+                DialogExtensionsKt.showAlert("未授予权限");
             }
         });
     }
@@ -48,12 +48,12 @@ public class PermissionApiFragment extends SimpleViewBindingFragment<FragmentPer
         .perform(getActivity(),new RequestPermissionCallback() {
             @Override
             public void onGranted() {
-                AlertDialogManager.showAlertDialog("权限已授予");
+                DialogExtensionsKt.showAlert("权限已授予");
             }
 
             @Override
             public void onDenied() {
-                AlertDialogManager.showAlertDialog("未授予权限");
+                DialogExtensionsKt.showAlert("未授予权限");
             }
         });
     }
@@ -69,12 +69,12 @@ public class PermissionApiFragment extends SimpleViewBindingFragment<FragmentPer
         .perform(getActivity(),new RequestPermissionCallback() {
             @Override
             public void onGranted() {
-                AlertDialogManager.showAlertDialog("权限已授予");
+                DialogExtensionsKt.showAlert("权限已授予");
             }
 
             @Override
             public void onDenied() {
-                AlertDialogManager.showAlertDialog("未授予权限");
+                DialogExtensionsKt.showAlert("未授予权限");
             }
         });
     }
@@ -85,12 +85,12 @@ public class PermissionApiFragment extends SimpleViewBindingFragment<FragmentPer
         .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
-                AlertDialogManager.showAlertDialog("权限已授予");
+                DialogExtensionsKt.showAlert("权限已授予");
             }
 
             @Override
             public void onDenied() {
-                AlertDialogManager.showAlertDialog("未授予权限");
+                DialogExtensionsKt.showAlert("未授予权限");
             }
         });
     }
@@ -101,12 +101,12 @@ public class PermissionApiFragment extends SimpleViewBindingFragment<FragmentPer
         .perform(getActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
-                AlertDialogManager.showAlertDialog("权限已授予");
+                DialogExtensionsKt.showAlert("权限已授予");
             }
 
             @Override
             public void onDenied() {
-                AlertDialogManager.showAlertDialog("未授予权限");
+                DialogExtensionsKt.showAlert("未授予权限");
             }
         });
     }

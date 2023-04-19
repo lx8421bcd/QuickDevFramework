@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.linxiao.framework.common.ToastAlert;
-import com.linxiao.framework.dialog.AlertDialogManager;
+import com.linxiao.framework.dialog.DialogExtensionsKt;
 import com.linxiao.framework.file.FileCopyTask;
 import com.linxiao.framework.file.FileDeleteTask;
 import com.linxiao.framework.file.FileModifyListener;
@@ -57,7 +57,7 @@ public class FileApiFragment extends SimpleViewBindingFragment<FragmentFileApiBi
 
             @Override
             public void onDenied() {
-                AlertDialogManager.showAlertDialog("请授予文件管理权限");
+                DialogExtensionsKt.showAlert("请授予文件管理权限");
             }
         });
         getViewBinding().btnCopyFileSimple.setOnClickListener(v -> OnCopyFileSimple());

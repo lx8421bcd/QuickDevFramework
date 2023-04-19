@@ -2,6 +2,8 @@ package com.linxiao.framework.architecture;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.CheckResult;
@@ -78,9 +80,21 @@ public abstract class BaseDialogFragment extends AppCompatDialogFragment impleme
 
     @Override
     @CallSuper
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         lifecycleSubject.onNext(FragmentEvent.CREATE_VIEW);
+        if (getDialog() != null) {
+            Window win = getDialog().getWindow();
+            //恢复dialog宽度设置
+            if (win != null) {
+                win.setLayout(
+                        WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT
+                );
+                //去除默认dialog白色背景
+                win.getDecorView().getBackground().setAlpha(0);
+            }
+        }
     }
 
     @Override
