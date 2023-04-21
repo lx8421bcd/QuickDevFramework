@@ -33,8 +33,8 @@ public class NotificationApiFragment extends SimpleViewBindingFragment<FragmentN
                 .setContentTitle("简单通知")
                 .setContentText("这是一条简单的通知");
         Intent intent = new Intent(getActivity(), NotificationTargetActivity.class);
-        builder.setContentIntent(NotificationManager.getBroadcastIntent(getActivity(), intent));
-        NotificationManager.show(123, builder);
+        builder.setContentIntent(NotificationManager.getActivityPendingIntent(getActivity(), intent));
+        NotificationManager.notify(123, builder);
     }
 
     public void onSendBigTextClick(View v) {
@@ -50,8 +50,8 @@ public class NotificationApiFragment extends SimpleViewBindingFragment<FragmentN
                 "big text summary",
                 bigText);
         Intent intent = new Intent(getActivity(), NotificationTargetActivity.class);
-        builder.setContentIntent(NotificationManager.getBroadcastIntent(getActivity(), intent));
-        NotificationManager.show(124, builder);
+        builder.setContentIntent(NotificationManager.getActivityPendingIntent(getActivity(), intent));
+        NotificationManager.notify(124, builder);
     }
 
     public void onSendBigPictureClick(View v) {
@@ -63,8 +63,8 @@ public class NotificationApiFragment extends SimpleViewBindingFragment<FragmentN
                 "bit picture summary",
                 BitmapFactory.decodeResource(getResources(), R.drawable.ic_notify));
         Intent intent = new Intent(getActivity(), NotificationTargetActivity.class);
-        builder.setContentIntent(NotificationManager.getBroadcastIntent(getActivity(), intent));
-        NotificationManager.show(125, builder);
+        builder.setContentIntent(NotificationManager.getActivityPendingIntent(getActivity(), intent));
+        NotificationManager.notify(125, builder);
     }
 
     public void onSendInboxClick(View v) {
@@ -76,8 +76,8 @@ public class NotificationApiFragment extends SimpleViewBindingFragment<FragmentN
                 "inbox summary",
                 Arrays.asList("这是一行内容", "这是一行内容", "这是一行内容", "这是一行内容"));
         Intent intent = new Intent(getActivity(), NotificationTargetActivity.class);
-        builder.setContentIntent(NotificationManager.getBroadcastIntent(getActivity(), intent));
-        NotificationManager.show(126, builder);
+        builder.setContentIntent(NotificationManager.getActivityPendingIntent(getActivity(), intent));
+        NotificationManager.notify(126, builder);
     }
 
     public void onSendHangUpClick(View v) {
@@ -85,8 +85,8 @@ public class NotificationApiFragment extends SimpleViewBindingFragment<FragmentN
                 .setContentTitle("横幅通知")
                 .setContentText("这是一条横幅通知");
         Intent intent = new Intent(getActivity(), NotificationTargetActivity.class);
-        builder.setContentIntent(NotificationManager.getBroadcastIntent(getActivity(), intent));
-        NotificationManager.show(126, builder);
+        builder.setContentIntent(NotificationManager.getActivityPendingIntent(getActivity(), intent));
+        NotificationManager.notify(126, builder);
     }
 
 }
