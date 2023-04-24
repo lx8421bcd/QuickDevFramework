@@ -1,13 +1,15 @@
 package com.linxiao.framework.notification
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.media.AudioAttributes
+import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
 import android.util.Log
@@ -66,23 +68,20 @@ object NotificationUtil {
      * @param channelName channelName
      * @param importance  channelImportance, see importance constants in [NotificationManagerCompat]
      */
-    @SuppressLint("WrongConstant")
     @JvmStatic
     @JvmOverloads
     fun createChannel(
         channelId: String,
         channelName: String,
-        importance: Int = NotificationManagerCompat.IMPORTANCE_DEFAULT
+        importance: Int = NotificationManager.IMPORTANCE_DEFAULT,
+        sound: Uri? = null,
+        audioAttributes: AudioAttributes? = null
     ) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return
         }
-        var channel = notificationManager.getNotificationChannel(channelId)
-        if (channel != null) {
-            return
-        }
-        channel = NotificationChannel(channelId, channelName, importance)
-        channel.setSound(null, null)
+        val channel = notificationManager.getNotificationChannel(channelId) ?: NotificationChannel(channelId, channelName, importance)
+        channel.setSound(sound, audioAttributes)
         notificationManager.createNotificationChannel(channel)
     }
 
@@ -119,6 +118,7 @@ object NotificationUtil {
             .setAutoCancel(true)
         return builder
     }
+
     /**
      * create a hangup notification builder
      *
@@ -132,18 +132,6 @@ object NotificationUtil {
      * @param channelName channelName
      * @return instance of [NotificationCompat.Builder]
      */
-    /**
-     * create a hangup notification builder
-     *
-     *
-     * ensure the created notification will show normally and won't trigger crash.
-     * put default notification channel for Android O and after.
-     * auto cancel.
-     *
-     *
-     * @param channelId channelId
-     * @return instance of [NotificationCompat.Builder]
-     */
     @JvmStatic
     @JvmOverloads
     fun createHangup(
@@ -153,20 +141,14 @@ object NotificationUtil {
         // to ensure the hangup style show normally,
         // channel importance must set higher than IMPORTANCE_HIGH
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val manager = notificationManager
-            var channel = manager.getNotificationChannel(channelName)
+            var channel = notificationManager.getNotificationChannel(channelName)
             if (channel == null) {
-                channel = NotificationChannel(
-                    channelId, channelName,
-                    android.app.NotificationManager.IMPORTANCE_HIGH
-                )
+                channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
                 channel.setSound(null, null)
-                manager.createNotificationChannel(channel)
+                notificationManager.createNotificationChannel(channel)
             }
         }
-        val builder = NotificationCompat.Builder(
-            ContextProvider.get(), channelName
-        )
+        val builder = NotificationCompat.Builder(ContextProvider.get(), channelName)
         builder.setSmallIcon(defaultIconRes)
             .setContentTitle(defaultTitle)
             .setContentText(" ")
