@@ -25,7 +25,7 @@
 
         <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
              animated drawable. One of these is required. -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_btn_clear</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_notification_default</item>
         <!-- Required for animated icons -->
         <item name="windowSplashScreenAnimationDuration">500</item>
 

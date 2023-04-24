@@ -23,6 +23,7 @@ public class SplashActivity extends BaseSplashActivity {
 
     private void execInit() {
         new Handler().postDelayed(() -> {
+            //此字段为true时show UI
             dataReady = true;
             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
             startActivity(intent);
