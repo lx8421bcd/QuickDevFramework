@@ -80,7 +80,11 @@ object NotificationUtil {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return
         }
-        val channel = notificationManager.getNotificationChannel(channelId) ?: NotificationChannel(channelId, channelName, importance)
+        var channel = notificationManager.getNotificationChannel(channelId)
+        if (channel == null) {
+            channel = NotificationChannel(channelId, channelName, importance)
+        }
+        channel.name = channelName
         channel.setSound(sound, audioAttributes)
         notificationManager.createNotificationChannel(channel)
     }
