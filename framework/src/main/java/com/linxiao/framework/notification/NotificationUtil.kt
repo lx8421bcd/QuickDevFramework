@@ -1,252 +1,259 @@
-package com.linxiao.framework.notification;
+package com.linxiao.framework.notification
 
-import android.Manifest;
-import android.app.NotificationChannel;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.os.Build;
-import android.text.TextUtils;
-import android.util.Log;
-
-import androidx.annotation.DrawableRes;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-
-import com.linxiao.framework.R;
-import com.linxiao.framework.common.ContextProvider;
-
-import java.util.List;
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.os.Build
+import android.text.TextUtils
+import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import com.linxiao.framework.R
+import com.linxiao.framework.common.ContextProvider
 
 /**
  * 通知消息包装器
  * Created by linxiao on 2016-11-27.
  */
-public class NotificationManager {
+object NotificationUtil {
 
-    private static final String TAG = NotificationManager.class.getSimpleName();
-    public static int defaultIcon = R.drawable.ic_notify_default;
-    private static String defaultTitle = " ";
+    private val TAG = NotificationUtil::class.java.simpleName
 
-    private NotificationManager() {
-    }
+    private var defaultIconRes = R.drawable.ic_notification_default
+        set(value) {
+            if (value != 0) {
+                field = value
+            }
+        }
 
-    public static void setDefaultTitle(String defaultTitle) {
-        NotificationManager.defaultTitle = defaultTitle;
-    }
-
-    public static void setDefaultIconRes(@DrawableRes int defaultIcon) {
-        NotificationManager.defaultIcon = defaultIcon;
-    }
+    private var defaultTitle = " "
+        set(value) {
+            if (value.isNotEmpty()) {
+                field = value
+            }
+        }
 
     /**
      * get system NotificationManager
      *
-     * @return instance of {@link NotificationManagerCompat}
+     * @return instance of [NotificationManagerCompat]
      */
-    public static NotificationManagerCompat getNotificationManager() {
-        return NotificationManagerCompat.from(ContextProvider.get());
+    val notificationManager by lazy {
+        return@lazy NotificationManagerCompat.from(ContextProvider.get())
     }
 
     /**
      * check notification is closed by user
      */
-    public static boolean isNotificationEnabled() {
-        return getNotificationManager().areNotificationsEnabled();
+    @JvmStatic
+    fun isNotificationEnabled(): Boolean {
+        return notificationManager.areNotificationsEnabled()
     }
 
     /**
      * create a simple channel for app's notification if not exists
-     * <p>
+     *
      * once channel are created, app cannot change it's config from the code.
      * channel's config can only changed by user manually
-     * </p>
      *
      * @param channelId   channelId
      * @param channelName channelName
+     * @param importance  channelImportance, see importance constants in [NotificationManagerCompat]
      */
-    public static void createChannel(String channelId, String channelName) {
-        createChannel(channelId, channelName, NotificationManagerCompat.IMPORTANCE_DEFAULT);
-    }
-
-    /**
-     * create a simple channel for app's notification if not exists
-     * <p>
-     * once channel are created, app cannot change it's config from the code.
-     * channel's config can only changed by user manually
-     * </p>
-     *
-     * @param channelId   channelId
-     * @param channelName channelName
-     * @param importance  channelImportance, see importance constants in {@link NotificationManagerCompat}
-     */
-    public static void createChannel(String channelId, String channelName, int importance) {
+    @SuppressLint("WrongConstant")
+    @JvmStatic
+    @JvmOverloads
+    fun createChannel(
+        channelId: String,
+        channelName: String,
+        importance: Int = NotificationManagerCompat.IMPORTANCE_DEFAULT
+    ) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return;
+            return
         }
-        NotificationManagerCompat manager = getNotificationManager();
-        NotificationChannel mChannel = manager.getNotificationChannel(channelId);
-        if (mChannel != null) {
-            return;
+        var channel = notificationManager.getNotificationChannel(channelId)
+        if (channel != null) {
+            return
         }
-        mChannel = new NotificationChannel(channelId, channelName, importance);
-        mChannel.setSound(null, null);
-        manager.createNotificationChannel(mChannel);
+        channel = NotificationChannel(channelId, channelName, importance)
+        channel.setSound(null, null)
+        notificationManager.createNotificationChannel(channel)
     }
 
     /**
-     * create a notification safe builder
-     * <p>
-     * ensure the created notification will show normally and won't trigger crash.
-     * put default notification channel to adapt Android O+
-     * </p>
-     *
-     * @return instance of {@link NotificationCompat.Builder}
+     * delete notification channel
      */
-    public static NotificationCompat.Builder create() {
-        return create("default");
+    @JvmStatic
+    fun deleteChannel(channelId: String) {
+        notificationManager.deleteNotificationChannel(channelId)
     }
 
     /**
      * create a notification safe builder
-     * <p>
+     *
      * ensure the created notification will show normally and won't trigger crash.
      * put default notification channel for Android O and after.
      * auto cancel.
-     * </p>
      *
+     * @param channelId channelId
      * @param channelName channelName
-     * @return instance of {@link NotificationCompat.Builder}
+     * @return instance of [NotificationCompat.Builder]
      */
-    public static NotificationCompat.Builder create(String channelName) {
-        createChannel(channelName, channelName);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(
-                ContextProvider.get(), channelName);
-        builder.setSmallIcon(defaultIcon)
-                .setContentTitle(defaultTitle)
-                .setContentText(" ")
-                .setAutoCancel(true);
-        return builder;
+    @JvmStatic
+    @JvmOverloads
+    fun create(
+        channelId: String = "default",
+        channelName: String = channelId
+    ): NotificationCompat.Builder {
+        createChannel(channelId, channelName)
+        val builder = NotificationCompat.Builder(ContextProvider.get(), channelId)
+        builder.setSmallIcon(defaultIconRes)
+            .setContentTitle(defaultTitle)
+            .setContentText(" ")
+            .setAutoCancel(true)
+        return builder
     }
-
     /**
      * create a hangup notification builder
-     * <p>
+     *
+     *
      * ensure the created notification will show normally and won't trigger crash.
      * put default notification channel for Android O and after.
      * auto cancel.
-     * </p>
      *
+     *
+     * @param channelId channelId
      * @param channelName channelName
-     * @return instance of {@link NotificationCompat.Builder}
+     * @return instance of [NotificationCompat.Builder]
      */
-    public static NotificationCompat.Builder createHangup(String channelName) {
+    /**
+     * create a hangup notification builder
+     *
+     *
+     * ensure the created notification will show normally and won't trigger crash.
+     * put default notification channel for Android O and after.
+     * auto cancel.
+     *
+     *
+     * @param channelId channelId
+     * @return instance of [NotificationCompat.Builder]
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun createHangup(
+        channelId: String,
+        channelName: String = channelId
+    ): NotificationCompat.Builder {
         // to ensure the hangup style show normally,
         // channel importance must set higher than IMPORTANCE_HIGH
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManagerCompat manager = getNotificationManager();
-            NotificationChannel mChannel = manager.getNotificationChannel(channelName);
-            if (mChannel == null) {
-                mChannel = new NotificationChannel(channelName, channelName,
-                        android.app.NotificationManager.IMPORTANCE_HIGH);
-                mChannel.setSound(null, null);
-                manager.createNotificationChannel(mChannel);
+            val manager = notificationManager
+            var channel = manager.getNotificationChannel(channelName)
+            if (channel == null) {
+                channel = NotificationChannel(
+                    channelId, channelName,
+                    android.app.NotificationManager.IMPORTANCE_HIGH
+                )
+                channel.setSound(null, null)
+                manager.createNotificationChannel(channel)
             }
         }
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(
-                ContextProvider.get(), channelName);
-        builder.setSmallIcon(defaultIcon)
-                .setContentTitle(defaultTitle)
-                .setContentText(" ")
-                .setFullScreenIntent(null, true)
-                .setAutoCancel(true);
-        return builder;
+        val builder = NotificationCompat.Builder(
+            ContextProvider.get(), channelName
+        )
+        builder.setSmallIcon(defaultIconRes)
+            .setContentTitle(defaultTitle)
+            .setContentText(" ")
+            .setFullScreenIntent(null, true)
+            .setAutoCancel(true)
+        return builder
     }
 
     /**
      * set big content text for notification
      *
-     * @param builder     builder
      * @param title       the notification title when expanded
      * @param contentText notification content text when expanded
      * @param summaryText can be seen as a subtitle, not very useful
      */
-    public static NotificationCompat.Builder setBigText(
-            NotificationCompat.Builder builder,
-            String title,
-            String summaryText,
-            String contentText
-    ) {
-        NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
-        bigTextStyle.setBigContentTitle(title);
-        bigTextStyle.bigText(contentText);
+    @JvmStatic
+    fun NotificationCompat.Builder.setBigText(
+        title: String?,
+        summaryText: String?,
+        contentText: String?
+    ): NotificationCompat.Builder {
+        val bigTextStyle = NotificationCompat.BigTextStyle()
+        bigTextStyle.setBigContentTitle(title)
+        bigTextStyle.bigText(contentText)
         if (!TextUtils.isEmpty(summaryText)) {
-            bigTextStyle.setSummaryText(summaryText);
+            bigTextStyle.setSummaryText(summaryText)
         }
-        builder.setStyle(bigTextStyle);
-        return builder;
+        this.setStyle(bigTextStyle)
+        return this
     }
 
     /**
      * set big picture style for notification
      *
-     * @param builder     builder
      * @param title       title
      * @param picture     picture, the picture should not higher than 255dp
      * @param summaryText summary
      */
-    public static NotificationCompat.Builder setBigPicture(
-            NotificationCompat.Builder builder,
-            String title,
-            String summaryText,
-            Bitmap picture
-    ) {
-        NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
-        bigPictureStyle.setBigContentTitle(title);
-        bigPictureStyle.bigPicture(picture);
+    @JvmStatic
+    fun NotificationCompat.Builder.setBigPicture(
+        title: String?,
+        summaryText: String?,
+        picture: Bitmap?
+    ): NotificationCompat.Builder {
+        val bigPictureStyle = NotificationCompat.BigPictureStyle()
+        bigPictureStyle.setBigContentTitle(title)
+        bigPictureStyle.bigPicture(picture)
         if (!TextUtils.isEmpty(summaryText)) {
-            bigPictureStyle.setSummaryText(summaryText);
+            bigPictureStyle.setSummaryText(summaryText)
         }
-        builder.setStyle(bigPictureStyle);
-        return builder;
+        this.setStyle(bigPictureStyle)
+        return this
     }
 
     /**
      * set inbox data style for notification
      *
-     * @param builder     builder
      * @param title       title
      * @param summaryText summary
      * @param lines       multiline text list
      */
-    public static NotificationCompat.Builder setInboxMessages(
-            NotificationCompat.Builder builder,
-            String title,
-            String summaryText,
-            List<String> lines
-    ) {
-        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        inboxStyle.setBigContentTitle(title);
+    @JvmStatic
+    fun NotificationCompat.Builder.setInboxMessages(
+        title: String?,
+        summaryText: String?,
+        lines: List<String?>
+    ): NotificationCompat.Builder {
+        val inboxStyle = NotificationCompat.InboxStyle()
+        inboxStyle.setBigContentTitle(title)
         if (!TextUtils.isEmpty(summaryText)) {
-            inboxStyle.setSummaryText(summaryText);
+            inboxStyle.setSummaryText(summaryText)
         }
-        for (String line : lines) {
-            inboxStyle.addLine(line);
+        for (line in lines) {
+            inboxStyle.addLine(line)
         }
-        builder.setStyle(inboxStyle);
-        return builder;
+        this.setStyle(inboxStyle)
+        return this
     }
 
-    public static PendingIntent getActivityPendingIntent(Context context, Intent intent) {
+    @JvmStatic
+    fun getActivityPendingIntent(context: Context?, intent: Intent?): PendingIntent {
         return PendingIntent.getActivity(
-                context,
-                0,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
-        );
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+        )
     }
 
     /**
@@ -255,15 +262,20 @@ public class NotificationManager {
      * @param notifyId id
      * @param builder  builder
      */
-    public static void notify(int notifyId, NotificationCompat.Builder builder) {
+    @JvmStatic
+    fun notify(notifyId: Int, builder: NotificationCompat.Builder?) {
         if (builder == null) {
-            return;
+            return
         }
-        if (ActivityCompat.checkSelfPermission(ContextProvider.get(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            Log.w(TAG, "notify: Manifest.permission.POST_NOTIFICATIONS not granted");
-            return;
+        if (ActivityCompat.checkSelfPermission(
+                ContextProvider.get(),
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.w(TAG, "notify: Manifest.permission.POST_NOTIFICATIONS not granted")
+            return
         }
-        getNotificationManager().notify(notifyId, builder.build());
+        notificationManager.notify(notifyId, builder.build())
     }
 
     /**
@@ -271,8 +283,8 @@ public class NotificationManager {
      *
      * @param notifyId notificationId
      */
-    public static void cancel(int notifyId) {
-        getNotificationManager().cancel(notifyId);
+    @JvmStatic
+    fun cancel(notifyId: Int) {
+        notificationManager.cancel(notifyId)
     }
-
 }

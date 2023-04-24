@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import com.linxiao.framework.notification.NotificationManager;
+import com.linxiao.framework.notification.NotificationUtil;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.FragmentNotificationApiBinding;
 import com.linxiao.framework.architecture.SimpleViewBindingFragment;
@@ -29,12 +29,12 @@ public class NotificationApiFragment extends SimpleViewBindingFragment<FragmentN
     }
 
     public void onSendNotificationClick(View v) {
-        NotificationCompat.Builder builder = NotificationManager.create()
+        NotificationCompat.Builder builder = NotificationUtil.create()
                 .setContentTitle("简单通知")
                 .setContentText("这是一条简单的通知");
         Intent intent = new Intent(getActivity(), NotificationTargetActivity.class);
-        builder.setContentIntent(NotificationManager.getActivityPendingIntent(getActivity(), intent));
-        NotificationManager.notify(123, builder);
+        builder.setContentIntent(NotificationUtil.getActivityPendingIntent(getActivity(), intent));
+        NotificationUtil.notify(123, builder);
     }
 
     public void onSendBigTextClick(View v) {
@@ -42,51 +42,51 @@ public class NotificationApiFragment extends SimpleViewBindingFragment<FragmentN
         for (int i = 0; i < 50; i++) {
             bigText += "很长";
         }
-        NotificationCompat.Builder builder = NotificationManager.create()
+        NotificationCompat.Builder builder = NotificationUtil.create()
                 .setContentTitle("bigText")
                 .setContentText("一条bigText");
-        NotificationManager.setBigText(builder,
+        NotificationUtil.setBigText(builder,
                 "big text title",
                 "big text summary",
                 bigText);
         Intent intent = new Intent(getActivity(), NotificationTargetActivity.class);
-        builder.setContentIntent(NotificationManager.getActivityPendingIntent(getActivity(), intent));
-        NotificationManager.notify(124, builder);
+        builder.setContentIntent(NotificationUtil.getActivityPendingIntent(getActivity(), intent));
+        NotificationUtil.notify(124, builder);
     }
 
     public void onSendBigPictureClick(View v) {
-        NotificationCompat.Builder builder = NotificationManager.create()
+        NotificationCompat.Builder builder = NotificationUtil.create()
                 .setContentTitle("bigPicture")
                 .setContentText("一条bigPicture");
-        NotificationManager.setBigPicture(builder,
+        NotificationUtil.setBigPicture(builder,
                 "big picture title",
                 "bit picture summary",
                 BitmapFactory.decodeResource(getResources(), R.drawable.ic_notify));
         Intent intent = new Intent(getActivity(), NotificationTargetActivity.class);
-        builder.setContentIntent(NotificationManager.getActivityPendingIntent(getActivity(), intent));
-        NotificationManager.notify(125, builder);
+        builder.setContentIntent(NotificationUtil.getActivityPendingIntent(getActivity(), intent));
+        NotificationUtil.notify(125, builder);
     }
 
     public void onSendInboxClick(View v) {
-        NotificationCompat.Builder builder = NotificationManager.create()
+        NotificationCompat.Builder builder = NotificationUtil.create()
                 .setContentTitle("inbox")
                 .setContentText("一条inbox");
-        NotificationManager.setInboxMessages(builder,
+        NotificationUtil.setInboxMessages(builder,
                 "inbox title",
                 "inbox summary",
                 Arrays.asList("这是一行内容", "这是一行内容", "这是一行内容", "这是一行内容"));
         Intent intent = new Intent(getActivity(), NotificationTargetActivity.class);
-        builder.setContentIntent(NotificationManager.getActivityPendingIntent(getActivity(), intent));
-        NotificationManager.notify(126, builder);
+        builder.setContentIntent(NotificationUtil.getActivityPendingIntent(getActivity(), intent));
+        NotificationUtil.notify(126, builder);
     }
 
     public void onSendHangUpClick(View v) {
-        NotificationCompat.Builder builder = NotificationManager.createHangup("hangup")
+        NotificationCompat.Builder builder = NotificationUtil.createHangup("hangup")
                 .setContentTitle("横幅通知")
                 .setContentText("这是一条横幅通知");
         Intent intent = new Intent(getActivity(), NotificationTargetActivity.class);
-        builder.setContentIntent(NotificationManager.getActivityPendingIntent(getActivity(), intent));
-        NotificationManager.notify(126, builder);
+        builder.setContentIntent(NotificationUtil.getActivityPendingIntent(getActivity(), intent));
+        NotificationUtil.notify(126, builder);
     }
 
 }
