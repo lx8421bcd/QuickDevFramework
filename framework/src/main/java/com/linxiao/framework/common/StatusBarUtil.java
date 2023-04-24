@@ -18,12 +18,8 @@ import java.util.List;
  * Created by linxiao on 2017/7/18.
  */
 public final class StatusBarUtil {
-    public static final String TAG = StatusBarUtil.class.getSimpleName();
 
-    /**
-     * API 23 以上无法由于修改底层实现而无法开启浅色状态栏的ROM黑名单
-     * */
-    private static final List<String> LIGHT_MODE_BLOCK_LIST = Arrays.asList("A Part Of Build.DISPLAY", "ZUI_2.3");
+    public static final String TAG = StatusBarUtil.class.getSimpleName();
 
     /**
      * 修改状态栏为全透明
@@ -37,7 +33,7 @@ public final class StatusBarUtil {
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
-            
+
         } else
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Window window =activity.getWindow();
@@ -84,12 +80,6 @@ public final class StatusBarUtil {
         // 这里可以添加其他适配，由于某些第三方UI使用原生方法不管用，因此建议第三方UI的适配放在原生前
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return false;
-        }
-        // 检查机型是否在无法显示浅色模式的黑名单中
-        for (String blockROMName : LIGHT_MODE_BLOCK_LIST) {
-            if (Build.DISPLAY.contains(blockROMName)) {
-                return false;
-            }
         }
         int cachedParams = activity.getWindow().getDecorView().getSystemUiVisibility();
         if (isLight) {
