@@ -38,6 +38,7 @@ import io.reactivex.schedulers.Schedulers;
  * <h5>当程序发生Uncaught异常的时候,有该类来接管程序,并记录错误日志</h5>
  *
  * @author relish-wang
+ * @since 2017-03-08
  */
 public class CrashHandler implements UncaughtExceptionHandler {
 
@@ -176,7 +177,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     }
 
     private Observable<Object> submitLog(Map<String, Object> info) {
-        return CommonApiProvider.getInstance().getApi().jsonPost("", info)
+        return CommonApiProvider.getInstance().getApi().postJson("", info)
         .subscribeOn(Schedulers.io())
         .map(resp -> resp);
     }
