@@ -22,8 +22,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     buildFeatures {
         viewBinding = true
@@ -38,7 +38,7 @@ dependencies {
     })
     testImplementation 'junit:junit:4.13.2'
     // Android基础库
-    api 'androidx.core:core-ktx:1.9.0'
+    api 'androidx.core:core-ktx:1.10.0'
     api 'androidx.appcompat:appcompat:1.6.1'
     api 'com.google.android.material:material:1.8.0'
     api 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -52,8 +52,8 @@ dependencies {
     // JSON解析
     api 'com.google.code.gson:gson:2.10'
     // OKHttp
-    api 'com.squareup.okhttp3:okhttp:4.9.0'
-    api 'com.squareup.okio:okio:2.8.0'
+    api 'com.squareup.okhttp3:okhttp:4.10.0'
+    api 'com.squareup.okio:okio:3.0.0'
     api 'com.squareup.okhttp3:okhttp-urlconnection:3.12.0'
     api 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
     // Retrofit
@@ -68,6 +68,6 @@ dependencies {
     // Eventbus
     api 'org.greenrobot:eventbus:3.3.1'
     // 加密算法库
-    api 'org.bouncycastle:bcprov-jdk15on:1.68'
+    api 'org.bouncycastle:bcprov-jdk15on:1.70'
 
 }
