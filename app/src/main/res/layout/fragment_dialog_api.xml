@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_dialog_api"
     android:layout_width="match_parent"
@@ -49,29 +50,33 @@
         style="@style/HorizontalDivider"
         android:layout_margin="12dp"/>
 
-    <Button
+    <com.linxiao.framework.widget.SettingItemView
         android:id="@+id/btnShowSimpleDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="show simple alert dialog" />
+        android:paddingHorizontal="12dp"
+        app:itemview_name="show simple alert dialog" />
 
-    <Button
+    <com.linxiao.framework.widget.SettingItemView
         android:id="@+id/btnShowOnStartActivity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="show alert dialog on startActivity" />
+        android:paddingHorizontal="12dp"
+        app:itemview_name="show alert dialog on startActivity" />
 
-    <Button
+    <com.linxiao.framework.widget.SettingItemView
         android:id="@+id/btnShowTopDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="show dialog from service" />
+        android:paddingHorizontal="12dp"
+        app:itemview_name="show dialog from service" />
 
-    <Button
+    <com.linxiao.framework.widget.SettingItemView
         android:id="@+id/btnShowBottomDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="show bottom dialog" />
+        android:paddingHorizontal="12dp"
+        app:itemview_name="show bottom dialog" />
 
 
 </LinearLayout>

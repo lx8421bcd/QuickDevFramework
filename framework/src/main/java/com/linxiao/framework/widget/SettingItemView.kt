@@ -2,7 +2,6 @@ package com.linxiao.framework.widget
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -34,9 +33,7 @@ class SettingItemView @JvmOverloads constructor(
         SWITCH(1),
     }
 
-    companion object {
-        private val DEFAULT_VIEW_HEIGHT = DensityHelper.dp2px(50f)
-    }
+    private val DEFAULT_VIEW_HEIGHT = dip2Px(50f)
 
     private val viewBinding: ViewSettingItemViewBinding
 
@@ -175,5 +172,9 @@ class SettingItemView @JvmOverloads constructor(
 
     fun setDividerVisible(show: Boolean) {
         viewBinding.divider.visibility = if (show) VISIBLE else GONE
+    }
+
+    private fun dip2Px(dip: Float): Int {
+        return (dip * resources.displayMetrics.density + 0.5f).toInt()
     }
 }
