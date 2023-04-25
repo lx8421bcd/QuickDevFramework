@@ -3,6 +3,7 @@ package com.linxiao.framework.common;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 /**
  * 分辨率适配工具
@@ -72,7 +73,7 @@ public class DensityHelper {
      * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
      */
     public static int dp2px(float dpValue) {
-        float scale = designedDensity >= 0 ? designedDensity : originDensity;
+        float scale = designedDensity > 0 ? designedDensity : originDensity;
         return (int) Math.ceil(dpValue * scale);
     }
 
@@ -80,7 +81,7 @@ public class DensityHelper {
      * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
      */
     public static int px2dp(float pxValue) {
-        float scale = designedDensity >= 0 ? designedDensity : originDensity;
+        float scale = designedDensity > 0 ? designedDensity : originDensity;
         return (int) Math.ceil(pxValue / scale);
     }
 }

@@ -71,7 +71,11 @@
         <attr name="showPercent" format="boolean"/>
     </declare-styleable>
 
-    <declare-styleable name="ItemView">
+    <declare-styleable name="SettingItemView">
+        <attr name="itemview_itemType" format="enum">
+            <enum name="typeNormal" value="0"/>
+            <enum name="typeSwitch" value="1"/>
+        </attr>
         <attr name="itemview_icon" format="reference"/>
         <attr name="itemview_iconSize" format="dimension"/>
         <attr name="itemview_name" format="string" />
@@ -85,17 +89,18 @@
         <attr name="itemview_dividerSize" format="dimension" />
         <attr name="itemview_dividerColor" format="color" />
         <attr name="itemview_showMoreIcon" format="boolean" />
+        <attr name="itemview_switch_checked" format="boolean" />
+        <attr name="itemview_switch_drawable" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="ItemSwitch">
-        <attr name="itemswitch_name" format="string" />
-        <attr name="itemswitch_nameTextSize" format="dimension" />
-        <attr name="itemswitch_nameTextColor" format="color" />
-        <attr name="itemswitch_checked" format="boolean" />
-        <attr name="itemswitch_dividerVisible" format="boolean" />
-        <attr name="itemswitch_dividerSize" format="dimension" />
-        <attr name="itemswitch_dividerColor" format="color" />
-        <attr name="itemswitch_switchDrawable" format="reference"/>
+    <attr name="itemswitch_name" format="string" />
+    <attr name="itemswitch_nameTextSize" format="dimension" />
+    <attr name="itemswitch_nameTextColor" format="color" />
+    <attr name="itemswitch_checked" format="boolean" />
+    <attr name="itemswitch_dividerVisible" format="boolean" />
+    <attr name="itemswitch_dividerSize" format="dimension" />
+    <attr name="itemswitch_dividerColor" format="color" />
+    <attr name="itemswitch_switchDrawable" format="reference"/>
     </declare-styleable>
-
 </resources>
