@@ -4,10 +4,9 @@ plugins {
 }
 
 android {
-    compileSdkVersion 34
-    buildToolsVersion '34.0.0'
     defaultConfig {
         applicationId "com.linxiao.quickdevframework"
+        compileSdk 34
         minSdkVersion 24
         targetSdkVersion 34
         versionCode 1
@@ -30,8 +29,8 @@ android {
     }
     namespace 'com.linxiao.quickdevframework'
 
-    android.applicationVariants.all{ variant ->
-        variant.outputs.all{
+    android.applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach {
             def appName = "QuickDevFramework"
             def packagingTime = new Date().format("yyyyMMddHHmmss", TimeZone.getTimeZone("GMT+08:00"))
             def fileName = "${appName}_${buildType.name}_v${defaultConfig.versionName}_${packagingTime}.apk"
@@ -43,7 +42,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':framework')
-    implementation 'androidx.core:core-ktx:+'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:2.9.1'
