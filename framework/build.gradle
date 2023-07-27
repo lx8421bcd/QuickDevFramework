@@ -5,12 +5,12 @@ plugins {
 
 
 android {
-    compileSdkVersion 33
-    buildToolsVersion '33.0.1'
+    compileSdkVersion 34
+    buildToolsVersion '34.0.0'
 
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 33
+        targetSdkVersion 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'proguard-rules.pro'
@@ -33,6 +33,7 @@ android {
 
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.core:core-ktx:+'
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
