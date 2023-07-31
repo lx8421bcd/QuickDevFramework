@@ -8,6 +8,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
+/**
+ * 人民币金额计算工具
+ *
+ * <p>
+ * 以BigDecimal作为运算对象封装人民币金额计算，避免使用浮点数而产生异常
+ * </p>
+ * @author lx8421bcd
+ * @since 2018-05-07
+ */
 public class RMBUtil {
 
     public enum AmountUnit {
@@ -19,7 +28,7 @@ public class RMBUtil {
      * @param amount 金额 单位： 分
      * @return instance of AmountOperator
      */
-    public static AmountOperator getAmount(int amount) {
+    public static AmountOperator getOperator(int amount) {
         return new AmountOperator(amount);
     }
     
@@ -29,7 +38,7 @@ public class RMBUtil {
      * @param unit 金额单位
      * @return instance of AmountOperator
      */
-    public static AmountOperator getAmount(String amount, AmountUnit unit) {
+    public static AmountOperator getOperator(String amount, AmountUnit unit) {
         BigDecimal amountDecimal = new BigDecimal(amount);
         return new AmountOperator(amountDecimal, unit);
     }
@@ -58,10 +67,10 @@ public class RMBUtil {
     }
     
     /**
-     * 输出金额字符串
+     * 输出金额字符串，格式手动指定
      * @param amount 金额对象
      * @param format 输出格式
-     * @return
+     * @return formatted amount string
      */
     public static String getAmountString(BigDecimal amount, String format) {
         if (TextUtils.isEmpty(format)) {
@@ -81,8 +90,8 @@ public class RMBUtil {
      */
     public static BigDecimal add(@NonNull Number... numbers) {
         BigDecimal sum = BigDecimal.ZERO;
-        for (Object num : numbers) {
-            sum = sum.add(new BigDecimal(((Number) num).doubleValue()));
+        for (Number num : numbers) {
+            sum = sum.add(new BigDecimal(String.valueOf(num)));
         }
         return sum;
     }
@@ -94,9 +103,9 @@ public class RMBUtil {
      * @return result
      */
     public static BigDecimal subtract(@NonNull Number a, @NonNull Number... numbers) {
-        BigDecimal result = new BigDecimal(a.doubleValue());
+        BigDecimal result = new BigDecimal(String.valueOf(a));
         for (Number num : numbers) {
-            result = result.subtract(new BigDecimal(num.doubleValue()));
+            result = result.subtract(new BigDecimal(String.valueOf(num)));
         }
         return result;
     }
@@ -124,12 +133,12 @@ public class RMBUtil {
      * @return result
      */
     public static BigDecimal divide(@NonNull Number a, @NonNull Number... numbers) {
-        BigDecimal result = new BigDecimal(a.doubleValue());
+        BigDecimal result = new BigDecimal(String.valueOf(a));
         for (Number num : numbers) {
             if (num.doubleValue() == 0) {
                 continue;
             }
-            result = result.divide(BigDecimal.valueOf(num.doubleValue()), 2, RoundingMode.HALF_DOWN);
+            result = result.divide(new BigDecimal(String.valueOf(num)), 2, RoundingMode.HALF_DOWN);
         }
         return result;
     }
@@ -164,26 +173,26 @@ public class RMBUtil {
         }
         
         public AmountOperator add(Number number) {
-            amount = amount.add(BigDecimal.valueOf(number.doubleValue()));
+            amount = amount.add(new BigDecimal(String.valueOf(number)));
             return this;
         }
         
         public AmountOperator subtract(Number number) {
-            amount = amount.subtract(BigDecimal.valueOf(number.doubleValue()));
+            amount = amount.subtract(new BigDecimal(String.valueOf(number)));
             return this;
         }
         
         public AmountOperator multiply(Number number) {
-            amount = amount.multiply(BigDecimal.valueOf(number.doubleValue()));
+            amount = amount.multiply(new BigDecimal(String.valueOf(number)));
             return this;
         }
         
         public AmountOperator divide(Number number) {
-            amount = amount.divide(BigDecimal.valueOf(number.doubleValue()),  RoundingMode.HALF_DOWN);
+            amount = amount.divide(new BigDecimal(String.valueOf(number)),  RoundingMode.HALF_DOWN);
             return this;
         }
         public AmountOperator divide(Number number,int scale) {
-            amount = amount.divide(BigDecimal.valueOf(number.doubleValue()), scale, RoundingMode.HALF_DOWN);
+            amount = amount.divide(new BigDecimal(String.valueOf(number)), scale, RoundingMode.HALF_DOWN);
             return this;
         }
         public int intValue() {
