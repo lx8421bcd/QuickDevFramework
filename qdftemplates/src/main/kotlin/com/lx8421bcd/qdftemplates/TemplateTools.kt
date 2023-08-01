@@ -1,5 +1,7 @@
 package com.lx8421bcd.qdftemplates
 
+import java.io.File
+import java.io.PrintWriter
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Matcher
@@ -71,3 +73,22 @@ fun getDefaultTemplateFile(codeLanguage: CodeLanguage, componentType: ComponentT
 fun getDefaultLayoutXml(): String {
     return PluginFileTools.loadStringFromResource("/templates/DefaultLayoutTemplateXml")
 }
+
+//fun saveToResource(filePath: String, text: String) {
+//    val destFile = this.javaClass.getResource(filePath)
+//    if (destFile == null) {
+//        println("null file, path = $filePath")
+//        return
+//    }
+//    var writer: PrintWriter? = null
+//    try {
+//        writer = PrintWriter(File(destFile.path))
+//        writer.print(text)
+//        writer.flush()
+//    } catch (e: Exception) {
+//        e.printStackTrace()
+//    }
+//    finally {
+//        writer?.close()
+//    }
+//}
