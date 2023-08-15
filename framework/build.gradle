@@ -66,6 +66,8 @@ dependencies {
     api 'com.trello.rxlifecycle2:rxlifecycle-components:2.2.1'
     // Eventbus
     api 'org.greenrobot:eventbus:3.3.1'
+    // BRVAH
+    api "io.github.cymchad:BaseRecyclerViewAdapterHelper:4.0.1"
     // 加密算法库
     api 'org.bouncycastle:bcprov-jdk15on:1.70'
 

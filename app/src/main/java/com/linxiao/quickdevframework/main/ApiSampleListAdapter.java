@@ -1,44 +1,22 @@
 package com.linxiao.quickdevframework.main;
 
-import android.content.Context;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import androidx.annotation.NonNull;
 
-import com.linxiao.framework.list.SingleItemAdapter;
-import com.linxiao.framework.list.BaseRecyclerViewHolder;
-import com.linxiao.quickdevframework.R;
+import com.linxiao.framework.list.ViewBindingRecyclerHolder;
+import com.linxiao.framework.list.ViewBindingSingleItemAdapter;
+import com.linxiao.quickdevframework.databinding.ItemApiSampleBinding;
 
 /**
  *
  * Created by linxiao on 2016/11/30.
  */
-public class ApiSampleListAdapter extends SingleItemAdapter<ApiSampleObject, ApiSampleListAdapter.ApiSampleHolder> {
+public class ApiSampleListAdapter extends ViewBindingSingleItemAdapter<ApiSampleObject, ItemApiSampleBinding> {
 
-    public ApiSampleListAdapter(Context context) {
-        super(context);
-    }
 
     @Override
-    protected void setData(ApiSampleHolder holder, int position, ApiSampleObject data) {
-        Log.d(TAG, "setData: " + position + data.toString());
-        holder.textView.setText(data.getApiName());
+    protected void onBindViewHolder(@NonNull ViewBindingRecyclerHolder<ItemApiSampleBinding> holder, int position, ApiSampleObject item) {
+        super.onBindViewHolder(holder, position, item);
+        holder.getViewBinding().tvApiSample.setText(item.getApiName());
     }
 
-    @Override
-    protected ApiSampleHolder onCreateDataViewHolder(ViewGroup parent, int viewType) {
-        return new ApiSampleHolder(inflateItemView(R.layout.item_api_sample, parent));
-    }
-
-    class ApiSampleHolder extends BaseRecyclerViewHolder {
-
-        TextView textView;
-
-        ApiSampleHolder(View itemView) {
-            super(itemView);
-            textView = (TextView) itemView.findViewById(R.id.tvApiSample);
-        }
-
-    }
 }

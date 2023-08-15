@@ -2,90 +2,90 @@ package com.linxiao.quickdevframework.sample.adapter;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.chad.library.adapter.base.layoutmanager.QuickGridLayoutManager;
 import com.linxiao.framework.common.DensityHelper;
 import com.linxiao.framework.common.ScreenUtil;
 import com.linxiao.framework.list.EquidistantDecoration;
+import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.ActivityEmptyTestBinding;
 import com.linxiao.framework.architecture.SimpleViewBindingActivity;
+import com.linxiao.quickdevframework.databinding.LayoutEmptyViewBinding;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class EmptyTestActivity extends SimpleViewBindingActivity<ActivityEmptyTestBinding> {
 
-    SampleAdapter mAdapter;
+    private SampleAdapter mAdapter;
 
     private boolean showEmpty = true;
     private boolean showData = false;
     private boolean showError = false;
 
+    private LayoutEmptyViewBinding emptyViewBinding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAdapter = new SampleAdapter(this);
+        mAdapter = new SampleAdapter();
         getViewBinding().rcvEmptySimple.setAdapter(mAdapter);
         getViewBinding().rcvEmptySimple.setItemAnimator(new DefaultItemAnimator());
-        getViewBinding().rcvEmptySimple.setLayoutManager(new GridLayoutManager(this, 3));
+        //TODO bug QuickGridLayoutManager not work
+//        getViewBinding().rcvEmptySimple.setLayoutManager(new QuickGridLayoutManager(this, 3));
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        // fix method
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (position == 0 && mAdapter.getItems().size() == 0) {
+                    return 3;
+                }
+                return 1;
+            }
+        });
+        getViewBinding().rcvEmptySimple.setLayoutManager(layoutManager);
         getViewBinding().rcvEmptySimple.addItemDecoration(new EquidistantDecoration(3, DensityHelper.dp2px(12)));
+        // 这种初始化empty view必须先设置LayoutManager
+        emptyViewBinding = LayoutEmptyViewBinding.inflate(getLayoutInflater(), getViewBinding().rcvEmptySimple, false);
+        mAdapter.setEmptyViewEnable(true);
+        mAdapter.setEmptyView(emptyViewBinding.getRoot());
 
-//        View emptyView = getLayoutInflater().inflate(R.layout.empty_view, null);
-//        mAdapter.setEmptyView(emptyView);
-//
-//        View loadingView = getLayoutInflater().inflate(R.layout.loading_view, null);
-//        mAdapter.setLoadingView(loadingView);
-//
-//        View errorView = getLayoutInflater().inflate(R.layout.error_view, null);
-//        mAdapter.setErrorView(errorView);
-//        errorView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                refreshData();
-//            }
-//        });
-//        emptyView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                refreshData();
-//            }
-//        });
+
         getViewBinding().btnRefresh.setOnClickListener(v -> {
-            showEmpty = true;
-            showError = false;
-            showData = false;
-            mAdapter.removeAll();
+            mAdapter.submitList(new ArrayList<>());
             refreshData();
         });
-        refreshData();
+        mAdapter.submitList(Arrays.asList("1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"));
+
     }
 
     private void refreshData() {
-        mAdapter.showLoadingView();
+        emptyViewBinding.tvText.setText("loading");
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (showEmpty) {
-                    showError = true;
                     showEmpty = false;
-                    showData = false;
-                    mAdapter.showEmptyView();
+                    showError = true;
+                    emptyViewBinding.tvText.setText("empty");
                 }
                 else if (showError) {
-                    showData = true;
-                    showEmpty = false;
                     showError = false;
-                    mAdapter.showErrorView();
+                    showData = true;
+                    emptyViewBinding.tvText.setText("error");
                 }
                 else if (showData) {
-                    showEmpty = true;
                     showData = false;
-                    showError = false;
-                    mAdapter.addToDataSource(Arrays.asList("1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"));
+                    showEmpty = true;
+                    mAdapter.submitList(Arrays.asList("1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"));
                 }
             }
         }, 1000);
-        mAdapter.addToDataSource(Arrays.asList("1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"));
     }
 }

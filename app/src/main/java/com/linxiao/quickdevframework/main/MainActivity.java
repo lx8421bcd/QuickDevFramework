@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.linxiao.framework.architecture.SimpleViewBindingActivity;
 import com.linxiao.framework.common.StatusBarUtil;
 import com.linxiao.framework.common.ToastAlert;
@@ -90,18 +91,15 @@ public class MainActivity extends SimpleViewBindingActivity<ActivityMainBinding>
         apiSampleList.add(new ApiSampleObject("Widgets", "WidgetsGuideFragment"));
 
 
-        ApiSampleListAdapter adapter = new ApiSampleListAdapter(this);
-        adapter.setDataSource(apiSampleList);
-        adapter.setOnItemClickListener(new SingleItemAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(SingleItemAdapter adapter, View itemView, int position) {
-                ApiSampleObject object = (ApiSampleObject) adapter.getFromDataSource(position);
-                switchFragment(object.getTarget());
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setTitle(object.getApiName());
-                }
-                contentBinding.drawerMain.closeDrawer(GravityCompat.START);
+        ApiSampleListAdapter adapter = new ApiSampleListAdapter();
+        adapter.setItems(apiSampleList);
+        adapter.setOnItemClickListener((baseQuickAdapter, view, position) -> {
+            ApiSampleObject object = (ApiSampleObject) adapter.getItem(position);
+            switchFragment(object.getTarget());
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(object.getApiName());
             }
+            contentBinding.drawerMain.closeDrawer(GravityCompat.START);
         });
         contentBinding.rcvApiSampleList.setLayoutManager(new LinearLayoutManager(this));
         contentBinding.rcvApiSampleList.setItemAnimator(new DefaultItemAnimator());
