@@ -3,71 +3,85 @@ package com.linxiao.quickdevframework.sample.adapter;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.QuickAdapterHelper;
+import com.chad.library.adapter.base.viewholder.QuickViewHolder;
+import com.linxiao.framework.list.HeaderFooterAdapter;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.ActivityHeaderFooterBinding;
 import com.linxiao.framework.architecture.SimpleViewBindingActivity;
 
+import java.util.Arrays;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
 public class HeaderFooterActivity extends SimpleViewBindingActivity<ActivityHeaderFooterBinding> {
 
-    SampleAdapter mAdapter;
+    private SampleAdapter mAdapter;
+    private QuickAdapterHelper quickAdapterHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        mAdapter = new SampleAdapter(this);
-//        getViewBinding().rcvHeaderFooter.setAdapter(mAdapter);
-//        getViewBinding().rcvHeaderFooter.setItemAnimator(new DefaultItemAnimator());
-//        getViewBinding().rcvHeaderFooter.setLayoutManager(new LinearLayoutManager(this));
-//
-//        View sampleHeader = getLayoutInflater().inflate(R.layout.header_sample, null);
-//        sampleHeader.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                addHeaderView();
-//            }
-//        });
-//        mAdapter.addHeaderView(sampleHeader);
-//
-//        View sampleFooter = getLayoutInflater().inflate(R.layout.footer_sample, null);
-//        sampleFooter.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                addFooterView();
-//            }
-//        });
-//        mAdapter.addFooterView(sampleFooter);
-//
-//        initData();
+        mAdapter = new SampleAdapter();
+        mAdapter.setOnItemClickListener((baseQuickAdapter, view, i) -> {
+            addHeaderView();
+            addFooterView();
+        });
+        quickAdapterHelper = new QuickAdapterHelper.Builder(mAdapter)
+                .build();
+        getViewBinding().rcvHeaderFooter.setLayoutManager(new LinearLayoutManager(this));
+        getViewBinding().rcvHeaderFooter.setItemAnimator(new DefaultItemAnimator());
+        getViewBinding().rcvHeaderFooter.setAdapter(quickAdapterHelper.getAdapter());
+        HeaderFooterAdapter headerAdapter = new HeaderFooterAdapter(R.layout.header_sample);
+        headerAdapter.setOnInitView(quickViewHolder -> {
+            quickViewHolder.itemView.setOnClickListener(v -> {
+                addHeaderView();
+            });
+            return Unit.INSTANCE;
+        });
+        quickAdapterHelper.addBeforeAdapter(headerAdapter);
+
+        HeaderFooterAdapter footerAdapter = new HeaderFooterAdapter(R.layout.footer_sample);
+        footerAdapter.setOnInitView(quickViewHolder -> {
+            quickViewHolder.itemView.setOnClickListener(v -> {
+                addFooterView();
+            });
+            return Unit.INSTANCE;
+        });
+        quickAdapterHelper.addAfterAdapter(footerAdapter);
+
+        initData();
     }
 
-//    private void initData() {
-//        for (int i = 0; i < 10; i++) {
-//            mAdapter.addToDataSource("");
-//        }
-//    }
-//
-//    private void addHeaderView() {
-//        View addedHeader = getLayoutInflater().inflate(R.layout.header_added, null);
-//        addedHeader.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                mAdapter.removeHeaderView(view);
-//            }
-//        });
-//        mAdapter.addHeaderView(addedHeader);
-//    }
-//
-//    private void addFooterView() {
-//        View addedFooter = getLayoutInflater().inflate(R.layout.footer_added, null);
-//        addedFooter.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                mAdapter.removeFooterView(view);
-//            }
-//        });
-//        mAdapter.addFooterView(addedFooter);
-//    }
+    private void initData() {
+        mAdapter.submitList(Arrays.asList("1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"));
+    }
+
+    private void addHeaderView() {
+        HeaderFooterAdapter headerAdapter = new HeaderFooterAdapter(R.layout.header_added);
+        headerAdapter.setOnInitView(quickViewHolder -> {
+            quickViewHolder.itemView.setOnClickListener(v -> {
+                quickAdapterHelper.removeAdapter(headerAdapter);
+            });
+            return Unit.INSTANCE;
+        });
+        quickAdapterHelper.addBeforeAdapter(0, headerAdapter);
+    }
+
+    private void addFooterView() {
+        HeaderFooterAdapter footerAdapter = new HeaderFooterAdapter(R.layout.footer_added);
+        footerAdapter.setOnInitView(quickViewHolder -> {
+            quickViewHolder.itemView.setOnClickListener(v -> {
+                quickAdapterHelper.removeAdapter(footerAdapter);
+            });
+            return Unit.INSTANCE;
+        });
+        quickAdapterHelper.addAfterAdapter(footerAdapter);
+    }
 }

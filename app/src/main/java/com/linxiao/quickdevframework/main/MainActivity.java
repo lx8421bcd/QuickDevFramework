@@ -1,10 +1,8 @@
 package com.linxiao.quickdevframework.main;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -15,11 +13,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.linxiao.framework.architecture.SimpleViewBindingActivity;
-import com.linxiao.framework.common.StatusBarUtil;
 import com.linxiao.framework.common.ToastAlert;
-import com.linxiao.framework.list.SingleItemAdapter;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.ActivityMainBinding;
 import com.linxiao.quickdevframework.databinding.ContentMainBinding;
