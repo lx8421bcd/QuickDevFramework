@@ -125,7 +125,7 @@ object BiometricHelper {
                 override fun onAuthenticationFailed() {
                     super.onAuthenticationFailed()
                     // Called when a biometric is valid but not recognized.
-                    // can be call multiple time during an authorization
+                    // can be called multiple times during an authorization
                     callback.onFailed()
                 }
             }
