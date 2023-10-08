@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.linxiao.framework.common.ToastAlert;
-import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.FragmentToastApiBinding;
 import com.linxiao.framework.architecture.SimpleViewBindingFragment;
 
@@ -29,7 +28,7 @@ public class ToastApiFragment extends SimpleViewBindingFragment<FragmentToastApi
     }
 
     public void onBtnTextIconShowClick(View v) {
-        ToastAlert.show("show a text toast with a icon", R.drawable.leak_canary_icon);
+        ToastAlert.show("show a text toast with a icon", com.squareup.leakcanary.core.R.drawable.leak_canary_icon);
     }
 
     public void onBtnTextEnqueueClick(View v) {
@@ -37,12 +36,12 @@ public class ToastApiFragment extends SimpleViewBindingFragment<FragmentToastApi
     }
 
     public void onBtnTextIconEnqueueClick(View v) {
-        ToastAlert.enqueue("enqueue a text toast with a icon", R.drawable.leak_canary_icon);
+        ToastAlert.enqueue("enqueue a text toast with a icon", com.squareup.leakcanary.core.R.drawable.leak_canary_icon);
     }
 
     public void onBtnPowerfulClick(View v) {
         ToastAlert.create("powerful")
-                .iconResId(R.drawable.leak_canary_icon)
+                .iconResId(com.squareup.leakcanary.core.R.drawable.leak_canary_icon)
                 .duration(100)
                 .gravity(Gravity.TOP, 200)
                 .show();

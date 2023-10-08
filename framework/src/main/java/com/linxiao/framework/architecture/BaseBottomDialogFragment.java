@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.linxiao.framework.R;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.trello.rxlifecycle2.LifecycleTransformer;
 import com.trello.rxlifecycle2.RxLifecycle;
@@ -104,7 +103,7 @@ public abstract class BaseBottomDialogFragment extends BottomSheetDialogFragment
                 getBehavior().setPeekHeight(absolutDialogHeight);
             }
             win.setBackgroundDrawableResource(android.R.color.transparent);
-            View sheetView = requireDialog().findViewById(R.id.design_bottom_sheet);
+            View sheetView = requireDialog().findViewById(com.google.android.material.R.id.design_bottom_sheet);
             if (sheetView != null) {
                 sheetView.setBackgroundResource(android.R.color.transparent);
             }
