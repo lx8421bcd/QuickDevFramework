@@ -8,6 +8,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.Fragment
 import com.linxiao.framework.biometric.BiometricAuthCallback
 import com.linxiao.framework.biometric.BiometricEnrollChangedException
+import com.linxiao.framework.biometric.BiometricException
 import com.linxiao.framework.biometric.BiometricHelper
 import com.linxiao.framework.common.ToastAlert
 import com.linxiao.quickdevframework.databinding.FragmentBiometricApiBinding
@@ -67,6 +68,9 @@ class BiometricApiFragment : Fragment() {
             override fun onError(exception: Throwable) {
                 if (exception is BiometricEnrollChangedException) {
                     ToastAlert.show("检测到指纹信息已改变")
+                }
+                else if (exception is BiometricException) {
+                    ToastAlert.show("biometric error, code = ${exception.code}, message = ${exception.message}")
                 }
                 else {
                     ToastAlert.show(exception.message)
