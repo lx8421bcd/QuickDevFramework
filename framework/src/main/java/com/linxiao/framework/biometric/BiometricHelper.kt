@@ -52,8 +52,9 @@ object BiometricHelper {
 
         private var failOnEnrollChanged = false
 
-        fun setFailOnEnrollChanged(value: Boolean) {
+        fun setFailOnEnrollChanged(value: Boolean): AuthBuilder {
             failOnEnrollChanged = value
+            return this
         }
         fun execute(fragment: Fragment, callback: BiometricAuthCallback) {
             execAuthorization(fragment, promptInfo, callback)

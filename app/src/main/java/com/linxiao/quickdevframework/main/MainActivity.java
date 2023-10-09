@@ -20,6 +20,7 @@ import com.linxiao.quickdevframework.databinding.ActivityMainBinding;
 import com.linxiao.quickdevframework.databinding.ContentMainBinding;
 import com.linxiao.quickdevframework.sample.adapter.AdapterTestFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.ApplicationApiFragment;
+import com.linxiao.quickdevframework.sample.frameworkapi.BiometricApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.DialogApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.FileApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.NotificationApiFragment;
@@ -76,6 +77,7 @@ public class MainActivity extends SimpleViewBindingActivity<ActivityMainBinding>
         List<ApiSampleObject> apiSampleList = new ArrayList<>();
         apiSampleList.add(new ApiSampleObject("Application API", "ApplicationApiFragment"));
         apiSampleList.add(new ApiSampleObject("Dialog API", "DialogApiFragment"));
+        apiSampleList.add(new ApiSampleObject("Biometric API", "BiometricApiFragment"));
         apiSampleList.add(new ApiSampleObject("Notification API", "NotificationApiFragment"));
         apiSampleList.add(new ApiSampleObject("Toast API", "ToastApiFragment"));
         apiSampleList.add(new ApiSampleObject("Permission API", "PermissionApiFragment"));
@@ -104,6 +106,7 @@ public class MainActivity extends SimpleViewBindingActivity<ActivityMainBinding>
     private void initFragments() {
         addFragment(new ApplicationApiFragment(), "ApplicationApiFragment");
         addFragment(new DialogApiFragment(), "DialogApiFragment");
+        addFragment(new BiometricApiFragment(), "BiometricApiFragment");
         addFragment(new NotificationApiFragment(), "NotificationApiFragment");
         addFragment(new ToastApiFragment(), "ToastApiFragment");
         addFragment(new PermissionApiFragment(), "PermissionApiFragment");
