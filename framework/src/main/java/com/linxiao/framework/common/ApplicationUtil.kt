@@ -1,139 +1,139 @@
-package com.linxiao.framework.common;
+package com.linxiao.framework.common
 
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Handler;
-import android.os.SystemClock;
-import android.provider.Settings;
-import android.util.Log;
-import android.widget.Toast;
-
-import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
-
-import com.linxiao.framework.permission.PermissionManager;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.List;
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.ActivityManager
+import android.app.ActivityManager.RunningAppProcessInfo
+import android.content.Context
+import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Build
+import android.os.Handler
+import android.os.SystemClock
+import android.provider.Settings
+import android.util.Log
+import androidx.core.content.FileProvider
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+import java.io.IOException
+import java.util.Locale
 
 /**
  * application util methods
  *
- * <p>
  * method collections of application and android os,
- * </p>
+ *
  * @author linxiao
  * @since 2016-12-12.
  */
-public class ApplicationUtil {
+object ApplicationUtil {
 
-    private static final String TAG = ApplicationUtil.class.getSimpleName();
+    @JvmStatic
+    private val TAG = ApplicationUtil.javaClass.simpleName
 
-    private ApplicationUtil() {}
+    /**
+     * get AndroidID which is Google allowed
+     *
+     * <p>
+     * Additionally in Android O:
+     * 1. The ANDROID_ID value won't change on package uninstall/reinstall,as long as the package name and signing key are the same.
+     * Apps can rely on this value to maintain state across reinstalls.
+     * 2. If an app was installed on a device running an earlier version of Android,
+     * the Android ID remains the same when the device is updated to Android O, unless the app is uninstalled and reinstalled.
+     * 3. The Android ID value only changes if the device is factory reset or if the signing key rotates between uninstall and reinstall events.
+     * 4. This change is only required for device manufacturers shipping with Google Play services and Advertising ID.
+     * Other device manufacturers may provide an alternative resettable ID or continue to provide ANDROID ID.
+     *
+     * https://android-developers.googleblog.com/2017/04/changes-to-device-identifiers-in.html
+     * </p>
+     */
+    @SuppressLint("HardwareIds")
+    fun getAndroidID(): String {
+        return Settings.Secure.getString(ContextProvider.get().contentResolver, Settings.Secure.ANDROID_ID) ?: ""
+    }
 
     /**
      * check this application is foreground
-     * <p>
+     *
      * application is visible to user on screen and screen is not lock,
      * which means there must have least one activity is resumed state.
-     * </p>
      */
-    public static boolean isAppForeground() {
-        Context context = ContextProvider.get();
-        if (context == null) {
-            return false;
-        }
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        if (activityManager == null) {
-            return false;
-        }
-        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-        if (appProcesses == null) {
-            return false;
-        }
-        final String packageName = context.getPackageName();
-        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-            if (!appProcess.processName.equals(packageName)) {
-                continue;
+    @JvmStatic
+    fun isAppForeground(): Boolean {
+        val context = ContextProvider.get()
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val appProcesses = activityManager.runningAppProcesses ?: return false
+        val packageName = context.packageName
+        for (appProcess in appProcesses) {
+            if (appProcess.processName != packageName) {
+                continue
             }
-            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-                return true;
+            if (appProcess.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                return true
             }
         }
-        return false;
+        return false
     }
 
     /**
      * close application
-     * <p>
+     *
+     *
      * Stop all active activities and call Runtime.exit() after 500ms
-     * </p>
+     *
      * @param activity activity instance
      */
-    public static void exitApplication(Activity activity) {
-        if (activity != null) {
-            activity.finishAffinity();
-        }
-        new Handler().postDelayed(() -> Runtime.getRuntime().exit(0), 500);
+    @JvmStatic
+    fun exitApplication(activity: Activity?) {
+        activity?.finishAffinity()
+        Handler().postDelayed({ Runtime.getRuntime().exit(0) }, 500)
     }
 
     /**
      * restart application
      *
-     * <p>
      * Stop all active activities and launch application again with default launch intent.
      * Start activity from background without permission is not allowed since Android Q,
      * AlarmManager method won't work without grant permission
-     * </p>
+     *
      * @param activity activity instance
      */
-    public static void restartApplication(Activity activity) {
-        if (activity != null) {
-            activity.finishAffinity();
-        }
-        String packageName = ContextProvider.get().getPackageName();
-        Intent mStartActivity = ContextProvider.get().getPackageManager().getLaunchIntentForPackage(packageName);
-        if (mStartActivity == null) {
-            return;
-        }
-        mStartActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        mStartActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        ContextProvider.get().startActivity(mStartActivity);
+    @JvmStatic
+    fun restartApplication(activity: Activity?) {
+        activity?:return
+        activity.finishAffinity()
+        val packageName = ContextProvider.get().packageName
+        val mStartActivity = ContextProvider.get().packageManager.getLaunchIntentForPackage(packageName) ?: return
+        mStartActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        mStartActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        ContextProvider.get().startActivity(mStartActivity)
     }
 
     /**
      * open application detail page of this app in Settings
      */
-    public static void openAppDetail(Context context) {
-        Intent localIntent = new Intent();
-        localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-        localIntent.setData(Uri.fromParts("package", context.getPackageName(), null));
-        context.startActivity(localIntent);
+    @JvmStatic
+    fun openAppDetail(context: Context) {
+        val localIntent = Intent()
+        localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        localIntent.action = "android.settings.APPLICATION_DETAILS_SETTINGS"
+        localIntent.data = Uri.fromParts("package", context.packageName, null)
+        context.startActivity(localIntent)
     }
 
     /**
      * is system system orientation enabled
      */
-    public static boolean isSystemOrientationEnabled() {
-        return Settings.System.getInt(ContextProvider.get().getContentResolver(),
-                Settings.System.ACCELEROMETER_ROTATION, 0) == 1;
+    fun isSystemOrientationEnabled(): Boolean {
+        return Settings.System.getInt(
+            ContextProvider.get().contentResolver,
+            Settings.System.ACCELEROMETER_ROTATION, 0
+        ) == 1
     }
 
     /**
@@ -141,40 +141,39 @@ public class ApplicationUtil {
      *
      * @return system running time since last boot, unit ms
      */
-    public static long getSystemBootTime() {
-        return System.currentTimeMillis() - SystemClock.elapsedRealtime();
-    }
-
+    @JvmStatic
+    val systemBootTime: Long
+        get() = System.currentTimeMillis() - SystemClock.elapsedRealtime()
 
     /**
      * get ApplicationInfo Object by package name
      * @param packageName package name
-     * @return {@link ApplicationInfo} object
+     * @return [ApplicationInfo] object
      */
-    public static ApplicationInfo getAppInfo(String packageName) {
+    fun getAppInfo(packageName: String?): ApplicationInfo? {
         try {
-            PackageManager packageManager = ContextProvider.get().getPackageManager();
-            return packageManager.getApplicationInfo(packageName, 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            val packageManager = ContextProvider.get().packageManager
+            return packageManager.getApplicationInfo(packageName!!, 0)
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
         }
-        return null;
+        return null
     }
 
     /**
      * get Application PackageInfo Object by package name
      * @param packageName package name
-     * @return {@link PackageInfo} object
+     * @return [PackageInfo] object
      */
-    public static PackageInfo getPackageInfo(String packageName) {
+    @JvmStatic
+    fun getPackageInfo(packageName: String?): PackageInfo? {
         try {
-            PackageManager packageManager = ContextProvider.get().getPackageManager();
-            PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
-            return packageInfo;
-        } catch (Exception e) {
-            e.printStackTrace();
+            val packageManager = ContextProvider.get().packageManager
+            return packageManager.getPackageInfo(packageName!!, 0)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        return null;
+        return null
     }
 
     /**
@@ -183,15 +182,16 @@ public class ApplicationUtil {
      * @param packageName package name
      * @return app name
      */
-    public static String getAppName(String packageName) {
+    @JvmStatic
+    fun getAppName(packageName: String?): String? {
         try {
-            PackageManager packageManager = ContextProvider.get().getPackageManager();
-            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
-            return (String) packageManager.getApplicationLabel(applicationInfo);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            val packageManager = ContextProvider.get().packageManager
+            val applicationInfo = packageManager.getApplicationInfo(packageName!!, 0)
+            return packageManager.getApplicationLabel(applicationInfo) as String
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
         }
-        return null;
+        return null
     }
 
     /**
@@ -200,15 +200,16 @@ public class ApplicationUtil {
      * @param packageName package name
      * @return app icon
      */
-    public static Drawable getAppIcon(String packageName) {
+    @JvmStatic
+    fun getAppIcon(packageName: String?): Drawable? {
         try {
-            PackageManager packageManager = ContextProvider.get().getPackageManager();
-            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
-            return applicationInfo.loadIcon(packageManager);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            val packageManager = ContextProvider.get().packageManager
+            val applicationInfo = packageManager.getApplicationInfo(packageName!!, 0)
+            return applicationInfo.loadIcon(packageManager)
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
         }
-        return null;
+        return null
     }
 
     /**
@@ -216,20 +217,18 @@ public class ApplicationUtil {
      * @param pid pid
      * @return process name
      */
-    public static String getProcessName(int pid) {
-        ActivityManager am = (ActivityManager) ContextProvider.get().getSystemService(Context.ACTIVITY_SERVICE);
-        if (am == null) {
-            return null;
-        }
-        List<ActivityManager.RunningAppProcessInfo> runningApps = am.getRunningAppProcesses();
+    @JvmStatic
+    fun getProcessName(pid: Int): String? {
+        val am = ContextProvider.get().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val runningApps = am.runningAppProcesses
         if (runningApps != null) {
-            for (ActivityManager.RunningAppProcessInfo procInfo : runningApps) {
+            for (procInfo in runningApps) {
                 if (procInfo.pid == pid) {
-                    return procInfo.processName;
+                    return procInfo.processName
                 }
             }
         }
-        return null;
+        return null
     }
 
     /**
@@ -238,106 +237,93 @@ public class ApplicationUtil {
      * @param packageName package name
      * @return boolean
      */
-    public static boolean isAppRunning(String packageName) {
-        ActivityManager activityManager = (ActivityManager) ContextProvider.get().getSystemService(Context.ACTIVITY_SERVICE);
-        if (activityManager == null) {
-            return false;
-        }
-        List<ActivityManager.RunningAppProcessInfo> processInfo = activityManager.getRunningAppProcesses();
-        for (int i = 0; i < processInfo.size(); i++) {
-            if (processInfo.get(i).processName.equals(packageName)) {
-                Log.d(TAG, String.format("the %s is running", packageName));
-                return true;
+    fun isAppRunning(packageName: String): Boolean {
+        val activityManager = ContextProvider.get().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val processInfo = activityManager.runningAppProcesses
+        for (i in processInfo.indices) {
+            if (processInfo[i].processName == packageName) {
+                Log.d(TAG, String.format("the %s is running", packageName))
+                return true
             }
         }
-        Log.d(TAG, String.format("the %s is not running", packageName));
-        return false;
+        Log.d(TAG, String.format("the %s is not running", packageName))
+        return false
     }
-    
+
     /**
      * check application is installed by package name
      *
      * @param packageName package name
      * @return boolean
      */
-    public static boolean isAppInstalled(String packageName) {
-        PackageInfo packageInfo;
-        try {
-            packageInfo = ContextProvider.get().getPackageManager().getPackageInfo(packageName, 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            packageInfo = null;
+    fun isAppInstalled(packageName: String?): Boolean {
+        val packageInfo: PackageInfo? = try {
+            ContextProvider.get().packageManager.getPackageInfo(packageName!!, 0)
+        } catch (e: PackageManager.NameNotFoundException) {
+            null
         }
-        return packageInfo != null;
+        return packageInfo != null
     }
 
     /**
      * install application with apk
-     * <p>
+     *
      * please check package install permission is granted before install apk
      * or installation will not complete
-     * </p>
      *
      * @param filePath full path of install apk file
      */
-    public static void installApk(String filePath, String providerAuth) {
-        Context mContext = ContextProvider.get();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mContext.getPackageManager().canRequestPackageInstalls()) {
-            return; // do not have package install permission
+    fun installApk(filePath: String, providerAuth: String?) {
+        val mContext = ContextProvider.get()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mContext.packageManager.canRequestPackageInstalls()) {
+            return  // do not have package install permission
         }
-        File installFile = new File(filePath);
+        val installFile = File(filePath)
         if (!installFile.exists()) {
-            Log.e(TAG, "cannot find install apk file");
-            return;
+            Log.e(TAG, "cannot find install apk file")
+            return
         }
         if (!filePath.endsWith(".apk")) {
-            Log.e(TAG, "target file is not apk file");
-            return;
+            Log.e(TAG, "target file is not apk file")
+            return
         }
-        Uri installPackageUri;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            installPackageUri = FileProvider.getUriForFile(mContext, providerAuth, installFile);
-        }
-        else {
-            installPackageUri = Uri.fromFile(new File(filePath)); //Uri.parse("file://" + installFile);
-        }
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(installPackageUri, "application/vnd.android.package-archive");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        mContext.startActivity(intent);
+        val installPackageUri: Uri = FileProvider.getUriForFile(mContext, providerAuth!!, installFile)
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(installPackageUri, "application/vnd.android.package-archive")
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        mContext.startActivity(intent)
     }
 
     /**
      * 获取手机cpu信息
      */
-    public static String getCPUName() {
-        FileReader fr = null;
-        BufferedReader br = null;
-        String text;
+    @JvmStatic
+    fun getCPUName(): String {
+        var fr: FileReader? = null
+        var br: BufferedReader? = null
+        var text: String
         try {
-            fr = new FileReader("/proc/cpuinfo");
-            br = new BufferedReader(fr);
-            while ((text = br.readLine()) != null) {
-                if (text.toLowerCase().contains("hardware")) {
-                    String[] array = text.split(":\\s+", 2);
-                    return array[1];
+            fr = FileReader("/proc/cpuinfo")
+            br = BufferedReader(fr)
+            while (br.readLine().also { text = it } != null) {
+                if (text.lowercase(Locale.getDefault()).contains("hardware")) {
+                    val array = text.split(":\\s+".toRegex(), limit = 2).toTypedArray()
+                    return array[1]
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (e: Exception) {
+            e.printStackTrace()
         } finally {
             try {
-                if (fr != null) {
-                    fr.close();
-                }
-                if (br != null) {
-                    br.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+                fr?.close()
+                br?.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
-
         }
-        return "";
+        return ""
     }
+
+
 }
