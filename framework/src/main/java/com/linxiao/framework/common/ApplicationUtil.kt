@@ -17,6 +17,11 @@ import android.os.SystemClock
 import android.provider.Settings
 import android.util.Log
 import androidx.core.content.FileProvider
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -83,15 +88,18 @@ object ApplicationUtil {
     /**
      * close application
      *
-     *
      * Stop all active activities and call Runtime.exit() after 500ms
      *
      * @param activity activity instance
      */
+    @DelicateCoroutinesApi
     @JvmStatic
     fun exitApplication(activity: Activity?) {
         activity?.finishAffinity()
-        Handler().postDelayed({ Runtime.getRuntime().exit(0) }, 500)
+        GlobalScope.launch(Dispatchers.IO) {
+            delay(200)
+            Runtime.getRuntime().exit(0)
+        }
     }
 
     /**
@@ -99,7 +107,7 @@ object ApplicationUtil {
      *
      * Stop all active activities and launch application again with default launch intent.
      * Start activity from background without permission is not allowed since Android Q,
-     * AlarmManager method won't work without grant permission
+     * AlarmManager method won't work without granted permission
      *
      * @param activity activity instance
      */
@@ -296,7 +304,16 @@ object ApplicationUtil {
     }
 
     /**
-     * 获取手机cpu信息
+     * get CPU info of this device
+     *
+     * <p>
+     * the file [/proc/cpuinfo] contains all running CPU info on the device,
+     * and the SOC name usually written in the last line of this file,
+     * example:
+     *     "Hardware	: Qualcomm Technologies, Inc SDM845"
+     * </p>
+     *
+     * @return the SOC name of this device
      */
     @JvmStatic
     fun getCPUName(): String {
@@ -307,6 +324,7 @@ object ApplicationUtil {
             fr = FileReader("/proc/cpuinfo")
             br = BufferedReader(fr)
             while (br.readLine().also { text = it } != null) {
+                Log.d(TAG, "getCPUName: $text")
                 if (text.lowercase(Locale.getDefault()).contains("hardware")) {
                     val array = text.split(":\\s+".toRegex(), limit = 2).toTypedArray()
                     return array[1]
