@@ -97,5 +97,6 @@ class BiometricApiFragment : Fragment() {
 
     private fun syncEnrollChanges() {
         BiometricHelper.updateBiometricEnrollState()
+        ToastAlert.show("updated")
     }
 }
