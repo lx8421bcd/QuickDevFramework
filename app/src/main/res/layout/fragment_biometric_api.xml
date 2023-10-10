@@ -25,4 +25,10 @@
         android:layout_height="wrap_content"
         android:text="check enrolled info changed"/>
 
+    <Button
+        android:id="@+id/btn_update_enroll_changes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="update enroll change state"/>
+
 </LinearLayout>

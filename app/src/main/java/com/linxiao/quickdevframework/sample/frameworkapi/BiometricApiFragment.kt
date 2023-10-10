@@ -49,6 +49,9 @@ class BiometricApiFragment : Fragment() {
         viewBinding.btnCheckEnrollChanged.setOnClickListener {
             checkEnrollChanged()
         }
+        viewBinding.btnUpdateEnrollChanges.setOnClickListener {
+            syncEnrollChanges()
+        }
     }
 
     private fun execAuth() {
@@ -90,5 +93,9 @@ class BiometricApiFragment : Fragment() {
         else {
             ToastAlert.show("未检测到指纹信息改变")
         }
+    }
+
+    private fun syncEnrollChanges() {
+        BiometricHelper.updateBiometricEnrollState()
     }
 }
