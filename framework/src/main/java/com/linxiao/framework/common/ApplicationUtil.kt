@@ -343,5 +343,27 @@ object ApplicationUtil {
         return ""
     }
 
+    /**
+     * check the system settings "don't keep activities" is opened
+     *
+     * @return opened - true; closed - false
+     */
+    @JvmStatic
+    fun isAlwaysFinishActivity(): Boolean{
+        return Settings.Global.getInt(
+            ContextProvider.get().contentResolver,
+            Settings.Global.ALWAYS_FINISH_ACTIVITIES,
+            0
+        ) != 0
+    }
 
+    /**
+     * open Developer settings page in phone system settings
+     */
+    fun openDeveloperSettings(context: Context) {
+        val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+        context.startActivity(intent)
+    }
 }
