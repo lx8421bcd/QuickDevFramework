@@ -9,6 +9,7 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.WindowCompat
 
 
 /**
@@ -176,8 +177,7 @@ fun isDarkMode(): Boolean {
 fun transparencyStatusBar(activity: Activity) {
     val window = activity.window
     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-    window.decorView.systemUiVisibility =
-        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
     window.statusBarColor = Color.TRANSPARENT
 }
@@ -203,17 +203,8 @@ fun setStatusBarColor(activity: Activity, color: Int) {
  * @param activity 需设置样式的activity
  * @param isLight 是否为浅色样式，true - 浅色，false - 深色
  */
-fun setStatusBarLightMode(activity: Activity?, isLight: Boolean): Boolean {
-    if (activity == null) {
-        return false
+fun setStatusBarLightMode(activity: Activity, isLight: Boolean) {
+    WindowCompat.getInsetsController(activity.window, activity.window.decorView).apply {
+        this.isAppearanceLightStatusBars = isLight
     }
-    val cachedParams = activity.window.decorView.systemUiVisibility
-    if (isLight) {
-        activity.window.decorView.systemUiVisibility =
-            cachedParams or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-    } else {
-        activity.window.decorView.systemUiVisibility =
-            cachedParams and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-    }
-    return true
 }
