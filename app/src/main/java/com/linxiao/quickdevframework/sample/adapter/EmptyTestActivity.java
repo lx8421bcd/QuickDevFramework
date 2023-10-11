@@ -2,23 +2,18 @@ package com.linxiao.quickdevframework.sample.adapter;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.chad.library.adapter.base.layoutmanager.QuickGridLayoutManager;
 import com.linxiao.framework.common.DensityHelper;
-import com.linxiao.framework.common.ScreenUtil;
 import com.linxiao.framework.list.EquidistantDecoration;
-import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.ActivityEmptyTestBinding;
 import com.linxiao.framework.architecture.SimpleViewBindingActivity;
 import com.linxiao.quickdevframework.databinding.LayoutEmptyViewBinding;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class EmptyTestActivity extends SimpleViewBindingActivity<ActivityEmptyTestBinding> {
 

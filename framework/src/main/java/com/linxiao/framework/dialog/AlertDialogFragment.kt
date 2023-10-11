@@ -14,7 +14,7 @@ import androidx.lifecycle.Lifecycle
 import com.linxiao.framework.R
 import com.linxiao.framework.architecture.BaseDialogFragment
 import com.linxiao.framework.common.ContextProvider
-import com.linxiao.framework.common.ScreenUtil
+import com.linxiao.framework.common.getRealScreenHeight
 
 /**
  * 提示对话框
@@ -187,7 +187,7 @@ class AlertDialogFragment : BaseDialogFragment() {
     private fun updateWebViewContent() {
         val wvContent = dialog?.findViewById<WebView?>(R.id.wv_content) ?: return
         if (contentLink.isNotEmpty()) {
-            wvContent.layoutParams.height = ScreenUtil.getRealScreenHeight() / 2
+            wvContent.layoutParams.height = getRealScreenHeight() / 2
             wvContent.loadUrl(contentLink)
         }
         else if (messageHtml.isNotEmpty()) {

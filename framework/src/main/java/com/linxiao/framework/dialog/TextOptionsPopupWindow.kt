@@ -9,7 +9,8 @@ import android.view.ViewGroup
 import android.widget.PopupWindow
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.linxiao.framework.common.DensityHelper
-import com.linxiao.framework.common.ScreenUtil
+import com.linxiao.framework.common.getStatusBarHeight
+import com.linxiao.framework.common.getUsableScreenWidth
 import com.linxiao.framework.databinding.PopupTextOptionsBinding
 
 /**
@@ -56,10 +57,10 @@ class TextOptionsPopupWindow(context: Context) : PopupWindow(context) {
         var xOffset = DensityHelper.dp2px(-4f)
         var yOffset = -(anchor.height + height)
         var gravity = Gravity.START or Gravity.TOP
-        if (ScreenUtil.getUsableScreenWidth(anchor.context) - xy[0] < width) {
+        if (getUsableScreenWidth(anchor.context) - xy[0] < width) {
             xOffset -= width
         }
-        if (xy[1] - ScreenUtil.getStatusBarHeight() < height) {
+        if (xy[1] - getStatusBarHeight() < height) {
             yOffset = 0
             gravity = Gravity.START or Gravity.BOTTOM
         }
