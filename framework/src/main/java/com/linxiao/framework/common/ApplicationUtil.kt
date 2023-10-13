@@ -12,7 +12,7 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
-import android.os.Handler
+import android.os.Process
 import android.os.SystemClock
 import android.provider.Settings
 import android.util.Log
@@ -218,6 +218,26 @@ object ApplicationUtil {
             e.printStackTrace()
         }
         return null
+    }
+
+    /**
+     * 获取本应用当前进程名称
+     * <p>
+     * 此方法旨在不使用遍历runningAppProcesses的方法时获取应用当前的进程名称，
+     * 避免因存在遍历进程名称而导致的审核问题
+     * </p>
+     */
+    fun getProcessNameByMyPid(): String? {
+        return try {
+            val file = File("/proc/" + Process.myPid() + "/cmdline")
+            val mBufferedReader = BufferedReader(FileReader(file))
+            val processName = mBufferedReader.readLine().trim { it <= ' ' }
+            mBufferedReader.close()
+            processName
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            ContextProvider.get().packageName
+        }
     }
 
     /**
