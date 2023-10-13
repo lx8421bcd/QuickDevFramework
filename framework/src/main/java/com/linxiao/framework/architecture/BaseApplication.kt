@@ -32,7 +32,7 @@ abstract class BaseApplication : MultiDexApplication(), LifecycleEventObserver {
             private set
     }
 
-    val TAG = this.javaClass.simpleName
+    protected val TAG = this.javaClass.simpleName
 
     override fun onCreate() {
         super.onCreate()
