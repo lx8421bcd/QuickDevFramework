@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 
@@ -48,6 +49,20 @@ dependencies {
     api "androidx.biometric:biometric:1.1.0"
     api 'androidx.multidex:multidex:2.0.1'
     api 'androidx.core:core-splashscreen:1.0.1'
+    def lifecycle_version = "2.6.2"
+    def arch_version = "2.2.0"
+    api "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
+//    api "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-service:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-process:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycle_version"
+    testApi "androidx.arch.core:core-testing:$arch_version"
+    testApi "androidx.lifecycle:lifecycle-runtime-testing:$lifecycle_version"
     // JSON解析
     api 'com.google.code.gson:gson:2.10'
     // OKHttp
