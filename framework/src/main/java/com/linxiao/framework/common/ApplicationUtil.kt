@@ -227,17 +227,17 @@ object ApplicationUtil {
      * 避免因存在遍历进程名称而导致的审核问题
      * </p>
      */
-    fun getProcessNameByMyPid(): String? {
-        return try {
+    fun getCurrentProcessName(): String? {
+        try {
             val file = File("/proc/" + Process.myPid() + "/cmdline")
             val mBufferedReader = BufferedReader(FileReader(file))
             val processName = mBufferedReader.readLine().trim { it <= ' ' }
             mBufferedReader.close()
-            processName
-        } catch (e: java.lang.Exception) {
+            return processName
+        } catch (e: Exception) {
             e.printStackTrace()
-            ContextProvider.get().packageName
         }
+        return null
     }
 
     /**
