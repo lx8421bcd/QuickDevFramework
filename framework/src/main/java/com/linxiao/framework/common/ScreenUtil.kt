@@ -208,3 +208,18 @@ fun setStatusBarLightMode(activity: Activity, isLight: Boolean) {
         this.isAppearanceLightStatusBars = isLight
     }
 }
+
+/**
+ * 是否允许截屏
+ * <p>关闭之后调用系统截屏为黑屏</p>
+ *
+ * @param enabled 是否允许
+ */
+fun allowScreenshots(activity: Activity, enabled: Boolean) {
+    if (enabled) {
+        activity.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+    }
+    else {
+        activity.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+    }
+}
