@@ -26,9 +26,14 @@ class JsonTestFragment : BaseFragment() {
         var name = "abc"
         var age = 0
         var gender = 1
+        lateinit var study: String
         override fun toString(): String {
-            return "TestObject(id='$id', name='$name', age=$age, gender=$gender)"
+            if (!this::study.isInitialized) {
+                study = "high school"
+            }
+            return "TestObject(id='$id', name='$name', age=$age, gender=$gender, study='$study')"
         }
+
 
     }
 

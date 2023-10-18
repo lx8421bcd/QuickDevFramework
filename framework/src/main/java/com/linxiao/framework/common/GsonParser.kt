@@ -266,6 +266,13 @@ object GsonParser {
         }
     }
 
+    /**
+     * kotlin null-safety check TypeAdapter
+     * <p>
+     * execute null check during json deserialize, if a value declared be non-null but deserialized
+     * a null value, the adapter will turned it to the default value that object declared
+     * </p>
+     */
     class NullableTypeAdapterFactory : TypeAdapterFactory {
 
         override fun <T : Any> create(gson: Gson, type: TypeToken<T>): TypeAdapter<T>? {
@@ -296,7 +303,7 @@ object GsonParser {
                 val kotlinClass: KClass<Any> = Reflection.createKotlinClass(type.rawType)
                 // Ensure none of its non-nullable fields were deserialized to null
                 kotlinClass.memberProperties.forEach {
-                    if (!it.returnType.isMarkedNullable && it.get(value) == null) {
+                    if (!it.isLateinit && !it.returnType.isMarkedNullable && it.get(value) == null) {
                         if (defaultValue == null) {
                             throw JsonParseException("Value of non-nullable member [${it.name}] cannot be null")
                         }
