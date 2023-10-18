@@ -37,6 +37,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testImplementation 'junit:junit:4.13.2'
+    // Kotlin base
+    api "org.jetbrains.kotlin:kotlin-reflect:1.9.0"
     // Android基础库
     api 'com.google.android.material:material:1.9.0'
     api 'androidx.core:core-ktx:1.10.1'
