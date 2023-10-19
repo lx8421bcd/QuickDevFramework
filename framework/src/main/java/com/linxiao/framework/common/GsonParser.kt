@@ -298,15 +298,14 @@ object GsonParser {
             override fun write(out: JsonWriter, value: T?) = delegate.write(out, value)
 
             override fun read(input: JsonReader): T? {
-                var defaultValue: T? = null
+                val defaultValue by lazy {
+                    constructor.construct() ?: null
+                }
                 val value = delegate.read(input) ?: return null
                 val kotlinClass: KClass<Any> = Reflection.createKotlinClass(type.rawType)
                 // Ensure none of its non-nullable fields were deserialized to null
                 kotlinClass.memberProperties.forEach {
                     if (!it.isLateinit && !it.returnType.isMarkedNullable && it.get(value) == null) {
-                        if (defaultValue == null) {
-                            defaultValue = constructor.construct()
-                        }
                         if (defaultValue == null) {
                             throw JsonParseException("Non-nullable member [${it.name}] get a null value at [${value::class.java.name}]")
                         }
