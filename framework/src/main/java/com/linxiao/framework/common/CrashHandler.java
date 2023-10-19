@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.collection.ArrayMap;
 
 import com.google.gson.reflect.TypeToken;
+import com.linxiao.framework.json.GsonParser;
 import com.linxiao.framework.net.CommonApiProvider;
 import com.linxiao.framework.preferences.AppPreferences;
 import com.linxiao.framework.rx.RxSubscriber;

@@ -1,7 +1,8 @@
-package com.linxiao.framework.common
+package com.linxiao.framework.json
 
 import android.text.TextUtils
 import android.util.Log
+import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
@@ -12,7 +13,9 @@ import com.google.gson.JsonParser
 import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.internal.ConstructorConstructor
+import com.google.gson.internal.Excluder
 import com.google.gson.internal.ObjectConstructor
+import com.google.gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
@@ -20,6 +23,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.lang.reflect.Type
+import java.util.Collections
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
@@ -58,7 +62,7 @@ object GsonParser {
     val builder: GsonBuilder
         get() {
             return GsonBuilder()
-                .registerTypeAdapterFactory(NullableTypeAdapterFactory())
+//                .registerTypeAdapterFactory(NullableTypeAdapterFactory())
                 .registerTypeAdapter(Int::class.javaPrimitiveType, IntegerDeserializer())
                 .registerTypeAdapter(Int::class.java, IntegerDeserializer())
                 .registerTypeAdapter(String::class.java, StringDeserializer())
@@ -72,7 +76,33 @@ object GsonParser {
      */
     @JvmStatic
     val parser: Gson by lazy {
-        builder.create()
+        builder.create().also {
+            var field = it.javaClass.getDeclaredField("factories")
+            field.isAccessible = true
+            @Suppress("UNCHECKED_CAST")
+            val factoryList = ArrayList(field.get(it) as List<TypeAdapterFactory>)
+            field = it.javaClass.getDeclaredField("constructorConstructor")
+            field.isAccessible = true
+            val constructorConstructor = field.get(it) as ConstructorConstructor
+
+            field = it.javaClass.getDeclaredField("jsonAdapterFactory")
+            field.isAccessible = true
+            val jsonAdapterFactory = field.get(it) as JsonAdapterAnnotationTypeAdapterFactory
+            factoryList.removeAt(factoryList.size - 1)
+            factoryList.add(
+                KotlinReflectiveTypeAdapterFactory(
+                    constructorConstructor,
+                    FieldNamingPolicy.IDENTITY,
+                    Excluder.DEFAULT,
+                    jsonAdapterFactory,
+                    mutableListOf()
+                )
+            )
+            field = it.javaClass.getDeclaredField("factories")
+            field.isAccessible = true
+
+            field.set(it, Collections.unmodifiableList(factoryList))
+        }
     }
 
     /**

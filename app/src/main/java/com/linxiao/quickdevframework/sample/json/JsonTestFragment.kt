@@ -1,4 +1,4 @@
-package com.linxiao.quickdevframework.sample.frameworkapi
+package com.linxiao.quickdevframework.sample.json
 
 import android.os.Bundle
 import android.util.Log
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.linxiao.framework.architecture.BaseFragment
-import com.linxiao.framework.common.GsonParser
+import com.linxiao.framework.json.GsonParser
 import com.linxiao.quickdevframework.databinding.FragmentJsonTestBinding
 
 /**
@@ -20,23 +20,6 @@ import com.linxiao.quickdevframework.databinding.FragmentJsonTestBinding
  * @since 2023-10-18
  */
 class JsonTestFragment : BaseFragment() {
-
-    class TestObject {
-        var id = "000000"
-        var name = "abc"
-        var age = 0
-        var gender = 1
-        lateinit var study: String
-        override fun toString(): String {
-            if (!this::study.isInitialized) {
-                study = "high school"
-            }
-            return "TestObject(id='$id', name='$name', age=$age, gender=$gender, study='$study')"
-        }
-
-
-    }
-
 
     private val viewBinding by lazy {
         return@lazy FragmentJsonTestBinding.inflate(layoutInflater)
@@ -63,7 +46,9 @@ class JsonTestFragment : BaseFragment() {
     }
 
     private fun testDeserialize() {
-        val obj = GsonParser.parser.fromJson("{\"name\":null}", TestObject::class.java)
-        Log.d(TAG, "testDeserialize: $obj")
+        val objKt = GsonParser.parser.fromJson("{\"name\":null, \"study\":null}", TestKtObject::class.java)
+        Log.d(TAG, "testDeserialize: $objKt")
+        val objJava = GsonParser.parser.fromJson("{\"name\":null, \"study\":\"university\"}", TestJavaObject::class.java)
+        Log.d(TAG, "testDeserialize: $objJava")
     }
 }

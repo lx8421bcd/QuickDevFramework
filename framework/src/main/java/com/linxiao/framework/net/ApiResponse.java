@@ -3,7 +3,7 @@ package com.linxiao.framework.net;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
-import com.linxiao.framework.common.GsonParser;
+import com.linxiao.framework.json.GsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;

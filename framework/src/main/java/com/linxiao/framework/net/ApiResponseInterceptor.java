@@ -4,7 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.linxiao.framework.common.GsonParser;
+import com.linxiao.framework.json.GsonParser;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

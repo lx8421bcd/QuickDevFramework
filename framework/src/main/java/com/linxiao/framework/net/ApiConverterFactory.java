@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonWriter;
-import com.linxiao.framework.common.GsonParser;
+import com.linxiao.framework.json.GsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

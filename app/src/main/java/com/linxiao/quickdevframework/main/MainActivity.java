@@ -23,7 +23,7 @@ import com.linxiao.quickdevframework.sample.frameworkapi.ApplicationApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.BiometricApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.DialogApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.FileApiFragment;
-import com.linxiao.quickdevframework.sample.frameworkapi.JsonTestFragment;
+import com.linxiao.quickdevframework.sample.json.JsonTestFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.NotificationApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.PermissionApiFragment;
 import com.linxiao.quickdevframework.sample.frameworkapi.ToastApiFragment;

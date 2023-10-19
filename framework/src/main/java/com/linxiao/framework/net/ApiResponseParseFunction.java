@@ -1,6 +1,6 @@
 package com.linxiao.framework.net;
 
-import com.linxiao.framework.common.GsonParser;
+import com.linxiao.framework.json.GsonParser;
 
 import java.lang.reflect.Type;
 
