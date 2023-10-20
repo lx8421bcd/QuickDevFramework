@@ -39,6 +39,18 @@ import java.util.Collections
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
+/**
+ * 修改自Gson内原本的ReflectiveTypeAdapterFactory，适配Kotlin Null安全。
+ * 使用此方法而非自定义TypeAdapterFactory主要是为了提高性能。
+ *
+ * 存在以下规则：
+ * * 在反序列化时，若反序列化结果不为null则正常赋值
+ * * 在反序列化时，若结果为null，如果检测到目标成员有NonNull声明，则不赋值，使用成员定义的默认值
+ * * Java实现的类型在参与反序列化时，默认所有成员为NonNull声明(kotlin reflection特性)
+ *
+ * @author lx8421bcd
+ * @since 2023-10-18
+ */
 class KotlinReflectiveTypeAdapterFactory(
     private val constructorConstructor: ConstructorConstructor,
     private val fieldNamingPolicy: FieldNamingStrategy,
