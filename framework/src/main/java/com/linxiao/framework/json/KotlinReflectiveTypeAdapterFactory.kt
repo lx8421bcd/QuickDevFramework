@@ -119,7 +119,7 @@ class KotlinReflectiveTypeAdapterFactory(
         serialize: Boolean,
         deserialize: Boolean,
         blockInaccessible: Boolean,
-        isKotlinNonNull: Boolean
+        isKotlinNullable: Boolean
     ): BoundField {
         val isPrimitive = Primitives.isPrimitive(fieldType.rawType)
         val modifiers = field.modifiers
@@ -208,7 +208,7 @@ class KotlinReflectiveTypeAdapterFactory(
                         field[target] = fieldValue
                     }
                     else {
-                        if (!isKotlinNonNull) {
+                        if (isKotlinNullable) {
                             field[target] = null
                         }
                     }
@@ -294,7 +294,7 @@ class KotlinReflectiveTypeAdapterFactory(
                         serialize,
                         deserialize,
                         blockInaccessible,
-                        it.isLateinit,
+                        it.returnType.isMarkedNullable,
                     )
                     val replaced = result.put(name, boundField)
                     if (previous == null) previous = replaced
