@@ -42,6 +42,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':framework')
+    implementation 'androidx.core:core-ktx:1.12.0'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:2.9.1'
