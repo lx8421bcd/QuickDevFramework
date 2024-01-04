@@ -3,9 +3,8 @@ package com.linxiao.framework.list
 import android.content.Context
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
-import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter4.BaseQuickAdapter
 import java.lang.reflect.ParameterizedType
-import java.util.Objects
 
 /**
  * SingleItemAdapter with [ViewBindingRecyclerHolder]
@@ -14,7 +13,7 @@ import java.util.Objects
  * @author linxiao
  * @since 2020-10-20
  */
-abstract class ViewBindingSingleItemAdapter<T, B : ViewBinding>: BaseQuickAdapter<T, ViewBindingRecyclerHolder<B>>() {
+abstract class ViewBindingSingleItemAdapter<T : Any, B : ViewBinding>: BaseQuickAdapter<T, ViewBindingRecyclerHolder<B>>() {
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreateViewHolder(context: Context, parent: ViewGroup, viewType: Int): ViewBindingRecyclerHolder<B> {

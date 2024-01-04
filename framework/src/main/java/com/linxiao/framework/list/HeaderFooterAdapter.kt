@@ -1,14 +1,10 @@
 package com.linxiao.framework.list
 
 import android.content.Context
-import android.util.Log
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.LayoutRes
-import com.chad.library.adapter.base.BaseQuickAdapter
-import com.chad.library.adapter.base.BaseSingleItemAdapter
-import com.chad.library.adapter.base.viewholder.QuickViewHolder
-import com.linxiao.framework.R
+import com.chad.library.adapter4.BaseSingleItemAdapter
+import com.chad.library.adapter4.viewholder.QuickViewHolder
 
 /**
  * Default Header and Footer holder adapter for BRVAH

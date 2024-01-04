@@ -1,24 +1,19 @@
 package com.linxiao.quickdevframework.sample.adapter;
 
 import android.os.Bundle;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.QuickAdapterHelper;
-import com.chad.library.adapter.base.viewholder.QuickViewHolder;
+import com.chad.library.adapter4.QuickAdapterHelper;
+import com.linxiao.framework.architecture.SimpleViewBindingActivity;
 import com.linxiao.framework.list.HeaderFooterAdapter;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.ActivityHeaderFooterBinding;
-import com.linxiao.framework.architecture.SimpleViewBindingActivity;
 
 import java.util.Arrays;
 
 import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 
 public class HeaderFooterActivity extends SimpleViewBindingActivity<ActivityHeaderFooterBinding> {
 
