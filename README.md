@@ -57,6 +57,7 @@
 * 主体框架切换至kotlin
 * 重构文件管理相关工具类
 * 基于当前项目框架，添加常用UI模板，如单列表界面等
+* 以JetPack Compose重写Sample相关UI，作为compose samples
 * 待续
 
 
