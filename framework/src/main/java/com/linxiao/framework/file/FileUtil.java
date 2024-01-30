@@ -4,7 +4,8 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.linxiao.framework.common.ContextProvider;
+
+import com.linxiao.framework.common.ContextProviderKt;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -189,18 +190,18 @@ public final class FileUtil {
      * @return true path belongs to app cache or data path
      */
     public static boolean isAppDataPath(String path) {
-        File extCacheRoot = ContextProvider.get().getExternalCacheDir();
+        File extCacheRoot = ContextProviderKt.getGlobalContext().getExternalCacheDir();
         if (extCacheRoot != null && path.contains(extCacheRoot.getPath())) {
             return true;
         }
-        File extFileRoot = ContextProvider.get().getExternalFilesDir(null);
+        File extFileRoot = ContextProviderKt.getGlobalContext().getExternalFilesDir(null);
         if (extFileRoot != null && path.contains(extFileRoot.getPath())) {
             return true;
         }
-        if (path.contains(ContextProvider.get().getCacheDir().getPath())) {
+        if (path.contains(ContextProviderKt.getGlobalContext().getCacheDir().getPath())) {
             return true;
         }
-        if (path.contains(ContextProvider.get().getFilesDir().getPath())) {
+        if (path.contains(ContextProviderKt.getGlobalContext().getFilesDir().getPath())) {
             return true;
         }
         return false;

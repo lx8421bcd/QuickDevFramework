@@ -88,8 +88,8 @@ public class CrashHandler implements UncaughtExceptionHandler {
     private Map<String, Object> collectAppVersionInfo() {
         Map<String, Object> ret = new ArrayMap<>();
         try {
-            PackageManager pm = ContextProvider.get().getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(ContextProvider.get().getPackageName(), PackageManager.GET_ACTIVITIES);
+            PackageManager pm = ContextProviderKt.getGlobalContext().getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(ContextProviderKt.getGlobalContext().getPackageName(), PackageManager.GET_ACTIVITIES);
             if (pi != null) {
                 ret.put("versionName", pi.versionName);
                 ret.put("versionCode", pi.versionCode);
@@ -127,7 +127,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
     private Map<String, Object> collectNetworkInfo() {
         Map<String, Object> ret = new ArrayMap<>();
-        ConnectivityManager manager = (ConnectivityManager) ContextProvider.get().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager manager = (ConnectivityManager) ContextProviderKt.getGlobalContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (manager == null) {
             return ret;
         }

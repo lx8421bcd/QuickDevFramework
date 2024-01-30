@@ -8,7 +8,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.linxiao.framework.common.ContextProvider;
+
+import com.linxiao.framework.common.ContextProviderKt;
 import com.linxiao.framework.common.ToastAlert;
 import com.linxiao.framework.net.SimpleDownloadTask;
 import com.linxiao.quickdevframework.databinding.FragmentDownloadTestBinding;
@@ -45,7 +46,7 @@ public class DownloadTestFragment extends SimpleViewBindingFragment<FragmentDown
     public void onClickStart() {
         String url = getViewBinding().etUrl.getText().toString();
         downloadTask = SimpleDownloadTask.newInstance(url)
-        .setDownloadTo(ContextProvider.get().getExternalCacheDir().getPath(), "test.apk")
+        .setDownloadTo(ContextProviderKt.getGlobalContext().getExternalCacheDir().getPath(), "test.apk")
 //        .hideNotification()
         .setNotification("TestDownload", "download test")
         ;

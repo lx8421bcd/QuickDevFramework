@@ -1,7 +1,6 @@
 package com.linxiao.framework.common
 
 import android.content.res.Resources
-import com.linxiao.framework.common.DensityHelper.toDp
 import kotlin.math.ceil
 
 /**
@@ -28,7 +27,7 @@ object DensityHelper {
     private var originDensityDpi = 0
 
     init {
-        val dm = ContextProvider.get().resources.displayMetrics
+        val dm = globalContext.resources.displayMetrics
         originDensity = dm.density
         originScaledDensity = dm.scaledDensity
         originDensityDpi = dm.densityDpi

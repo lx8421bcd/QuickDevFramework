@@ -17,7 +17,8 @@ import android.util.Log;
 
 import com.linxiao.framework.R;
 import com.linxiao.framework.common.ApplicationUtil;
-import com.linxiao.framework.common.ContextProvider;
+
+import com.linxiao.framework.common.ContextProviderKt;
 import com.linxiao.framework.dialog.AlertDialogFragment;
 
 /**
@@ -76,7 +77,7 @@ public class PermissionManager {
      * 是否拥有相机权限
      */
     public static boolean hasCameraPermission() {
-        return isPermissionsGranted(ContextProvider.get(),
+        return isPermissionsGranted(ContextProviderKt.getGlobalContext(),
                 Manifest.permission.CAMERA
         );
     }
@@ -85,7 +86,7 @@ public class PermissionManager {
      * 是否拥有录音权限
      */
     public static boolean hasRecordAudioPermission() {
-        return isPermissionsGranted(ContextProvider.get(),
+        return isPermissionsGranted(ContextProviderKt.getGlobalContext(),
                 Manifest.permission.RECORD_AUDIO
         );
     }
@@ -94,7 +95,7 @@ public class PermissionManager {
      * 是否拥有管理通话状态权限
      */
     public static boolean hasReadPhoneStatePermission() {
-        return isPermissionsGranted(ContextProvider.get(),
+        return isPermissionsGranted(ContextProviderKt.getGlobalContext(),
                 Manifest.permission.READ_PHONE_STATE
         );
     }
@@ -103,7 +104,7 @@ public class PermissionManager {
      * 是否拥有SD卡读权限
      */
     public static boolean hasSDCardPermission() {
-        return isPermissionsGranted(ContextProvider.get(),
+        return isPermissionsGranted(ContextProviderKt.getGlobalContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         );
@@ -113,7 +114,7 @@ public class PermissionManager {
      * 是否拥有定位权限
      */
     public static boolean hasLocationPermission() {
-        return isPermissionsGranted(ContextProvider.get(),
+        return isPermissionsGranted(ContextProviderKt.getGlobalContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
         );
     }
@@ -123,7 +124,7 @@ public class PermissionManager {
      */
     public static boolean hasManageOverlayPermission() {
         if (hasRuntimePermission()) {
-            return Settings.canDrawOverlays(ContextProvider.get());
+            return Settings.canDrawOverlays(ContextProviderKt.getGlobalContext());
         }
         return true;
     }
@@ -133,7 +134,7 @@ public class PermissionManager {
      */
     public static boolean hasWriteSystemSettingsPermission() {
         if (hasRuntimePermission()) {
-            return Settings.System.canWrite(ContextProvider.get());
+            return Settings.System.canWrite(ContextProviderKt.getGlobalContext());
         }
         return true;
     }
@@ -142,7 +143,7 @@ public class PermissionManager {
      * 是否拥有日历权限
      */
     public static boolean hasCalendarPermission() {
-        return isPermissionsGranted(ContextProvider.get(),
+        return isPermissionsGranted(ContextProviderKt.getGlobalContext(),
                 Manifest.permission.READ_CALENDAR,
                 Manifest.permission.WRITE_CALENDAR
         );
@@ -155,7 +156,7 @@ public class PermissionManager {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return true;
         }
-        return ContextProvider.get().getPackageManager().canRequestPackageInstalls();
+        return ContextProviderKt.getGlobalContext().getPackageManager().canRequestPackageInstalls();
     }
 
     /**

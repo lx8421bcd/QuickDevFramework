@@ -27,7 +27,6 @@ import android.text.SpannedString;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 
 /**
@@ -46,7 +45,7 @@ public class SpanFormatter {
 
 
 	public static SpannedString getText(@StringRes int resId, Object... args) {
-		return format(ContextProvider.get().getText(resId), args);
+		return format(ContextProviderKt.getGlobalContext().getText(resId), args);
 	}
 
 	/**

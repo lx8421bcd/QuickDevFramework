@@ -4,7 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import androidx.annotation.RawRes;
 
-import com.linxiao.framework.common.ContextProvider;
+
+import com.linxiao.framework.common.ContextProviderKt;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -149,7 +150,7 @@ public final class SSLHelper {
      */
     public static KeyStore createKeyStore(@RawRes int rawResId, String password)
             throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
-        InputStream is = ContextProvider.get().getResources().openRawResource(rawResId);
+        InputStream is = ContextProviderKt.getGlobalContext().getResources().openRawResource(rawResId);
         return createKeyStore(is, password);
     }
 

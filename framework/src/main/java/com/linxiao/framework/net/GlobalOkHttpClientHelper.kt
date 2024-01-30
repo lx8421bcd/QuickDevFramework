@@ -3,7 +3,7 @@ package com.linxiao.framework.net
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
-import com.linxiao.framework.common.ContextProvider
+import com.linxiao.framework.common.globalContext
 import com.linxiao.framework.net.ApiResponseInterceptor.OnApiResponseInterceptCallback
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -71,7 +71,7 @@ object GlobalOkHttpClientHelper {
     private val globalCookieJar by lazy {
         return@lazy PersistentCookieJar(
             SetCookieCache(),
-            SharedPrefsCookiePersistor(ContextProvider.get())
+            SharedPrefsCookiePersistor(globalContext)
         )
     }
     /**

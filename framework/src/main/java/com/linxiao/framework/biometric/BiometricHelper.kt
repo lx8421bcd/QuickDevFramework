@@ -10,7 +10,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.linxiao.framework.common.ContextProvider
+import com.linxiao.framework.common.globalContext
 import java.security.KeyStore
 import java.security.UnrecoverableKeyException
 import javax.crypto.Cipher
@@ -40,11 +40,11 @@ object BiometricHelper {
     private val keystore = KeyStore.getInstance("AndroidKeyStore")
     private var cachedEnrolledChanged: Boolean
         get() {
-            val pref = ContextProvider.get().getSharedPreferences(CACHE_PREFERENCES, Context.MODE_PRIVATE)
+            val pref = globalContext.getSharedPreferences(CACHE_PREFERENCES, Context.MODE_PRIVATE)
             return pref.getBoolean(PREF_ENROLL_CHANGED, false)
         }
         set(value) {
-            val pref = ContextProvider.get().getSharedPreferences(CACHE_PREFERENCES, Context.MODE_PRIVATE)
+            val pref = globalContext.getSharedPreferences(CACHE_PREFERENCES, Context.MODE_PRIVATE)
             pref.edit().putBoolean(PREF_ENROLL_CHANGED, value).apply()
         }
 
@@ -74,7 +74,7 @@ object BiometricHelper {
             promptInfo: PromptInfo,
             callback: BiometricAuthCallback
         ) {
-            val checkResult = BiometricManager.from(ContextProvider.get()).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
+            val checkResult = BiometricManager.from(globalContext).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
             if (checkResult != BiometricManager.BIOMETRIC_SUCCESS) {
                 callback.onError(BiometricException(checkResult))
                 return
@@ -137,7 +137,7 @@ object BiometricHelper {
      */
     @JvmStatic
     fun hardwareEnabled(): Boolean {
-        val checkResult = BiometricManager.from(ContextProvider.get()).canAuthenticate(
+        val checkResult = BiometricManager.from(globalContext).canAuthenticate(
             BiometricManager.Authenticators.BIOMETRIC_WEAK
         )
         // the hardware do not support biometric
@@ -159,7 +159,7 @@ object BiometricHelper {
      */
     @JvmStatic
     fun canUseBiometricAuthorization(): Boolean {
-        val checkResult = BiometricManager.from(ContextProvider.get()).canAuthenticate(
+        val checkResult = BiometricManager.from(globalContext).canAuthenticate(
             BiometricManager.Authenticators.BIOMETRIC_WEAK
         )
         return checkResult == BiometricManager.BIOMETRIC_SUCCESS
@@ -232,7 +232,7 @@ object BiometricHelper {
      * @des 根据当前指纹库创建一个密钥
      */
     private fun createKey(createNewKey: Boolean) {
-        val pref = ContextProvider.get().getSharedPreferences(CACHE_PREFERENCES, Context.MODE_PRIVATE)
+        val pref = globalContext.getSharedPreferences(CACHE_PREFERENCES, Context.MODE_PRIVATE)
         try {
             if (TextUtils.isEmpty(pref.getString(HAS_BIOMETRIC_CACHE, "")) || createNewKey) {
                 val builder = KeyGenParameterSpec.Builder(KEYSTORE_ALIAS, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)

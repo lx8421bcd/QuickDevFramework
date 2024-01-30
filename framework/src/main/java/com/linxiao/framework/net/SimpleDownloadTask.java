@@ -9,7 +9,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
-import com.linxiao.framework.common.ContextProvider;
+
+import com.linxiao.framework.common.ContextProviderKt;
 import com.linxiao.framework.file.FileUtil;
 import com.linxiao.framework.permission.PermissionException;
 import com.linxiao.framework.permission.PermissionManager;
@@ -124,7 +125,7 @@ public class SimpleDownloadTask {
      * </p>
      */
     public SimpleDownloadTask hideNotification() {
-        if (PermissionManager.isPermissionsGranted(ContextProvider.get(),
+        if (PermissionManager.isPermissionsGranted(ContextProviderKt.getGlobalContext(),
                 "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION")) {
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
         }
@@ -260,7 +261,7 @@ public class SimpleDownloadTask {
     }
 
     private DownloadManager getDownloadManager() {
-        return (DownloadManager) ContextProvider.get()
+        return (DownloadManager) ContextProviderKt.getGlobalContext()
                 .getSystemService(Context.DOWNLOAD_SERVICE);
     }
 }

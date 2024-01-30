@@ -2,7 +2,8 @@ package com.linxiao.framework.language;
 
 import androidx.annotation.StringRes;
 
-import com.linxiao.framework.common.ContextProvider;
+
+import com.linxiao.framework.common.ContextProviderKt;
 
 import java.io.Serializable;
 import java.util.Locale;
@@ -63,7 +64,7 @@ public class LanguageOption implements Serializable {
 
     public String getDisplayName() {
         if (displayNameRes != 0) {
-            displayName = ContextProvider.get().getString(displayNameRes);
+            displayName = ContextProviderKt.getGlobalContext().getString(displayNameRes);
         }
         return displayName;
     }

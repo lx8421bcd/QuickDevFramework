@@ -6,7 +6,8 @@ import android.content.SharedPreferences;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
-import com.linxiao.framework.common.ContextProvider;
+import com.linxiao.framework.common.ContextProviderKt;
+
 
 /**
  * SharedPreferences封装
@@ -28,7 +29,7 @@ public class AppPreferences {
     }
 
     public static PreferenceOperator getDefault() {
-        return getDefault(ContextProvider.get());
+        return getDefault(ContextProviderKt.getGlobalContext());
     }
 
     /**
@@ -41,7 +42,7 @@ public class AppPreferences {
     }
 
     public static PreferenceOperator getPrivate(String name) {
-        return getPreferencesByMode(ContextProvider.get(), name, Context.MODE_PRIVATE);
+        return getPreferencesByMode(ContextProviderKt.getGlobalContext(), name, Context.MODE_PRIVATE);
     }
 
     /**
@@ -54,7 +55,7 @@ public class AppPreferences {
     }
 
     public static PreferenceOperator getAppend(String name) {
-        return getPreferencesByMode(ContextProvider.get(), name, Context.MODE_APPEND);
+        return getPreferencesByMode(ContextProviderKt.getGlobalContext(), name, Context.MODE_APPEND);
     }
 
 

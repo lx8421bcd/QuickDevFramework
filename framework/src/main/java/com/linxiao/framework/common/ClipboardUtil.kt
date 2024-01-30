@@ -1,14 +1,13 @@
-package com.linxiao.framework.common;
+package com.linxiao.framework.common
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 
-public class ClipboardUtil {
-
-    public static void writeTo(String text) {
-        ClipboardManager clipboardManager = (ClipboardManager) ContextProvider.get().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData data = ClipData.newPlainText("", text);
-        clipboardManager.setPrimaryClip(data);
+object ClipboardUtil {
+    fun writeTo(text: String?) {
+        val clipboardManager = globalContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val data = ClipData.newPlainText("", text)
+        clipboardManager.setPrimaryClip(data)
     }
 }

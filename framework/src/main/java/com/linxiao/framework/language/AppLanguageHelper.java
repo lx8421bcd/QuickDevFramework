@@ -5,7 +5,8 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
-import com.linxiao.framework.common.ContextProvider;
+
+import com.linxiao.framework.common.ContextProviderKt;
 import com.linxiao.framework.preferences.AppPreferences;
 
 import org.greenrobot.eventbus.EventBus;
@@ -93,7 +94,7 @@ public class AppLanguageHelper {
     public synchronized static void setLanguage(LanguageOption option) {
         AppPreferences.getDefault().put(PREF_SELECTED_LOCALE, option);
         currentLanguageOption = option;
-        Resources res = ContextProvider.get().getResources();
+        Resources res = ContextProviderKt.getGlobalContext().getResources();
         changeResourcesConfig(res);
     }
 

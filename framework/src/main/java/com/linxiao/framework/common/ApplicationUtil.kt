@@ -59,7 +59,7 @@ object ApplicationUtil {
      */
     @SuppressLint("HardwareIds")
     fun getAndroidID(): String {
-        return Settings.Secure.getString(ContextProvider.get().contentResolver, Settings.Secure.ANDROID_ID) ?: ""
+        return Settings.Secure.getString(globalContext.contentResolver, Settings.Secure.ANDROID_ID) ?: ""
     }
 
     /**
@@ -70,7 +70,7 @@ object ApplicationUtil {
      */
     @JvmStatic
     fun isAppForeground(): Boolean {
-        val context = ContextProvider.get()
+        val context = globalContext
         val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val appProcesses = activityManager.runningAppProcesses ?: return false
         val packageName = context.packageName
@@ -115,11 +115,11 @@ object ApplicationUtil {
     fun restartApplication(activity: Activity?) {
         activity?:return
         activity.finishAffinity()
-        val packageName = ContextProvider.get().packageName
-        val mStartActivity = ContextProvider.get().packageManager.getLaunchIntentForPackage(packageName) ?: return
+        val packageName = globalContext.packageName
+        val mStartActivity = globalContext.packageManager.getLaunchIntentForPackage(packageName) ?: return
         mStartActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         mStartActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        ContextProvider.get().startActivity(mStartActivity)
+        globalContext.startActivity(mStartActivity)
     }
 
     /**
@@ -139,7 +139,7 @@ object ApplicationUtil {
      */
     fun isSystemOrientationEnabled(): Boolean {
         return Settings.System.getInt(
-            ContextProvider.get().contentResolver,
+            globalContext.contentResolver,
             Settings.System.ACCELEROMETER_ROTATION, 0
         ) == 1
     }
@@ -160,7 +160,7 @@ object ApplicationUtil {
      */
     fun getAppInfo(packageName: String?): ApplicationInfo? {
         try {
-            val packageManager = ContextProvider.get().packageManager
+            val packageManager = globalContext.packageManager
             return packageManager.getApplicationInfo(packageName!!, 0)
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
@@ -176,7 +176,7 @@ object ApplicationUtil {
     @JvmStatic
     fun getPackageInfo(packageName: String?): PackageInfo? {
         try {
-            val packageManager = ContextProvider.get().packageManager
+            val packageManager = globalContext.packageManager
             return packageManager.getPackageInfo(packageName!!, 0)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -193,7 +193,7 @@ object ApplicationUtil {
     @JvmStatic
     fun getAppName(packageName: String?): String? {
         try {
-            val packageManager = ContextProvider.get().packageManager
+            val packageManager = globalContext.packageManager
             val applicationInfo = packageManager.getApplicationInfo(packageName!!, 0)
             return packageManager.getApplicationLabel(applicationInfo) as String
         } catch (e: PackageManager.NameNotFoundException) {
@@ -211,7 +211,7 @@ object ApplicationUtil {
     @JvmStatic
     fun getAppIcon(packageName: String?): Drawable? {
         try {
-            val packageManager = ContextProvider.get().packageManager
+            val packageManager = globalContext.packageManager
             val applicationInfo = packageManager.getApplicationInfo(packageName!!, 0)
             return applicationInfo.loadIcon(packageManager)
         } catch (e: PackageManager.NameNotFoundException) {
@@ -247,7 +247,7 @@ object ApplicationUtil {
      */
     @JvmStatic
     fun getProcessName(pid: Int): String? {
-        val am = ContextProvider.get().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val am = globalContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val runningApps = am.runningAppProcesses
         if (runningApps != null) {
             for (procInfo in runningApps) {
@@ -266,7 +266,7 @@ object ApplicationUtil {
      * @return boolean
      */
     fun isAppRunning(packageName: String): Boolean {
-        val activityManager = ContextProvider.get().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val activityManager = globalContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val processInfo = activityManager.runningAppProcesses
         for (i in processInfo.indices) {
             if (processInfo[i].processName == packageName) {
@@ -286,7 +286,7 @@ object ApplicationUtil {
      */
     fun isAppInstalled(packageName: String?): Boolean {
         val packageInfo: PackageInfo? = try {
-            ContextProvider.get().packageManager.getPackageInfo(packageName!!, 0)
+            globalContext.packageManager.getPackageInfo(packageName!!, 0)
         } catch (e: PackageManager.NameNotFoundException) {
             null
         }
@@ -302,7 +302,7 @@ object ApplicationUtil {
      * @param filePath full path of install apk file
      */
     fun installApk(filePath: String, providerAuth: String?) {
-        val mContext = ContextProvider.get()
+        val mContext = globalContext
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mContext.packageManager.canRequestPackageInstalls()) {
             return  // do not have package install permission
         }
@@ -371,7 +371,7 @@ object ApplicationUtil {
     @JvmStatic
     fun isAlwaysFinishActivity(): Boolean{
         return Settings.Global.getInt(
-            ContextProvider.get().contentResolver,
+            globalContext.contentResolver,
             Settings.Global.ALWAYS_FINISH_ACTIVITIES,
             0
         ) != 0

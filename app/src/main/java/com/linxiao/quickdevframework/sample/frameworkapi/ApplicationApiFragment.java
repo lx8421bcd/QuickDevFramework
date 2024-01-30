@@ -8,7 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.linxiao.framework.common.ApplicationUtil;
-import com.linxiao.framework.common.ContextProvider;
+
+import com.linxiao.framework.common.ContextProviderKt;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.FragmentApplicationApiBinding;
 import com.linxiao.framework.architecture.SimpleViewBindingFragment;
@@ -26,15 +27,15 @@ public class ApplicationApiFragment extends SimpleViewBindingFragment<FragmentAp
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getViewBinding().ivAppIcon.setImageDrawable(ApplicationUtil.getAppIcon(ContextProvider.get().getPackageName()));
+        getViewBinding().ivAppIcon.setImageDrawable(ApplicationUtil.getAppIcon(ContextProviderKt.getGlobalContext().getPackageName()));
         getViewBinding().tvIsAppRunning.setText(getString(R.string.is_app_running) + ": " + ApplicationUtil.isAppForeground());
         getViewBinding().tvIsAppForeground.setText(getString(R.string.is_app_foreground) + ": " + ApplicationUtil.isAppForeground());
         getViewBinding().tvCPUName.setText("CPU Name: " + ApplicationUtil.getCPUName());
         getViewBinding().btnGetAppName.setOnClickListener(v -> {
-            getViewBinding().tvAppName.setText(ApplicationUtil.getAppName(ContextProvider.get().getPackageName()));
+            getViewBinding().tvAppName.setText(ApplicationUtil.getAppName(ContextProviderKt.getGlobalContext().getPackageName()));
         });
         getViewBinding().btnGetAppVersion.setOnClickListener(v -> {
-            PackageInfo info = ApplicationUtil.getPackageInfo(ContextProvider.get().getPackageName());
+            PackageInfo info = ApplicationUtil.getPackageInfo(ContextProviderKt.getGlobalContext().getPackageName());
             if (info != null) {
                 getViewBinding().tvAppVersion.setText(info.versionName);
             }

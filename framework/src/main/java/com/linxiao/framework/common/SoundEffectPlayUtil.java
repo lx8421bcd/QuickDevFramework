@@ -57,7 +57,7 @@ public final class SoundEffectPlayUtil {
                 soundPool.setOnLoadCompleteListener(null);
                 playSound(res, times);
             });
-            soundPoolMap.put(res, soundPool.load(ContextProvider.get(), res, 1));
+            soundPoolMap.put(res, soundPool.load(ContextProviderKt.getGlobalContext(), res, 1));
             return;
         }
         playSound(res, times);
@@ -75,7 +75,7 @@ public final class SoundEffectPlayUtil {
      */
     private void playSound(int soundId, int times) {
         // 实例化AudioManager对象
-        AudioManager am = (AudioManager) ContextProvider.get().getSystemService(Context.AUDIO_SERVICE);
+        AudioManager am = (AudioManager) ContextProviderKt.getGlobalContext().getSystemService(Context.AUDIO_SERVICE);
         // 返回当前AudioManager对象播放所选声音的类型的最大音量值
         float maxVolume = am.getStreamMaxVolume(volumeType.value);
         // 返回当前AudioManager对象的音量值

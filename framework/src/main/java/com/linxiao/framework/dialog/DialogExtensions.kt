@@ -3,7 +3,7 @@ package com.linxiao.framework.dialog
 import android.content.DialogInterface
 import android.content.Intent
 import androidx.fragment.app.DialogFragment
-import com.linxiao.framework.common.ContextProvider
+import com.linxiao.framework.common.globalContext
 
 /**
  * Dialog相关扩展
@@ -16,11 +16,11 @@ import com.linxiao.framework.common.ContextProvider
 fun DialogFragment.showInNewActivity() {
     val tag: String = this::class.java.simpleName + this.hashCode()
     DialogContainerActivity.alertDialogFragmentCacheMap[tag] = this
-    val intent = Intent(ContextProvider.get(), DialogContainerActivity::class.java)
+    val intent = Intent(globalContext, DialogContainerActivity::class.java)
     intent.putExtra(DialogContainerActivity.DIALOG_KEY, tag)
     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    ContextProvider.get().startActivity(intent)
+    globalContext.startActivity(intent)
 }
 
 @JvmOverloads

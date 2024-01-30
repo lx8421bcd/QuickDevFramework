@@ -17,7 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.linxiao.framework.R
-import com.linxiao.framework.common.ContextProvider
+import com.linxiao.framework.common.globalContext
 
 /**
  * 通知消息包装器
@@ -47,7 +47,7 @@ object NotificationUtil {
      * @return instance of [NotificationManagerCompat]
      */
     val notificationManager by lazy {
-        return@lazy NotificationManagerCompat.from(ContextProvider.get())
+        return@lazy NotificationManagerCompat.from(globalContext)
     }
 
     /**
@@ -115,7 +115,7 @@ object NotificationUtil {
         channelName: String = channelId
     ): NotificationCompat.Builder {
         createChannel(channelId, channelName)
-        val builder = NotificationCompat.Builder(ContextProvider.get(), channelId)
+        val builder = NotificationCompat.Builder(globalContext, channelId)
         builder.setSmallIcon(defaultIconRes)
             .setContentTitle(defaultTitle)
             .setContentText(" ")
@@ -152,7 +152,7 @@ object NotificationUtil {
                 notificationManager.createNotificationChannel(channel)
             }
         }
-        val builder = NotificationCompat.Builder(ContextProvider.get(), channelName)
+        val builder = NotificationCompat.Builder(globalContext, channelName)
         builder.setSmallIcon(defaultIconRes)
             .setContentTitle(defaultTitle)
             .setContentText(" ")
@@ -254,7 +254,7 @@ object NotificationUtil {
             return
         }
         if (ActivityCompat.checkSelfPermission(
-                ContextProvider.get(),
+                globalContext,
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {

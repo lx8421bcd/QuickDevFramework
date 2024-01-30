@@ -13,8 +13,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import com.linxiao.framework.R
 import com.linxiao.framework.architecture.BaseDialogFragment
-import com.linxiao.framework.common.ContextProvider
 import com.linxiao.framework.common.getRealScreenHeight
+import com.linxiao.framework.common.globalContext
 
 /**
  * 提示对话框
@@ -27,7 +27,7 @@ class AlertDialogFragment : BaseDialogFragment() {
     companion object {
         @JvmStatic
         val FRAMEWORK_DEFAULT_LAYOUT = R.layout.dialog_alert_framework_default
-        val defaultTitle = ContextProvider.get().getString(android.R.string.dialog_alert_title)
+        val defaultTitle = globalContext.getString(android.R.string.dialog_alert_title)
         var defaultLayoutRes = FRAMEWORK_DEFAULT_LAYOUT
     }
 
@@ -38,8 +38,8 @@ class AlertDialogFragment : BaseDialogFragment() {
     private var messageHtml = ""
     private var contentLink = ""
     private var hint: CharSequence = ""
-    private var positiveBtnText: String? = ContextProvider.get().getString(android.R.string.ok)
-    private var negativeBtnText: String? = ContextProvider.get().getString(android.R.string.cancel)
+    private var positiveBtnText: String? = globalContext.getString(android.R.string.ok)
+    private var negativeBtnText: String? = globalContext.getString(android.R.string.cancel)
     private var positiveListener: DialogInterface.OnClickListener? = DialogInterface.OnClickListener { _, _ -> dismiss() }
     private var negativeListener: DialogInterface.OnClickListener? = DialogInterface.OnClickListener { _, _ -> dismiss() }
     private var cancelable = true

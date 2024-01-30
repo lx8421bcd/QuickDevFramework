@@ -5,7 +5,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.linxiao.framework.common.BitmapUtil;
-import com.linxiao.framework.common.ContextProvider;
+
+import com.linxiao.framework.common.ContextProviderKt;
 import com.linxiao.framework.permission.PermissionException;
 import com.linxiao.framework.permission.PermissionManager;
 
@@ -59,7 +60,7 @@ public class SimpleImageUploader {
     private static final String TAG = SimpleImageUploader.class.getSimpleName();
     
     private static final int DEFAULT_UPLOAD_LIMIT_SIZE = 10485760;  // default limit 10MB
-    private static final String DEFAULT_USER_AGENT = ContextProvider.get().getPackageName();
+    private static final String DEFAULT_USER_AGENT = ContextProviderKt.getGlobalContext().getPackageName();
 
     private static String mUserAgent = DEFAULT_USER_AGENT;
     private String filePath;

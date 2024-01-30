@@ -18,7 +18,7 @@ import androidx.core.view.WindowCompat
  * @return screenWidth;
  */
 fun getRealScreenWidth(): Int {
-    val windowManager = ContextProvider.get().getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val windowManager = globalContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     val display = windowManager.defaultDisplay
     val dm = DisplayMetrics()
     try {
@@ -38,7 +38,7 @@ fun getRealScreenWidth(): Int {
  * @return screenHeight;
  */
 fun getRealScreenHeight(): Int {
-    val windowManager = ContextProvider.get().getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val windowManager = globalContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     val display = windowManager.defaultDisplay
     val dm = DisplayMetrics()
     try {
@@ -107,9 +107,9 @@ fun getVirtualKeyHeight(context: Context?): Int {
 @SuppressLint("PrivateApi", "DiscouragedApi", "InternalInsetResource")
 fun getStatusBarHeight(): Int {
     var statusBarHeight = 0
-    val resId = ContextProvider.get().resources.getIdentifier("status_bar_height", "dimen", "android")
+    val resId = globalContext.resources.getIdentifier("status_bar_height", "dimen", "android")
     if (resId > 0) {
-        statusBarHeight = ContextProvider.get().resources.getDimensionPixelSize(resId)
+        statusBarHeight = globalContext.resources.getDimensionPixelSize(resId)
     }
     return statusBarHeight
 }
@@ -120,7 +120,7 @@ fun getStatusBarHeight(): Int {
 @SuppressLint("PrivateApi", "DiscouragedApi")
 fun hasNavigationBar(): Boolean {
     var hasNavigationBar = false
-    val rs = ContextProvider.get().resources
+    val rs = globalContext.resources
     val id = rs.getIdentifier("config_showNavigationBar", "bool", "android")
     if (id > 0) {
         hasNavigationBar = rs.getBoolean(id)
@@ -149,7 +149,7 @@ fun getNavigationBarHeight(): Int {
         return 0
     }
     val statusBarHeight = 0
-    val resources = ContextProvider.get().resources
+    val resources = globalContext.resources
     val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
     return if (resourceId > 0) {
         resources.getDimensionPixelSize(resourceId)
@@ -166,7 +166,7 @@ fun isDarkMode(): Boolean {
     if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO) {
         return false
     }
-    val mode = ContextProvider.get().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    val mode = globalContext.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
     return mode == Configuration.UI_MODE_NIGHT_YES
 }
 
