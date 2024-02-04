@@ -17,6 +17,28 @@ const val MINUTE = "mm"
 const val SECOND = "ss"
 const val MILLISECOND = "SSS"
 
+/*常用时间单位毫秒数，到天，再往上没有意义了，请通过日历获取*/
+/**一秒的毫秒数 */
+const val MS_ONE_SECOND: Long = 1000
+
+/**一分钟的毫秒数 */
+const val MS_ONE_MINUTE = MS_ONE_SECOND * 60
+
+/**一小时的毫秒数 */
+const val MS_ONE_HOUR = MS_ONE_MINUTE * 60
+
+/**一天的毫秒数 */
+const val MS_ONE_DAY = MS_ONE_HOUR * 24
+
+/**一分钟的秒数 */
+const val SEC_ONE_MINUTE = MS_ONE_MINUTE / MS_ONE_SECOND
+
+/**一小时的秒数 */
+const val SEC_ONE_HOUR = MS_ONE_HOUR / MS_ONE_SECOND
+
+/**一天的秒数 */
+const val SEC_ONE_DAY = MS_ONE_DAY / MS_ONE_SECOND
+
 /**
  * date tools
  *
@@ -25,27 +47,6 @@ const val MILLISECOND = "SSS"
  */
 object DateUtil {
     private val TAG = DateUtil::class.java.simpleName
-    /*常用时间单位毫秒数，到天，再往上没有意义了，请通过日历获取*/
-    /**一秒的毫秒数 */
-    const val MS_ONE_SECOND: Long = 1000
-
-    /**一分钟的毫秒数 */
-    const val MS_ONE_MINUTE = MS_ONE_SECOND * 60
-
-    /**一小时的毫秒数 */
-    const val MS_ONE_HOUR = MS_ONE_MINUTE * 60
-
-    /**一天的毫秒数 */
-    const val MS_ONE_DAY = MS_ONE_HOUR * 24
-
-    /**一分钟的秒数 */
-    const val SEC_ONE_MINUTE = MS_ONE_MINUTE / MS_ONE_SECOND
-
-    /**一小时的秒数 */
-    const val SEC_ONE_HOUR = MS_ONE_HOUR / MS_ONE_SECOND
-
-    /**一天的秒数 */
-    const val SEC_ONE_DAY = MS_ONE_DAY / MS_ONE_SECOND
 
     /**
      * 获取今日0点时间戳，单位毫秒
