@@ -1,157 +1,128 @@
-package com.linxiao.framework.architecture;
+package com.linxiao.framework.architecture
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
-import android.widget.FrameLayout;
-
-import androidx.annotation.CallSuper;
-import androidx.annotation.CheckResult;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.trello.rxlifecycle2.LifecycleProvider;
-import com.trello.rxlifecycle2.LifecycleTransformer;
-import com.trello.rxlifecycle2.RxLifecycle;
-import com.trello.rxlifecycle2.android.FragmentEvent;
-import com.trello.rxlifecycle2.android.RxLifecycleAndroid;
-
-import io.reactivex.Observable;
-import io.reactivex.subjects.BehaviorSubject;
+import android.app.Activity
+import android.os.Bundle
+import android.view.View
+import android.widget.FrameLayout
+import androidx.annotation.CallSuper
+import androidx.annotation.CheckResult
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.trello.rxlifecycle2.LifecycleProvider
+import com.trello.rxlifecycle2.LifecycleTransformer
+import com.trello.rxlifecycle2.RxLifecycle
+import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.android.RxLifecycleAndroid
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 
 /**
  * 从底部显示的全屏Dialog基类
  * Created by linxiao on 2016-12-12.
  */
-public abstract class BaseBottomDialogFragment extends BottomSheetDialogFragment implements LifecycleProvider<FragmentEvent> {
+abstract class BaseBottomDialogFragment : BottomSheetDialogFragment(), LifecycleProvider<FragmentEvent?> {
 
-    private int absolutDialogHeight = 0;
+    @JvmField
+    protected val TAG = this.javaClass.simpleName
+
+    private var absolutDialogHeight = 0
 
     /**
      * 设置底部Dialog高度
-     * */
-    public void setDialogHeight(int height) {
-        absolutDialogHeight = height;
+     */
+    fun setDialogHeight(height: Int) {
+        absolutDialogHeight = height
     }
 
-    public static String TAG;
+    private val lifecycleSubject = BehaviorSubject.create<FragmentEvent>()
 
-    private final BehaviorSubject<FragmentEvent> lifecycleSubject = BehaviorSubject.create();
+    val behavior: BottomSheetBehavior<FrameLayout>
+        get() = (requireDialog() as BottomSheetDialog).behavior
 
-    public BaseBottomDialogFragment() {
-        TAG = this.getClass().getSimpleName();
-    }
-
-    public BottomSheetBehavior<FrameLayout> getBehavior() {
-        return ((BottomSheetDialog) requireDialog()).getBehavior();
-    }
-
-    @Override
-    @NonNull
     @CheckResult
-    public final Observable<FragmentEvent> lifecycle() {
-        return lifecycleSubject.hide();
+    override fun lifecycle(): Observable<FragmentEvent?> {
+        return lifecycleSubject.hide()
     }
 
-    @Override
-    @NonNull
     @CheckResult
-    public final <T> LifecycleTransformer<T> bindUntilEvent(@NonNull FragmentEvent event) {
-        return RxLifecycle.bindUntilEvent(lifecycleSubject, event);
+    override fun <T> bindUntilEvent(event: FragmentEvent): LifecycleTransformer<T> {
+        return RxLifecycle.bindUntilEvent(lifecycleSubject, event)
     }
 
-    @Override
-    @NonNull
     @CheckResult
-    public final <T> LifecycleTransformer<T> bindToLifecycle() {
-        return RxLifecycleAndroid.bindFragment(lifecycleSubject);
+    override fun <T> bindToLifecycle(): LifecycleTransformer<T> {
+        return RxLifecycleAndroid.bindFragment(lifecycleSubject)
     }
 
-    @Override
     @CallSuper
-    public void onAttach(@NonNull Activity activity) {
-        super.onAttach(activity);
-        lifecycleSubject.onNext(FragmentEvent.ATTACH);
+    override fun onAttach(activity: Activity) {
+        super.onAttach(activity)
+        lifecycleSubject.onNext(FragmentEvent.ATTACH)
     }
 
-    @Override
     @CallSuper
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        lifecycleSubject.onNext(FragmentEvent.CREATE);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lifecycleSubject.onNext(FragmentEvent.CREATE)
     }
 
-    @Override
     @CallSuper
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        lifecycleSubject.onNext(FragmentEvent.CREATE_VIEW);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        lifecycleSubject.onNext(FragmentEvent.CREATE_VIEW)
     }
 
-    @Override
     @CallSuper
-    public void onStart() {
-        super.onStart();
-        lifecycleSubject.onNext(FragmentEvent.START);
-        Window win = requireDialog().getWindow();
+    override fun onStart() {
+        super.onStart()
+        lifecycleSubject.onNext(FragmentEvent.START)
+        val win = requireDialog().window
         if (win != null) {
             if (absolutDialogHeight > 0) {
-                getBehavior().setPeekHeight(absolutDialogHeight);
+                behavior.peekHeight = absolutDialogHeight
             }
-            win.setBackgroundDrawableResource(android.R.color.transparent);
-            View sheetView = requireDialog().findViewById(com.google.android.material.R.id.design_bottom_sheet);
-            if (sheetView != null) {
-                sheetView.setBackgroundResource(android.R.color.transparent);
-            }
+            win.setBackgroundDrawableResource(android.R.color.transparent)
+            val sheetView =
+                requireDialog().findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            sheetView?.setBackgroundResource(android.R.color.transparent)
         }
-
     }
 
-    @Override
     @CallSuper
-    public void onResume() {
-        super.onResume();
-        lifecycleSubject.onNext(FragmentEvent.RESUME);
+    override fun onResume() {
+        super.onResume()
+        lifecycleSubject.onNext(FragmentEvent.RESUME)
     }
 
-    @Override
     @CallSuper
-    public void onPause() {
-        lifecycleSubject.onNext(FragmentEvent.PAUSE);
-        super.onPause();
+    override fun onPause() {
+        lifecycleSubject.onNext(FragmentEvent.PAUSE)
+        super.onPause()
     }
 
-    @Override
     @CallSuper
-    public void onStop() {
-        lifecycleSubject.onNext(FragmentEvent.STOP);
-        super.onStop();
+    override fun onStop() {
+        lifecycleSubject.onNext(FragmentEvent.STOP)
+        super.onStop()
     }
 
-    @Override
     @CallSuper
-    public void onDestroyView() {
-        lifecycleSubject.onNext(FragmentEvent.DESTROY_VIEW);
-        super.onDestroyView();
+    override fun onDestroyView() {
+        lifecycleSubject.onNext(FragmentEvent.DESTROY_VIEW)
+        super.onDestroyView()
     }
 
-    @Override
     @CallSuper
-    public void onDestroy() {
-        lifecycleSubject.onNext(FragmentEvent.DESTROY);
-        super.onDestroy();
+    override fun onDestroy() {
+        lifecycleSubject.onNext(FragmentEvent.DESTROY)
+        super.onDestroy()
     }
 
-    @Override
     @CallSuper
-    public void onDetach() {
-        lifecycleSubject.onNext(FragmentEvent.DETACH);
-        super.onDetach();
+    override fun onDetach() {
+        lifecycleSubject.onNext(FragmentEvent.DETACH)
+        super.onDetach()
     }
-
 
 }
