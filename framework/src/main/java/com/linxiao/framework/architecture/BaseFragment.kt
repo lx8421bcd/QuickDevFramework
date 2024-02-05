@@ -33,7 +33,7 @@ import io.reactivex.subjects.BehaviorSubject
 abstract class BaseFragment : Fragment(), LifecycleProvider<FragmentEvent> {
 
     @JvmField
-    protected var TAG: String = this.javaClass.simpleName
+    protected val TAG = this.javaClass.simpleName
 
     private val lifecycleSubject = BehaviorSubject.create<FragmentEvent>()
 

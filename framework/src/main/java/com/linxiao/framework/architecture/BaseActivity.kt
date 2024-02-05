@@ -48,7 +48,7 @@ import org.greenrobot.eventbus.ThreadMode
 abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEvent> {
 
     @JvmField
-    protected var TAG: String? = null
+    protected val TAG = this.javaClass.simpleName
 
     private var printLifecycle = false
     private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
@@ -91,7 +91,6 @@ abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEve
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        TAG = this.javaClass.simpleName
         lifecycleSubject.onNext(ActivityEvent.CREATE)
         if (printLifecycle) {
             Log.d(TAG, "onCreate")
