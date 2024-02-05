@@ -1,263 +1,263 @@
-package com.linxiao.framework.architecture;
+package com.linxiao.framework.architecture
 
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.EditText;
-
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.annotation.CheckResult;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.linxiao.framework.common.DensityHelper;
-import com.linxiao.framework.common.KeyboardUtil;
-import com.linxiao.framework.language.AppLanguageHelper;
-import com.linxiao.framework.language.LanguageChangedEvent;
-import com.linxiao.framework.permission.PermissionManager;
-import com.trello.rxlifecycle2.LifecycleProvider;
-import com.trello.rxlifecycle2.LifecycleTransformer;
-import com.trello.rxlifecycle2.RxLifecycle;
-import com.trello.rxlifecycle2.android.ActivityEvent;
-import com.trello.rxlifecycle2.android.RxLifecycleAndroid;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import io.reactivex.Observable;
-import io.reactivex.subjects.BehaviorSubject;
-
+import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Resources
+import android.graphics.PixelFormat
+import android.os.Build
+import android.os.Bundle
+import android.util.Log
+import android.view.MotionEvent
+import android.view.View
+import android.view.WindowManager
+import android.widget.EditText
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.annotation.CheckResult
+import androidx.appcompat.app.AppCompatActivity
+import com.linxiao.framework.architecture.ActivityResultHolderFragment.Companion.startActivityForCallback
+import com.linxiao.framework.common.DensityHelper.onActivityGetResources
+import com.linxiao.framework.common.KeyboardUtil
+import com.linxiao.framework.language.AppLanguageHelper
+import com.linxiao.framework.language.LanguageChangedEvent
+import com.linxiao.framework.permission.PermissionManager
+import com.trello.rxlifecycle2.LifecycleProvider
+import com.trello.rxlifecycle2.LifecycleTransformer
+import com.trello.rxlifecycle2.RxLifecycle
+import com.trello.rxlifecycle2.android.ActivityEvent
+import com.trello.rxlifecycle2.android.RxLifecycleAndroid
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * base activity class of entire project
- * <p>
+ *
+ *
  * template for activities in the project, used to define common methods of activity,
  * extends from Android base appcompat component class, manually implemented the implementation
  * of RxLifeCycle, if you have to extends framework base class from some third sdk, just
  * change parent class is ok.
- * </p>
+ *
  *
  * @author linxiao
  * @since 2016-12-05
  */
-public abstract class BaseActivity extends AppCompatActivity implements LifecycleProvider<ActivityEvent> {
+abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEvent> {
 
-    protected String TAG;
+    @JvmField
+    protected var TAG: String? = null
 
-    private boolean printLifecycle = false;
-    private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
-    private final BehaviorSubject<Object> finishSubject = BehaviorSubject.create();
-    private static final Object finishSignal = new Object();
-    private boolean hideKeyboardOnTouchOutside = false;
+    private var printLifecycle = false
+    private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
+    private val finishSubject = BehaviorSubject.create<Any>()
+    private val finishSignal = Any()
+    private var hideKeyboardOnTouchOutside = false
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(LanguageChangedEvent event) {
-        this.recreate();
+    fun onEvent(event: LanguageChangedEvent?) {
+        recreate()
     }
 
-    @Override
-    @NonNull
     @CheckResult
-    public final Observable<ActivityEvent> lifecycle() {
-        return lifecycleSubject.hide();
+    override fun lifecycle(): Observable<ActivityEvent> {
+        return lifecycleSubject.hide()
     }
 
-    @Override
-    @NonNull
     @CheckResult
-    public final <T> LifecycleTransformer<T> bindUntilEvent(@NonNull ActivityEvent event) {
-        return RxLifecycle.bindUntilEvent(lifecycleSubject, event);
+    override fun <T> bindUntilEvent(event: ActivityEvent): LifecycleTransformer<T> {
+        return RxLifecycle.bindUntilEvent(lifecycleSubject, event)
     }
 
-    @NonNull
     @CheckResult
-    public final <T> LifecycleTransformer<T> bindUntilFinish() {
-        return RxLifecycle.bindUntilEvent(finishSubject, finishSignal);
+    fun <T> bindUntilFinish(): LifecycleTransformer<T> {
+        return RxLifecycle.bindUntilEvent(finishSubject, finishSignal)
     }
 
-    @Override
-    @NonNull
     @CheckResult
-    public final <T> LifecycleTransformer<T> bindToLifecycle() {
-        return RxLifecycleAndroid.bindActivity(lifecycleSubject);
+    override fun <T> bindToLifecycle(): LifecycleTransformer<T> {
+        return RxLifecycleAndroid.bindActivity(lifecycleSubject)
     }
 
-    public void printLifecycle(boolean print) {
-        this.printLifecycle = print;
+    fun printLifecycle(print: Boolean) {
+        printLifecycle = print
     }
 
-    public void setHideKeyboardOnTouchOutside(boolean hideKeyboardOnTouchOutside) {
-        this.hideKeyboardOnTouchOutside = hideKeyboardOnTouchOutside;
+    fun setHideKeyboardOnTouchOutside(hideKeyboardOnTouchOutside: Boolean) {
+        this.hideKeyboardOnTouchOutside = hideKeyboardOnTouchOutside
     }
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        TAG = this.getClass().getSimpleName();
-        lifecycleSubject.onNext(ActivityEvent.CREATE);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        TAG = this.javaClass.simpleName
+        lifecycleSubject.onNext(ActivityEvent.CREATE)
         if (printLifecycle) {
-            Log.d(TAG, "onCreate");
+            Log.d(TAG, "onCreate")
         }
-        EventBus.getDefault().register(this);
+        EventBus.getDefault().register(this)
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        lifecycleSubject.onNext(ActivityEvent.START);
+    override fun onStart() {
+        super.onStart()
+        lifecycleSubject.onNext(ActivityEvent.START)
         if (printLifecycle) {
-            Log.d(TAG, "onStart");
+            Log.d(TAG, "onStart")
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        lifecycleSubject.onNext(ActivityEvent.RESUME);
+    override fun onResume() {
+        super.onResume()
+        lifecycleSubject.onNext(ActivityEvent.RESUME)
         if (printLifecycle) {
-            Log.d(TAG, "onResume");
+            Log.d(TAG, "onResume")
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        lifecycleSubject.onNext(ActivityEvent.PAUSE);
+    override fun onPause() {
+        super.onPause()
+        lifecycleSubject.onNext(ActivityEvent.PAUSE)
         if (printLifecycle) {
-            Log.d(TAG, "onPause");
+            Log.d(TAG, "onPause")
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        lifecycleSubject.onNext(ActivityEvent.STOP);
+    override fun onStop() {
+        super.onStop()
+        lifecycleSubject.onNext(ActivityEvent.STOP)
         if (printLifecycle) {
-            Log.d(TAG, "onStop");
+            Log.d(TAG, "onStop")
         }
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-       if (printLifecycle) {
-           Log.d(TAG, "onRestart");
-       }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        lifecycleSubject.onNext(ActivityEvent.DESTROY);
+    override fun onRestart() {
+        super.onRestart()
         if (printLifecycle) {
-            Log.d(TAG, "onDestroy");
+            Log.d(TAG, "onRestart")
         }
-        EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        finishSubject.onNext(finishSignal);
+    override fun onDestroy() {
+        super.onDestroy()
+        lifecycleSubject.onNext(ActivityEvent.DESTROY)
+        if (printLifecycle) {
+            Log.d(TAG, "onDestroy")
+        }
+        EventBus.getDefault().unregister(this)
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionManager.handleCallback(this, requestCode, permissions, grantResults);
+    override fun finish() {
+        super.finish()
+        finishSubject.onNext(finishSignal)
     }
 
-    @Override
-    public void setRequestedOrientation(int requestedOrientation) {
-        if (isTranslucent() && Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        PermissionManager.handleCallback(this, requestCode, permissions, grantResults)
+    }
+
+    override fun setRequestedOrientation(requestedOrientation: Int) {
+        if (isTranslucent && Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
             if (requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
                 // return to avoid crash in Android O
-                return;
+                return
             }
         }
-        super.setRequestedOrientation(requestedOrientation);
+        super.setRequestedOrientation(requestedOrientation)
     }
 
-    public void startActivityForCallback(Intent intent, ActivityResultCallback<ActivityResult> callback) {
-        ActivityResultHolderFragment.startActivityForCallback(this, intent, callback, null);
+    fun startActivityForCallback(
+        intent: Intent?,
+        callback: ActivityResultCallback<ActivityResult>?
+    ) {
+        this.startActivityForCallback(intent, callback, null)
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        if (ev.action == MotionEvent.ACTION_DOWN) {
             if (hideKeyboardOnTouchOutside) {
-                View v = getCurrentFocus();
+                val v = currentFocus
                 if (shouldHideInput(v, ev)) {
-                    KeyboardUtil.hideKeyboard(getWindow().getDecorView());
-                    v.clearFocus();
+                    KeyboardUtil.hideKeyboard(window.decorView)
+                    v!!.clearFocus()
                 }
             }
         }
-        return super.dispatchTouchEvent(ev);
+        return super.dispatchTouchEvent(ev)
     }
 
-    private boolean shouldHideInput(View v, MotionEvent ev) {
-        if (v instanceof EditText) {
-            int[] l = new int[]{0, 0};
-            v.getLocationInWindow(l);
-            int left = l[0];
-            int top = l[1];
-            int right = left + v.getWidth();
-            int bottom = top + v.getHeight();
-            return !(ev.getX() > left && ev.getX() < right && ev.getY() > top && ev.getY() < bottom);
+    private fun shouldHideInput(v: View?, ev: MotionEvent): Boolean {
+        if (v is EditText) {
+            val l = intArrayOf(0, 0)
+            v.getLocationInWindow(l)
+            val left = l[0]
+            val top = l[1]
+            val right = left + v.getWidth()
+            val bottom = top + v.getHeight()
+            return !(ev.x > left && ev.x < right && ev.y > top && ev.y < bottom)
         }
-        return false;
+        return false
     }
 
     /**
      * set activity to immersive mode without using fullscreen
-     * <p>
+     *
+     *
      * in this mode, the window will extend to the status bar area,
      * but the bottom will not extend to the bottom navigation bar area.
-     * </p>
+     *
      * @param enabled enable immersive mode
      */
-    protected void setImmersiveMode(boolean enabled) {
-        int mask = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-        int flags = enabled ? mask : 0;
-        Window window = getWindow();
-        int originStatus = window.getDecorView().getSystemUiVisibility();
-        int deStatus = (originStatus & ~mask) | (flags & mask);
-        window.getDecorView().setSystemUiVisibility(deStatus);
+    protected fun setImmersiveMode(enabled: Boolean) {
+        val mask = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        val flags = if (enabled) mask else 0
+        val window = window
+        val originStatus = window.decorView.systemUiVisibility
+        val deStatus = originStatus and mask.inv() or (flags and mask)
+        window.decorView.systemUiVisibility = deStatus
     }
 
-    @Override
-    public Resources getResources() {
-        Resources resources = super.getResources();
+    override fun getResources(): Resources {
+        val resources = super.getResources()
         // update density
-        DensityHelper.onActivityGetResources(resources);
+        onActivityGetResources(resources)
         // update language config
-        AppLanguageHelper.doOnContextGetResources(resources);
-        return resources;
+        AppLanguageHelper.doOnContextGetResources(resources)
+        return resources
     }
 
-    protected boolean isTranslucent() {
-        WindowManager.LayoutParams attributes = getWindow().getAttributes();
-        int flagTranslucentStatus = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-        int flagTranslucentNavigation = WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
-        if ((attributes.flags & flagTranslucentStatus) == flagTranslucentStatus ||
-            (attributes.flags & flagTranslucentNavigation) == flagTranslucentNavigation
-        ) {
-            return true;
+    protected val isTranslucent: Boolean
+        get() {
+            val attributes = window.attributes
+            val flagTranslucentStatus = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+            val flagTranslucentNavigation = WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION
+            if (attributes.flags and flagTranslucentStatus == flagTranslucentStatus ||
+                attributes.flags and flagTranslucentNavigation == flagTranslucentNavigation
+            ) {
+                return true
+            }
+            val background = window.decorView.background
+            return background == null || background.opacity != PixelFormat.OPAQUE
         }
-        Drawable background = getWindow().getDecorView().getBackground();
-        return background == null || background.getOpacity() != PixelFormat.OPAQUE;
+
+    /**
+     * 是否允许截屏
+     * <p>关闭之后调用系统截屏为黑屏</p>
+     *
+     * @param enabled 是否允许
+     */
+    fun swtAllowScreenshots(enabled: Boolean) {
+        if (enabled) {
+            window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+        else {
+            window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
     }
+
 }
