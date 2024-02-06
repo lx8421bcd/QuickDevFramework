@@ -1,45 +1,39 @@
-package com.linxiao.framework.architecture;
+package com.linxiao.framework.architecture
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.viewbinding.ViewBinding
+import java.lang.reflect.ParameterizedType
 
-import androidx.annotation.NonNull;
-import androidx.viewbinding.ViewBinding;
+@Suppress("UNCHECKED_CAST")
+abstract class SimpleViewBindingDialogFragment<B : ViewBinding?> : BaseDialogFragment() {
+    protected var viewBinding: B? = null
+        private set
 
-import java.lang.reflect.ParameterizedType;
-
-public abstract class SimpleViewBindingDialogFragment<B extends ViewBinding> extends BaseDialogFragment {
-
-    private B binding = null;
-
-    protected B getViewBinding() {
-        return binding;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void setViewBinding(Class<B> bindingClass) {
+    protected fun setViewBinding(bindingClass: Class<B>) {
         try {
-            binding = (B) bindingClass.getMethod("inflate", LayoutInflater.class)
-                    .invoke(null, getLayoutInflater());
-        } catch (Exception e) {
-            e.printStackTrace();
+            viewBinding = bindingClass.getMethod("inflate", LayoutInflater::class.java)
+                .invoke(null, layoutInflater) as B
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setViewBinding((Class<B>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
-        return binding.getRoot();
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        setViewBinding((javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<B>)
+        return viewBinding!!.root
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    override fun onStart() {
+        super.onStart()
+        dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 }

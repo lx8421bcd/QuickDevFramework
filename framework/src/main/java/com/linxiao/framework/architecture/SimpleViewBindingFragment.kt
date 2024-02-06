@@ -1,46 +1,41 @@
-package com.linxiao.framework.architecture;
+package com.linxiao.framework.architecture
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.viewbinding.ViewBinding;
-
-import java.lang.reflect.ParameterizedType;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.viewbinding.ViewBinding
+import java.lang.reflect.ParameterizedType
 
 /**
- * <p>
+ *
+ *
  * class usage summary
- * </p>
+ *
  *
  * @author linxiao
  * @since 2020-10-20
  */
-public abstract class SimpleViewBindingFragment<B extends ViewBinding> extends BaseFragment {
+@Suppress("UNCHECKED_CAST")
+abstract class SimpleViewBindingFragment<B : ViewBinding?> : BaseFragment() {
+    protected var viewBinding: B? = null
+        private set
 
-    private B binding = null;
-
-    protected B getViewBinding() {
-        return binding;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void setViewBinding(Class<B> bindingClass) {
+    protected fun setViewBinding(bindingClass: Class<B>) {
         try {
-            binding = (B) bindingClass.getMethod("inflate", LayoutInflater.class)
-                    .invoke(null, getLayoutInflater());
-        } catch (Exception e) {
-            e.printStackTrace();
+            viewBinding = bindingClass.getMethod("inflate", LayoutInflater::class.java)
+                .invoke(null, layoutInflater) as B
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setViewBinding((Class<B>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
-        return binding.getRoot();
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        setViewBinding((javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<B>)
+        return viewBinding!!.root
     }
-
 }

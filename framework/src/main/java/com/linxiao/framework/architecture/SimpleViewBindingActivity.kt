@@ -1,44 +1,36 @@
-package com.linxiao.framework.architecture;
+package com.linxiao.framework.architecture
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-
-import androidx.annotation.Nullable;
-import androidx.viewbinding.ViewBinding;
-
-import java.lang.reflect.ParameterizedType;
+import android.os.Bundle
+import android.view.LayoutInflater
+import androidx.viewbinding.ViewBinding
+import java.lang.reflect.ParameterizedType
 
 /**
- * <p>
+ *
+ *
  * class usage summary
- * </p>
+ *
  *
  * @author linxiao
  * @since 2020-10-20
  */
-public abstract class SimpleViewBindingActivity<B extends ViewBinding> extends BaseActivity {
+@Suppress("UNCHECKED_CAST")
+abstract class SimpleViewBindingActivity<B : ViewBinding?> : BaseActivity() {
+    protected var viewBinding: B? = null
+        private set
 
-    private B binding = null;
-
-    protected B getViewBinding() {
-        return binding;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void setViewBinding(Class<B> bindingClass) {
+    protected fun setViewBinding(bindingClass: Class<B>) {
         try {
-            binding = (B) bindingClass.getMethod("inflate", LayoutInflater.class)
-                    .invoke(null, getLayoutInflater());
-        } catch (Exception e) {
-            e.printStackTrace();
+            viewBinding = bindingClass.getMethod("inflate", LayoutInflater::class.java)
+                .invoke(null, layoutInflater) as B
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        setContentView(binding.getRoot());
+        setContentView(viewBinding!!.root)
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setViewBinding((Class<B>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setViewBinding((javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<B>)
     }
 }
