@@ -1,38 +1,27 @@
-package com.linxiao.quickdevframework.main;
+package com.linxiao.quickdevframework.main
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-
-import com.linxiao.framework.architecture.BaseSplashActivity;
-import com.linxiao.quickdevframework.R;
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Bundle
+import android.os.Handler
+import com.linxiao.framework.architecture.BaseSplashActivity
+import com.linxiao.quickdevframework.R
 
 @SuppressLint("CustomSplashScreen")
-public class SplashActivity extends BaseSplashActivity {
-
-    private boolean dataReady = false;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
-        keepSplashScreenUntilInitFinished();
-        execInit();
+class SplashActivity : BaseSplashActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_splash)
+//        keepSplashScreenUntilInitFinished()
+        execInit()
     }
 
-    private void execInit() {
-        new Handler().postDelayed(() -> {
-            //此字段为true时show UI
-            dataReady = true;
-            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }, 1000);
-    }
-
-    @Override
-    protected boolean isInitFinished() {
-        return dataReady;
+    private fun execInit() {
+        Handler().postDelayed({
+            keepSplashScreen.set(false)
+            val intent = Intent(this@SplashActivity, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }, 1000)
     }
 }

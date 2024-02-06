@@ -1,66 +1,35 @@
-package com.linxiao.framework.architecture;
+package com.linxiao.framework.architecture
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.view.ViewTreeObserver;
-
-import androidx.annotation.Nullable;
-import androidx.core.splashscreen.SplashScreen;
-
+import android.annotation.SuppressLint
+import android.os.Bundle
+import android.view.View
+import android.view.ViewTreeObserver
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * 启动Activity基类
- * <p>执行App启动的预处理，此处用于执行框架模块的预处理操作。
- * </p>
+ *
+ * 执行App启动的预处理，此处用于执行框架模块的预处理操作。
+ *
  * Created by linxiao on 2016/12/5.
  */
 @SuppressLint("CustomSplashScreen")
-public abstract class BaseSplashActivity extends BaseActivity {
+abstract class BaseSplashActivity : BaseActivity() {
 
-    protected SplashScreen splashScreen;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        splashScreen = SplashScreen.installSplashScreen(this);
-        super.onCreate(savedInstanceState);
-
+    protected val splashScreen by lazy {
+        return@lazy installSplashScreen()
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
+    /**
+     * 控制系统启动屏显示变量
+     */
+    protected val keepSplashScreen = AtomicBoolean(true)
 
-    protected boolean isInitFinished() {
-        return true;
-    }
-
-    protected void keepSplashScreenUntilInitFinished() {
-        // Set up an OnPreDrawListener to the root view.
-        final View content = findViewById(android.R.id.content);
-        content.getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        // Check if the initial data is ready.
-                        if (isInitFinished()) {
-                            // The content is ready; start drawing.
-                            content.getViewTreeObserver().removeOnPreDrawListener(this);
-                            return true;
-                        } else {
-                            // The content is not ready; suspend.
-                            return false;
-                        }
-                    }
-                }
-        );
-    }
-
-    @Override
-    public void startActivity(Intent intent) {
-        super.startActivity(intent);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // 保持Android系统级启动屏直至Splash页面内的初始化内容初始化完成，避免闪屏
+        splashScreen.setKeepOnScreenCondition { keepSplashScreen.get() }
+        super.onCreate(savedInstanceState)
     }
 
 }
