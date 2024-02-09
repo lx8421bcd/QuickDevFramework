@@ -50,3 +50,5 @@ freeline.py
 freeline/
 freeline_project_description.json
 
+# kotlin complie files
+.kotlin/
