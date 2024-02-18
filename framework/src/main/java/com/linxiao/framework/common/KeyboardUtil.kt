@@ -1,8 +1,8 @@
-package com.linxiao.framework.common;
+package com.linxiao.framework.common
 
-import android.content.Context;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.content.Context
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 
 /**
  * 软键盘管理工具类
@@ -10,44 +10,28 @@ import android.view.inputmethod.InputMethodManager;
  * @author 0x8421bcd
  * @since 2022-08-31
  */
-public class KeyboardUtil {
+object KeyboardUtil {
 
-    public static void hideKeyboard(final View targetView) {
-        if (targetView == null) {
-            return;
-        }
-
-        targetView.clearFocus();
-        InputMethodManager imm = (InputMethodManager) targetView.getContext()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(targetView.getWindowToken(), 0);
+    @JvmStatic
+    fun hideKeyboard(targetView: View?) {
+        targetView ?: return
+        targetView.clearFocus()
+        val imm = targetView.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(targetView.windowToken, 0)
     }
 
-    public static void showKeyboard(final View targetView, final int retryDelayMillis) {
-        if (targetView == null) {
-            return;
-        }
-
-        final InputMethodManager imm = (InputMethodManager) targetView.getContext()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        new Runnable() {
-            @Override
-            public void run() {
-                if (!targetView.requestFocus() || !imm.isActive(targetView)
-                        || !imm.showSoftInput(targetView, InputMethodManager.SHOW_IMPLICIT)) {
-                    targetView.postDelayed(this, retryDelayMillis);
-                }
-            }
-        }.run();
+    @JvmStatic
+    fun showKeyboard(targetView: View?) {
+        targetView ?: return
+        val imm = targetView.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        targetView.requestFocus()
+        imm.showSoftInput(targetView, InputMethodManager.SHOW_IMPLICIT)
     }
 
-    public static boolean isSoftKeyBoardActiveFor(View targetView) {
-        if (targetView == null) {
-            return false;
-        }
-
-        InputMethodManager imm = (InputMethodManager) targetView.getContext()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        return imm.isActive(targetView);
+    @JvmStatic
+    fun isSoftKeyBoardActiveFor(targetView: View?): Boolean {
+        targetView ?: return false
+        val imm = targetView.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        return imm.isActive(targetView)
     }
 }
