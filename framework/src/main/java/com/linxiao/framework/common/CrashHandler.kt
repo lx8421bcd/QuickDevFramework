@@ -1,185 +1,139 @@
-package com.linxiao.framework.common;
+package com.linxiao.framework.common
 
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Build;
-import android.text.TextUtils;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.collection.ArrayMap;
-
-import com.google.gson.reflect.TypeToken;
-import com.linxiao.framework.json.GsonParser;
-import com.linxiao.framework.net.CommonApiProvider;
-import com.linxiao.framework.preferences.AppPreferences;
-import com.linxiao.framework.rx.RxSubscriber;
-
-import org.json.JSONObject;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import io.reactivex.Observable;
-import io.reactivex.schedulers.Schedulers;
+import android.content.Context
+import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.os.Build
+import android.util.Log
+import androidx.collection.ArrayMap
+import com.google.gson.reflect.TypeToken
+import com.linxiao.framework.common.DateUtil.timeMillsToDateString
+import com.linxiao.framework.json.GsonParser.parser
+import com.linxiao.framework.json.GsonParser.toJSONObject
+import com.linxiao.framework.preferences.AppPreferences
+import java.io.PrintWriter
+import java.io.StringWriter
+import java.io.Writer
+import java.util.Arrays
 
 /**
- * <h3>全局捕获异常处理</h3> <br>
+ * <h3>全局捕获异常处理</h3> <br></br>
  * <h5>当程序发生Uncaught异常的时候,有该类来接管程序,并记录错误日志</h5>
  *
  * @author relish-wang
  * @since 2017-03-08
  */
-public class CrashHandler implements UncaughtExceptionHandler {
+object CrashHandler : Thread.UncaughtExceptionHandler {
 
-    public static String TAG = CrashHandler.class.getSimpleName();
+    private const val CACHE_KEY = "cache_report_data"
 
-    private static final String CACHE_KEY = "cache_report_data";
+    private val TAG = CrashHandler::class.java.simpleName
+    private val defaultCrashHandler = Thread.getDefaultUncaughtExceptionHandler()
 
-    private static CrashHandler instance;
+    var onSubmitLogs: ((info: Map<String, Any?>) -> Unit)? = null
 
-    public static CrashHandler getInstance() {
-        if (instance == null) {
-            instance = new CrashHandler();
-        }
-        return instance;
+    init {
+        Thread.setDefaultUncaughtExceptionHandler(this)
     }
 
-    private Thread.UncaughtExceptionHandler defaultCrashHandler;
-
-    private CrashHandler() {
-        defaultCrashHandler = Thread.getDefaultUncaughtExceptionHandler();
+    fun init(onSubmitLogs: ((info: Map<String, Any?>) -> Unit)?) {
+        this.onSubmitLogs = onSubmitLogs
+        uploadCachedLog()
     }
 
-    public void init() {
-        Thread.setDefaultUncaughtExceptionHandler(this);
-        uploadCachedLog();
+    override fun uncaughtException(t: Thread, e: Throwable) {
+        val info: MutableMap<String, Any?> = HashMap()
+        info["thread"] = t.name
+        info["time"] = timeMillsToDateString("yyyy-MM-dd HH:mm:ss", System.currentTimeMillis())
+        info["app_info"] = collectAppVersionInfo()
+        info["device_info"] = collectDeviceInfo()
+        info["network_info"] = collectNetworkInfo()
+        info["stack_trace"] = getStackTraceStr(e)
+        onSubmitLogs?.invoke(info)
     }
 
-    @Override
-    public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
-        Map<String, Object> info = new HashMap<>();
-        info.put("thread", t.getName());
-        info.put("time", DateUtil.timeMillsToDateString("yyyy-MM-dd HH:mm:ss", System.currentTimeMillis()));
-        info.put("app_info", collectAppVersionInfo());
-        info.put("device_info", collectDeviceInfo());
-        info.put("network_info", collectNetworkInfo());
-        info.put("stack_trace", getStackTraceStr(e));
-        submitLog(info)
-        .doOnError(ex -> {
-            saveToLocal(info);
-            defaultCrashHandler.uncaughtException(t, e);
-        })
-        .doOnNext(r -> defaultCrashHandler.uncaughtException(t, e))
-        .subscribe(new RxSubscriber<>());
-    }
-
-    private Map<String, Object> collectAppVersionInfo() {
-        Map<String, Object> ret = new ArrayMap<>();
+    private fun collectAppVersionInfo(): Map<String, Any> {
+        val ret: MutableMap<String, Any> = ArrayMap()
         try {
-            PackageManager pm = ContextProviderKt.getGlobalContext().getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(ContextProviderKt.getGlobalContext().getPackageName(), PackageManager.GET_ACTIVITIES);
+            val pm = globalContext.packageManager
+            val pi = pm.getPackageInfo(globalContext.packageName, PackageManager.GET_ACTIVITIES)
             if (pi != null) {
-                ret.put("versionName", pi.versionName);
-                ret.put("versionCode", pi.versionCode);
+                ret["versionName"] = pi.versionName
+                ret["versionCode"] = pi.versionCode
             }
-        } catch (Exception ignored) {}
+        } catch (ignored: Exception) {}
 //        ret.put("debug_mode", GlobalConfig.isDebugMode());
 //        ret.put("beta_mode", GlobalConfig.isBetaMode());
-        return ret;
+        return ret
     }
 
-    private Map<String, Object> collectDeviceInfo() {
-        Map<String, Object> ret = new ArrayMap<>();
-
-        ret.put("MODEL", Build.MODEL);
-        ret.put("ID", Build.ID);
-        ret.put("HOST", Build.HOST);
-        ret.put("OS_VERSION", Build.VERSION.RELEASE + "(API" + Build.VERSION.SDK_INT + ")");
-        ret.put("DISPLAY", Build.DISPLAY);
-        ret.put("PRODUCT", Build.PRODUCT);
-        ret.put("MANUFACTURER", Build.MANUFACTURER);
-        ret.put("CPU_ABI", Build.CPU_ABI);
-        ret.put("SUPPORTED_ABIS", Arrays.asList(Build.SUPPORTED_ABIS));
-        List<String> extraInfo = Arrays.asList("SOC_MODEL", "SOC_MANUFACTURER", "IS_EMULATOR");
-        Field[] fields = Build.class.getDeclaredFields();
-        for (Field field : fields) {
-            if (extraInfo.contains(field.getName())) {
+    private fun collectDeviceInfo(): Map<String, Any> {
+        val ret: MutableMap<String, Any> = ArrayMap()
+        ret["MODEL"] = Build.MODEL
+        ret["ID"] = Build.ID
+        ret["HOST"] = Build.HOST
+        ret["OS_VERSION"] = Build.VERSION.RELEASE + "(API" + Build.VERSION.SDK_INT + ")"
+        ret["DISPLAY"] = Build.DISPLAY
+        ret["PRODUCT"] = Build.PRODUCT
+        ret["MANUFACTURER"] = Build.MANUFACTURER
+        ret["CPU_ABI"] = Build.CPU_ABI
+        ret["SUPPORTED_ABIS"] = Arrays.asList(*Build.SUPPORTED_ABIS)
+        val extraInfo: List<String> = mutableListOf("SOC_MODEL", "SOC_MANUFACTURER", "IS_EMULATOR")
+        val fields = Build::class.java.declaredFields
+        for (field in fields) {
+            if (extraInfo.contains(field.name)) {
                 try {
-                    field.setAccessible(true);
-                    ret.put(field.getName(), String.valueOf(field.get(null)));
-                } catch (Exception ignored) { }
+                    field.isAccessible = true
+                    ret[field.name] = field[null].toString()
+                } catch (ignored: Exception) {
+                }
             }
         }
-        return ret;
+        return ret
     }
 
-    private Map<String, Object> collectNetworkInfo() {
-        Map<String, Object> ret = new ArrayMap<>();
-        ConnectivityManager manager = (ConnectivityManager) ContextProviderKt.getGlobalContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (manager == null) {
-            return ret;
-        }
-        NetworkInfo activeNetworkInfo = manager.getActiveNetworkInfo();
-        ret.put("connected", activeNetworkInfo.isConnected());
-        ret.put("type", activeNetworkInfo.getTypeName());
-        ret.put("detail_state", activeNetworkInfo.getDetailedState().toString());
-        ret.put("extra_info", activeNetworkInfo.getExtraInfo());
-        return ret;
+    private fun collectNetworkInfo(): Map<String, Any> {
+        val ret: MutableMap<String, Any> = ArrayMap()
+        val manager = globalContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = manager.activeNetworkInfo
+        ret["connected"] = activeNetworkInfo!!.isConnected
+        ret["type"] = activeNetworkInfo.typeName
+        ret["detail_state"] = activeNetworkInfo.detailedState.toString()
+        ret["extra_info"] = activeNetworkInfo.extraInfo
+        return ret
     }
 
-    private String getStackTraceStr(Throwable ex) {
-        Writer writer = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(writer);
-        ex.printStackTrace(printWriter);
-        Throwable cause = ex.getCause();
+    private fun getStackTraceStr(ex: Throwable): String {
+        val writer: Writer = StringWriter()
+        val printWriter = PrintWriter(writer)
+        ex.printStackTrace(printWriter)
+        var cause = ex.cause
         while (cause != null) {
-            cause.printStackTrace(printWriter);
-            cause = cause.getCause();
+            cause.printStackTrace(printWriter)
+            cause = cause.cause
         }
-        printWriter.flush();
-        printWriter.close();
-        String result = writer.toString();
-        Log.e(TAG, result);
-        return result;
+        printWriter.flush()
+        printWriter.close()
+        val result = writer.toString()
+        Log.e(TAG, result)
+        return result
     }
 
-    private void saveToLocal(Map<String, Object> info) {
-        JSONObject reportData = GsonParser.toJSONObject(info);
-        if (reportData != null) {
-            AppPreferences.getDefault().put(CACHE_KEY, reportData.toString());
-        }
+    private fun saveToLocal(info: Map<String, Any?>) {
+        val reportData = toJSONObject(info) ?: return
+        AppPreferences.getDefault().put(CACHE_KEY, reportData.toString())
     }
 
-    private void uploadCachedLog() {
-        String cacheStr = AppPreferences.getDefault().getString(CACHE_KEY, "");
-        Log.d(TAG, "cached log: " + cacheStr);
-        if (TextUtils.isEmpty(cacheStr)) {
-            return;
+    private fun uploadCachedLog() {
+        val cacheStr = AppPreferences.getDefault().getString(CACHE_KEY, "")
+        Log.d(TAG, "cached log: $cacheStr")
+        if (cacheStr.isNullOrEmpty()) {
+            return
         }
-        Type convertType = new TypeToken<Map<String, Object>>() {}.getType();
-        Map<String, Object> reportData = GsonParser.getParser().fromJson(cacheStr, convertType);
-        if (reportData == null) {
-            return;
-        }
-        AppPreferences.getDefault().remove(CACHE_KEY);
-        submitLog(reportData).subscribe(new RxSubscriber<>());
+        val convertType = object : TypeToken<Map<String?, Any?>?>() {}.type
+        val reportData = parser.fromJson<Map<String, Any?>>(cacheStr, convertType) ?: return
+        AppPreferences.getDefault().remove(CACHE_KEY)
+        onSubmitLogs?.invoke(reportData)
     }
 
-    private Observable<Object> submitLog(Map<String, Object> info) {
-        return CommonApiProvider.getInstance().getApi().postJson("", info)
-        .subscribeOn(Schedulers.io())
-        .map(resp -> resp);
-    }
 }
