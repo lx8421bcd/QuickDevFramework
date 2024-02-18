@@ -17,7 +17,7 @@ import androidx.annotation.CheckResult
 import androidx.appcompat.app.AppCompatActivity
 import com.linxiao.framework.architecture.ActivityResultHolderFragment.Companion.startActivityForCallback
 import com.linxiao.framework.common.DensityHelper.onActivityGetResources
-import com.linxiao.framework.common.KeyboardUtil
+import com.linxiao.framework.common.hideKeyboard
 import com.linxiao.framework.language.AppLanguageHelper
 import com.linxiao.framework.language.LanguageChangedEvent
 import com.linxiao.framework.permission.PermissionManager
@@ -182,7 +182,7 @@ abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEve
             if (hideKeyboardOnTouchOutside) {
                 val v = currentFocus
                 if (shouldHideInput(v, ev)) {
-                    KeyboardUtil.hideKeyboard(window.decorView)
+                    window.decorView.hideKeyboard()
                     v!!.clearFocus()
                 }
             }
