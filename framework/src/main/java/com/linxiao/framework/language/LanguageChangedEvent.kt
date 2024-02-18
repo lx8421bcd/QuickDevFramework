@@ -1,4 +1,4 @@
-package com.linxiao.framework.language;
+package com.linxiao.framework.language
 
 /**
  * holder class of language changed event
@@ -6,6 +6,4 @@ package com.linxiao.framework.language;
  * @author lx8421bcd
  * @since 2022-11-08
  */
-public class LanguageChangedEvent {
-
-}
+class LanguageChangedEvent
