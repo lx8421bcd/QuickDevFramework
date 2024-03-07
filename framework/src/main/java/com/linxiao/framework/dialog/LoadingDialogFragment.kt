@@ -18,9 +18,7 @@ import com.linxiao.framework.databinding.DialogLoadingBinding
  */
 class LoadingDialogFragment : BaseDialogFragment() {
     
-    private val viewBinding by lazy {
-        return@lazy DialogLoadingBinding.inflate(layoutInflater)
-    }
+    private lateinit var viewBinding: DialogLoadingBinding
     
     private var title = ""
     private var text = ""
@@ -30,6 +28,7 @@ class LoadingDialogFragment : BaseDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        viewBinding = DialogLoadingBinding.inflate(layoutInflater, container, false)
         return viewBinding.root
     }
 
@@ -52,8 +51,8 @@ class LoadingDialogFragment : BaseDialogFragment() {
     fun setTitle(title: String): LoadingDialogFragment {
         this.title = title
         if (lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
-            viewBinding.tvTitle.text = text
-            viewBinding.tvTitle.isVisible = !TextUtils.isEmpty(text)
+            viewBinding.tvTitle.text = title
+            viewBinding.tvTitle.isVisible = !TextUtils.isEmpty(title)
         }
         return this
     }
