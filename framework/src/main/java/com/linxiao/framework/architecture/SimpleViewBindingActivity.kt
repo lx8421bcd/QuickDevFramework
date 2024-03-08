@@ -15,8 +15,8 @@ import java.lang.reflect.ParameterizedType
  * @since 2020-10-20
  */
 @Suppress("UNCHECKED_CAST")
-abstract class SimpleViewBindingActivity<B : ViewBinding?> : BaseActivity() {
-    protected var viewBinding: B? = null
+abstract class SimpleViewBindingActivity<B : ViewBinding> : BaseActivity() {
+    protected lateinit var viewBinding: B
         private set
 
     protected fun setViewBinding(bindingClass: Class<B>) {
@@ -26,7 +26,7 @@ abstract class SimpleViewBindingActivity<B : ViewBinding?> : BaseActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        setContentView(viewBinding!!.root)
+        setContentView(viewBinding.root)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

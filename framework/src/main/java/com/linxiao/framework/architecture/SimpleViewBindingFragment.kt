@@ -17,8 +17,8 @@ import java.lang.reflect.ParameterizedType
  * @since 2020-10-20
  */
 @Suppress("UNCHECKED_CAST")
-abstract class SimpleViewBindingFragment<B : ViewBinding?> : BaseFragment() {
-    protected var viewBinding: B? = null
+abstract class SimpleViewBindingFragment<B : ViewBinding> : BaseFragment() {
+    protected lateinit var viewBinding: B
         private set
 
     protected fun setViewBinding(bindingClass: Class<B>) {
@@ -36,6 +36,6 @@ abstract class SimpleViewBindingFragment<B : ViewBinding?> : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         setViewBinding((javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<B>)
-        return viewBinding!!.root
+        return viewBinding.root
     }
 }

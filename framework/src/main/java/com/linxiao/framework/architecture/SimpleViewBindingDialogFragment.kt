@@ -10,8 +10,8 @@ import androidx.viewbinding.ViewBinding
 import java.lang.reflect.ParameterizedType
 
 @Suppress("UNCHECKED_CAST")
-abstract class SimpleViewBindingDialogFragment<B : ViewBinding?> : BaseDialogFragment() {
-    protected var viewBinding: B? = null
+abstract class SimpleViewBindingDialogFragment<B : ViewBinding> : BaseDialogFragment() {
+    protected lateinit var viewBinding: B
         private set
 
     protected fun setViewBinding(bindingClass: Class<B>) {
@@ -29,7 +29,7 @@ abstract class SimpleViewBindingDialogFragment<B : ViewBinding?> : BaseDialogFra
         savedInstanceState: Bundle?
     ): View? {
         setViewBinding((javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<B>)
-        return viewBinding!!.root
+        return viewBinding.root
     }
 
     override fun onStart() {
