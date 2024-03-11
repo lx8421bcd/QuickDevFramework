@@ -1,49 +1,25 @@
-package com.linxiao.framework.common;
+package com.linxiao.framework.common
 
-import android.content.Context;
-import android.media.AudioManager;
-import android.media.SoundPool;
+import android.content.Context
+import android.media.AudioManager
+import android.media.SoundPool
+import androidx.annotation.RawRes
 
-import androidx.annotation.RawRes;
-
-import java.util.HashMap;
-
-
-public final class SoundEffectPlayUtil {
-
-    enum VolumeType {
-        RING(2), MEDIA(3);
-
-        public final int value;
-        VolumeType(int value) {
-            this.value = value;
-        }
+object SoundPlayHelper {
+    internal enum class VolumeType(val value: Int) {
+        RING(2),
+        MEDIA(3)
     }
 
-    private static SoundEffectPlayUtil defaultHelper;
+    private val soundPool = SoundPool.Builder()
+        .setMaxStreams(5)
+        .build()
+    private val soundPoolMap = HashMap<Int, Int?>()
 
-    public static SoundEffectPlayUtil getDefault() {
-        synchronized (SoundEffectPlayUtil.class) {
-            if (defaultHelper == null) {
-                defaultHelper = new SoundEffectPlayUtil();
-            }
-        }
-        return defaultHelper;
-    }
+    private var volumeType = VolumeType.MEDIA
 
-    private final SoundPool soundPool = new SoundPool.Builder()
-            .setMaxStreams(5)
-            .build();
-    private final HashMap<Integer, Integer> soundPoolMap = new HashMap<>();
-    private VolumeType volumeType = VolumeType.MEDIA;
-
-
-    public void setVolume(VolumeType volumeType) {
-        this.volumeType = volumeType;
-    }
-
-    public void release() {
-        soundPool.release();
+    fun release() {
+        soundPool.release()
     }
 
     /**
@@ -51,20 +27,18 @@ public final class SoundEffectPlayUtil {
      * @param res resources id of raw sound
      * @param times loop times, -1 means loop forever
      */
-    public synchronized void playSoundRes(@RawRes int res, int times) {
-        if (soundPoolMap.get(res) == null) {
-            soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) -> {
-                soundPool.setOnLoadCompleteListener(null);
-                playSound(res, times);
-            });
-            soundPoolMap.put(res, soundPool.load(ContextProviderKt.getGlobalContext(), res, 1));
-            return;
+    @Synchronized
+    @JvmOverloads
+    fun playSoundRes(@RawRes res: Int, times: Int = 0) {
+        if (soundPoolMap[res] == null) {
+            soundPool.setOnLoadCompleteListener { soundPool: SoundPool, sampleId: Int, status: Int ->
+                soundPool.setOnLoadCompleteListener(null)
+                playSound(res, times)
+            }
+            soundPoolMap[res] = soundPool.load(globalContext, res, 1)
+            return
         }
-        playSound(res, times);
-    }
-
-    public synchronized void playSoundRes(@RawRes int res) {
-        playSoundRes(res, 1);
+        playSound(res, times)
     }
 
     /**
@@ -73,19 +47,17 @@ public final class SoundEffectPlayUtil {
      * @param soundId 所添加声音的编号
      * @param times   循环次数，0:不循环，-1:永远循环
      */
-    private void playSound(int soundId, int times) {
+    @Synchronized
+    private fun playSound(soundId: Int, times: Int = 0) {
         // 实例化AudioManager对象
-        AudioManager am = (AudioManager) ContextProviderKt.getGlobalContext().getSystemService(Context.AUDIO_SERVICE);
+        val am = globalContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         // 返回当前AudioManager对象播放所选声音的类型的最大音量值
-        float maxVolume = am.getStreamMaxVolume(volumeType.value);
+        val maxVolume = am.getStreamMaxVolume(volumeType.value).toFloat()
         // 返回当前AudioManager对象的音量值
-        float currentVolume = am.getStreamVolume(volumeType.value);
+        val currentVolume = am.getStreamVolume(volumeType.value).toFloat()
         // 比值
-        float volumeRatio = currentVolume / maxVolume;
-        Integer sound = soundPoolMap.get(soundId);
-        if (sound == null) {
-            return;
-        }
-        soundPool.play(sound, volumeRatio, volumeRatio, 1, times, 1);
+        val volumeRatio = currentVolume / maxVolume
+        val sound = soundPoolMap[soundId] ?: return
+        soundPool.play(sound, volumeRatio, volumeRatio, 1, times, 1f)
     }
 }
