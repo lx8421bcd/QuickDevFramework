@@ -8,8 +8,8 @@
     android:background="@drawable/bg_round_corner_8"
     android:orientation="vertical"
     android:paddingTop="12dp"
-    tools:layout_margin="40dp"
-    tools:elevation="10dp"
+    android:layout_margin="40dp"
+    android:elevation="10dp"
     tools:ignore="WebViewLayout">
 
     <TextView

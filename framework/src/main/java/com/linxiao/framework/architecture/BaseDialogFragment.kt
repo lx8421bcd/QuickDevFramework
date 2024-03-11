@@ -1,8 +1,12 @@
 package com.linxiao.framework.architecture
 
 import android.app.Activity
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
+import android.view.Window
 import android.view.WindowManager
 import androidx.annotation.CallSuper
 import androidx.annotation.CheckResult
@@ -62,22 +66,24 @@ abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider
         lifecycleSubject.onNext(FragmentEvent.CREATE)
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        return dialog
+    }
+
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycleSubject.onNext(FragmentEvent.CREATE_VIEW)
-        if (dialog != null) {
-            val win = dialog!!.window
-            //恢复dialog宽度设置
-            if (win != null) {
-                win.setLayout(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT
-                )
-                //去除默认dialog白色背景
-                win.decorView.background.alpha = 0
-            }
-        }
+        dialog?.window?.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+        dialog?.window?.decorView?.background?.alpha = 0
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        // 去除半透明蒙板背景
+//        dialog?.window?.attributes?.dimAmount = 0.0f
     }
 
     @CallSuper
