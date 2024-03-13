@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -36,6 +35,14 @@ import io.reactivex.subjects.BehaviorSubject
  * @since 2016-12-05
  */
 abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider<FragmentEvent> {
+
+    companion object {
+        /**
+         * 应用内所有继承自BaseDialogFragment的Dialog组件的默认宽度
+         */
+        @JvmStatic
+        val baseDialogWidth: Int = (getRealScreenWidth() * 0.8).toInt()
+    }
 
     @JvmField
     protected val TAG = this::class.java.simpleName
@@ -82,7 +89,7 @@ abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider
         // 默认这个宽度，如需改变，自己在子类中设置
         dialog?.window?.setLayout(
 //            WindowManager.LayoutParams.MATCH_PARENT,
-            (getRealScreenWidth() * 0.8).toInt(),
+            baseDialogWidth,
             WindowManager.LayoutParams.WRAP_CONTENT
         )
         dialog?.window?.decorView?.background?.alpha = 0
