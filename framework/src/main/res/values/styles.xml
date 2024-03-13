@@ -57,19 +57,4 @@
         <item name="alertDialogTheme">@style/AppDialogTheme</item>
     </style>
 
-    <!-- 底部弹出对话框基本样式 -->
-    <style name="FrameworkBottomDialogStyle" parent="@style/Theme.AppCompat.Light.DialogWhenLarge">
-        <item name="android:windowFrame">@null</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowAnimationStyle">@style/FrameworkBottomDialogAnimation</item>
-        <item name="android:backgroundDimEnabled">true</item>
-    </style>
-
-    <style name="FrameworkBottomDialogAnimation" parent="@android:style/Animation.Dialog">
-        <item name="android:windowEnterAnimation">@anim/push_bottom_in</item>
-        <item name="android:windowExitAnimation">@anim/push_bottom_out</item>
-    </style>
-
 </resources>
