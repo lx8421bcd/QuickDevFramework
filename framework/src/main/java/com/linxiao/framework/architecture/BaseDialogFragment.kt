@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -12,6 +13,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.CheckResult
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.FragmentManager
+import com.linxiao.framework.common.getRealScreenWidth
 import com.trello.rxlifecycle2.LifecycleProvider
 import com.trello.rxlifecycle2.LifecycleTransformer
 import com.trello.rxlifecycle2.RxLifecycle
@@ -36,7 +38,7 @@ import io.reactivex.subjects.BehaviorSubject
 abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider<FragmentEvent> {
 
     @JvmField
-    protected val TAG = this.javaClass.simpleName
+    protected val TAG = this::class.java.simpleName
 
     private val lifecycleSubject = BehaviorSubject.create<FragmentEvent>()
 
@@ -77,8 +79,10 @@ abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycleSubject.onNext(FragmentEvent.CREATE_VIEW)
+        // 默认这个宽度，如需改变，自己在子类中设置
         dialog?.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
+//            WindowManager.LayoutParams.MATCH_PARENT,
+            (getRealScreenWidth() * 0.8).toInt(),
             WindowManager.LayoutParams.WRAP_CONTENT
         )
         dialog?.window?.decorView?.background?.alpha = 0
