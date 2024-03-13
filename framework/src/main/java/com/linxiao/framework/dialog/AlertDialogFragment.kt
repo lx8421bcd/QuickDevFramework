@@ -156,10 +156,6 @@ class AlertDialogFragment : BaseDialogFragment() {
         return this
     }
 
-    fun show(manager: FragmentManager) {
-        super.show(manager, "${tag}${hashCode()}")
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

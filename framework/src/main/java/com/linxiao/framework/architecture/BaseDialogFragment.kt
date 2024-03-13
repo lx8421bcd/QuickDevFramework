@@ -11,6 +11,7 @@ import android.view.WindowManager
 import androidx.annotation.CallSuper
 import androidx.annotation.CheckResult
 import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.fragment.app.FragmentManager
 import com.trello.rxlifecycle2.LifecycleProvider
 import com.trello.rxlifecycle2.LifecycleTransformer
 import com.trello.rxlifecycle2.RxLifecycle
@@ -126,5 +127,29 @@ abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider
     override fun onDetach() {
         lifecycleSubject.onNext(FragmentEvent.DETACH)
         super.onDetach()
+    }
+
+    override fun show(manager: FragmentManager, tag: String?) {
+        if (manager.findFragmentByTag(tag) != null) {
+            // which means already added, do not add again to avoid error
+            return
+        }
+        super.show(manager, tag)
+    }
+
+    fun show(manager: FragmentManager) {
+        this.show(manager, "${this.javaClass.simpleName}#${this.hashCode()}")
+    }
+
+    override fun showNow(manager: FragmentManager, tag: String?) {
+        if (manager.findFragmentByTag(tag) != null) {
+            // which means already added, do not add again to avoid error
+            return
+        }
+        super.showNow(manager, tag)
+    }
+
+    fun showNow(manager: FragmentManager) {
+        this.showNow(manager, "${this.javaClass.simpleName}#${this.hashCode()}")
     }
 }
