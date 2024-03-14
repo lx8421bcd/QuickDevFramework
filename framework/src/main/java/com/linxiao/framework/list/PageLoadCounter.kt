@@ -1,63 +1,49 @@
-package com.linxiao.framework.list;
+package com.linxiao.framework.list
 
 /**
  * 分页器，用于分页加载接口
- * <p>Page load counter using in paging load.</p>
- * <p>
+ *
+ * Page load counter using in paging load.
+ *
+ *
  * Before using this class, you should confirm to backend engineer
  * whether the page index is starting from 0 or 1.
  * The default page index is starting from 1.
- * </p>
+ *
  *
  * @author linxiao
  * @since 2018/5/4.
- * */
-public class PageLoadCounter {
-    private int pageSize = 10;
-    private int pageIndex = 0;
-    private boolean hasMorePage;
-    private int itemCount = 0;
-    
-    public PageLoadCounter(int pageSize) {
-        this.pageSize = pageSize;
+ */
+class PageLoadCounter(pageSize: Int) {
+
+    var pageSize = 10
+    var pageIndex = 0
+    private var hasMorePage = false
+    private var itemCount = 0
+
+    init {
+        this.pageSize = pageSize
     }
-    
-    public int getPageSize() {
-        return pageSize;
+
+    fun nextPage(): Int {
+        return ++pageIndex
     }
-    
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
+
+    fun reset() {
+        itemCount = 0
+        pageIndex = 0
     }
-    
-    public int getPageIndex() {
-        return pageIndex;
+
+    fun checkHasMore(pageCount: Int): Boolean {
+        itemCount += pageCount
+        hasMorePage = pageCount >= pageSize
+        return hasMorePage
     }
-    
-    public void setPageIndex(int pageIndex) {
-        this.pageIndex = pageIndex;
+
+    fun hasMore(): Boolean {
+        return hasMorePage
     }
-    
-    public int nextPage() {
-        return ++pageIndex;
-    }
-    
-    public void reset() {
-        itemCount = 0;
-        pageIndex = 0;
-    }
-    
-    public boolean checkHasMore(int pageCount) {
-        this.itemCount += pageCount;
-        hasMorePage = pageCount >= pageSize;
-        return hasMorePage;
-    }
-    
-    public boolean hasMore() {
-        return hasMorePage;
-    }
-    
-    public boolean isEmpty() {
-        return pageIndex <= 1 && itemCount <= 0;
-    }
+
+    val isEmpty: Boolean
+        get() = pageIndex <= 1 && itemCount <= 0
 }
