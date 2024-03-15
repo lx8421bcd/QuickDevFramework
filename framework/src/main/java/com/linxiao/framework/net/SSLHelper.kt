@@ -1,175 +1,190 @@
-package com.linxiao.framework.net;
+package com.linxiao.framework.net
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import androidx.annotation.RawRes;
-
-
-import com.linxiao.framework.common.ContextProviderKt;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import android.annotation.SuppressLint
+import android.content.Context
+import androidx.annotation.RawRes
+import com.linxiao.framework.common.globalContext
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.io.InputStream
+import java.security.KeyStore
+import java.security.KeyStoreException
+import java.security.NoSuchAlgorithmException
+import java.security.PublicKey
+import java.security.cert.CertificateException
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
+import javax.net.ssl.HostnameVerifier
+import javax.net.ssl.SSLSession
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 /**
  * tool class for user to build SSL configs for TCP connect
- * <p>
+ *
+ *
  * details for class usage and attention
- * </p>
+ *
  *
  * @author linxiao
  * @since 2019-04-28
  */
-public final class SSLHelper {
-
-
+object SSLHelper {
     /**
      * get public key from certificate file in raw folder
      * @param certificateRes resId of certificate
-     * @return instance of {@link PublicKey}
+     * @return instance of [PublicKey]
      */
-    public static PublicKey getPublicKey(Context context, @RawRes int certificateRes) {
+    fun getPublicKey(context: Context, @RawRes certificateRes: Int): PublicKey? {
         try {
-            InputStream fin = context.getResources().openRawResource(certificateRes);
-            CertificateFactory f = CertificateFactory.getInstance("X.509");
-            X509Certificate certificate = (X509Certificate)f.generateCertificate(fin);
-            return certificate.getPublicKey();
-        } catch (CertificateException e) {
-            e.printStackTrace();
+            val fin = context.resources.openRawResource(certificateRes)
+            val f = CertificateFactory.getInstance("X.509")
+            val certificate = f.generateCertificate(fin) as X509Certificate
+            return certificate.publicKey
+        } catch (e: CertificateException) {
+            e.printStackTrace()
         }
-        return null;
+        return null
     }
 
     /**
      * get public key from local certificate file
      * @param certificatePath file path of certificate
-     * @return instance of {@link PublicKey}
+     * @return instance of [PublicKey]
      */
-    public static PublicKey getPublicKey(String certificatePath) {
+    fun getPublicKey(certificatePath: String?): PublicKey? {
         try {
-            FileInputStream fin = new FileInputStream(certificatePath);
-            CertificateFactory f = CertificateFactory.getInstance("X.509");
-            X509Certificate certificate = (X509Certificate)f.generateCertificate(fin);
-            return certificate.getPublicKey();
-        } catch (FileNotFoundException | CertificateException e) {
-            e.printStackTrace();
+            val fin = FileInputStream(certificatePath)
+            val f = CertificateFactory.getInstance("X.509")
+            val certificate = f.generateCertificate(fin) as X509Certificate
+            return certificate.publicKey
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: CertificateException) {
+            e.printStackTrace()
         }
-        return null;
+        return null
     }
 
     /**
-     * generate a instance of {@link X509TrustManager} config as trust all
+     * generate a instance of [X509TrustManager] config as trust all
      * @return instance of X509TrustManager
      */
     @SuppressLint("CustomX509TrustManager")
-    public static TrustManager createTrustAllTrustManager() {
-        return new X509TrustManager() {
-            public X509Certificate[] getAcceptedIssuers() {
-                return new java.security.cert.X509Certificate[]{};
+    fun createTrustAllTrustManager(): TrustManager {
+        return object : X509TrustManager {
+            override fun getAcceptedIssuers(): Array<X509Certificate> {
+                return arrayOf()
             }
+
             @SuppressLint("TrustAllX509TrustManager")
-            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            override fun checkClientTrusted(certs: Array<X509Certificate>, authType: String) {
                 // do nothing
             }
+
             @SuppressLint("TrustAllX509TrustManager")
-            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            override fun checkServerTrusted(certs: Array<X509Certificate>, authType: String) {
                 // do nothing
             }
-        };
+        }
     }
 
     /**
      * generate a https HostNameVerifier with inputted urls
      * @param hostUrls accept host urls
      */
-    public static HostnameVerifier getHostnameVerifier(final String[] hostUrls) {
-        return (hostname, session) -> {
-            for (String host : hostUrls) {
-                if (host.equalsIgnoreCase(hostname)) {
-                    return true;
+    fun getHostnameVerifier(hostUrls: Array<String>): HostnameVerifier {
+        return HostnameVerifier { hostname: String?, session: SSLSession? ->
+            for (host in hostUrls) {
+                if (host.equals(hostname, ignoreCase = true)) {
+                    return@HostnameVerifier true
                 }
             }
-            return false;
-        };
+            false
+        }
     }
 
-    /**
-     * generate a https HostNameVerifier accept all host
-     */
-    public static HostnameVerifier getTrustAllVerifier() {
-        return (hostname, session) -> true;
-    }
-
+    val trustAllVerifier: HostnameVerifier
+        /**
+         * generate a https HostNameVerifier accept all host
+         */
+        get() = HostnameVerifier { hostname: String?, session: SSLSession? -> true }
 
     /**
-     * generate a {@link KeyStore} Object from KeyStore file
-     * <p>
+     * generate a [KeyStore] Object from KeyStore file
+     *
+     *
      * attention: Android only support BKS format key store, which means you have to use
      * ".bks" certificate file format, you have to convert other key store format to bks
      * to use it in Android
-     * </p>
+     *
      *
      * @param keyStoreFileStream key store file input stream from local file, such as raw resource and sdcard
      * @param password key store password
-     * @return {@link KeyStore} instance
+     * @return [KeyStore] instance
      */
-    public static KeyStore createKeyStore(InputStream keyStoreFileStream, String password) throws
-            KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
+    @Throws(
+        KeyStoreException::class,
+        CertificateException::class,
+        NoSuchAlgorithmException::class,
+        IOException::class
+    )
+    fun createKeyStore(keyStoreFileStream: InputStream?, password: String): KeyStore? {
         if (keyStoreFileStream == null) {
-            return null;
+            return null
         }
-        KeyStore keyStore = KeyStore.getInstance("BKS");
-        keyStore.load(keyStoreFileStream, password.toCharArray());
-        return keyStore;
+        val keyStore = KeyStore.getInstance("BKS")
+        keyStore.load(keyStoreFileStream, password.toCharArray())
+        return keyStore
     }
 
     /**
-     * generate a {@link KeyStore} Object from KeyStore file
-     * <p>
+     * generate a [KeyStore] Object from KeyStore file
+     *
+     *
      * attention: Android only support BKS format key store, which means you have to use
      * ".bks" certificate file format, you have to convert other key store format to bks
      * to use it in Android
-     * </p>
+     *
      *
      * @param rawResId resId of certificate file in raw resource folder
      * @param password key store password
-     * @return {@link KeyStore} instance
+     * @return [KeyStore] instance
      */
-    public static KeyStore createKeyStore(@RawRes int rawResId, String password)
-            throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
-        InputStream is = ContextProviderKt.getGlobalContext().getResources().openRawResource(rawResId);
-        return createKeyStore(is, password);
+    @Throws(
+        CertificateException::class,
+        NoSuchAlgorithmException::class,
+        KeyStoreException::class,
+        IOException::class
+    )
+    fun createKeyStore(@RawRes rawResId: Int, password: String): KeyStore? {
+        val `is` = globalContext.resources.openRawResource(rawResId)
+        return createKeyStore(`is`, password)
     }
 
     /**
-     * generate a {@link KeyStore} Object from KeyStore file
-     * <p>
+     * generate a [KeyStore] Object from KeyStore file
+     *
+     *
      * attention: Android only support BKS format key store, which means you have to use
      * ".bks" certificate file format, you have to convert other key store format to bks
      * to use it in Android
-     * </p>
+     *
      *
      * @param certFile certificate file object
      * @param password key store password
-     * @return {@link KeyStore} instance
+     * @return [KeyStore] instance
      */
-    public static KeyStore createKeyStore(File certFile, String password)
-            throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
-        InputStream is = new FileInputStream(certFile);
-        return createKeyStore(is, password);
+    @Throws(
+        CertificateException::class,
+        NoSuchAlgorithmException::class,
+        KeyStoreException::class,
+        IOException::class
+    )
+    fun createKeyStore(certFile: File?, password: String): KeyStore? {
+        val `is`: InputStream = FileInputStream(certFile)
+        return createKeyStore(`is`, password)
     }
-
 }

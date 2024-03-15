@@ -1,24 +1,14 @@
-package com.linxiao.framework.net;
+package com.linxiao.framework.net
 
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-
-import com.linxiao.framework.json.GsonParser;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
-import okhttp3.Interceptor;
-import okhttp3.MediaType;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okio.Buffer;
-import okio.BufferedSource;
-import okio.GzipSource;
+import android.util.Log
+import com.linxiao.framework.json.GsonParser.fromJSONObject
+import com.linxiao.framework.net.ApiResponse.Companion.isApiResponseString
+import okhttp3.Interceptor
+import okhttp3.Response
+import okio.Buffer
+import okio.GzipSource
+import java.io.IOException
+import java.nio.charset.StandardCharsets
 
 /**
  * ApiResponse拦截器, 用于进行全局错误拦截处理
@@ -26,86 +16,79 @@ import okio.GzipSource;
  * @author lx8421bcd
  * @since 2022-12-07
  */
-public class ApiResponseInterceptor implements Interceptor {
+class ApiResponseInterceptor : Interceptor {
 
-    private static final String TAG = ApiResponseInterceptor.class.getSimpleName();
+    private val TAG = ApiResponseInterceptor::class.java.getSimpleName()
+    private val apiResponseCallbackList: MutableList<(response: ApiResponse?) -> Unit> = ArrayList()
 
-    public interface OnApiResponseInterceptCallback {
-
-        void onApiResponse(ApiResponse response);
-    }
-
-    private final List<OnApiResponseInterceptCallback> apiResponseCallbackList = new ArrayList<>();
-
-    public void addOnApiResponseInterceptCallback(OnApiResponseInterceptCallback callback) {
+    fun addOnApiResponseInterceptCallback(callback: (response: ApiResponse?) -> Unit) {
         if (!apiResponseCallbackList.contains(callback)) {
-            apiResponseCallbackList.add(callback);
+            apiResponseCallbackList.add(callback)
         }
     }
 
-    public void removeOnApiResponseInterceptCallback(OnApiResponseInterceptCallback callback) {
-        apiResponseCallbackList.remove(callback);
+    fun removeOnApiResponseInterceptCallback(callback: (response: ApiResponse?) -> Unit) {
+        apiResponseCallbackList.remove(callback)
     }
 
-    @NonNull
-    @Override
-    public Response intercept(@NonNull Chain chain) throws IOException {
-        Response response;
-        response = chain.proceed(chain.request());
-
-        ResponseBody responseBody = response.body();
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val response: Response = chain.proceed(chain.request())
+        val responseBody = response.body
         if (responseBody == null) {
-            Log.e(TAG, "intercept: null response body");
-            return response;
+            Log.e(TAG, "intercept: null response body")
+            return response
         }
         try {
-            BufferedSource source = responseBody.source();
-            source.request(Long.MAX_VALUE); // Buffer the entire requestBody.
-            Buffer buffer = source.buffer();
+            val source = responseBody.source()
+            source.request(Long.MAX_VALUE) // Buffer the entire requestBody.
+            var buffer = source.buffer()
             // handle gzip
-            if ("gzip".equalsIgnoreCase(response.headers().get("Content-Encoding"))) {
-                try (GzipSource gzippedResponseBody = new GzipSource(buffer.clone())) {
-                    buffer = new Buffer();
-                    buffer.writeAll(gzippedResponseBody);
+            if ("gzip".equals(response.headers["Content-Encoding"], ignoreCase = true)) {
+                GzipSource(buffer.clone()).use { gzippedResponseBody ->
+                    buffer = Buffer()
+                    buffer.writeAll(gzippedResponseBody)
                 }
             }
-            if (!isPlaintext(buffer) || responseBody.contentLength() == 0) {
-                return response;
+            if (!isPlaintext(buffer) || responseBody.contentLength() == 0L) {
+                return response
             }
-            MediaType contentType = responseBody.contentType();
-            Charset charset = contentType == null ? StandardCharsets.UTF_8 : contentType.charset(StandardCharsets.UTF_8);
-            String responseString = charset == null ? "" :  buffer.clone().readString(charset);
-            if (ApiResponse.isApiResponseString(responseString)) {
-                ApiResponse apiResponse = GsonParser.fromJSONObject(responseString, ApiResponse.class);
+            val contentType = responseBody.contentType()
+            val charset = if (contentType == null) StandardCharsets.UTF_8 else contentType.charset(
+                StandardCharsets.UTF_8
+            )
+            val responseString = if (charset == null) "" else buffer.clone().readString(charset)
+            if (isApiResponseString(responseString)) {
+                val apiResponse = fromJSONObject(responseString, ApiResponse::class.java)
                 if (apiResponse != null) {
-                    for (OnApiResponseInterceptCallback callback : apiResponseCallbackList) {
-                        callback.onApiResponse(apiResponse);
+                    for (callback in apiResponseCallbackList) {
+                        callback.invoke(apiResponse)
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        return response;
+        return response
     }
 
-    private static boolean isPlaintext(Buffer buffer) {
-        try {
-            Buffer prefix = new Buffer();
-            long byteCount = buffer.size() < 64 ? buffer.size() : 64;
-            buffer.copyTo(prefix, 0, byteCount);
-            for (int i = 0; i < 16; i++) {
+    private fun isPlaintext(buffer: Buffer): Boolean {
+        return try {
+            val prefix = Buffer()
+            val byteCount = if (buffer.size < 64) buffer.size else 64
+            buffer.copyTo(prefix, 0, byteCount)
+            for (i in 0..15) {
                 if (prefix.exhausted()) {
-                    break;
+                    break
                 }
-                int codePoint = prefix.readUtf8CodePoint();
+                val codePoint = prefix.readUtf8CodePoint()
                 if (Character.isISOControl(codePoint) && !Character.isWhitespace(codePoint)) {
-                    return false;
+                    return false
                 }
             }
-            return true;
-        } catch (Exception e) {
-            return false; // Truncated UTF-8 sequence.
+            true
+        } catch (e: Exception) {
+            false // Truncated UTF-8 sequence.
         }
     }
 }

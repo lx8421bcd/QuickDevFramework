@@ -1,15 +1,11 @@
-package com.linxiao.framework.net;
+package com.linxiao.framework.net
 
-import android.text.TextUtils;
-
-import com.google.gson.annotations.SerializedName;
-import com.linxiao.framework.json.GsonParser;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
+import android.text.TextUtils
+import com.google.gson.annotations.SerializedName
+import com.linxiao.framework.json.GsonParser.parser
+import org.json.JSONException
+import org.json.JSONObject
+import java.lang.reflect.Type
 
 /**
  * entity data responses from server
@@ -17,83 +13,67 @@ import java.lang.reflect.Type;
  * @author lx8421bcd
  * @since 2016-07-27
  */
-public class ApiResponse {
+class ApiResponse {
+    @SerializedName(value = "code", alternate = ["code"])
+    var code = 0
 
-    public static class ApiException extends IOException {
+    @SerializedName(value = "desc", alternate = ["message", "msg"])
+    var message: String? = null
 
-        private final ApiResponse response;
-        public ApiException(ApiResponse response) {
-            super("(" + response.code +")");
-            this.response = response;
-        }
-
-        public ApiResponse getResponse() {
-            return response;
-        }
-    }
-
-    /**
-     * 业务请求成功code
-     */
-    public static int businessSuccessCode = 0;
-
-    @SerializedName(value = "code", alternate = {"code"})
-    public int code;
-
-    @SerializedName(value = "desc", alternate = {"message", "msg"})
-    public String message;
-
-    @SerializedName(value = "body", alternate = {"data"})
-    public String data;
-
-    @Override
-    public String toString() {
+    @JvmField
+    @SerializedName(value = "body", alternate = ["data"])
+    var data: String? = null
+    override fun toString(): String {
         return "ApiResponse{" +
                 "code=" + code +
                 ", message='" + message + '\'' +
                 ", data='" + data + '\'' +
-                '}';
+                '}'
     }
 
-    public static boolean isApiResponseString(String responseString) {
-        if (TextUtils.isEmpty(responseString)) {
-            return false;
-        }
-        if (!(responseString.startsWith("{") && responseString.endsWith("}"))) {
-            return false;
-        }
+    val isSuccess: Boolean
+        get() = code == businessSuccessCode
+
+    fun <T> getResponseData(clazz: Class<T>?): T? {
         try {
-            JSONObject respObj = new JSONObject(responseString);
-            return  respObj.has("code") &&
-                    (respObj.has("desc") || respObj.has("message") || respObj.has("msg")) &&
-                    (respObj.has("body") || respObj.has("data"));
-        } catch (JSONException e) {
-            e.printStackTrace();
+            return parser.fromJson(data, clazz)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        return false;
+        return null
     }
 
-    public boolean isSuccess() {
-        return code == businessSuccessCode;
-    }
-
-    public <T> T getResponseData(Class<T> clazz) {
+    fun <T> getResponseData(t: Type?): T? {
         try {
-            return GsonParser.getParser().fromJson(data, clazz);
-        } catch (Exception e) {
-            e.printStackTrace();
+            return parser.fromJson(data, t)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        return null;
+        return null
     }
 
-
-    public <T> T getResponseData(Type t) {
-        try {
-            return GsonParser.getParser().fromJson(data, t);
-        } catch (Exception e) {
-            e.printStackTrace();
+    companion object {
+        /**
+         * 业务请求成功code
+         */
+        var businessSuccessCode = 0
+        @JvmStatic
+        fun isApiResponseString(responseString: String): Boolean {
+            if (TextUtils.isEmpty(responseString)) {
+                return false
+            }
+            if (!(responseString.startsWith("{") && responseString.endsWith("}"))) {
+                return false
+            }
+            try {
+                val respObj = JSONObject(responseString)
+                return respObj.has("code") &&
+                        (respObj.has("desc") || respObj.has("message") || respObj.has("msg")) &&
+                        (respObj.has("body") || respObj.has("data"))
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+            return false
         }
-        return null;
     }
 }
-

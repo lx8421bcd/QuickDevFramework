@@ -1,166 +1,144 @@
-package com.linxiao.framework.net;
+package com.linxiao.framework.net
 
-import androidx.annotation.NonNull;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.Connection;
-import okhttp3.Interceptor;
-import okhttp3.MediaType;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-import okhttp3.ResponseBody;
-import okio.Buffer;
-import okio.BufferedSource;
-import okio.GzipSource;
+import okhttp3.Connection
+import okhttp3.Interceptor
+import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.Response
+import okio.Buffer
+import okio.GzipSource
+import java.io.IOException
+import java.nio.charset.StandardCharsets
+import java.nio.charset.UnsupportedCharsetException
+import java.util.concurrent.TimeUnit
 
 /**
  * instance of OkHttp interceptor
- * <p>
- * Used to catch http request and response info and
- * save as {@link HttpInfoEntity}.
  *
- * Use method {@link okhttp3.OkHttpClient.Builder#addNetworkInterceptor(Interceptor)} to register
- * {@link HttpInfoCatchInterceptor} instance into OkHttpClient, if registered instance using
- * {@link okhttp3.OkHttpClient.Builder#addInterceptor(Interceptor)},
+ *
+ * Used to catch http request and response info and
+ * save as [HttpInfoEntity].
+ *
+ * Use method [okhttp3.OkHttpClient.Builder.addNetworkInterceptor] to register
+ * [HttpInfoCatchInterceptor] instance into OkHttpClient, if registered instance using
+ * [okhttp3.OkHttpClient.Builder.addInterceptor],
  * you will unable to get complete network messages.
  *
- * </p>
  *
- * Created by linxiao on 2016/12/4.
+ * @author lx8421bcd
+ * @since  2016-12-04.
  */
-public class HttpInfoCatchInterceptor implements Interceptor {
-    
-    private static final Charset UTF8 = Charset.forName("UTF-8");
-    
-    private HttpInfoCatchListener httpInfoCatchListener;
-    
-    private boolean catchEnabled;
-    
+class HttpInfoCatchInterceptor : Interceptor {
+
+    private val UTF8 = StandardCharsets.UTF_8
+    var httpInfoCatchListener: ((info: HttpInfoEntity) -> Unit)? = null
+        private set
+    private var catchEnabled = false
+
     /**
      * set catch http info enabled
      * @param enabled enabled
      */
-    public void setCatchEnabled(boolean enabled) {
-        catchEnabled = enabled;
+    fun setCatchEnabled(enabled: Boolean) {
+        catchEnabled = enabled
     }
-    
-    @Override
-    public Response intercept(@NonNull Chain chain) throws IOException {
-        Request request = chain.request();
+
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val request: Request = chain.request()
         if (!catchEnabled || httpInfoCatchListener == null) {
-            return chain.proceed(request);
+            return chain.proceed(request)
         }
-        HttpInfoEntity entity = new HttpInfoEntity();
-        
-        RequestBody requestBody = request.body();
-        Connection connection = chain.connection();
-        
-        Protocol protocol = connection != null ? connection.protocol() : Protocol.HTTP_1_1;
-        entity.protocol = protocol.toString();
-        entity.method = request.method();
-        entity.url = request.url().toString();
-        entity.requestHeaders = request.headers();
-        
+        val entity = HttpInfoEntity()
+        val requestBody = request.body
+        val connection: Connection? = chain.connection()
+        val protocol = connection?.protocol() ?: Protocol.HTTP_1_1
+        entity.protocol = protocol.toString()
+        entity.method = request.method
+        entity.url = request.url.toString()
+        entity.requestHeaders = request.headers
         if (requestBody != null) {
-            entity.requestContentType = String.valueOf(requestBody.contentType());
-            entity.requestContentLength = requestBody.contentLength();
-            Buffer buffer = new Buffer();
-            requestBody.writeTo(buffer);
-            Charset charset = UTF8;
-            MediaType contentType = requestBody.contentType();
+            entity.requestContentType = requestBody.contentType().toString()
+            entity.requestContentLength = requestBody.contentLength()
+            val buffer = Buffer()
+            requestBody.writeTo(buffer)
+            var charset = UTF8
+            val contentType = requestBody.contentType()
             if (contentType != null) {
-                charset = contentType.charset(UTF8);
+                charset = contentType.charset(UTF8)
             }
             if (charset != null) {
-                entity.requestBody = buffer.readString(charset);
+                entity.requestBody = buffer.readString(charset)
             }
         }
         //-----request prepare----
-        long startNs = System.nanoTime();
-        Response response;
-        response = chain.proceed(request);
+        val startNs = System.nanoTime()
+        val response: Response = chain.proceed(request)
         //-----request done--------
-        
-        entity.tookMills = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs);
-        entity.responseHeaders = response.headers();
-        entity.responseCode = response.code();
-        entity.responseMessage = response.message();
-        
-        ResponseBody responseBody = response.body();
+        entity.tookMills = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs)
+        entity.responseHeaders = response.headers
+        entity.responseCode = response.code
+        entity.responseMessage = response.message
+        val responseBody = response.body
         if (responseBody != null) {
-            entity.responseContentLength = responseBody.contentLength();
-            BufferedSource source = responseBody.source();
-            source.request(Long.MAX_VALUE); // Buffer the entire requestBody.
-            Buffer buffer = source.buffer();
-            
+            entity.responseContentLength = responseBody.contentLength()
+            val source = responseBody.source()
+            source.request(Long.MAX_VALUE) // Buffer the entire requestBody.
+            var buffer = source.buffer()
+
             // handle gzip
-            if ("gzip".equalsIgnoreCase(response.headers().get("Content-Encoding"))) {
-                GzipSource gzippedResponseBody = null;
+            if ("gzip".equals(response.headers["Content-Encoding"], ignoreCase = true)) {
+                var gzippedResponseBody: GzipSource? = null
                 try {
-                    gzippedResponseBody = new GzipSource(buffer.clone());
-                    buffer = new Buffer();
-                    buffer.writeAll(gzippedResponseBody);
+                    gzippedResponseBody = GzipSource(buffer.clone())
+                    buffer = Buffer()
+                    buffer.writeAll(gzippedResponseBody)
                 } finally {
-                    if (gzippedResponseBody != null) {
-                        gzippedResponseBody.close();
-                    }
+                    gzippedResponseBody?.close()
                 }
             }
-            
-            Charset charset = UTF8;
-            MediaType contentType = responseBody.contentType();
+            var charset = UTF8
+            val contentType = responseBody.contentType()
             if (contentType != null) {
                 try {
-                    charset = contentType.charset(UTF8);
-                } catch (UnsupportedCharsetException e) {
-                    entity.responseBody = "unreadable, charset error";
+                    charset = contentType.charset(UTF8)
+                } catch (e: UnsupportedCharsetException) {
+                    entity.responseBody = "unreadable, charset error"
                 }
             }
-            if (isPlaintext(buffer) && responseBody.contentLength() != 0) {
+            if (isPlaintext(buffer) && responseBody.contentLength() != 0L) {
                 if (charset != null) {
-                    entity.responseBody = buffer.clone().readString(charset);
+                    entity.responseBody = buffer.clone().readString(charset)
                 }
-            }
-            else {
-                entity.responseBody = "unreadable, not text";
+            } else {
+                entity.responseBody = "unreadable, not text"
             }
         }
-        httpInfoCatchListener.onInfoCaught(entity);
-        return response;
+        httpInfoCatchListener!!.invoke(entity)
+        return response
     }
-    
-    private static boolean isPlaintext(Buffer buffer) {
-        try {
-            Buffer prefix = new Buffer();
-            long byteCount = buffer.size() < 64 ? buffer.size() : 64;
-            buffer.copyTo(prefix, 0, byteCount);
-            for (int i = 0; i < 16; i++) {
+
+    private fun isPlaintext(buffer: Buffer): Boolean {
+        return try {
+            val prefix = Buffer()
+            val byteCount = if (buffer.size < 64) buffer.size else 64
+            buffer.copyTo(prefix, 0, byteCount)
+            for (i in 0..15) {
                 if (prefix.exhausted()) {
-                    break;
+                    break
                 }
-                int codePoint = prefix.readUtf8CodePoint();
+                val codePoint = prefix.readUtf8CodePoint()
                 if (Character.isISOControl(codePoint) && !Character.isWhitespace(codePoint)) {
-                    return false;
+                    return false
                 }
             }
-            return true;
-        } catch (Exception e) {
-            return false; // Truncated UTF-8 sequence.
+            true
+        } catch (e: Exception) {
+            false // Truncated UTF-8 sequence.
         }
     }
-    
-    public HttpInfoCatchListener getHttpInfoCatchListener() {
-        return httpInfoCatchListener;
-    }
-    
-    public void setHttpInfoCatchListener(@NonNull HttpInfoCatchListener httpInfoCatchListener) {
-        this.httpInfoCatchListener = httpInfoCatchListener;
+
+    fun setHttpInfoCatchListener(httpInfoCatchListener: (info: HttpInfoEntity) -> Unit) {
+        this.httpInfoCatchListener = httpInfoCatchListener
     }
 }

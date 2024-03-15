@@ -1,46 +1,39 @@
-package com.linxiao.framework.net;
+package com.linxiao.framework.net
 
-import com.linxiao.framework.json.GsonParser;
+import com.linxiao.framework.json.GsonParser.parser
+import io.reactivex.functions.Function
+import java.lang.reflect.Type
 
-import java.lang.reflect.Type;
-
-import io.reactivex.functions.Function;
 /**
  * flatMap function to parse data in ApiResponse to data object
  *
  * @author linxiao
  * @since 2018-08-20
  */
-public class ApiResponseParseFunction<T> implements Function<ApiResponse, T> {
+@Suppress("UNCHECKED_CAST")
+class ApiResponseParseFunction<T> : Function<ApiResponse, T> {
+    private val type: Type
 
-    private final Type type;
-
-    public ApiResponseParseFunction() {
-        type = Object.class;
+    constructor() {
+        type = Any::class.java
     }
 
-    public ApiResponseParseFunction(Class<T> clazz) {
-        type = clazz;
+    constructor(clazz: Class<T>) {
+        type = clazz
     }
 
-    public ApiResponseParseFunction(Type type) {
-        this.type = type;
+    constructor(type: Type) {
+        this.type = type
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public T apply(ApiResponse apiResponse) throws Exception {
-        T ret;
-        if (!apiResponse.isSuccess()) {
-            throw new ApiResponse.ApiException(apiResponse);
+    @Throws(Exception::class)
+    override fun apply(apiResponse: ApiResponse): T {
+        if (!apiResponse.isSuccess) {
+            throw ApiException(apiResponse)
         }
-        if (type == Object.class) {
-            return (T) (apiResponse.data == null ? "" : apiResponse.data);
+        if (type === Any::class.java) {
+            return (if (apiResponse.data == null) "" else apiResponse.data) as T
         }
-        ret = GsonParser.getParser().fromJson(apiResponse.data, type);
-        if (ret == null) {
-            throw new ApiResponse.ApiException(apiResponse);
-        }
-        return ret;
+        return parser.fromJson(apiResponse.data, type) ?: throw ApiException(apiResponse)
     }
 }

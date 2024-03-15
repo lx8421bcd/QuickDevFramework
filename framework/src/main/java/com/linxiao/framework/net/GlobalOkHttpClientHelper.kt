@@ -4,11 +4,14 @@ import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
 import com.linxiao.framework.common.globalContext
-import com.linxiao.framework.net.ApiResponseInterceptor.OnApiResponseInterceptCallback
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import okhttp3.*
+import okhttp3.Cookie
+import okhttp3.CookieJar
+import okhttp3.Headers
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import java.io.File
 import java.security.SecureRandom
 import java.util.concurrent.Executors
@@ -27,10 +30,10 @@ import javax.net.ssl.X509TrustManager
 object GlobalOkHttpClientHelper {
 
     val globalHeaderMap = HashMap<String, String>()
-    val globalOnApiResponseCallbackList = HashSet<OnApiResponseInterceptCallback>()
+    val globalOnApiResponseCallbackList = HashSet<(response: ApiResponse?) -> Unit>()
 
     private val logoutExecutor = Executors.newSingleThreadExecutor()
-    var globalInfoCatchListener = HttpInfoCatchListener { entity ->
+    var globalInfoCatchListener = { entity: HttpInfoEntity ->
         Observable.fromCallable { entity.logOut() }
         .subscribeOn(Schedulers.from(logoutExecutor))
         .subscribe()
@@ -40,7 +43,7 @@ object GlobalOkHttpClientHelper {
         val interceptor = HttpInfoCatchInterceptor()
         interceptor.setCatchEnabled(true)
         interceptor.setHttpInfoCatchListener {
-            globalInfoCatchListener.onInfoCaught(it)
+            globalInfoCatchListener.invoke(it)
         }
         return@lazy interceptor
     }
@@ -49,7 +52,7 @@ object GlobalOkHttpClientHelper {
         val interceptor = ApiResponseInterceptor()
         interceptor.addOnApiResponseInterceptCallback { apiResponse ->
             globalOnApiResponseCallbackList.forEach {
-                it.onApiResponse(apiResponse)
+                it.invoke(apiResponse)
             }
         }
         return@lazy interceptor
