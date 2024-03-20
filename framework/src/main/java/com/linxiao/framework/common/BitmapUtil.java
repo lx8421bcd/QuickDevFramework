@@ -34,7 +34,8 @@ import static android.os.Build.VERSION_CODES.KITKAT;
 /**
  * btimap 工具类
  *
- * Created by linxiao on 2016/7/30.
+ * @author lx8421bcd
+ * @since 2016-07-30.
  */
 public class BitmapUtil {
 
@@ -58,7 +59,7 @@ public class BitmapUtil {
     }
 
     /**
-     * 通过URI加载图片
+     * 获取指定最大尺寸的图片
      *
      * @param context
      * @param uri     图片URI
@@ -258,12 +259,8 @@ public class BitmapUtil {
         options.inSampleSize = 1;
 
         // 如果尺寸接近则不压缩，否则进行比例压缩
-        if (widthRatio > 1 || widthRatio > 1) {
-            if (widthRatio > heightRatio) {
-                options.inSampleSize = widthRatio;
-            } else {
-                options.inSampleSize = heightRatio;
-            }
+        if (widthRatio > 1 || heightRatio > 1) {
+            options.inSampleSize = Math.max(widthRatio, heightRatio);
         }
 
         //设置好缩放比例后，加载图片进内容；
