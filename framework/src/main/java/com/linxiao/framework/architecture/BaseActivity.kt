@@ -14,7 +14,9 @@ import android.widget.EditText
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.annotation.CheckResult
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.linxiao.framework.architecture.ActivityResultHolderFragment.Companion.startActivityForCallback
 import com.linxiao.framework.common.DensityHelper.onActivityGetResources
 import com.linxiao.framework.common.hideKeyboard
@@ -250,12 +252,31 @@ abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEve
      *
      * @param enabled 是否允许
      */
-    fun swtAllowScreenshots(enabled: Boolean) {
+    fun setAllowScreenshots(enabled: Boolean) {
         if (enabled) {
             window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
         else {
             window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+    }
+
+    fun addFragmentPageTo(@IdRes viewId: Int, fragment: Fragment, addToBackstack: Boolean) {
+        val tag = fragment.javaClass.getSimpleName() + fragment.hashCode()
+        val transaction = supportFragmentManager.beginTransaction()
+        if (fragment.isAdded) {
+            transaction.remove(fragment)
+        }
+        transaction.add(viewId, fragment, tag)
+        if (addToBackstack) {
+            transaction.addToBackStack(tag)
+        }
+        transaction.commitAllowingStateLoss()
+    }
+
+    fun popAllFragmentPages() {
+        for (i in 0 until supportFragmentManager.backStackEntryCount) {
+            supportFragmentManager.popBackStack()
         }
     }
 
