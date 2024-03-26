@@ -279,8 +279,8 @@ object BitmapUtil {
      *
      * 每次压缩，等比例缩小图片直到bitmap小于限制大小
      */
-    fun matrixCompressByLimit(bitmap: Bitmap?, quality: Int, limitSize: Int): Bitmap? {
-        var ret = bitmap ?: return null
+    fun matrixCompressByLimit(bitmap: Bitmap, quality: Int, limitSize: Int): Bitmap {
+        var ret = bitmap
         while (getBitmapSize(ret, quality) > limitSize) {
             val matrix = Matrix()
             matrix.setScale(0.9f, 0.9f)

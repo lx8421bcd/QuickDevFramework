@@ -1,49 +1,49 @@
-package com.linxiao.quickdevframework.sample.frameworkapi;
+package com.linxiao.quickdevframework.sample.frameworkapi
 
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.View;
+import android.os.Bundle
+import android.view.Gravity
+import android.view.View
+import com.linxiao.framework.architecture.SimpleViewBindingFragment
+import com.linxiao.framework.common.ToastAlert
+import com.linxiao.framework.common.ToastAlert.enqueue
+import com.linxiao.framework.common.ToastAlert.show
+import com.linxiao.quickdevframework.databinding.FragmentToastApiBinding
+import com.squareup.leakcanary.core.R
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.linxiao.framework.common.ToastAlert;
-import com.linxiao.quickdevframework.databinding.FragmentToastApiBinding;
-import com.linxiao.framework.architecture.SimpleViewBindingFragment;
-
-public class ToastApiFragment extends SimpleViewBindingFragment<FragmentToastApiBinding> {
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        getViewBinding().btnTextShow.setOnClickListener(this::onBtnTextShowClick);
-        getViewBinding().btnTextIconShow.setOnClickListener(this::onBtnTextIconShowClick);
-        getViewBinding().btnTextEnqueue.setOnClickListener(this::onBtnTextEnqueueClick);
-        getViewBinding().btnTextIconEnqueue.setOnClickListener(this::onBtnTextIconEnqueueClick);
-        getViewBinding().btnPowerful.setOnClickListener(this::onBtnPowerfulClick);
+class ToastApiFragment : SimpleViewBindingFragment<FragmentToastApiBinding>() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewBinding.btnTextShow.setOnClickListener { v: View? -> onBtnTextShowClick(v) }
+        viewBinding.btnTextIconShow.setOnClickListener { v: View? -> onBtnTextIconShowClick(v) }
+        viewBinding.btnTextEnqueue.setOnClickListener { v: View? -> onBtnTextEnqueueClick(v) }
+        viewBinding.btnTextIconEnqueue.setOnClickListener { v: View? ->
+            onBtnTextIconEnqueueClick(v)
+        }
+        viewBinding.btnPowerful.setOnClickListener { v: View? -> onBtnPowerfulClick(v) }
     }
 
-    public void onBtnTextShowClick(View v) {
-        ToastAlert.show("show a text toast");
+    fun onBtnTextShowClick(v: View?) {
+        show("show a text toast")
     }
 
-    public void onBtnTextIconShowClick(View v) {
-        ToastAlert.show("show a text toast with a icon", com.squareup.leakcanary.core.R.drawable.leak_canary_icon);
+    fun onBtnTextIconShowClick(v: View?) {
+        show("show a text toast with a icon", R.drawable.leak_canary_icon)
     }
 
-    public void onBtnTextEnqueueClick(View v) {
-        ToastAlert.show("enqueue a text toast");
+    fun onBtnTextEnqueueClick(v: View?) {
+        show("enqueue a text toast")
     }
 
-    public void onBtnTextIconEnqueueClick(View v) {
-        ToastAlert.enqueue("enqueue a text toast with a icon", com.squareup.leakcanary.core.R.drawable.leak_canary_icon);
+    fun onBtnTextIconEnqueueClick(v: View?) {
+        enqueue("enqueue a text toast with a icon", R.drawable.leak_canary_icon)
     }
 
-    public void onBtnPowerfulClick(View v) {
-        ToastAlert.create("powerful")
-                .iconResId(com.squareup.leakcanary.core.R.drawable.leak_canary_icon)
-                .duration(100)
-                .gravity(Gravity.TOP, 200)
-                .show();
+    fun onBtnPowerfulClick(v: View?) {
+        ToastAlert.create("powerful").apply {
+            iconResId = R.drawable.leak_canary_icon
+            duration = 100
+            gravity = Gravity.TOP
+            offsetY = 200
+        }.show()
     }
 }
