@@ -25,11 +25,11 @@ object ErrorMessageUtil {
     }
 
     @JvmStatic
-    fun getMessageString(e: Throwable): String? {
+    fun getMessageString(e: Throwable): String {
         val parser = errorMessageMap[e.javaClass]
         return if (parser != null) {
-            parser.parseMessage(e)
-        } else e.message
+            parser.parseMessage(e) ?: ""
+        } else e.message ?: ""
     }
 
     @JvmStatic
