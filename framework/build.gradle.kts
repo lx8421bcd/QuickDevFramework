@@ -51,7 +51,6 @@ dependencies {
     api("androidx.constraintlayout:constraintlayout:2.1.4")
     api("androidx.recyclerview:recyclerview:1.3.2")
     api("androidx.preference:preference-ktx:1.2.1")
-    api("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     api("androidx.biometric:biometric:1.1.0")
     api("androidx.multidex:multidex:2.0.1")
     api("androidx.core:core-splashscreen:1.0.1")
