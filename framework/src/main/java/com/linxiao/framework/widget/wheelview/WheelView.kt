@@ -16,497 +16,409 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+package com.linxiao.framework.widget.wheelview
 
-package com.linxiao.framework.widget.wheelview;
+import android.content.Context
+import android.database.DataSetObserver
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.drawable.GradientDrawable
+import android.util.AttributeSet
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.view.animation.Interpolator
+import android.widget.LinearLayout
+import com.linxiao.framework.widget.wheelview.WheelScroller.ScrollingListener
+import com.linxiao.framework.widget.wheelview.adapter.WheelViewAdapter
+import java.util.LinkedList
+import kotlin.math.abs
+import kotlin.math.asin
+import kotlin.math.max
+import kotlin.math.min
 
-import android.content.Context;
-import android.database.DataSetObserver;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.GradientDrawable;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.view.animation.Interpolator;
-import android.widget.LinearLayout;
-
-import com.linxiao.framework.widget.wheelview.adapter.WheelViewAdapter;
-
-import java.util.LinkedList;
-import java.util.List;
-
-public class WheelView extends View {
-
-	/** Top and bottom shadows colors */
-	private static final int[] SHADOWS_COLORS = new int[] { 0xFF111111,
-			0x00AAAAAA, 0x00AAAAAA };
-
-	/** Top and bottom items offset (to hide that) */
-	private static final int ITEM_OFFSET_PERCENT = 10;
-
-	/** Left and right padding value */
-	private static final int PADDING = 0;
-
-	/** Default count of visible items */
-	private static final int DEF_VISIBLE_ITEMS = 1;
-
-	// Wheel Values
-	private int currentItem = 0;
-	
-	// Count of visible items
-	private int visibleItems = DEF_VISIBLE_ITEMS;
-	
-	// Item height
-	private int itemHeight = 0;
-
-	// Center Line
-	private boolean showStroke = false;
-    private int strokeColor = Color.GRAY;
-    private int strokeWidth = 1; // 1px
-	private Paint strokePaint;
-	
-	// Shadows drawables
-	private GradientDrawable topShadow;
-	private GradientDrawable bottomShadow;
-
-	// Scrolling
-	private WheelScroller scroller;
-    private boolean isScrollingPerformed; 
-    private int scrollingOffset;
-
-	// Cyclic
-	boolean isCyclic = false;
-	
-	// Items layout
-	private LinearLayout itemsLayout;
-	
-	// The number of first item in layout
-	private int firstItem;
-
-	// View adapter
-	private WheelViewAdapter viewAdapter;
-	
-	// Recycle
-	private WheelRecycle recycle = new WheelRecycle(this);
-
-	// Listeners
-	private List<OnWheelChangedListener> changingListeners = new LinkedList<OnWheelChangedListener>();
-	private List<OnWheelScrollListener> scrollingListeners = new LinkedList<OnWheelScrollListener>();
-    private List<OnWheelClickedListener> clickingListeners = new LinkedList<OnWheelClickedListener>();
-	
-	/**
-	 * Constructor
-	 */
-	public WheelView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		initData(context);
-	}
-
-	/**
-	 * Constructor
-	 */
-	public WheelView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		initData(context);
-	}
-
-	/**
-	 * Constructor
-	 */
-	public WheelView(Context context) {
-		super(context);
-		initData(context);
-	}
-	
-	/**
-	 * Initializes class data
-	 * @param context the context
-	 */
-	private void initData(Context context) {
-	    scroller = new WheelScroller(getContext(), scrollingListener);
-	}
-	
-	// Scrolling listener
-	WheelScroller.ScrollingListener scrollingListener = new WheelScroller.ScrollingListener() {
-        public void onStarted() {
-            isScrollingPerformed = true;
-            notifyScrollingListenersAboutStart();
+class WheelView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : View(context, attrs, defStyleAttr) {
+    companion object {
+        /** Top and bottom shadows colors  */
+        private val SHADOWS_COLORS = intArrayOf(
+            -0xeeeeef,
+            0x00AAAAAA,
+            0x00AAAAAA
+        )
+        /** Top and bottom items offset (to hide that)  */
+        private const val ITEM_OFFSET_PERCENT = 10
+        /** Left and right padding value  */
+        private const val PADDING = 0
+        /** Default count of visible items  */
+        private const val DEF_VISIBLE_ITEMS = 1
+    }
+    /**
+     * Count of visible items
+     */
+	@JvmField
+	var visibleItems = DEF_VISIBLE_ITEMS
+    
+    private var currentItem = 0
+    private var itemHeight = 0
+        get() {
+            if (field != 0) {
+                return field
+            }
+            itemsLayout.getChildAt(0)?.apply {
+                itemHeight = this.height
+                return field
+            }
+            return height / visibleItems
         }
-        
-        public void onScroll(int distance) {
-            doScroll(distance);
-            
-            int height = getHeight();
+    private var showStroke = false
+    private var strokeColor = Color.GRAY
+    private var strokeWidth = 1 // 1px
+    private var strokePaint: Paint? = null
+    // Shadows drawables
+    private val topShadow: GradientDrawable? = null
+    private val bottomShadow: GradientDrawable? = null
+    // Scrolling listener
+    private var scrollingListener: ScrollingListener = object : ScrollingListener {
+
+        override fun onStarted() {
+            isScrollingPerformed = true
+            notifyScrollingListenersAboutStart()
+        }
+
+        override fun onScroll(distance: Int) {
+            doScroll(distance)
+            val height = height
             if (scrollingOffset > height) {
-                scrollingOffset = height;
-                scroller.stopScrolling();
+                scrollingOffset = height
+                scroller.stopScrolling()
             } else if (scrollingOffset < -height) {
-                scrollingOffset = -height;
-                scroller.stopScrolling();
+                scrollingOffset = -height
+                scroller.stopScrolling()
             }
         }
-        
-        public void onFinished() {
+
+        override fun onFinished() {
             if (isScrollingPerformed) {
-                notifyScrollingListenersAboutEnd();
-                isScrollingPerformed = false;
+                notifyScrollingListenersAboutEnd()
+                isScrollingPerformed = false
             }
-            
-            scrollingOffset = 0;
-            invalidate();
+            scrollingOffset = 0
+            invalidate()
         }
 
-        public void onJustify() {
-            if (Math.abs(scrollingOffset) > WheelScroller.MIN_DELTA_FOR_SCROLLING) {
-                scroller.scroll(scrollingOffset, 0);
+        override fun onJustify() {
+            if (abs(scrollingOffset.toDouble()) > WheelScroller.MIN_DELTA_FOR_SCROLLING) {
+                scroller.scroll(scrollingOffset, 0)
             }
         }
-    };
-	
-	/**
-	 * Set the the specified scrolling interpolator
-	 * @param interpolator the interpolator
-	 */
-	public void setInterpolator(Interpolator interpolator) {
-		scroller.setInterpolator(interpolator);
-	}
-	
-	/**
-	 * Gets count of visible items
-	 * 
-	 * @return the count of visible items
-	 */
-	public int getVisibleItems() {
-		return visibleItems;
-	}
-
-	/**
-	 * Sets the desired count of visible items.
-	 * Actual amount of visible items depends on wheel layout parameters.
-	 * To apply changes and rebuild view call measure(). 
-	 * 
-	 * @param count the desired count for visible items
-	 */
-	public void setVisibleItems(int count) {
-		visibleItems = count;
-	}
-
-	/**
-	 * Gets view adapter
-	 * @return the view adapter
-	 */
-	public WheelViewAdapter getViewAdapter() {
-		return viewAdapter;
-	}
-
-	// Adapter listener
-    private DataSetObserver dataObserver = new DataSetObserver() {
-        @Override
-        public void onChanged() {
-            invalidateWheel(false);
+    }
+    private val itemsRange: ItemsRange?
+        get() {
+            if (itemHeight == 0) {
+                return null
+            }
+            var first = currentItem
+            var count = 1
+            while (count * itemHeight < height) {
+                first--
+                count += 2 // top + bottom items
+            }
+            if (scrollingOffset != 0) {
+                if (scrollingOffset > 0) {
+                    first--
+                }
+                count++
+                // process empty items above the first or below the second
+                val emptyItems = scrollingOffset / itemHeight
+                first -= emptyItems
+                count += asin(emptyItems.toDouble()).toInt()
+            }
+            return ItemsRange(first, count)
+        }
+    private var scroller = WheelScroller(getContext(), scrollingListener)
+    private var isScrollingPerformed = false
+    private var scrollingOffset = 0
+    // Cyclic
+    var cyclic = false
+        set(value) {
+            field = value
+            invalidateWheel(false)
+        }
+    // Items layout
+    private val itemsLayout by lazy {
+        val layout = LinearLayout(context)
+        layout.orientation = LinearLayout.VERTICAL
+        return@lazy layout
+    }
+    // The number of first item in layout
+    private var firstItem = 0
+    // View adapter
+    var viewAdapter: WheelViewAdapter? = null
+        set(value) {
+            field?.unregisterDataSetObserver(dataObserver)
+            field = value
+            field?.registerDataSetObserver(dataObserver)
+            invalidateWheel(true)
+        }
+    private val dataObserver: DataSetObserver = object : DataSetObserver() {
+        override fun onChanged() {
+            invalidateWheel(false)
         }
 
-        @Override
-        public void onInvalidated() {
-            invalidateWheel(true);
+        override fun onInvalidated() {
+            invalidateWheel(true)
         }
-    };
+    }
+    // Recycle
+    private val recycle = WheelRecycle(this)
+    // Listeners
+    private val changingListeners: MutableList<OnWheelChangedListener> = LinkedList()
+    private val scrollingListeners: MutableList<OnWheelScrollListener> = LinkedList()
+    private val clickingListeners: MutableList<OnWheelClickedListener> = LinkedList()
+    
+    /**
+     * Set the the specified scrolling interpolator
+     * @param interpolator the interpolator
+     */
+    fun setInterpolator(interpolator: Interpolator?) {
+        scroller.setInterpolator(interpolator)
+    }
 
-	/**
-	 * Sets view adapter. Usually new adapters contain different views, so
-	 * it needs to rebuild view by calling measure().
-	 *  
-	 * @param viewAdapter the view adapter
-	 */
-	public void setViewAdapter(WheelViewAdapter viewAdapter) {
-	    if (this.viewAdapter != null) {
-	        this.viewAdapter.unregisterDataSetObserver(dataObserver);
-	    }
-        this.viewAdapter = viewAdapter;
-        if (this.viewAdapter != null) {
-            this.viewAdapter.registerDataSetObserver(dataObserver);
+    /**
+     * Adds wheel changing listener
+     * @param listener the listener
+     */
+    fun addChangingListener(listener: OnWheelChangedListener) {
+        changingListeners.add(listener)
+    }
+
+    /**
+     * Removes wheel changing listener
+     * @param listener the listener
+     */
+    fun removeChangingListener(listener: OnWheelChangedListener) {
+        changingListeners.remove(listener)
+    }
+
+    /**
+     * Notifies changing listeners
+     * @param oldValue the old wheel value
+     * @param newValue the new wheel value
+     */
+    protected fun notifyChangingListeners(oldValue: Int, newValue: Int) {
+        for (listener in changingListeners) {
+            listener.onChanged(this, oldValue, newValue)
         }
-        
-        invalidateWheel(true);
-	}
-	
-	/**
-	 * Adds wheel changing listener
-	 * @param listener the listener 
-	 */
-	public void addChangingListener(OnWheelChangedListener listener) {
-		changingListeners.add(listener);
-	}
+    }
 
-	/**
-	 * Removes wheel changing listener
-	 * @param listener the listener
-	 */
-	public void removeChangingListener(OnWheelChangedListener listener) {
-		changingListeners.remove(listener);
-	}
-	
-	/**
-	 * Notifies changing listeners
-	 * @param oldValue the old wheel value
-	 * @param newValue the new wheel value
-	 */
-	protected void notifyChangingListeners(int oldValue, int newValue) {
-		for (OnWheelChangedListener listener : changingListeners) {
-			listener.onChanged(this, oldValue, newValue);
-		}
-	}
+    /**
+     * Adds wheel scrolling listener
+     * @param listener the listener
+     */
+    fun addScrollingListener(listener: OnWheelScrollListener) {
+        scrollingListeners.add(listener)
+    }
 
-	/**
-	 * Adds wheel scrolling listener
-	 * @param listener the listener 
-	 */
-	public void addScrollingListener(OnWheelScrollListener listener) {
-		scrollingListeners.add(listener);
-	}
+    /**
+     * Removes wheel scrolling listener
+     * @param listener the listener
+     */
+    fun removeScrollingListener(listener: OnWheelScrollListener) {
+        scrollingListeners.remove(listener)
+    }
 
-	/**
-	 * Removes wheel scrolling listener
-	 * @param listener the listener
-	 */
-	public void removeScrollingListener(OnWheelScrollListener listener) {
-		scrollingListeners.remove(listener);
-	}
-	
-	/**
-	 * Notifies listeners about starting scrolling
-	 */
-	protected void notifyScrollingListenersAboutStart() {
-		for (OnWheelScrollListener listener : scrollingListeners) {
-			listener.onScrollingStarted(this);
-		}
-	}
+    /**
+     * Notifies listeners about starting scrolling
+     */
+    protected fun notifyScrollingListenersAboutStart() {
+        for (listener in scrollingListeners) {
+            listener.onScrollingStarted(this)
+        }
+    }
 
-	/**
-	 * Notifies listeners about ending scrolling
-	 */
-	protected void notifyScrollingListenersAboutEnd() {
-		for (OnWheelScrollListener listener : scrollingListeners) {
-			listener.onScrollingFinished(this);
-		}
-	}
+    /**
+     * Notifies listeners about ending scrolling
+     */
+    protected fun notifyScrollingListenersAboutEnd() {
+        for (listener in scrollingListeners) {
+            listener.onScrollingFinished(this)
+        }
+    }
 
     /**
      * Adds wheel clicking listener
-     * @param listener the listener 
+     * @param listener the listener
      */
-    public void addClickingListener(OnWheelClickedListener listener) {
-        clickingListeners.add(listener);
+    fun addClickingListener(listener: OnWheelClickedListener) {
+        clickingListeners.add(listener)
     }
 
     /**
      * Removes wheel clicking listener
      * @param listener the listener
      */
-    public void removeClickingListener(OnWheelClickedListener listener) {
-        clickingListeners.remove(listener);
+    fun removeClickingListener(listener: OnWheelClickedListener) {
+        clickingListeners.remove(listener)
     }
-    
+
     /**
      * Notifies listeners about clicking
      */
-    protected void notifyClickListenersAboutClick(int item) {
-        for (OnWheelClickedListener listener : clickingListeners) {
-            listener.onItemClicked(this, item);
+    protected fun notifyClickListenersAboutClick(item: Int) {
+        for (listener in clickingListeners) {
+            listener.onItemClicked(this, item)
         }
     }
 
-	/**
-	 * Gets current value
-	 * 
-	 * @return the current value
-	 */
-	public int getCurrentItem() {
-		return currentItem;
-	}
+    /**
+     * Gets current value
+     *
+     * @return the current value
+     */
+    fun getCurrentItem(): Int {
+        return currentItem
+    }
 
-	/**
-	 * Sets the current item. Does nothing when index is wrong.
-	 * 
-	 * @param index the item index
-	 * @param animated the animation flag
-	 */
-	public void setCurrentItem(int index, boolean animated) {
-		if (viewAdapter == null || viewAdapter.getItemsCount() == 0) {
-			return; // throw?
-		}
-		
-		int itemCount = viewAdapter.getItemsCount();
-		if (index < 0 || index >= itemCount) {
-			if (isCyclic) {
-				while (index < 0) {
-					index += itemCount;
-				}
-				index %= itemCount;
-			} else{
-				return; // throw?
-			}
-		}
-		if (index != currentItem) {
-			if (animated) {
-			    int itemsToScroll = index - currentItem;
-			    if (isCyclic) {
-			        int scroll = itemCount + Math.min(index, currentItem) - Math.max(index, currentItem);
-			        if (scroll < Math.abs(itemsToScroll)) {
-			            itemsToScroll = itemsToScroll < 0 ? scroll : -scroll;
-			        }
-			    }
-				scroll(itemsToScroll, 0);
-			} else {
-				scrollingOffset = 0;
-			
-				int old = currentItem;
-				currentItem = index;
-			
-				notifyChangingListeners(old, currentItem);
-			
-				invalidate();
-			}
-		}
-	}
-
-	/**
-	 * Sets the current item w/o animation. Does nothing when index is wrong.
-	 * 
-	 * @param index the item index
-	 */
-	public void setCurrentItem(int index) {
-		setCurrentItem(index, false);
-	}	
-	
-	/**
-	 * Tests if wheel is cyclic. That means before the 1st item there is shown the last one
-	 * @return true if wheel is cyclic
-	 */
-	public boolean isCyclic() {
-		return isCyclic;
-	}
-
-	/**
-	 * Set wheel cyclic flag
-	 * @param isCyclic the flag to set
-	 */
-	public void setCyclic(boolean isCyclic) {
-		this.isCyclic = isCyclic;
-		invalidateWheel(false);
-	}
-	
-	/**
-	 * Invalidates wheel
-	 * @param clearCaches if true then cached views will be clear
-	 */
-    public void invalidateWheel(boolean clearCaches) {
-        if (clearCaches) {
-            recycle.clearAll();
-            if (itemsLayout != null) {
-                itemsLayout.removeAllViews();
+    /**
+     * Sets the current item. Does nothing when index is wrong.
+     *
+     * @param index the item index
+     * @param animated the animation flag
+     */
+    @JvmOverloads
+    fun setCurrentItem(index: Int, animated: Boolean = false) {
+        var viewIndex = index
+        viewAdapter?.apply {
+            val itemCount = getItemsCount()
+            if (itemCount == 0) {
+                return
             }
-            scrollingOffset = 0;
-        } else if (itemsLayout != null) {
-            // cache all items
-	        recycle.recycleItems(itemsLayout, firstItem, new ItemsRange());         
+            if (viewIndex < 0 || viewIndex >= itemCount) {
+                if (cyclic) {
+                    while (viewIndex < 0) {
+                        viewIndex += itemCount
+                    }
+                    viewIndex %= itemCount
+                } else {
+                    return  // throw?
+                }
+            }
+            if (viewIndex != currentItem) {
+                if (animated) {
+                    var itemsToScroll = viewIndex - currentItem
+                    if (cyclic) {
+                        val scroll = (itemCount + min(
+                            viewIndex.toDouble(),
+                            currentItem.toDouble()
+                        ) - max(viewIndex.toDouble(), currentItem.toDouble())).toInt()
+                        if (scroll < abs(itemsToScroll.toDouble())) {
+                            itemsToScroll = if (itemsToScroll < 0) scroll else -scroll
+                        }
+                    }
+                    scroll(itemsToScroll, 0)
+                } else {
+                    scrollingOffset = 0
+                    val old = currentItem
+                    currentItem = viewIndex
+                    notifyChangingListeners(old, currentItem)
+                    invalidate()
+                }
+            }
         }
-        
-        invalidate();
-	}
-	
-	/**
-	 * Calculates desired height for layout
-	 * 
-	 * @param layout
-	 *            the source layout
-	 * @return the desired layout height
-	 */
-	private int getDesiredHeight(LinearLayout layout) {
-		if (layout != null && layout.getChildAt(0) != null) {
-			itemHeight = layout.getChildAt(0).getMeasuredHeight();
-		}
+    }
 
-		int desired = itemHeight * visibleItems - itemHeight * ITEM_OFFSET_PERCENT / 50;
+    /**
+     * Invalidates wheel
+     * @param clearCaches if true then cached views will be clear
+     */
+    fun invalidateWheel(clearCaches: Boolean) {
+        if (clearCaches) {
+            recycle.clearAll()
+            itemsLayout.removeAllViews()
+            scrollingOffset = 0
+        } 
+        else {
+            recycle.recycleItems(itemsLayout, firstItem, ItemsRange())
+        }
+        invalidate()
+    }
 
-		return Math.max(desired, getSuggestedMinimumHeight());
-	}
+    /**
+     * Calculates desired height for layout
+     *
+     * @param layout
+     * the source layout
+     * @return the desired layout height
+     */
+    private fun getDesiredHeight(layout: LinearLayout?): Int {
+        if (layout?.getChildAt(0) != null) {
+            itemHeight = layout.getChildAt(0).measuredHeight
+        }
+        val desired = itemHeight * visibleItems - itemHeight * ITEM_OFFSET_PERCENT / 50
+        return max(desired.toDouble(), suggestedMinimumHeight.toDouble()).toInt()
+    }
 
-	/**
-	 * Returns height of wheel item
-	 * @return the item height
-	 */
-	private int getItemHeight() {
-		if (itemHeight != 0) {
-			return itemHeight;
-		}
-		
-		if (itemsLayout != null && itemsLayout.getChildAt(0) != null) {
-			itemHeight = itemsLayout.getChildAt(0).getHeight();
-			return itemHeight;
-		}
-		
-		return getHeight() / visibleItems;
-	}
+    /**
+     * Calculates control width and creates text layouts
+     * @param widthSize the input layout width
+     * @param mode the layout mode
+     * @return the calculated control width
+     */
+    private fun calculateLayoutWidth(widthSize: Int, mode: Int): Int {
+        itemsLayout.setLayoutParams(
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
+        itemsLayout.measure(
+            MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.UNSPECIFIED),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        )
+        var width = itemsLayout.measuredWidth
+        if (mode == MeasureSpec.EXACTLY) {
+            width = widthSize
+        } else {
+            width += 2 * PADDING
+            // Check against our minimum width
+            width = max(width.toDouble(), suggestedMinimumWidth.toDouble()).toInt()
+            if (mode == MeasureSpec.AT_MOST && widthSize < width) {
+                width = widthSize
+            }
+        }
+        itemsLayout.measure(
+            MeasureSpec.makeMeasureSpec(width - 2 * PADDING, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        )
+        return width
+    }
 
-	/**
-	 * Calculates control width and creates text layouts
-	 * @param widthSize the input layout width
-	 * @param mode the layout mode
-	 * @return the calculated control width
-	 */
-	private int calculateLayoutWidth(int widthSize, int mode) {
-		itemsLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-	    itemsLayout.measure(MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.UNSPECIFIED), 
-	                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-		int width = itemsLayout.getMeasuredWidth();
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+        buildViewForMeasuring()
+        val width = calculateLayoutWidth(widthSize, widthMode)
+        var height: Int
+        if (heightMode == MeasureSpec.EXACTLY) {
+            height = heightSize
+        } else {
+            height = getDesiredHeight(itemsLayout)
+            if (heightMode == MeasureSpec.AT_MOST) {
+                height = min(height.toDouble(), heightSize.toDouble()).toInt()
+            }
+        }
+        setMeasuredDimension(width, height)
+    }
 
-		if (mode == MeasureSpec.EXACTLY) {
-			width = widthSize;
-		} else {
-			width += 2 * PADDING;
-			// Check against our minimum width
-			width = Math.max(width, getSuggestedMinimumWidth());
-			if (mode == MeasureSpec.AT_MOST && widthSize < width) {
-				width = widthSize;
-			}
-		}
-		
-        itemsLayout.measure(MeasureSpec.makeMeasureSpec(width - 2 * PADDING, MeasureSpec.EXACTLY), 
-                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-
-		return width;
-	}
-
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-		int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-
-		buildViewForMeasuring();
-		
-		int width = calculateLayoutWidth(widthSize, widthMode);
-
-		int height;
-		if (heightMode == MeasureSpec.EXACTLY) {
-			height = heightSize;
-		} else {
-			height = getDesiredHeight(itemsLayout);
-
-			if (heightMode == MeasureSpec.AT_MOST) {
-				height = Math.min(height, heightSize);
-			}
-		}
-		setMeasuredDimension(width, height);
-	}
-	
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-    	layout(r - l, b - t);
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        layout(r - l, b - t)
     }
 
     /**
@@ -514,363 +426,299 @@ public class WheelView extends View {
      * @param width the layout width
      * @param height the layout height
      */
-    private void layout(int width, int height) {
-		int itemsWidth = width - 2 * PADDING;
-		
-		itemsLayout.layout(0, 0, itemsWidth, height);
+    private fun layout(width: Int, height: Int) {
+        val itemsWidth = width - 2 * PADDING
+        itemsLayout.layout(0, 0, itemsWidth, height)
     }
 
-	@Override
-	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
-		
-		if (viewAdapter != null && viewAdapter.getItemsCount() > 0) {
-	        updateView();
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        if (viewAdapter != null && viewAdapter!!.getItemsCount() > 0) {
+            updateView()
+            drawItems(canvas)
+            drawCenterRect(canvas)
+        }
+        drawShadows(canvas)
+    }
 
-	        drawItems(canvas);
-	        drawCenterRect(canvas);
-		}
-		
-        drawShadows(canvas);
-	}
-
-	/**
-	 * Draws shadows on top and bottom of control
-	 * @param canvas the canvas for drawing
-	 */
-	private void drawShadows(Canvas canvas) {
-		int height = (int)(1.5 * getItemHeight());
+    /**
+     * Draws shadows on top and bottom of control
+     * @param canvas the canvas for drawing
+     */
+    private fun drawShadows(canvas: Canvas) {
+        val height = (1.5 * itemHeight).toInt()
 //		topShadow.setBounds(0, 0, getWidth(), height);
 //		topShadow.draw(canvas);
 //
 //		bottomShadow.setBounds(0, getHeight() - height, getWidth(), getHeight());
 //		bottomShadow.draw(canvas);
-	}
-
-	/**
-	 * Draws items
-	 * @param canvas the canvas for drawing
-	 */
-	private void drawItems(Canvas canvas) {
-		canvas.save();
-		
-		int top = (currentItem - firstItem) * getItemHeight() + (getItemHeight() - getHeight()) / 2;
-		canvas.translate(PADDING, - top + scrollingOffset);
-		
-		itemsLayout.draw(canvas);
-
-		canvas.restore();
-	}
-
-	public void setSelectStroke(int strokeColor, int strokeWidth) {
-	    this.strokeColor = strokeColor;
-	    this.strokeWidth = strokeWidth;
     }
-	
-    public void showSelectStroke(boolean show) {
-		showStroke = show;
-	}
- 
-	/**
-	 * Draws rect for current value
-	 * @param canvas the canvas for drawing
-	 */
-	private void drawCenterRect(Canvas canvas) {
-		if (!showStroke) {
-			if (strokePaint == null) {
-				return;
-			}
-			strokePaint.clearShadowLayer();
-			return;
-		}
-		int center = getHeight() / 2;
-		int offset = (int) (getItemHeight() / 2 * 1.2);
-		if (strokePaint == null) {
-			strokePaint = new Paint();
-		}
-		strokePaint.setColor(strokeColor);
-		// 设置线宽
-		strokePaint.setStrokeWidth(strokeWidth);
-		// 绘制上边直线
-		canvas.drawLine(0, center - offset, getWidth(), center - offset, strokePaint);
-		// 绘制下边直线
-		canvas.drawLine(0, center + offset, getWidth(), center + offset, strokePaint);
-	}
 
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		if (!isEnabled() || getViewAdapter() == null) {
-			return true;
-		}
-		
-		switch (event.getAction()) {
-		    case MotionEvent.ACTION_MOVE:
-		        if (getParent() != null) {
-		            getParent().requestDisallowInterceptTouchEvent(true);
-		        }
-		        break;
-		        
-		    case MotionEvent.ACTION_UP:
-		        if (!isScrollingPerformed) {
-		            int distance = (int) event.getY() - getHeight() / 2;
-		            if (distance > 0) {
-		                distance += getItemHeight() / 2;
-		            } else {
-                        distance -= getItemHeight() / 2;
-		            }
-		            int items = distance / getItemHeight();
-		            if (items != 0 && isValidItemIndex(currentItem + items)) {
-	                    notifyClickListenersAboutClick(currentItem + items);
-		            }
-		        }
-		        break;
-		}
+    /**
+     * Draws items
+     * @param canvas the canvas for drawing
+     */
+    private fun drawItems(canvas: Canvas) {
+        canvas.save()
+        val top = (currentItem - firstItem) * itemHeight + (itemHeight - height) / 2
+        canvas.translate(PADDING.toFloat(), (-top + scrollingOffset).toFloat())
+        itemsLayout.draw(canvas)
+        canvas.restore()
+    }
 
-		return scroller.onTouchEvent(event);
-	}
-	
-	/**
-	 * Scrolls the wheel
-	 * @param delta the scrolling value
-	 */
-	private void doScroll(int delta) {
-		scrollingOffset += delta;
-		
-		int itemHeight = getItemHeight();
-		int count = scrollingOffset / itemHeight;
+    fun setSelectStroke(strokeColor: Int, strokeWidth: Int) {
+        this.strokeColor = strokeColor
+        this.strokeWidth = strokeWidth
+    }
 
-		int pos = currentItem - count;
-		int itemCount = viewAdapter.getItemsCount();
-		
-	    int fixPos = scrollingOffset % itemHeight;
-	    if (Math.abs(fixPos) <= itemHeight / 2) {
-	        fixPos = 0;
-	    }
-		if (isCyclic && itemCount > 0) {
-		    if (fixPos > 0) {
-		        pos--;
-                count++;
-		    } else if (fixPos < 0) {
-		        pos++;
-		        count--;
-		    }
-			// fix position by rotating
-			while (pos < 0) {
-				pos += itemCount;
-			}
-			pos %= itemCount;
-		} else {
-			// 
-			if (pos < 0) {
-				count = currentItem;
-				pos = 0;
-			} else if (pos >= itemCount) {
-				count = currentItem - itemCount + 1;
-				pos = itemCount - 1;
-			} else if (pos > 0 && fixPos > 0) {
-                pos--;
-                count++;
-            } else if (pos < itemCount - 1 && fixPos < 0) {
-                pos++;
-                count--;
+    fun showSelectStroke(show: Boolean) {
+        showStroke = show
+    }
+
+    /**
+     * Draws rect for current value
+     * @param canvas the canvas for drawing
+     */
+    private fun drawCenterRect(canvas: Canvas) {
+        if (!showStroke) {
+            if (strokePaint == null) {
+                return
             }
-		}
-		
-		int offset = scrollingOffset;
-		if (pos != currentItem) {
-			setCurrentItem(pos, false);
-		} else {
-			invalidate();
-		}
-		
-		// update offset
-		scrollingOffset = offset - count * itemHeight;
-		if (scrollingOffset > getHeight()) {
-			scrollingOffset = scrollingOffset % getHeight() + getHeight();
-		}
-	}
-		
-	/**
-	 * Scroll the wheel
-	 * @param itemsToScroll items to scroll
-	 * @param time scrolling duration
-	 */
-	public void scroll(int itemsToScroll, int time) {
-		int distance = itemsToScroll * getItemHeight() - scrollingOffset;
-        scroller.scroll(distance, time);
-	}
-	
-	/**
-	 * Calculates range for wheel items
-	 * @return the items range
-	 */
-	private ItemsRange getItemsRange() {
-        if (getItemHeight() == 0) {
-            return null;
+            strokePaint!!.clearShadowLayer()
+            return
         }
-        
-		int first = currentItem;
-		int count = 1;
-		
-		while (count * getItemHeight() < getHeight()) {
-			first--;
-			count += 2; // top + bottom items
-		}
-		
-		if (scrollingOffset != 0) {
-			if (scrollingOffset > 0) {
-				first--;
-			}
-			count++;
-			
-			// process empty items above the first or below the second
-			int emptyItems = scrollingOffset / getItemHeight();
-			first -= emptyItems;
-			count += Math.asin(emptyItems);
-		}
-		return new ItemsRange(first, count);
-	}
-	
-	/**
-	 * Rebuilds wheel items if necessary. Caches all unused items.
-	 * 
-	 * @return true if items are rebuilt
-	 */
-	private boolean rebuildItems() {
-		boolean updated = false;
-		ItemsRange range = getItemsRange();
-		if (itemsLayout != null) {
-			int first = recycle.recycleItems(itemsLayout, firstItem, range);
-			updated = firstItem != first;
-			firstItem = first;
-		} else {
-			createItemsLayout();
-			updated = true;
-		}
-		
-		if (!updated) {
-			updated = firstItem != range.getFirst() || itemsLayout.getChildCount() != range.getCount();
-		}
-		
-		if (firstItem > range.getFirst() && firstItem <= range.getLast()) {
-			for (int i = firstItem - 1; i >= range.getFirst(); i--) {
-				if (!addViewItem(i, true)) {
-				    break;
-				}
-				firstItem = i;
-			}			
-		} else {
-		    firstItem = range.getFirst();
-		}
-		
-		int first = firstItem;
-		for (int i = itemsLayout.getChildCount(); i < range.getCount(); i++) {
-			if (!addViewItem(firstItem + i, false) && itemsLayout.getChildCount() == 0) {
-			    first++;
-			}
-		}
-		firstItem = first;
-		
-		return updated;
-	}
-	
-	/**
-	 * Updates view. Rebuilds items and label if necessary, recalculate items sizes.
-	 */
-	private void updateView() {
-		if (rebuildItems()) {
-			calculateLayoutWidth(getWidth(), MeasureSpec.EXACTLY);
-			layout(getWidth(), getHeight());
-		}
-	}
+        val center = height / 2
+        val offset = (itemHeight / 2 * 1.2).toInt()
+        if (strokePaint == null) {
+            strokePaint = Paint()
+        }
+        strokePaint!!.setColor(strokeColor)
+        // 设置线宽
+        strokePaint!!.strokeWidth = strokeWidth.toFloat()
+        // 绘制上边直线
+        canvas.drawLine(
+            0f,
+            (center - offset).toFloat(),
+            width.toFloat(),
+            (center - offset).toFloat(),
+            strokePaint!!
+        )
+        // 绘制下边直线
+        canvas.drawLine(
+            0f,
+            (center + offset).toFloat(),
+            width.toFloat(),
+            (center + offset).toFloat(),
+            strokePaint!!
+        )
+    }
 
-	/**
-	 * Creates item layouts if necessary
-	 */
-	private void createItemsLayout() {
-		if (itemsLayout == null) {
-			itemsLayout = new LinearLayout(getContext());
-			itemsLayout.setOrientation(LinearLayout.VERTICAL);
-		}
-	}
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (!isEnabled || viewAdapter == null) {
+            return true
+        }
+        when (event.action) {
+            MotionEvent.ACTION_MOVE -> if (parent != null) {
+                parent.requestDisallowInterceptTouchEvent(true)
+            }
 
-	/**
-	 * Builds view for measuring
-	 */
-	private void buildViewForMeasuring() {
-		// clear all items
-		if (itemsLayout != null) {
-			recycle.recycleItems(itemsLayout, firstItem, new ItemsRange());			
-		} else {
-			createItemsLayout();
-		}
-		
-		// add views
-		int addItems = visibleItems / 2;
-		for (int i = currentItem + addItems; i >= currentItem - addItems; i--) {
-			if (addViewItem(i, true)) {
-			    firstItem = i;
-			}
-		}
-	}
+            MotionEvent.ACTION_UP -> if (!isScrollingPerformed) {
+                var distance = event.y.toInt() - height / 2
+                if (distance > 0) {
+                    distance += itemHeight / 2
+                } else {
+                    distance -= itemHeight / 2
+                }
+                val items = distance / itemHeight
+                if (items != 0 && isValidItemIndex(currentItem + items)) {
+                    notifyClickListenersAboutClick(currentItem + items)
+                }
+            }
+        }
+        return scroller.onTouchEvent(event)
+    }
 
-	/**
-	 * Adds view for item to items layout
-	 * @param index the item index
-	 * @param first the flag indicates if view should be first
-	 * @return true if corresponding item exists and is added
-	 */
-	private boolean addViewItem(int index, boolean first) {
-		View view = getItemView(index);
-		if (view != null) {
-			if (first) {
-				itemsLayout.addView(view, 0);
-			} else {
-				itemsLayout.addView(view);
-			}
-			
-			return true;
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Checks whether intem index is valid
-	 * @param index the item index
-	 * @return true if item index is not out of bounds or the wheel is cyclic
-	 */
-	private boolean isValidItemIndex(int index) {
-	    return viewAdapter != null && viewAdapter.getItemsCount() > 0 &&
-	        (isCyclic || index >= 0 && index < viewAdapter.getItemsCount());
-	}
-	
-	/**
-	 * Returns view for specified item
-	 * @param index the item index
-	 * @return item view or empty view if index is out of bounds
-	 */
-    private View getItemView(int index) {
-		if (viewAdapter == null || viewAdapter.getItemsCount() == 0) {
-			return null;
-		}
-		int count = viewAdapter.getItemsCount();
-		if (!isValidItemIndex(index)) {
-			return viewAdapter.getEmptyItem(recycle.getEmptyItem(), itemsLayout);
-		} else {
-			while (index < 0) {
-				index = count + index;
-			}
-		}
-		
-		index %= count;
-		return viewAdapter.getItem(index, recycle.getItem(), itemsLayout);
-	}
-	
-	/**
-	 * Stops scrolling
-	 */
-	public void stopScrolling() {
-	    scroller.stopScrolling();
-	}
+    /**
+     * Scrolls the wheel
+     * @param delta the scrolling value
+     */
+    private fun doScroll(delta: Int) {
+        scrollingOffset += delta
+        val itemHeight = itemHeight
+        var count = scrollingOffset / itemHeight
+        var pos = currentItem - count
+        val itemCount = viewAdapter!!.getItemsCount()
+        var fixPos = scrollingOffset % itemHeight
+        if (abs(fixPos.toDouble()) <= itemHeight / 2) {
+            fixPos = 0
+        }
+        if (cyclic && itemCount > 0) {
+            if (fixPos > 0) {
+                pos--
+                count++
+            } else if (fixPos < 0) {
+                pos++
+                count--
+            }
+            // fix position by rotating
+            while (pos < 0) {
+                pos += itemCount
+            }
+            pos %= itemCount
+        } else {
+            // 
+            if (pos < 0) {
+                count = currentItem
+                pos = 0
+            } else if (pos >= itemCount) {
+                count = currentItem - itemCount + 1
+                pos = itemCount - 1
+            } else if (pos > 0 && fixPos > 0) {
+                pos--
+                count++
+            } else if (pos < itemCount - 1 && fixPos < 0) {
+                pos++
+                count--
+            }
+        }
+        val offset = scrollingOffset
+        if (pos != currentItem) {
+            setCurrentItem(pos, false)
+        } else {
+            invalidate()
+        }
+
+        // update offset
+        scrollingOffset = offset - count * itemHeight
+        if (scrollingOffset > height) {
+            scrollingOffset = scrollingOffset % height + height
+        }
+    }
+
+    /**
+     * Scroll the wheel
+     * @param itemsToScroll items to scroll
+     * @param time scrolling duration
+     */
+    fun scroll(itemsToScroll: Int, time: Int) {
+        val distance = itemsToScroll * itemHeight - scrollingOffset
+        scroller.scroll(distance, time)
+    }
+
+    /**
+     * Rebuilds wheel items if necessary. Caches all unused items.
+     *
+     * @return true if items are rebuilt
+     */
+    private fun rebuildItems(): Boolean {
+        var updated: Boolean
+        val range = itemsRange
+        var first = recycle.recycleItems(itemsLayout, firstItem, range!!)
+        updated = firstItem != first
+        firstItem = first
+        if (!updated) {
+            updated = firstItem != range.first || itemsLayout.childCount != range.count
+        }
+        if (firstItem > range.first && firstItem <= range.last) {
+            for (i in firstItem - 1 downTo range.first) {
+                if (!addViewItem(i, true)) {
+                    break
+                }
+                firstItem = i
+            }
+        } else {
+            firstItem = range.first
+        }
+        first = firstItem
+        for (i in itemsLayout.childCount until range.count) {
+            if (!addViewItem(firstItem + i, false) && itemsLayout.childCount == 0) {
+                first++
+            }
+        }
+        firstItem = first
+        return updated
+    }
+
+    /**
+     * Updates view. Rebuilds items and label if necessary, recalculate items sizes.
+     */
+    private fun updateView() {
+        if (rebuildItems()) {
+            calculateLayoutWidth(width, MeasureSpec.EXACTLY)
+            layout(width, height)
+        }
+    }
+
+    /**
+     * Builds view for measuring
+     */
+    private fun buildViewForMeasuring() {
+        // clear all items
+        recycle.recycleItems(itemsLayout, firstItem, ItemsRange())
+        // add views
+        val addItems = visibleItems / 2
+        for (i in currentItem + addItems downTo currentItem - addItems) {
+            if (addViewItem(i, true)) {
+                firstItem = i
+            }
+        }
+    }
+
+    /**
+     * Adds view for item to items layout
+     * @param index the item index
+     * @param first the flag indicates if view should be first
+     * @return true if corresponding item exists and is added
+     */
+    private fun addViewItem(index: Int, first: Boolean): Boolean {
+        val view = getItemView(index)
+        if (view != null) {
+            if (first) {
+                itemsLayout.addView(view, 0)
+            } else {
+                itemsLayout.addView(view)
+            }
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Checks whether intem index is valid
+     * @param index the item index
+     * @return true if item index is not out of bounds or the wheel is cyclic
+     */
+    private fun isValidItemIndex(index: Int): Boolean {
+        return viewAdapter != null && viewAdapter!!.getItemsCount() > 0 &&
+                (cyclic || index >= 0 && index < viewAdapter!!.getItemsCount())
+    }
+
+    /**
+     * Returns view for specified item
+     * @param index the item index
+     * @return item view or empty view if index is out of bounds
+     */
+    private fun getItemView(index: Int): View? {
+        var viewIndex = index
+        viewAdapter?.apply {
+            val count = getItemsCount()
+            if (!isValidItemIndex(viewIndex)) {
+                return getEmptyItem(recycle.emptyItem, itemsLayout)
+            } else {
+                while (viewIndex < 0) {
+                    viewIndex += count
+                }
+            }
+            viewIndex %= count
+            return getItem(viewIndex, recycle.item, itemsLayout)
+        }
+        return null
+    }
+
+    /**
+     * Stops scrolling
+     */
+    fun stopScrolling() {
+        scroller.stopScrolling()
+    }
 }

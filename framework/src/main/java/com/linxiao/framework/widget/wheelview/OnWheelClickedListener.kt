@@ -13,20 +13,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-package com.linxiao.framework.widget.wheelview;
+package com.linxiao.framework.widget.wheelview
 
 /**
  * Wheel clicked listener interface.
- * <p>The onItemClicked() method is called whenever a wheel item is clicked
- * <li> New Wheel position is set
- * <li> Wheel view is scrolled
+ *
+ * The onItemClicked() method is called whenever a wheel item is clicked
+ *  *  New Wheel position is set
+ *  *  Wheel view is scrolled
  */
-public interface OnWheelClickedListener {
+interface OnWheelClickedListener {
     /**
      * Callback method to be invoked when current item clicked
      * @param wheel the wheel view
      * @param itemIndex the index of clicked item
      */
-    void onItemClicked(WheelView wheel, int itemIndex);
+    fun onItemClicked(wheel: WheelView, itemIndex: Int)
 }

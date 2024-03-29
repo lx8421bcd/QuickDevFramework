@@ -13,22 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-package com.linxiao.framework.widget.wheelview;
+package com.linxiao.framework.widget.wheelview
 
 /**
  * Wheel scrolled listener interface.
  */
-public interface OnWheelScrollListener {
-	/**
-	 * Callback method to be invoked when scrolling started.
-	 * @param wheel the wheel view whose state has changed.
-	 */
-	void onScrollingStarted(WheelView wheel);
-	
-	/**
-	 * Callback method to be invoked when scrolling ended.
-	 * @param wheel the wheel view whose state has changed.
-	 */
-	void onScrollingFinished(WheelView wheel);
+interface OnWheelScrollListener {
+    /**
+     * Callback method to be invoked when scrolling started.
+     * @param wheel the wheel view whose state has changed.
+     */
+    fun onScrollingStarted(wheel: WheelView)
+
+    /**
+     * Callback method to be invoked when scrolling ended.
+     * @param wheel the wheel view whose state has changed.
+     */
+    fun onScrollingFinished(wheel: WheelView)
 }

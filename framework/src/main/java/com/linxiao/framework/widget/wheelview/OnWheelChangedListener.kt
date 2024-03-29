@@ -13,21 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-package com.linxiao.framework.widget.wheelview;
+package com.linxiao.framework.widget.wheelview
 
 /**
  * Wheel changed listener interface.
- * <p>The onChanged() method is called whenever current wheel positions is changed:
- * <li> New Wheel position is set
- * <li> Wheel view is scrolled
+ *
+ * The onChanged() method is called whenever current wheel positions is changed:
+ *  *  New Wheel position is set
+ *  *  Wheel view is scrolled
  */
-public interface OnWheelChangedListener {
-	/**
-	 * Callback method to be invoked when current item changed
-	 * @param wheel the wheel view whose state has changed
-	 * @param oldValue the old value of current item
-	 * @param newValue the new value of current item
-	 */
-	void onChanged(WheelView wheel, int oldValue, int newValue);
+interface OnWheelChangedListener {
+    /**
+     * Callback method to be invoked when current item changed
+     * @param wheel the wheel view whose state has changed
+     * @param oldValue the old value of current item
+     * @param newValue the new value of current item
+     */
+    fun onChanged(wheel: WheelView, oldValue: Int, newValue: Int)
 }

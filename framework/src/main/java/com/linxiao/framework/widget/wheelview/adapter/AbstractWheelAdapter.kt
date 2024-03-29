@@ -13,62 +13,48 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+package com.linxiao.framework.widget.wheelview.adapter
 
-package com.linxiao.framework.widget.wheelview.adapter;
-
-import android.database.DataSetObserver;
-import android.view.View;
-import android.view.ViewGroup;
-
-import java.util.LinkedList;
-import java.util.List;
+import android.database.DataSetObserver
+import android.view.View
+import android.view.ViewGroup
+import java.util.LinkedList
 
 /**
  * Abstract Wheel adapter.
  */
-public abstract class AbstractWheelAdapter implements WheelViewAdapter {
+abstract class AbstractWheelAdapter : WheelViewAdapter {
+
     // Observers
-    private List<DataSetObserver> datasetObservers;
-    
-    @Override
-    public View getEmptyItem(View convertView, ViewGroup parent) {
-        return null;
+    private val datasetObservers: MutableList<DataSetObserver> = LinkedList()
+
+    override fun getEmptyItem(convertView: View?, parent: ViewGroup?): View? {
+        return null
     }
 
-    @Override
-    public void registerDataSetObserver(DataSetObserver observer) {
-        if (datasetObservers == null) {
-            datasetObservers = new LinkedList<DataSetObserver>();
-        }
-        datasetObservers.add(observer);
+    override fun registerDataSetObserver(observer: DataSetObserver) {
+        datasetObservers.add(observer)
     }
 
-    @Override
-    public void unregisterDataSetObserver(DataSetObserver observer) {
-        if (datasetObservers != null) {
-            datasetObservers.remove(observer);
-        }
+    override fun unregisterDataSetObserver(observer: DataSetObserver) {
+        datasetObservers.remove(observer)
     }
-    
+
     /**
      * Notifies observers about data changing
      */
-    protected void notifyDataChangedEvent() {
-        if (datasetObservers != null) {
-            for (DataSetObserver observer : datasetObservers) {
-                observer.onChanged();
-            }
+    protected fun notifyDataChangedEvent() {
+        for (observer in datasetObservers) {
+            observer.onChanged()
         }
     }
-    
+
     /**
      * Notifies observers about invalidating data
      */
-    protected void notifyDataInvalidatedEvent() {
-        if (datasetObservers != null) {
-            for (DataSetObserver observer : datasetObservers) {
-                observer.onInvalidated();
-            }
+    protected fun notifyDataInvalidatedEvent() {
+        for (observer in datasetObservers) {
+            observer.onInvalidated()
         }
     }
 }

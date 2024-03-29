@@ -13,45 +13,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.linxiao.framework.widget.wheelview.adapter;
+package com.linxiao.framework.widget.wheelview.adapter
 
-import android.content.Context;
+import android.content.Context
 
 /**
  * The simple Array wheel adapter
  * @param <T> the element type
  */
-public class ArrayWheelAdapter<T> extends AbstractWheelTextAdapter {
-    
-    // items
-    private T items[];
+class ArrayWheelAdapter<T>(
+    context: Context,
+    private val items: Array<T>
+) : AbstractWheelTextAdapter(context) {
 
-    /**
-     * Constructor
-     * @param context the current context
-     * @param items the items
-     */
-    public ArrayWheelAdapter(Context context, T items[]) {
-        super(context);
-        
-        //setEmptyItemResource(TEXT_VIEW_ITEM_RESOURCE);
-        this.items = items;
-    }
-    
-    @Override
-    public CharSequence getItemText(int index) {
-        if (index >= 0 && index < items.length) {
-            T item = items[index];
-            if (item instanceof CharSequence) {
-                return (CharSequence) item;
-            }
-            return item.toString();
+    public override fun getItemText(index: Int): CharSequence? {
+        if (index >= 0 && index < items.size) {
+            val item = items[index]
+            return if (item is CharSequence) item else item.toString()
         }
-        return null;
+        return null
     }
 
-    @Override
-    public int getItemsCount() {
-        return items.length;
+    override fun getItemsCount(): Int {
+        return items.size
     }
 }

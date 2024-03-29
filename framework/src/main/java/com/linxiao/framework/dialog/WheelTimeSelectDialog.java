@@ -188,12 +188,12 @@ public class WheelTimeSelectDialog extends Dialog {
         viewBinding.wheelMinute.showSelectStroke(true);
         viewBinding.wheelSeconds.showSelectStroke(true);
 
-        viewBinding.wheelYear.setVisibleItems(5);
-        viewBinding.wheelMonth.setVisibleItems(5);
-        viewBinding.wheelDay.setVisibleItems(5);
-        viewBinding.wheelHour.setVisibleItems(5);
-        viewBinding.wheelMinute.setVisibleItems(5);
-        viewBinding.wheelSeconds.setVisibleItems(5);
+        viewBinding.wheelYear.visibleItems = 5;
+        viewBinding.wheelMonth.visibleItems = 5;
+        viewBinding.wheelDay.visibleItems = 5;
+        viewBinding.wheelHour.visibleItems = 5;
+        viewBinding.wheelMinute.visibleItems = 5;
+        viewBinding.wheelSeconds.visibleItems = 5;
 
         viewBinding.wheelYear.setViewAdapter(new CalendarWheelAdapter(years, "年"));
         viewBinding.wheelMonth.setViewAdapter(new CalendarWheelAdapter(months, "月"));
@@ -267,7 +267,7 @@ public class WheelTimeSelectDialog extends Dialog {
         }
 
         protected CalendarWheelAdapter(List<Integer> list, String unitName) {
-            super(getContext());
+            super(WheelTimeSelectDialog.this.getContext());
             this.list = list;
             this.unitName = unitName == null ? "" : unitName;
         }
