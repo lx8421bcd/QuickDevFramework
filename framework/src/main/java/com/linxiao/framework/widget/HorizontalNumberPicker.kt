@@ -52,8 +52,21 @@ class HorizontalNumberPicker @JvmOverloads constructor(
     private var btnAdd: ImageView = rootView.findViewById(R.id.et_number)
     private var min = 0
     private var max = 999
+    var onButtonClickListener: OnButtonClickListener = object : OnButtonClickListener {
+
+        override fun onAddClick() {
+            if (number < max) {
+                number++
+            }
+        }
+
+        override fun onSubtractClick() {
+            if (number > min) {
+                number--
+            }
+        }
+    }
     var onNumberChangeListener: OnNumberChangeListener? = null
-    var onButtonClickListener: OnButtonClickListener? = null
     var number = 0
         set(value) {
             btnAdd.setEnabled(true)
@@ -182,16 +195,10 @@ class HorizontalNumberPicker @JvmOverloads constructor(
 
     private fun initListeners() {
         btnSubtract.setOnClickListener { v: View? ->
-            if (number > min) {
-                number--
-            }
-            onButtonClickListener?.onSubtractClick()
+            onButtonClickListener.onSubtractClick()
         }
         btnAdd.setOnClickListener { v: View? ->
-            if (number < max) {
-                number++
-            }
-            onButtonClickListener?.onAddClick()
+            onButtonClickListener.onAddClick()
         }
         etNumber.onFocusChangeListener = OnFocusChangeListener { v: View?, hasFocus: Boolean ->
             if (!hasFocus) {
