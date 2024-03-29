@@ -1,162 +1,131 @@
-package com.linxiao.framework.widget;
+package com.linxiao.framework.widget
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import androidx.annotation.AttrRes;
-import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.collection.ArrayMap;
-import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.view.Gravity;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
+import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.drawable.Drawable
+import android.util.AttributeSet
+import android.view.Gravity
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.widget.FrameLayout
+import android.widget.ImageView
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.collection.ArrayMap
+import androidx.core.content.ContextCompat
+import androidx.core.view.children
+import kotlin.math.max
 
 /**
  * 高亮引导控件
- * <p> 对于单个引导页创建，请使用 {@link #newInstance(Activity)} 创建引导页实例，
- * 如果有依次弹出若干引导页的需求，可以使用{@link #newGuideQueue()}创建引导页队列，
- * 队列会自动管理引导页销毁逻辑
- * </p>
  *
- * Created by linxiao on 2017/8/3.
+ *  对于单个引导页创建，请使用 [.newInstance] 创建引导页实例，
+ * 如果有依次弹出若干引导页的需求，可以使用[.newGuideQueue]创建引导页队列，
+ * 队列会自动管理引导页销毁逻辑
+ *
+ *
+ * @author lx8421bcd
+ * @since 2017-08-03
  */
-public class HighlightGuideView extends FrameLayout {
-    /**
-     * 方形高亮
-     * */
-    public static final int STYLE_RECT = 0;
-    /**
-     * 原型高亮
-     * */
-    public static final int STYLE_CIRCLE = 1;
-    /**
-     * 椭圆形高亮
-     * */
-    public static final int STYLE_OVAL = 2;
-
-    /**
-     * 没有高亮目标的引导控件容器ID
-     * */
-    private static final int NO_TARGET_GUIDE_ID = 10152;
-
+class HighlightGuideView private constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : FrameLayout(context, attrs, defStyleAttr) {
     /**
      * 引导页销毁监听
-     * */
-    public interface OnDismissListener {
-        void onDismiss();
+     */
+    fun interface OnDismissListener {
+        fun onDismiss()
     }
-    
+
+    companion object {
+        /**
+         * 方形高亮
+         */
+        const val STYLE_RECT = 0
+
+        /**
+         * 原型高亮
+         */
+        const val STYLE_CIRCLE = 1
+
+        /**
+         * 椭圆形高亮
+         */
+        const val STYLE_OVAL = 2
+
+        /**
+         * 没有高亮目标的引导控件容器ID
+         */
+        private const val NO_TARGET_GUIDE_ID = 10152
+
+        /**
+         * 新建引导页实例
+         *
+         * 必须使用Activity
+         */
+        fun newInstance(activity: Activity): HighlightGuideView {
+            return HighlightGuideView(activity)
+        }
+
+        /**
+         * 新建引导页队列
+         */
+        fun newGuideQueue(): GuideQueue {
+            return GuideQueue()
+        }
+    }
+
     // 需要高亮页面的根布局
-    private ViewGroup mRootView;
-
-    private Map<Integer, View> mTargetViewMap = new ArrayMap<>();
-    private Map<Integer, List<View>> mGuideViewsMap = new ArrayMap<>();
-    private Map<Integer, Integer> mHighlightPaddingMap = new ArrayMap<>();
-    private Map<Integer, Map<String, Integer>> mGuideRelativePosMap = new ArrayMap<>();
-
-    private int mHighlightStyle = STYLE_CIRCLE; // 默认为圆形高亮
+    private var rootView: ViewGroup = (context as Activity).findViewById<View>(Window.ID_ANDROID_CONTENT) as ViewGroup
+    private val targetViewMap: MutableMap<Int, View> = ArrayMap()
+    private val guideViewsMap: MutableMap<Int, MutableList<View>> = ArrayMap()
+    private val highlightPaddingMap: MutableMap<Int, Int> = ArrayMap()
+    private val guideRelativePosMap: MutableMap<Int, Map<String, Int>> = ArrayMap()
+    private var highlightStyle = STYLE_CIRCLE // 默认为圆形高亮
     // 绘制参数
-    private Bitmap backgroundBitmap; //背景
-    private Paint mHighlightPaint;
-    private Canvas mCanvas;
-    private int screenWidth;
-    private int screenHeight;
-    private int backgroundColor = 0xCC000000; //背景默认颜色
-    
-    private boolean touchOutsideCancelable = true;
-    
-    private List<OnDismissListener> dismissListeners = new ArrayList<>();
-    
-    /**
-     * 新建引导页实例
-     * <p>必须使用Activity</p>
-     * */
-    public static HighlightGuideView newInstance(Activity activity) {
-        return new HighlightGuideView(activity);
+    private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.DITHER_FLAG) // 开启抗锯齿和抗抖动
+    private val screenWidth = resources.displayMetrics.widthPixels
+    private val screenHeight = resources.displayMetrics.heightPixels
+    private val backgroundBitmap = Bitmap.createBitmap(screenWidth, screenHeight, Bitmap.Config.ARGB_8888)
+    private var backgroundColor = -0x34000000 //背景默认颜色
+    private val canvas = Canvas(backgroundBitmap)
+    private var touchOutsideCancelable = true
+    private val dismissListeners: MutableList<OnDismissListener> = ArrayList()
+
+    init {
+        setWillNotDraw(false)
+        highlightPaint.setARGB(0, 255, 0, 0)
+        highlightPaint.setXfermode(PorterDuffXfermode(PorterDuff.Mode.DST_IN))
+        canvas.drawColor(backgroundColor)
     }
 
-    /**
-     * 新建引导页队列
-     * */
-    public static GuideQueue newGuideQueue() {
-        return new GuideQueue();
-    }
-
-    private HighlightGuideView(@NonNull Context context) {
-        super(context);
-        if (context instanceof Activity) {
-            mRootView = (ViewGroup) ((Activity)context).findViewById(Window.ID_ANDROID_CONTENT);
-        }
-        setWillNotDraw(false);
-        mHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG); // 开启抗锯齿和抗抖动
-        mHighlightPaint.setARGB(0, 255, 0, 0);
-        mHighlightPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-    
-        Resources resources = getContext().getResources();
-        DisplayMetrics dm = resources.getDisplayMetrics();
-        screenWidth = dm.widthPixels;
-        screenHeight = dm.heightPixels;
-        
-        backgroundBitmap = Bitmap.createBitmap(screenWidth, screenHeight, Bitmap.Config.ARGB_4444);
-        mCanvas = new Canvas(backgroundBitmap);
-        mCanvas.drawColor(backgroundColor);
-    }
-
-    private HighlightGuideView(@NonNull Context context, @Nullable AttributeSet attrs) {
-        this(context);
-    }
-
-    private HighlightGuideView(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
-        this(context);
-    }
-
-    /**
-     * 设置高亮导航目标
-     *
-     * @param view 目标控件
-     * */
-    public HighlightGuideView addTargetView(View view) {
-        mTargetViewMap.put(view.hashCode(), view);
-        if (!mGuideViewsMap.containsKey(view.hashCode())) {
-            mGuideViewsMap.put(view.hashCode(), new ArrayList<View>());
-        }
-        return this;
+    fun setContainerView(view: ViewGroup) {
+        dismiss()
+        rootView = view
     }
 
     /**
      * 设置目标View高亮区域内边距
      * @param view 目标View
      * @param padding 内边距
-     * */
-    public HighlightGuideView setHighlightPadding(View view, int padding) {
-        if (view == null) {
-            return this;
-        }
-        mHighlightPaddingMap.put(view.hashCode(), padding);
-        return this;
+     */
+    fun setHighlightPadding(view: View, padding: Int): HighlightGuideView {
+        highlightPaddingMap[view.hashCode()] = padding
+        return this
     }
 
     /**
@@ -168,48 +137,30 @@ public class HighlightGuideView extends FrameLayout {
      * @param height 引导图片高度
      * @param relativeX 引导图片相对目标View左上角横向距离
      * @param relativeY 引导图片相对目标View左上角纵向距离
-     * */
-    public HighlightGuideView addGuideView(View targetView, View guideView, int width, int height, int relativeX, int relativeY) {
-        if (targetView != null && !mGuideViewsMap.containsKey(targetView.hashCode())) {
-            return this;
-        }
-        LayoutParams lp = new LayoutParams(width, height);
-        guideView.setLayoutParams(lp);
-        
-        Map<String, Integer> paramsMap = new ArrayMap<>();
-        paramsMap.put("x", relativeX);
-        paramsMap.put("y", relativeY);
-        mGuideRelativePosMap.put(guideView.hashCode(), paramsMap);
-
-        if (targetView != null) {
-            mGuideViewsMap.get(targetView.hashCode()).add(guideView);
-        }
-        else {
-            if (!mGuideViewsMap.containsKey(NO_TARGET_GUIDE_ID)) {
-                mGuideViewsMap.put(NO_TARGET_GUIDE_ID, new ArrayList<View>());
-            }
-            mGuideViewsMap.get(NO_TARGET_GUIDE_ID).add(guideView);
-        }
-        this.addView(guideView);
-        return this;
-    }
-    
-    /**
-     * 添加目标引导控件
-     * <p>不传入宽高默认为wrap_content</p>
-     *
-     * @param targetView 目标View，如果没有目标则传入null
-     * @param guideView 图片资源Drawable
-     * @param relativeX 引导图片相对目标View左上角横向距离
-     * @param relativeY 引导图片相对目标View左上角纵向距离
-     * */
-    public HighlightGuideView addGuideView(View targetView, View guideView, int relativeX, int relativeY) {
-        addGuideView(targetView, guideView,
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT,
-                relativeX, relativeY
-        );
-        return this;
+     */
+    @JvmOverloads
+    fun addGuideView(
+        targetView: View?,
+        guideView: View,
+        width: Int? = null,
+        height: Int? = null,
+        relativeX: Int = 0,
+        relativeY: Int = 0,
+    ): HighlightGuideView {
+        val lp = LayoutParams(
+            width ?: LayoutParams.WRAP_CONTENT,
+            height ?: LayoutParams.WRAP_CONTENT
+        )
+        guideView.setLayoutParams(lp)
+        val paramsMap: MutableMap<String, Int> = ArrayMap()
+        paramsMap["x"] = relativeX
+        paramsMap["y"] = relativeY
+        guideRelativePosMap[guideView.hashCode()] = paramsMap
+        guideViewsMap.getOrPut(targetView?.hashCode() ?: NO_TARGET_GUIDE_ID) {
+            mutableListOf()
+        }.add(guideView)
+        this.addView(guideView)
+        return this
     }
 
     /**
@@ -221,32 +172,22 @@ public class HighlightGuideView extends FrameLayout {
      * @param height 引导图片高度
      * @param relativeX 引导图片相对目标View左上角横向距离
      * @param relativeY 引导图片相对目标View左上角纵向距离
-     * */
-    public HighlightGuideView addGuideImage(View targetView, Drawable guideDrawable, int width, int height, int relativeX, int relativeY) {
-        ImageView guideImageView = new ImageView(getContext());
-        guideImageView.setImageDrawable(guideDrawable);
-        addGuideView(targetView, guideImageView, width, height, relativeX, relativeY);
-        return this;
+     */
+    @JvmOverloads
+    fun addGuideImage(
+        targetView: View?,
+        guideDrawable: Drawable?,
+        width: Int? = null,
+        height: Int? = null,
+        relativeX: Int = 0,
+        relativeY: Int = 0,
+    ): HighlightGuideView {
+        val guideImageView = ImageView(context)
+        guideImageView.setImageDrawable(guideDrawable)
+        addGuideView(targetView, guideImageView, width, height, relativeX, relativeY)
+        return this
     }
-    
-    /**
-     * 添加引导图片
-     * <p>不传入宽高默认为wrap_content</p>
-     *
-     * @param targetView 目标View，如果没有目标则传入null
-     * @param guideDrawable 图片资源Drawable
-     * @param relativeX 引导图片相对目标View左上角横向距离
-     * @param relativeY 引导图片相对目标View左上角纵向距离
-     * */
-    public HighlightGuideView addGuideImage(View targetView, Drawable guideDrawable, int relativeX, int relativeY) {
-        addGuideImage(targetView, guideDrawable,
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT,
-                relativeX, relativeY
-        );
-        return this;
-    }
-    
+
     /**
      * 添加引导图片
      *
@@ -257,304 +198,277 @@ public class HighlightGuideView extends FrameLayout {
      * @param height 引导图片高度
      * @param relativeX 引导图片相对目标View左上角横向距离
      * @param relativeY 引导图片相对目标View左上角纵向距离
-     * */
-    public HighlightGuideView addGuideImage(View targetView, @DrawableRes int resId, int width, int height, int relativeX, int relativeY) {
-        ImageView guideImageView = new ImageView(getContext());
-        guideImageView.setImageResource(resId);
-        addGuideView(targetView, guideImageView, width, height, relativeX, relativeY);
-        return this;
-    }
-    
-    /**
-     * 添加引导图片
-     * <p>不传入宽高默认为wrap_content</p>
-     *
-     * @param targetView 目标View，如果没有目标则传入null
-     * @param resId 图片资源ID
-     * @param relativeX 引导图片相对目标View左上角横向距离
-     * @param relativeY 引导图片相对目标View左上角纵向距离
-     * */
-    public HighlightGuideView addGuideImage(View targetView, @DrawableRes int resId, int relativeX, int relativeY) {
-        addGuideImage(targetView, resId,
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT,
-                relativeX, relativeY
-        );
-        return this;
+     */
+    @JvmOverloads
+    fun addGuideImageResource(
+        targetView: View?,
+        @DrawableRes resId: Int,
+        width: Int? = null,
+        height: Int? = null,
+        relativeX: Int = 0,
+        relativeY: Int = 0,
+    ): HighlightGuideView {
+        val guideImageView = ImageView(context)
+        guideImageView.setImageResource(resId)
+        addGuideView(targetView, guideImageView, width, height, relativeX, relativeY)
+        return this
     }
 
     /**
      * 是否允许点击空白区域隐藏HighlightGuideView
-     * <p>默认为true</p>
+     *
+     * 默认为true
      *
      * @param cancel 是否允许
-     * */
-    public HighlightGuideView setCancelOnTouchOutside(boolean cancel) {
-        touchOutsideCancelable = cancel;
-        return this;
+     */
+    fun setCancelOnTouchOutside(cancel: Boolean): HighlightGuideView {
+        touchOutsideCancelable = cancel
+        return this
     }
 
     /**
      * 设置高亮样式
      *
      * @param style 高亮样式
-     * */
-    public HighlightGuideView setHighlightStyle(int style) {
+     */
+    fun setHighlightStyle(style: Int): HighlightGuideView {
         if (style > 2 || style < 0) {
-            mHighlightStyle = 1;
+            highlightStyle = 1
         }
-        mHighlightStyle = style;
-        return this;
+        highlightStyle = style
+        return this
     }
 
     /**
      * 设置蒙版背景颜色
      *
      * @param color 颜色色值
-     * */
-    public HighlightGuideView setMaskBackgroundColor(@ColorInt int color) {
-        backgroundColor = color;
-        return this;
+     */
+    fun setMaskBackgroundColor(@ColorInt color: Int): HighlightGuideView {
+        backgroundColor = color
+        return this
     }
-    
+
     /**
      * 设置蒙版背景颜色
      *
      * @param resId 颜色资源ID
-     * */
-    public HighlightGuideView setMaskBackgroundRes(@ColorRes int resId) {
-        backgroundColor = ContextCompat.getColor(getContext(), resId);
-        return this;
+     */
+    fun setMaskBackgroundRes(@ColorRes resId: Int): HighlightGuideView {
+        backgroundColor = ContextCompat.getColor(context, resId)
+        return this
     }
-    
-    public HighlightGuideView addOnDismissListener(OnDismissListener listener) {
-        dismissListeners.add(listener);
-        return this;
+
+    fun addOnDismissListener(listener: OnDismissListener): HighlightGuideView {
+        dismissListeners.add(listener)
+        return this
     }
 
     /**
      * 显示引导
-     * */
-    public void show() {
-        if (mRootView == null) {
-            return;
+     */
+    fun show() {
+        if (rootView.children.contains(this)) {
+            return
         }
-        for (int i = 0; i < mRootView.getChildCount(); i++) {
-            if (mRootView.getChildAt(i).equals(this)) {
-                return;
-            }
-        }
-        mRootView.addView(this,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-        );
-        this.setVisibility(VISIBLE);
+        rootView.addView(
+            this,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        this.visibility = VISIBLE
     }
 
     /**
      * 移除引导
-     * */
-    public void dismiss() {
-        if (mRootView == null) {
-            return;
-        }
-        this.setVisibility(GONE);
-        mRootView.removeView(this);
-        for (OnDismissListener listener : dismissListeners) {
-            if (listener != null) {
-                listener.onDismiss();
-            }
+     */
+    fun dismiss() {
+        this.visibility = GONE
+        rootView.removeView(this)
+        for (listener in dismissListeners) {
+            listener.onDismiss()
         }
     }
-    
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() != MotionEvent.ACTION_UP) {
-            return true;
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (event.action != MotionEvent.ACTION_UP) {
+            return true
         }
         if (touchOutsideCancelable) {
-            dismiss();
+            dismiss()
         }
-        return true;
+        return true
     }
-    
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        for (int targetId : mGuideViewsMap.keySet()) {
-            int targetX = 0, targetY = 0;
-            if (targetId != NO_TARGET_GUIDE_ID) {
-                View targetView = mTargetViewMap.get(targetId);
-                Rect rect = getTargetViewRect(targetView);
-                targetX = rect.left;
-                targetY = rect.top;
-            }
-            for (View guideView : mGuideViewsMap.get(targetId)) {
-                int relativeX = 0;
-                int relativeY = 0;
-                if (mGuideRelativePosMap.containsKey(guideView.hashCode())) {
-                    relativeX = mGuideRelativePosMap.get(guideView.hashCode()).get("x");
-                    relativeY = mGuideRelativePosMap.get(guideView.hashCode()).get("y");
-                }
 
-                LayoutParams params = (LayoutParams) guideView.getLayoutParams();
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        for (targetId in guideViewsMap.keys) {
+            var targetX = 0
+            var targetY = 0
+            if (targetId != NO_TARGET_GUIDE_ID) {
+                val targetView = targetViewMap[targetId] ?: continue
+                val rect = getTargetViewRect(targetView)
+                targetX = rect.left
+                targetY = rect.top
+            }
+            for (guideView in guideViewsMap[targetId] ?: mutableListOf()) {
+                val relativeX = guideRelativePosMap[guideView.hashCode()]?.get("x") ?: 0
+                val relativeY = guideRelativePosMap[guideView.hashCode()]?.get("y") ?: 0
+                val params = guideView.layoutParams as LayoutParams
                 //尝试兼容View中设定的水平居中或垂直居中属性
-                int gravity = params.gravity;
-                int absoluteGravity = 0;
-                if (Build.VERSION.SDK_INT >= 17) {
-                    final int layoutDirection = getLayoutDirection();
-                    absoluteGravity = Gravity.getAbsoluteGravity(gravity, layoutDirection);
-                }
-                final int verticalGravity = gravity & Gravity.VERTICAL_GRAVITY_MASK;
+                val gravity = params.gravity
+                var absoluteGravity: Int
+                val layoutDirection = getLayoutDirection()
+                absoluteGravity = Gravity.getAbsoluteGravity(gravity, layoutDirection)
+                val verticalGravity = gravity and Gravity.VERTICAL_GRAVITY_MASK
                 if (absoluteGravity == Gravity.CENTER_HORIZONTAL) {
-                    guideView.setX((screenWidth - guideView.getMeasuredWidth()) / 2);
-                }
-                else {
-                    guideView.setX(targetX + params.leftMargin + relativeX);
+                    guideView.x = ((screenWidth - guideView.measuredWidth) / 2).toFloat()
+                } else {
+                    guideView.x = (targetX + params.leftMargin + relativeX).toFloat()
                 }
                 if (verticalGravity == Gravity.CENTER_VERTICAL) {
-                    guideView.setY((screenHeight - guideView.getMeasuredHeight()) / 2);
-                }
-                else {
-                    guideView.setY(targetY + params.topMargin + relativeY);
+                    guideView.y = ((screenHeight - guideView.measuredHeight) / 2).toFloat()
+                } else {
+                    guideView.y = (targetY + params.topMargin + relativeY).toFloat()
                 }
             }
         }
     }
-    
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
         //绘制背景
-        canvas.drawBitmap(backgroundBitmap, 0, 0, null);
+        canvas.drawBitmap(backgroundBitmap, 0f, 0f, null)
         //绘制高亮区域
-        if (mTargetViewMap.size() == 0) {
-            return;
+        if (targetViewMap.isEmpty()) {
+            return
         }
-        for (int targetId : mGuideViewsMap.keySet()) {
-            View targetView = mTargetViewMap.get(targetId);
-            int padding = 0;
-            if (mHighlightPaddingMap.containsKey(targetId)) {
-                padding = mHighlightPaddingMap.get(targetId);
-            }
-            drawHighlightArea(targetView, padding);
+        for (targetId in guideViewsMap.keys) {
+            val targetView = targetViewMap[targetId] ?: continue
+            val padding = highlightPaddingMap[targetId] ?: 0
+            drawHighlightArea(targetView, padding)
         }
     }
+
     /**
      * 绘制高亮区域
-     * */
-    private void drawHighlightArea(View highlightView, int padding) {
-        int width = highlightView.getWidth();
-        int height = highlightView.getHeight();
+     */
+    private fun drawHighlightArea(highlightView: View, padding: Int) {
+        val width = highlightView.width.toFloat()
+        val height = highlightView.height.toFloat()
         //高亮控件坐标
-        Rect targetRect = getTargetViewRect(highlightView);
-        int left = targetRect.left;
-        int top = targetRect.top;
-        int right = targetRect.right;
-        int bottom = targetRect.bottom;
-    
-        RectF highlightRect;
-        switch (mHighlightStyle) {
-        case STYLE_RECT :
-            highlightRect = new RectF(left - padding, top - padding, right + padding, bottom + padding);
-            mCanvas.drawRect(highlightRect, mHighlightPaint);
-            break;
-        case STYLE_OVAL:
-            highlightRect = new RectF(left - padding, top - padding, right + padding, bottom + padding);
-            mCanvas.drawOval(highlightRect, mHighlightPaint);
-            break;
-        case STYLE_CIRCLE:
-            int radius = ((width > height ? width : height) + padding) / 2;
-            mCanvas.drawCircle(left + width / 2, top + height / 2, radius, mHighlightPaint);
-            break;
+        val targetRect = getTargetViewRect(highlightView)
+        val left = targetRect.left
+        val top = targetRect.top
+        val right = targetRect.right
+        val bottom = targetRect.bottom
+        val highlightRect: RectF
+        when (highlightStyle) {
+            STYLE_RECT -> {
+                highlightRect = RectF(
+                    (left - padding).toFloat(),
+                    (top - padding).toFloat(),
+                    (right + padding).toFloat(),
+                    (bottom + padding).toFloat()
+                )
+                canvas.drawRect(highlightRect, highlightPaint)
+            }
+
+            STYLE_OVAL -> {
+                highlightRect = RectF(
+                    (left - padding).toFloat(),
+                    (top - padding).toFloat(),
+                    (right + padding).toFloat(),
+                    (bottom + padding).toFloat()
+                )
+                canvas.drawOval(highlightRect, highlightPaint)
+            }
+
+            STYLE_CIRCLE -> {
+                val radius = ((max(width.toDouble(), height.toDouble()) + padding) / 2).toFloat()
+                canvas.drawCircle(left + width / 2, top + height / 2, radius, highlightPaint)
+            }
         }
     }
-    
+
     /**
      * 获取目标控件在Activity根布局中的坐标矩阵
-     * */
-    private Rect getTargetViewRect(View targetView) {
-        View parent = mRootView.getChildAt(0);
-        View decorView = null;
-        Context context = targetView.getContext();
-        if (context instanceof Activity) {
-            decorView = ((Activity) context).getWindow().getDecorView();
+     */
+    private fun getTargetViewRect(targetView: View): Rect {
+        val parent = rootView.getChildAt(0)
+        var decorView: View? = null
+        val context = targetView.context
+        if (context is Activity) {
+            decorView = context.window.decorView
         }
-        Rect result = new Rect();
-        Rect tmpRect = new Rect();
-        
-        View tmp = targetView;
-        
-        if (targetView == parent) {
-            targetView.getHitRect(result);
-            return result;
+        val result = Rect()
+        val tmpRect = Rect()
+        var tmp = targetView
+        if (targetView === parent) {
+            targetView.getHitRect(result)
+            return result
         }
-        while (tmp != decorView && tmp != parent) {
-            tmp.getHitRect(tmpRect);
-            if (!tmp.getClass().toString().equals("NoSaveStateFrameLayout")) {
-                result.left += tmpRect.left;
-                result.top += tmpRect.top;
+        while (tmp !== decorView && tmp !== parent) {
+            tmp.getHitRect(tmpRect)
+            if (tmp.javaClass.toString() != "NoSaveStateFrameLayout") {
+                result.left += tmpRect.left
+                result.top += tmpRect.top
             }
-            tmp = (View) tmp.getParent();
+            tmp = tmp.parent as View
         }
-        result.right = result.left + targetView.getMeasuredWidth();
-        result.bottom = result.top + targetView.getMeasuredHeight();
-        return result;
+        result.right = result.left + targetView.measuredWidth
+        result.bottom = result.top + targetView.measuredHeight
+        return result
     }
 
     /**
      * 引导页队列
-     * <p>使用此类构建按添加先后顺序依次显示的引导页队列</p>
      *
-     * */
-    public static class GuideQueue {
-
-        private List<HighlightGuideView> mGuideViewList = new ArrayList<>();
-        private int showCount = 0;
-
-        public void add(HighlightGuideView guideView) {
+     * 使用此类构建按添加先后顺序依次显示的引导页队列
+     *
+     */
+    class GuideQueue {
+        private val guideViewList: MutableList<HighlightGuideView> = ArrayList()
+        private var showCount = 0
+        fun add(guideView: HighlightGuideView?) {
             if (guideView == null) {
-                return;
+                return
             }
-            guideView.addOnDismissListener(new OnDismissListener() {
-                @Override
-                public void onDismiss() {
-                    showNext();
-                }
-            });
-            mGuideViewList.add(guideView);
+            guideView.addOnDismissListener { showNext() }
+            guideViewList.add(guideView)
         }
 
         /**
          * 移除引导页，显示过后的页面无法移除
-         * */
-        public void remove(HighlightGuideView guideView) {
-            if (mGuideViewList.indexOf(guideView) > showCount) {
-                mGuideViewList.remove(guideView);
+         */
+        fun remove(guideView: HighlightGuideView) {
+            if (guideViewList.indexOf(guideView) > showCount) {
+                guideViewList.remove(guideView)
             }
         }
 
-        public void show() {
-            if (mGuideViewList.size() > 0) {
-                mGuideViewList.get(0).show();
+        fun show() {
+            if (guideViewList.isNotEmpty()) {
+                guideViewList[0].show()
             }
         }
 
         /**
          * 取消后续引导显示
-         * */
-        public void cancelAll() {
-            mGuideViewList.get(showCount).dismiss();
-            mGuideViewList.clear();
+         */
+        fun cancelAll() {
+            guideViewList[showCount].dismiss()
+            guideViewList.clear()
         }
 
-        private void showNext() {
-            if (++showCount >= mGuideViewList.size()) {
-                mGuideViewList.clear();
-                showCount = 0;
-                return ;
+        private fun showNext() {
+            if (++showCount >= guideViewList.size) {
+                guideViewList.clear()
+                showCount = 0
+                return
             }
-            mGuideViewList.get(showCount).show();
+            guideViewList[showCount].show()
         }
     }
 }
