@@ -19,7 +19,6 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
