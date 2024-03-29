@@ -1,262 +1,242 @@
-package com.linxiao.framework.widget;
+package com.linxiao.framework.widget
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
-import android.text.TextUtils;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
-
-import com.linxiao.framework.R;
-
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.text.TextUtils
+import android.util.AttributeSet
+import android.util.Log
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import com.linxiao.framework.R
+import kotlin.math.ceil
+import kotlin.math.max
 
 /**
  * 小红点控件
- * <p>在没有字符时,默认为使用系统红色,大小为8dp * 8dp的小红点,
+ *
+ * 在没有字符时,默认为使用系统红色,大小为8dp * 8dp的小红点,
  * 在向其设置字符时,如果字符长度>5之后的内容将会被省略,如果设置数字,当数字大于99时,默认将显示99+,
- * 可以通过setTargetView()方法,在java代码中绑定至指定View</p>
- * <p>
- * 自定义属性：<br>
- * badge_color: 设置红点颜色 <br>
- * badge_default_size: 红点在无文字显示时的默认大小 <br>
- * badge_hideOnZero: 在显示数字为0时是否隐藏 <br>
- * badge_ellipsisDigit: 设置超限位数，超过位数后将显示超限省略符号，默认两位 <br>
- * badge_numberEllipsis: 在数字超限时的省略符号，默认显示99+ <br>
+ * 可以通过setTargetView()方法,在java代码中绑定至指定View
+ *
+ *
+ * 自定义属性：<br></br>
+ * badge_color: 设置红点颜色 <br></br>
+ * badge_default_size: 红点在无文字显示时的默认大小 <br></br>
+ * badge_hideOnZero: 在显示数字为0时是否隐藏 <br></br>
+ * badge_ellipsisDigit: 设置超限位数，超过位数后将显示超限省略符号，默认两位 <br></br>
+ * badge_numberEllipsis: 在数字超限时的省略符号，默认显示99+ <br></br>
  * badge_strokeWidth: 小圆点边框宽度
  * badge_strokeColor: 小圆点边框颜色
- * </p>
+ *
  *
  * @since 2015-11-03
  * @author linxiao
  * @version 1.0
  */
 @SuppressLint("AppCompatCustomView")
-public class BadgeView extends TextView {
+class BadgeView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : TextView(context, attrs, defStyleAttr) {
 
-    private static final String TAG = BadgeView.class.getSimpleName();
+    companion object {
+        private val TAG = BadgeView::class.java.getSimpleName()
+        private var defaultTextViewTextColor = 0
+    }
 
-    private int minPaddingHorizontal = dip2Px(4);
-    private int minPaddingVertical = dip2Px(0.5f);
-
-    private static int defaultTextViewTextColor = 0;
-    private int badgeColor = Color.RED;
-    private float radius;
-
-    private int defaultSize = dip2Px(8);
-    private boolean hideOnZero = false;
+    private var minPaddingHorizontal = dip2Px(4f)
+    private var minPaddingVertical = dip2Px(0.5f)
+    private var badgeColor = Color.RED
+    private var radius = 0f
+    private var defaultSize = dip2Px(8f)
+        set(value) {
+            field = value
+            requestLayout()
+        }
+    private var hideOnZero = false
+        set(value) {
+            field = value
+            text = getText()
+        }
 
     //省略标识
-    private String ellipsis = "99+";
-    private int ellipsisDigit = 2;
+    private var ellipsis: String = "99+"
+    private var ellipsisDigit = 2
+
     //补充内边距值，内容为1字符时的内边距值，
-    private int extraPaddingHorizontal;
-    private int extraPaddingVertical;
+    private var extraPaddingHorizontal = 0
+    private var extraPaddingVertical = 0
+
     //是否绑定到目标，防止重复添加
-    private FrameLayout badgeContainer;
+    private var badgeContainer: FrameLayout? = null
+
     //缓存padding
-    private int cachePaddingLeft;
-    private int cachePaddingTop;
-    private int cachePaddingRight;
-    private int cachePaddingBottom;
+    private var cachePaddingLeft = 0
+    private var cachePaddingTop = 0
+    private var cachePaddingRight = 0
+    private var cachePaddingBottom = 0
 
     // 边框参数
-    private int strokeWidth = 0;
-    private int strokeColor = 0;
+    private var strokeWidth = 0
+    private var strokeColor = 0
 
-    public BadgeView(Context context) {
-        super(context);
-        init(context, null);
-        setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT)
-        );
-        setTextSize(12);
+    init {
+        init(context, attrs)
+        if (attrs == null) {
+            setLayoutParams(
+                FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+            textSize = 12f
+        }
     }
 
-    public BadgeView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
-    }
-
-    public BadgeView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context, attrs);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public BadgeView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init(context, attrs);
-    }
-
-    private void init(Context context, AttributeSet attrs) {
+    private fun init(context: Context, attrs: AttributeSet?) {
         if (attrs != null) {
-            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BadgeView);
-            badgeColor = typedArray.getColor(R.styleable.BadgeView_badge_color, badgeColor);
-            defaultSize = typedArray.getDimensionPixelSize(R.styleable.BadgeView_badge_defaultSize, dip2Px(8));
-            hideOnZero = typedArray.getBoolean(R.styleable.BadgeView_badge_hideOnZero, false);
-            ellipsis = typedArray.getString(R.styleable.BadgeView_badge_numberEllipsis);
-            ellipsisDigit = typedArray.getInt(R.styleable.BadgeView_badge_ellipsisDigit, 2);
-            strokeWidth = typedArray.getDimensionPixelSize(R.styleable.BadgeView_badge_strokeWidth, 0);
-            strokeColor= typedArray.getColor(R.styleable.BadgeView_badge_strokeColor, 0);
-            typedArray.recycle();
+            val typedArray = context.obtainStyledAttributes(attrs, R.styleable.BadgeView)
+            badgeColor = typedArray.getColor(R.styleable.BadgeView_badge_color, badgeColor)
+            defaultSize = typedArray.getDimensionPixelSize(R.styleable.BadgeView_badge_defaultSize, dip2Px(8f))
+            hideOnZero = typedArray.getBoolean(R.styleable.BadgeView_badge_hideOnZero, false)
+            ellipsis = typedArray.getString(R.styleable.BadgeView_badge_numberEllipsis) ?: ellipsis
+            ellipsisDigit = typedArray.getInt(R.styleable.BadgeView_badge_ellipsisDigit, 2)
+            strokeWidth = typedArray.getDimensionPixelSize(R.styleable.BadgeView_badge_strokeWidth, 0)
+            strokeColor = typedArray.getColor(R.styleable.BadgeView_badge_strokeColor, 0)
+            typedArray.recycle()
         }
         // 没有自定义省略符号，使用默认的数字省略符号
         if (TextUtils.isEmpty(ellipsis)) {
-            countEllipsisString();
+            countEllipsisString()
         }
         // 在自定义属性初始化后重新setText
         if (!TextUtils.isEmpty(getText())) {
-            setText(getText());
+            text = getText()
         }
         if (defaultTextViewTextColor == 0) {
-            defaultTextViewTextColor = ContextCompat.getColor(getContext(), android.R.color.secondary_text_dark);
+            defaultTextViewTextColor =
+                ContextCompat.getColor(getContext(), android.R.color.secondary_text_dark)
         }
-        if (getCurrentTextColor() == defaultTextViewTextColor) {
+        if (currentTextColor == defaultTextViewTextColor) {
             // 如果getCurrentTextColor颜色为TextView默认值说明用户没有手动设置过颜色，使用白色默认
-            setTextColor(Color.WHITE);
+            setTextColor(Color.WHITE)
         }
-        setGravity(Gravity.CENTER);
-        execSetPadding();
+        setGravity(Gravity.CENTER)
+        execSetPadding()
     }
 
-    private void countEllipsisString() {
-        ellipsis = "";
-        for (int i = 0; i < ellipsisDigit; i++) {
-            ellipsis += "9";
+    private fun countEllipsisString() {
+        ellipsis = ""
+        for (i in 0 until ellipsisDigit) {
+            ellipsis += "9"
         }
-        ellipsis += "+";
-    }
-
-    /**
-     * 设置在显示数字为0的时候隐藏小红点
-     *
-     * @param hideOnZero 是否隐藏
-     */
-    public void setHideOnZero(boolean hideOnZero) {
-        this.hideOnZero = hideOnZero;
-        setText(getText());
-    }
-
-    /**
-     * 设置小红点默认大小
-     */
-    public void setDefaultBadgeSize(int defaultSize) {
-        this.defaultSize = defaultSize;
-        requestLayout();
+        ellipsis += "+"
     }
 
     /**
      * 设置两位数最小内边距
      */
-    public void setMinPaddingOverOneDigit(int horizontal, int vertical) {
-        minPaddingHorizontal = horizontal;
-        minPaddingVertical = vertical;
-        requestLayout();
+    fun setMinPaddingOverOneDigit(horizontal: Int, vertical: Int) {
+        minPaddingHorizontal = horizontal
+        minPaddingVertical = vertical
+        requestLayout()
     }
 
     /**
      * 设置数字
-     * <p>仅为代理setText方法将数字toString，防止使用setText设置数字时误被当做资源ID引起崩溃</p>
+     *
+     * 仅为代理setText方法将数字toString，防止使用setText设置数字时误被当做资源ID引起崩溃
      */
-    public void setNumber(int i) {
-        setText(String.valueOf(i));
+    fun setNumber(i: Int) {
+        text = i.toString()
     }
 
     /**
      * 设置消息, 数字大于99时显示"99+",字符串长度大于5的部分省略
      */
-    @Override
-    public void setText(CharSequence text, BufferType type) {
+    override fun setText(text: CharSequence, type: BufferType) {
+        var showText = text
         if (ellipsisDigit == 0) {
             // 此时为TextView基类调用setText，子类属性还未初始化，
             // 不作任何判断直接执行基类操作
-            super.setText(text, type);
-            return;
+            super.setText(showText, type)
+            return
         }
-        if (text == null) {
-            return;
-        }
-        if (text.toString().matches("^\\d+$")) {
-            int number = Integer.parseInt(text.toString());
+        if (showText.toString().matches("^\\d+$".toRegex())) {
+            val number = showText.toString().toInt()
             if (number == 0 && hideOnZero) {
-                hide();
+                hide()
             } else {
-                show();
+                show()
             }
-            if (text.length() > ellipsisDigit) {
-                text = ellipsis;
+            if (showText.length > ellipsisDigit) {
+                showText = ellipsis
             }
-        } else if (text.length() > 5) {
-            text = text.subSequence(0, 4) + "...";
+        } else if (showText.length > 5) {
+            showText = showText.subSequence(0, 4).toString() + "..."
         }
-        super.setText(text, type);
-        execSetPadding();
+        super.setText(showText, type)
+        execSetPadding()
     }
 
-    public void setBadgeStroke(int width, int color) {
-        strokeWidth = width;
-        strokeColor = color;
-        setBadgeBackground();
+    fun setBadgeStroke(width: Int, color: Int) {
+        strokeWidth = width
+        strokeColor = color
+        setBadgeBackground()
     }
 
     /**
      * 设置红点背景,在字符数为1时显示原型,在字符数超过1时显示圆角矩形
      */
-    private void setBadgeBackground() {
-        GradientDrawable defaultBgDrawable = new GradientDrawable();
-        defaultBgDrawable.setCornerRadius(radius);
-        defaultBgDrawable.setColor(badgeColor);
+    private fun setBadgeBackground() {
+        val defaultBgDrawable = GradientDrawable()
+        defaultBgDrawable.setCornerRadius(radius)
+        defaultBgDrawable.setColor(badgeColor)
         if (strokeWidth != 0 && strokeColor != 0) {
-            defaultBgDrawable.setStroke(strokeWidth, strokeColor);
+            defaultBgDrawable.setStroke(strokeWidth, strokeColor)
         }
-        super.setBackgroundDrawable(defaultBgDrawable);
+        super.setBackground(defaultBgDrawable)
     }
 
-    public void show() {
-        this.setVisibility(View.VISIBLE);
+    fun show() {
+        this.visibility = VISIBLE
     }
 
-    public void hide() {
-        this.setVisibility(View.GONE);
+    fun hide() {
+        this.visibility = GONE
     }
 
     /**
      * 解除小红点对某一View的绑定
-     * <p>此操作将会清除{@link #setTargetView(View)}方法在目标View外套的FrameLayout，
-     * 还原目标View原本的状态</p>
+     *
+     * 此操作将会清除[.setTargetView]方法在目标View外套的FrameLayout，
+     * 还原目标View原本的状态
      */
-    public void unbindTargetView() {
-        if (badgeContainer == null || badgeContainer.getChildCount() <= 0) {
-            return;
+    fun unbindTargetView() {
+        badgeContainer?.apply {
+            if (childCount <= 0) {
+                return
+            }
+            val lastTarget = this.getChildAt(0)
+            if (lastTarget != null) {
+                val lastParent = this.parent as ViewGroup
+                val lastLayoutParams = this.layoutParams
+                this.removeView(lastTarget)
+                lastParent.removeView(this)
+                lastTarget.setLayoutParams(lastLayoutParams)
+                lastParent.addView(lastTarget)
+            }
+            removeAllViews()
         }
-        View lastTarget = badgeContainer.getChildAt(0);
-        if (lastTarget != null) {
-            ViewGroup lastParent = (ViewGroup) badgeContainer.getParent();
-            ViewGroup.LayoutParams lastLayoutParams = badgeContainer.getLayoutParams();
-
-            badgeContainer.removeView(lastTarget);
-            lastParent.removeView(badgeContainer);
-
-            lastTarget.setLayoutParams(lastLayoutParams);
-            lastParent.addView(lastTarget);
-        }
-        badgeContainer.removeAllViews();
-        badgeContainer = null;
+        badgeContainer = null
     }
 
     /**
@@ -269,251 +249,234 @@ public class BadgeView extends TextView {
      * @param marginRight  右外边距
      * @param marginBottom 下外边距
      */
-    public void setTargetView(View target, int badgeGravity, int marginLeft, int marginRight, int marginTop, int marginBottom) {
-        if (getParent() != null) {
-            ((ViewGroup) getParent()).removeView(this);
+    @JvmOverloads
+    fun setTargetView(
+        target: View?,
+        badgeGravity: Int = Gravity.END,
+        marginLeft: Int = 0,
+        marginRight: Int = 0,
+        marginTop: Int = 0,
+        marginBottom: Int = 0,
+    ) {
+        target ?: return
+        parent?.apply {
+            (this as ViewGroup).removeView(this)
         }
-        if (target == null) {
-            return;
-        }
-        if (target.getParent() instanceof ViewGroup) {
-            ViewGroup parentContainer = (ViewGroup) target.getParent();
-            if (parentContainer.equals(badgeContainer)) {
+        if (target.parent is ViewGroup) {
+            val parentContainer = target.parent as ViewGroup
+            if (parentContainer == badgeContainer) {
                 //对同一个目标执行setTargetView;
-                FrameLayout.LayoutParams badgeLayoutParam = (FrameLayout.LayoutParams) this.getLayoutParams();
-                badgeLayoutParam.gravity = badgeGravity;
-                badgeLayoutParam.setMargins(marginLeft, marginTop, marginRight, marginBottom);
-                return;
+                val badgeLayoutParam = this.layoutParams as FrameLayout.LayoutParams
+                badgeLayoutParam.gravity = badgeGravity
+                badgeLayoutParam.setMargins(marginLeft, marginTop, marginRight, marginBottom)
+                return
             }
-            unbindTargetView();
-            int groupIndex = parentContainer.indexOfChild(target);
-            parentContainer.removeView(target);
-            badgeContainer = new FrameLayout(getContext());
-            ViewGroup.LayoutParams parentLayoutParams = target.getLayoutParams();
-
-            badgeContainer.setLayoutParams(parentLayoutParams);
-            target.setLayoutParams(new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-            parentContainer.addView(badgeContainer, groupIndex, parentLayoutParams);
-            badgeContainer.addView(target);
-            badgeContainer.addView(this);
-
-            FrameLayout.LayoutParams badgeLayoutParam = (FrameLayout.LayoutParams) this.getLayoutParams();
-            badgeLayoutParam.gravity = badgeGravity;
-            badgeLayoutParam.setMargins(marginLeft, marginTop, marginRight, marginBottom);
-        } else if (target.getParent() == null) {
-            Log.e(getClass().getSimpleName(), "ParentView is needed");
+            unbindTargetView()
+            val groupIndex = parentContainer.indexOfChild(target)
+            parentContainer.removeView(target)
+            badgeContainer = FrameLayout(context)
+            val parentLayoutParams = target.layoutParams
+            badgeContainer!!.setLayoutParams(parentLayoutParams)
+            target.setLayoutParams(
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            )
+            parentContainer.addView(badgeContainer, groupIndex, parentLayoutParams)
+            badgeContainer!!.addView(target)
+            badgeContainer!!.addView(this)
+            val badgeLayoutParam = this.layoutParams as FrameLayout.LayoutParams
+            badgeLayoutParam.gravity = badgeGravity
+            badgeLayoutParam.setMargins(marginLeft, marginTop, marginRight, marginBottom)
+        } else if (target.parent == null) {
+            Log.e(javaClass.getSimpleName(), "ParentView is needed")
         }
     }
 
-    /**
-     * 将红点绑定到某个控件上，默认各方向margin为 0
-     *
-     * @param target       目标控件
-     * @param badgeGravity 相对位置
-     */
-    public void setTargetView(View target, int badgeGravity) {
-        setTargetView(target, badgeGravity, 0, 0, 0, 0);
-    }
-
-    /**
-     * 将红点绑定到某个控件上，默认为右上方，各方向margin为 0
-     *
-     * @param target 目标控件
-     */
-    public void setTargetView(View target) {
-        setTargetView(target, Gravity.END, 0, 0, 0, 0);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int textLength = this.getText().length();
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val textLength = getText().length
         if (textLength <= 0) {
-            setMeasuredDimension(defaultSize, defaultSize);
-            return;
+            setMeasuredDimension(defaultSize, defaultSize)
+            return
         }
 //        int mode = MeasureSpec.getMode(widthMeasureSpec);
 //        if (mode != MeasureSpec.EXACTLY) {
 //            execSetPadding();
 //        }
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        radius = bottom - top;
-        setBadgeBackground();
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        radius = (bottom - top).toFloat()
+        setBadgeBackground()
     }
 
-    @Override
-    public void setPadding(int left, int top, int right, int bottom) {
-        cachePaddingLeft = left;
-        cachePaddingTop = top;
-        cachePaddingRight = right;
-        cachePaddingBottom = bottom;
-        execSetPadding();
-
+    override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
+        cachePaddingLeft = left
+        cachePaddingTop = top
+        cachePaddingRight = right
+        cachePaddingBottom = bottom
+        execSetPadding()
     }
 
-    private void execSetPadding() {
+    private fun execSetPadding() {
         if (ellipsisDigit == 0) {
             // 此时为TextView基类调用setText，子类属性还未初始化，
             // 不作任何判断直接执行基类操作
-            super.setPadding(cachePaddingLeft, cachePaddingTop, cachePaddingRight, cachePaddingBottom);
-            return;
-        }
-        int textLength = 0;
-        if (this.getText() != null) {
-            textLength = this.getText().length();
-        }
-        if (textLength == 0) {
-            super.setPadding(cachePaddingLeft, cachePaddingTop, cachePaddingRight, cachePaddingBottom);
-            return;
-        }
-        if (textLength == 1) {
-            int padding = Math.max(
-                    Math.max(cachePaddingLeft, cachePaddingRight),
-                    Math.max(cachePaddingTop, cachePaddingBottom));
-            padding += minPaddingVertical;
-            // 在为单个字符时, 根据文字宽高计算出的水平/垂直方向补充padding, 使得控件为正方形
-            calculateExtraPadding();
             super.setPadding(
-                    padding + extraPaddingHorizontal,
-                    padding + extraPaddingVertical,
-                    padding + extraPaddingHorizontal,
-                    padding + extraPaddingVertical
-            );
-            return;
+                cachePaddingLeft,
+                cachePaddingTop,
+                cachePaddingRight,
+                cachePaddingBottom
+            )
+            return
         }
-        int paddingHorizontal = Math.max(cachePaddingLeft, cachePaddingRight);
-        int paddingVertical = Math.max(cachePaddingTop, cachePaddingBottom);
+        var textLength = 0
+        if (getText() != null) {
+            textLength = getText().length
+        }
+        if (textLength == 0) {
+            super.setPadding(
+                cachePaddingLeft,
+                cachePaddingTop,
+                cachePaddingRight,
+                cachePaddingBottom
+            )
+            return
+        }
+        if (textLength == 1) {
+            var padding = max(
+                max(cachePaddingLeft.toDouble(), cachePaddingRight.toDouble()),
+                max(cachePaddingTop.toDouble(), cachePaddingBottom.toDouble())
+            ).toInt()
+            padding += minPaddingVertical
+            // 在为单个字符时, 根据文字宽高计算出的水平/垂直方向补充padding, 使得控件为正方形
+            calculateExtraPadding()
+            super.setPadding(
+                padding + extraPaddingHorizontal,
+                padding + extraPaddingVertical,
+                padding + extraPaddingHorizontal,
+                padding + extraPaddingVertical
+            )
+            return
+        }
+        val paddingHorizontal = max(cachePaddingLeft.toDouble(), cachePaddingRight.toDouble()).toInt()
+        val paddingVertical = max(cachePaddingTop.toDouble(), cachePaddingBottom.toDouble()).toInt()
         super.setPadding(
-                minPaddingHorizontal + paddingHorizontal,
-                minPaddingVertical + paddingVertical,
-                minPaddingHorizontal + paddingHorizontal,
-                minPaddingVertical + paddingVertical
-        );
+            minPaddingHorizontal + paddingHorizontal,
+            minPaddingVertical + paddingVertical,
+            minPaddingHorizontal + paddingHorizontal,
+            minPaddingVertical + paddingVertical
+        )
     }
 
-    @Override
-    public int getPaddingLeft() {
+    override fun getPaddingLeft(): Int {
         if (super.getPaddingLeft() == 0) {
-            return 0;
+            return 0
         }
-        int textLength = this.getText().length();
+        val textLength = getText().length
         if (textLength == 0) {
-            return 0;
+            return 0
         }
         if (textLength == 1) {
-            return super.getPaddingLeft() - extraPaddingHorizontal;
+            return super.getPaddingLeft() - extraPaddingHorizontal
         }
-        if (textLength > 1) {
-            return super.getPaddingLeft() - minPaddingHorizontal;
-        }
-        return super.getPaddingLeft();
+        return if (textLength > 1) {
+            super.getPaddingLeft() - minPaddingHorizontal
+        } else super.getPaddingLeft()
     }
 
-    @Override
-    public int getPaddingRight() {
+    override fun getPaddingRight(): Int {
         if (super.getPaddingRight() == 0) {
-            return 0;
+            return 0
         }
-        int textLength = this.getText().length();
+        val textLength = getText().length
         if (textLength == 0) {
-            return 0;
+            return 0
         }
         if (textLength == 1) {
-            return super.getPaddingRight() - extraPaddingHorizontal;
+            return super.getPaddingRight() - extraPaddingHorizontal
         }
-        if (textLength > 1) {
-            return super.getPaddingRight() - minPaddingHorizontal;
-        }
-        return super.getPaddingRight();
+        return if (textLength > 1) {
+            super.getPaddingRight() - minPaddingHorizontal
+        } else super.getPaddingRight()
     }
 
-    @Override
-    public int getPaddingTop() {
+    override fun getPaddingTop(): Int {
         if (super.getPaddingTop() == 0) {
-            return 0;
+            return 0
         }
-        int textLength = this.getText().length();
+        val textLength = getText().length
         if (textLength == 0) {
-            return 0;
+            return 0
         }
         if (textLength == 1) {
-            return super.getPaddingTop() - extraPaddingVertical;
+            return super.getPaddingTop() - extraPaddingVertical
         }
-        if (textLength > 1) {
-            return super.getPaddingTop() - minPaddingVertical;
-        }
-        return super.getPaddingTop();
+        return if (textLength > 1) {
+            super.getPaddingTop() - minPaddingVertical
+        } else super.getPaddingTop()
     }
 
-    @Override
-    public int getPaddingBottom() {
+    override fun getPaddingBottom(): Int {
         if (super.getPaddingBottom() == 0) {
-            return 0;
+            return 0
         }
-        int textLength = this.getText().length();
+        val textLength = getText().length
         if (textLength == 0) {
-            return 0;
+            return 0
         }
         if (textLength == 1) {
-            return super.getPaddingBottom() - extraPaddingVertical;
+            return super.getPaddingBottom() - extraPaddingVertical
         }
-        if (textLength > 1) {
-            return super.getPaddingBottom() - minPaddingVertical;
-        }
-        return super.getPaddingBottom();
+        return if (textLength > 1)
+            super.getPaddingBottom() - minPaddingVertical
+         else
+            super.getPaddingBottom()
     }
 
-
-    private void calculateExtraPadding() {
-        if (this.getText().length() != 1) {
-            extraPaddingHorizontal = 0;
-            extraPaddingVertical = 0;
-            return;
+    private fun calculateExtraPadding() {
+        if (getText().length != 1) {
+            extraPaddingHorizontal = 0
+            extraPaddingVertical = 0
+            return
         }
         // 此处根据文字宽高计算，至少有一个补充值为0
-        int textWidth = (int) (getPaint().measureText(getText().toString()));
-        Paint.FontMetrics fm = getPaint().getFontMetrics();
-        int textHeight = (int) (Math.ceil(fm.descent - fm.top) + 2);
+        val textWidth = paint.measureText(getText().toString()).toInt()
+        val fm = paint.getFontMetrics()
+        val textHeight = (ceil((fm.descent - fm.top).toDouble()) + 2).toInt()
         if (textWidth > textHeight) {
-            extraPaddingHorizontal = 0;
-            extraPaddingVertical = (textWidth - textHeight) / 2;
+            extraPaddingHorizontal = 0
+            extraPaddingVertical = (textWidth - textHeight) / 2
         } else if (textHeight > textWidth) {
-            extraPaddingHorizontal = (textHeight - textWidth) / 2;
-            extraPaddingVertical = 0;
+            extraPaddingHorizontal = (textHeight - textWidth) / 2
+            extraPaddingVertical = 0
         } else {
-            extraPaddingHorizontal = 0;
-            extraPaddingVertical = 0;
+            extraPaddingHorizontal = 0
+            extraPaddingVertical = 0
         }
     }
 
-    @Override
-    public void setBackground(Drawable background) {
-        setBadgeBackground();
+    override fun setBackground(background: Drawable) {
+        setBadgeBackground()
     }
 
-    @Override
-    public void setBackgroundColor(int color) {
-        badgeColor = color;
-        setBadgeBackground();
+    override fun setBackgroundColor(color: Int) {
+        badgeColor = color
+        setBadgeBackground()
     }
 
-    @Override
-    public void setBackgroundDrawable(Drawable background) {
-        setBadgeBackground();
+    override fun setBackgroundDrawable(background: Drawable) {
+        setBadgeBackground()
     }
 
-    @Override
-    public void setBackgroundResource(int resId) {
-        setBadgeBackground();
+    override fun setBackgroundResource(resId: Int) {
+        setBadgeBackground()
     }
 
-    private int dip2Px(float dip) {
-        return (int) (dip * getResources().getDisplayMetrics().density + 0.5f);
+    private fun dip2Px(dip: Float): Int {
+        return (dip * resources.displayMetrics.density + 0.5f).toInt()
     }
 }
