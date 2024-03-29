@@ -6,7 +6,6 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.widget.RadioButton
-import android.widget.TextView
 import com.linxiao.framework.R
 
 /**
