@@ -1,55 +1,48 @@
-package com.linxiao.quickdevframework.sample.frameworkapi;
+package com.linxiao.quickdevframework.sample.frameworkapi
 
-import android.content.pm.PackageInfo;
-import android.os.Bundle;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.linxiao.framework.common.ApplicationUtil;
-
-import com.linxiao.framework.common.ContextProviderKt;
-import com.linxiao.quickdevframework.R;
-import com.linxiao.quickdevframework.databinding.FragmentApplicationApiBinding;
-import com.linxiao.framework.architecture.SimpleViewBindingFragment;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import android.annotation.SuppressLint
+import android.os.Bundle
+import android.view.View
+import com.linxiao.framework.architecture.SimpleViewBindingFragment
+import com.linxiao.framework.common.ApplicationUtil
+import com.linxiao.framework.common.globalContext
+import com.linxiao.quickdevframework.R
+import com.linxiao.quickdevframework.databinding.FragmentApplicationApiBinding
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * Application类提供API示例
  * Created by linxiao on 2017/2/17.
  */
-public class ApplicationApiFragment extends SimpleViewBindingFragment<FragmentApplicationApiBinding> {
+@SuppressLint("SetTextI18n")
+class ApplicationApiFragment : SimpleViewBindingFragment<FragmentApplicationApiBinding>() {
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        getViewBinding().ivAppIcon.setImageDrawable(ApplicationUtil.getAppIcon(ContextProviderKt.getGlobalContext().getPackageName()));
-        getViewBinding().tvIsAppRunning.setText(getString(R.string.is_app_running) + ": " + ApplicationUtil.isAppForeground());
-        getViewBinding().tvIsAppForeground.setText(getString(R.string.is_app_foreground) + ": " + ApplicationUtil.isAppForeground());
-        getViewBinding().tvCPUName.setText("CPU Name: " + ApplicationUtil.getCPUName());
-        getViewBinding().btnGetAppName.setOnClickListener(v -> {
-            getViewBinding().tvAppName.setText(ApplicationUtil.getAppName(ContextProviderKt.getGlobalContext().getPackageName()));
-        });
-        getViewBinding().btnGetAppVersion.setOnClickListener(v -> {
-            PackageInfo info = ApplicationUtil.getPackageInfo(ContextProviderKt.getGlobalContext().getPackageName());
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewBinding.ivAppIcon.setImageDrawable(ApplicationUtil.getAppIcon(globalContext.packageName))
+        viewBinding.tvIsAppRunning.text = "${getString(R.string.is_app_running)}: ${ApplicationUtil.isAppForeground()}"
+        viewBinding.tvIsAppForeground.text = "${getString(R.string.is_app_foreground)}: ${ApplicationUtil.isAppForeground()}"
+        viewBinding.tvCPUName.text = "CPU Name: ${ApplicationUtil.getCPUName()}"
+        viewBinding.btnGetAppName.setOnClickListener { v: View? ->
+            viewBinding.tvAppName.text = ApplicationUtil.getAppName(globalContext.packageName)
+        }
+        viewBinding.btnGetAppVersion.setOnClickListener { v: View? ->
+            val info = ApplicationUtil.getPackageInfo(globalContext.packageName)
             if (info != null) {
-                getViewBinding().tvAppVersion.setText(info.versionName);
+                viewBinding.tvAppVersion.text = info.versionName
             }
-        });
-        getViewBinding().btnExitApp.setOnClickListener(v -> {
-            ApplicationUtil.exitApplication(getActivity());
-        });
-        getViewBinding().btnRestartApp.setOnClickListener(v -> {
-            ApplicationUtil.restartApplication(getActivity());
-        });
-        getViewBinding().btnGetSystemBootTime.setOnClickListener(v -> {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS", Locale.getDefault());
-            getViewBinding().tvSystemBootTime.setText(format.format(new Date(ApplicationUtil.getSystemBootTime())));
-        });
+        }
+        viewBinding.btnExitApp.setOnClickListener { v: View? ->
+            ApplicationUtil.exitApplication(activity)
+        }
+        viewBinding.btnRestartApp.setOnClickListener { v: View? ->
+            ApplicationUtil.restartApplication(activity)
+        }
+        viewBinding.btnGetSystemBootTime.setOnClickListener { v: View? ->
+            val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS", Locale.getDefault())
+            viewBinding.tvSystemBootTime.text = format.format(Date(ApplicationUtil.systemBootTime))
+        }
     }
-
 }

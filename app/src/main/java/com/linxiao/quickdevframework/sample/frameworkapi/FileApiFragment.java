@@ -1,5 +1,6 @@
 package com.linxiao.quickdevframework.sample.frameworkapi;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,15 +27,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/** @noinspection CallToPrintStackTrace*/
+@SuppressLint("SetTextI18n")
 public class FileApiFragment extends SimpleViewBindingFragment<FragmentFileApiBinding> {
-    private String totalFilePath = FileUtil.extRoot() + File.separator + "QuickDevFramework";
+    private final String totalFilePath = FileUtil.extRoot() + File.separator + "QuickDevFramework";
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         PermissionRequestHelper.create()
         .requestSDCard()
-        .perform(getActivity(), new RequestPermissionCallback() {
+        .perform(requireActivity(), new RequestPermissionCallback() {
             @Override
             public void onGranted() {
                 Log.d(TAG, FileUtil.extRoot().getAbsolutePath());
@@ -79,8 +82,8 @@ public class FileApiFragment extends SimpleViewBindingFragment<FragmentFileApiBi
 
             @Override
             public void onProgressUpdate(long totalCount, long finishedCount, long totalSize, long finishedSize) {
-                getViewBinding().tvTotalSum.setText("totalSum:"  + totalCount + "");
-                getViewBinding().tvCurrentSum.setText("currentSum:" + finishedCount + "");
+                getViewBinding().tvTotalSum.setText("totalSum:"  + totalCount);
+                getViewBinding().tvCurrentSum.setText("currentSum:" + finishedCount);
                 getViewBinding().tvTotalSize.setText("totalSize:" + FileSizeUtil.getFormattedSizeString(totalSize));
                 getViewBinding().tvCurrentSize.setText("currentSize:" + FileSizeUtil.getFormattedSizeString(finishedSize));
             }
@@ -140,8 +143,8 @@ public class FileApiFragment extends SimpleViewBindingFragment<FragmentFileApiBi
 
             @Override
             public void onProgressUpdate(long totalCount, long finishedCount, long totalSize, long finishedSize) {
-                getViewBinding().tvTotalSum.setText("totalSum:"  + totalCount + "");
-                getViewBinding().tvCurrentSum.setText("currentSum:" + finishedCount + "");
+                getViewBinding().tvTotalSum.setText("totalSum:"  + totalCount);
+                getViewBinding().tvCurrentSum.setText("currentSum:" + finishedCount);
                 getViewBinding().tvTotalSize.setText("totalSize:" + FileSizeUtil.getFormattedSizeString(totalSize));
                 getViewBinding().tvCurrentSize.setText("currentSize:" + FileSizeUtil.getFormattedSizeString(finishedSize));
             }
@@ -170,8 +173,8 @@ public class FileApiFragment extends SimpleViewBindingFragment<FragmentFileApiBi
 
             @Override
             public void onProgressUpdate(long totalCount, long finishedCount, long totalSize, long finishedSize) {
-                getViewBinding().tvTotalSum.setText("totalSum:"  + totalCount + "");
-                getViewBinding().tvCurrentSum.setText("currentSum:" + finishedCount + "");
+                getViewBinding().tvTotalSum.setText("totalSum:"  + totalCount);
+                getViewBinding().tvCurrentSum.setText("currentSum:" + finishedCount);
                 getViewBinding().tvTotalSize.setText("totalSize:" + FileSizeUtil.getFormattedSizeString(totalSize));
                 getViewBinding().tvCurrentSize.setText("currentSize:" + FileSizeUtil.getFormattedSizeString(finishedSize));
             }

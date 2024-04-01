@@ -1,20 +1,14 @@
-package com.linxiao.quickdevframework.sample.frameworkapi;
+package com.linxiao.quickdevframework.sample.frameworkapi
 
-import android.os.Bundle;
-import android.view.View;
+import android.os.Bundle
+import android.view.View
+import com.linxiao.framework.architecture.SimpleViewBindingActivity
+import com.linxiao.quickdevframework.databinding.ActivityNotificationTargetBinding
 
-import com.linxiao.quickdevframework.databinding.ActivityNotificationTargetBinding;
-import com.linxiao.framework.architecture.SimpleViewBindingActivity;
-
-public class NotificationTargetActivity extends SimpleViewBindingActivity<ActivityNotificationTargetBinding> {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getViewBinding().tvTargetDesc.setOnClickListener(this::onTextViewClick);
+class NotificationTargetActivity : SimpleViewBindingActivity<ActivityNotificationTargetBinding>() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewBinding.tvTargetDesc.setOnClickListener { v: View? -> finish() }
     }
 
-    public void onTextViewClick(View v) {
-        finish();
-    }
 }

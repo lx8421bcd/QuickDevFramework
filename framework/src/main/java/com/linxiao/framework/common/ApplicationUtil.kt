@@ -20,6 +20,7 @@ import androidx.core.content.FileProvider
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
@@ -92,11 +93,10 @@ object ApplicationUtil {
      *
      * @param activity activity instance
      */
-    @DelicateCoroutinesApi
     @JvmStatic
     fun exitApplication(activity: Activity?) {
         activity?.finishAffinity()
-        GlobalScope.launch(Dispatchers.IO) {
+        MainScope().launch(Dispatchers.IO) {
             delay(200)
             Runtime.getRuntime().exit(0)
         }

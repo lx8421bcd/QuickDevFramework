@@ -1,75 +1,78 @@
-package com.linxiao.quickdevframework.sample.frameworkapi;
+package com.linxiao.quickdevframework.sample.frameworkapi
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
+import android.content.DialogInterface
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import com.linxiao.framework.architecture.SimpleViewBindingFragment
+import com.linxiao.framework.common.ToastAlert.showToast
+import com.linxiao.framework.dialog.AlertDialogFragment
+import com.linxiao.framework.dialog.showAlert
+import com.linxiao.quickdevframework.R
+import com.linxiao.quickdevframework.databinding.FragmentDialogApiBinding
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.linxiao.framework.architecture.SimpleViewBindingFragment;
-import com.linxiao.framework.common.ToastAlert;
-import com.linxiao.framework.dialog.AlertDialogFragment;
-import com.linxiao.framework.dialog.DialogExtensionsKt;
-import com.linxiao.quickdevframework.R;
-import com.linxiao.quickdevframework.databinding.FragmentDialogApiBinding;
-
-public class DialogApiFragment extends SimpleViewBindingFragment<FragmentDialogApiBinding> {
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        getViewBinding().btnShowAlertDialog.setOnClickListener(this::onShowAlertDialogClick);
-        getViewBinding().btnShowSimpleDialog.setOnClickListener(this::onSimpleDialogClick);
-        getViewBinding().btnShowOnStartActivity.setOnClickListener(this::onShowStartActivityClick);
-        getViewBinding().btnShowBottomDialog.setOnClickListener(this::onShowBottomDialogClick);
-        getViewBinding().btnShowTopDialog.setOnClickListener(this::onShowTopDialogClick);
-    }
-
-    public void onShowAlertDialogClick(View v) {
-        AlertDialogFragment dialogFragment = new AlertDialogFragment();
-        if (getViewBinding().rbTypeString.isChecked()) {
-            dialogFragment.setMessage(getString(R.string.sample_dialog_message));
+class DialogApiFragment : SimpleViewBindingFragment<FragmentDialogApiBinding>() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewBinding.btnShowAlertDialog.setOnClickListener { v: View? -> onShowAlertDialogClick(v) }
+        viewBinding.btnShowSimpleDialog.setOnClickListener { v: View? -> onSimpleDialogClick(v) }
+        viewBinding.btnShowOnStartActivity.setOnClickListener { v: View? ->
+            onShowStartActivityClick(
+                v
+            )
         }
-        if (getViewBinding().rbTypeHtmlString.isChecked()) {
-            dialogFragment.setContentHtml("<ul>\n" +
-                    "<li>html unordered list item 1</li>\n" +
-                    "<li>html unordered list item 2</li>\n" +
-                    "<li>html unordered list item 3</li>\n" +
-                    "</ul>"
-            );
+        viewBinding.btnShowBottomDialog.setOnClickListener { v: View? -> onShowBottomDialogClick(v) }
+        viewBinding.btnShowTopDialog.setOnClickListener { v: View? -> onShowTopDialogClick(v) }
+    }
+
+    fun onShowAlertDialogClick(v: View?) {
+        val dialogFragment = AlertDialogFragment()
+        if (viewBinding.rbTypeString.isChecked) {
+            dialogFragment.setMessage(getString(R.string.sample_dialog_message))
         }
-        if (getViewBinding().rbTypeHtmlLink.isChecked()) {
-            dialogFragment.setContentLink("https://www.google.com");
+        if (viewBinding.rbTypeHtmlString.isChecked) {
+            dialogFragment.setContentHtml(
+                """
+                <ul>
+                    <li>html unordered list item 1</li>
+                    <li>html unordered list item 2</li>
+                    <li>html unordered list item 3</li>
+                </ul>
+                
+                """.trimIndent()
+            )
         }
-        dialogFragment.setPositiveButton(getString(R.string.sample_positive), (dialogInterface, i) -> {
-            ToastAlert.showToast(getContext(), getString(R.string.positive_click));
-            dialogInterface.dismiss();
-        });
-        dialogFragment.setNegativeButton(getString(R.string.sample_negative), (dialogInterface, i) -> {
-            ToastAlert.showToast(getContext(), getString(R.string.negative_click));
-            dialogInterface.dismiss();
-        });
-        dialogFragment.setDialogCancelable(false);
-        dialogFragment.show(getChildFragmentManager());
+        if (viewBinding.rbTypeHtmlLink.isChecked) {
+            dialogFragment.setContentLink("https://www.google.com")
+        }
+        dialogFragment.setPositiveButton(getString(R.string.sample_positive)) { dialogInterface: DialogInterface, i: Int ->
+            showToast(context, getString(R.string.positive_click))
+            dialogInterface.dismiss()
+        }
+        dialogFragment.setNegativeButton(getString(R.string.sample_negative)) { dialogInterface: DialogInterface, i: Int ->
+            showToast(context, getString(R.string.negative_click))
+            dialogInterface.dismiss()
+        }
+        dialogFragment.setDialogCancelable(false)
+        dialogFragment.show(getChildFragmentManager())
     }
 
-    public void onSimpleDialogClick(View v) {
-        DialogExtensionsKt.showAlert(getString(R.string.sample_dialog_message));
+    fun onSimpleDialogClick(v: View?) {
+        showAlert(getString(R.string.sample_dialog_message))
     }
 
-    public void onShowStartActivityClick(View v) {
-        startActivity(new Intent(getActivity(), NotificationTargetActivity.class));
-        DialogExtensionsKt.showAlert( "dialog after start activity");
+    fun onShowStartActivityClick(v: View?) {
+        startActivity(Intent(activity, NotificationTargetActivity::class.java))
+        showAlert("dialog after start activity")
     }
 
-    public void onShowTopDialogClick(View v) {
-        Intent backServiceIntent = new Intent(getActivity(), BackgroundService.class);
-        requireActivity().startService(backServiceIntent);
+    fun onShowTopDialogClick(v: View?) {
+        val backServiceIntent = Intent(activity, BackgroundService::class.java)
+        requireActivity().startService(backServiceIntent)
     }
 
-    public void onShowBottomDialogClick(View v) {
-        SampleBottomDialogFragment dialogFragment = new SampleBottomDialogFragment();
-        dialogFragment.show(getChildFragmentManager(), "SampleDialog");
+    fun onShowBottomDialogClick(v: View?) {
+        val dialogFragment = SampleBottomDialogFragment()
+        dialogFragment.show(getChildFragmentManager(), "SampleDialog")
     }
 }
