@@ -33,5 +33,5 @@
     <string name="has_file_permission">是否拥有使用存储设备权限</string>
     <string name="get_system_boot_time">获取开机时间</string>
 
-
+    <string name="toast_permission_denied">权限已被禁止，请前往设置解锁</string>
 </resources>

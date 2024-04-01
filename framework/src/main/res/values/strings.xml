@@ -1,5 +1,4 @@
 <resources>
-    <string name="toast_permission_denied"> permission has been disabled. please go to Settings to open it</string>
     <string name="framework_text_dialog_confirm">@android:string/ok</string>
     <string name="framework_text_dialog_cancel">@android:string/cancel</string>
     <string name="framework_text_empty">no data</string>

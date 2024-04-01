@@ -18,11 +18,11 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.linxiao.framework.architecture.ActivityResultHolderFragment.Companion.startActivityForCallback
-import com.linxiao.framework.common.DensityHelper.onActivityGetResources
+import com.linxiao.framework.common.DensityHelper
 import com.linxiao.framework.common.hideKeyboard
 import com.linxiao.framework.language.AppLanguageHelper
 import com.linxiao.framework.language.LanguageChangedEvent
-import com.linxiao.framework.permission.PermissionManager
+import com.linxiao.framework.permission.PermissionRequestHelper
 import com.trello.rxlifecycle2.LifecycleProvider
 import com.trello.rxlifecycle2.LifecycleTransformer
 import com.trello.rxlifecycle2.RxLifecycle
@@ -159,7 +159,12 @@ abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEve
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        PermissionManager.handleCallback(this, requestCode, permissions, grantResults)
+        PermissionRequestHelper.current?.handleCallback(this, requestCode, permissions, grantResults)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        PermissionRequestHelper.current?.onActivityResult(this, requestCode, resultCode, data)
     }
 
     override fun setRequestedOrientation(requestedOrientation: Int) {
@@ -226,7 +231,7 @@ abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEve
     override fun getResources(): Resources {
         val resources = super.getResources()
         // update density
-        onActivityGetResources(resources)
+        DensityHelper.onActivityGetResources(resources)
         // update language config
         AppLanguageHelper.doOnContextGetResources(resources)
         return resources

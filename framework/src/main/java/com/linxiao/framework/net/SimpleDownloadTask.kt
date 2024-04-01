@@ -5,13 +5,12 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Handler
-import android.text.TextUtils
 import android.util.Log
 import android.webkit.MimeTypeMap
 import com.linxiao.framework.common.globalContext
 import com.linxiao.framework.file.FileUtil
 import com.linxiao.framework.permission.PermissionException
-import com.linxiao.framework.permission.PermissionManager
+import com.linxiao.framework.permission.PermissionUtil
 import java.io.File
 import java.io.IOException
 import java.util.Timer
@@ -89,7 +88,7 @@ class SimpleDownloadTask(
      *
      */
     fun hideNotification(): SimpleDownloadTask {
-        if (PermissionManager.isPermissionsGranted(
+        if (PermissionUtil.isPermissionsGranted(
                 globalContext,
                 "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"
             )
@@ -139,7 +138,7 @@ class SimpleDownloadTask(
         }
         downloadListener = listener
         val downloadPath = downloadTo.path
-        if (!FileUtil.isAppDataPath(downloadPath) && !PermissionManager.hasSDCardPermission()) {
+        if (!FileUtil.isAppDataPath(downloadPath) && !PermissionUtil.hasSDCardPermission()) {
             downloadListener?.onError(PermissionException())
             return
         }

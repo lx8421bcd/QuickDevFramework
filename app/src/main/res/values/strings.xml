@@ -29,4 +29,6 @@
     <string name="is_exist_sd_card">is exist sd card</string>
     <string name="has_file_permission">has file permission</string>
     <string name="get_system_boot_time">get system boot time</string>
+
+    <string name="toast_permission_denied"> permission has been disabled. please go to Settings to open it</string>
 </resources>

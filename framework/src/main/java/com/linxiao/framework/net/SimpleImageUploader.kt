@@ -7,7 +7,7 @@ import android.util.Log
 import com.linxiao.framework.common.BitmapUtil
 import com.linxiao.framework.common.globalContext
 import com.linxiao.framework.permission.PermissionException
-import com.linxiao.framework.permission.PermissionManager
+import com.linxiao.framework.permission.PermissionUtil
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
@@ -112,7 +112,7 @@ class SimpleImageUploader private constructor(val filePath: String, val uploadUr
     }
 
     fun start(): Observable<JSONObject> {
-        return if (!PermissionManager.hasSDCardPermission()) {
+        return if (!PermissionUtil.hasSDCardPermission()) {
             Observable.error(PermissionException())
         } else Observable.create(ObservableOnSubscribe { emitter: ObservableEmitter<JSONObject> ->
             val boundary = UUID.randomUUID().toString()

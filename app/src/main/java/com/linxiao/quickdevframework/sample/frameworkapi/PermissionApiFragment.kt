@@ -1,113 +1,122 @@
-package com.linxiao.quickdevframework.sample.frameworkapi;
+package com.linxiao.quickdevframework.sample.frameworkapi
 
-import android.Manifest;
-import android.os.Bundle;
-import android.view.View;
+import android.Manifest
+import android.content.DialogInterface
+import android.os.Bundle
+import android.view.View
+import androidx.fragment.app.FragmentActivity
+import com.linxiao.framework.architecture.SimpleViewBindingFragment
+import com.linxiao.framework.common.ApplicationUtil.openAppDetail
+import com.linxiao.framework.dialog.AlertDialogFragment
+import com.linxiao.framework.dialog.showAlert
+import com.linxiao.framework.permission.PermissionRequestHelper
+import com.linxiao.framework.permission.PermissionUtil
+import com.linxiao.framework.permission.PermissionUtil.getPermissionGroupName
+import com.linxiao.framework.permission.RequestPermissionCallback
+import com.linxiao.quickdevframework.R
+import com.linxiao.quickdevframework.databinding.FragmentPermissionApiBinding
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.linxiao.framework.dialog.DialogExtensionsKt;
-import com.linxiao.framework.permission.PermissionManager;
-import com.linxiao.framework.permission.RequestPermissionCallback;
-import com.linxiao.quickdevframework.databinding.FragmentPermissionApiBinding;
-import com.linxiao.framework.architecture.SimpleViewBindingFragment;
-
-public class PermissionApiFragment extends SimpleViewBindingFragment<FragmentPermissionApiBinding> {
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        getViewBinding().btnRequestSample.setOnClickListener(this::onRequestPermissionClick);
-        getViewBinding().btnRequestWithRationale.setOnClickListener(this::onRationaleClick);
-        getViewBinding().btnDoOnProhibited.setOnClickListener(this::OnProhibitedClick);
-        getViewBinding().btnRequestAlertWindow.setOnClickListener(this::onReqSysAlertClick);
-        getViewBinding().btnRequestWriteSettings.setOnClickListener(this::onReqWriteSettingsClick);
+class PermissionApiFragment : SimpleViewBindingFragment<FragmentPermissionApiBinding>() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewBinding.btnRequestSample.setOnClickListener { v: View? -> onRequestPermissionClick(v) }
+        viewBinding.btnRequestWithRationale.setOnClickListener { v: View? -> onRationaleClick(v) }
+        viewBinding.btnDoOnProhibited.setOnClickListener { v: View? -> OnProhibitedClick(v) }
+        viewBinding.btnRequestAlertWindow.setOnClickListener { v: View? -> onReqSysAlertClick(v) }
+        viewBinding.btnRequestWriteSettings.setOnClickListener { v: View? -> onReqWriteSettingsClick(v) }
     }
 
-    public void onRequestPermissionClick(View v) {
-        PermissionManager.createPermissionOperator()
-        .requestAudioRecord()
-        .perform(getActivity(), new RequestPermissionCallback() {
-            @Override
-            public void onGranted() {
-                DialogExtensionsKt.showAlert("权限已授予");
-            }
+    fun onRequestPermissionClick(v: View?) {
+        PermissionRequestHelper.create()
+            .requestAudioRecord()
+            .perform(requireActivity(), object : RequestPermissionCallback {
+                override fun onGranted() {
+                    showAlert("权限已授予")
+                }
 
-            @Override
-            public void onDenied() {
-                DialogExtensionsKt.showAlert("未授予权限");
-            }
-        });
+                override fun onDenied() {
+                    showAlert("未授予权限")
+                }
+            })
     }
 
-    public void onRationaleClick(View v) {
-        PermissionManager.createPermissionOperator()
-        .addRequestPermission(Manifest.permission.SEND_SMS)
-        .showRationaleBeforeRequest("请授予发送短信权限权限以启用功能")
-        .perform(getActivity(),new RequestPermissionCallback() {
-            @Override
-            public void onGranted() {
-                DialogExtensionsKt.showAlert("权限已授予");
-            }
+    fun onRationaleClick(v: View?) {
+        PermissionRequestHelper.create()
+            .addRequestPermission(Manifest.permission.SEND_SMS)
+            .showRationaleBeforeRequest("请授予发送短信权限权限以启用功能")
+            .perform(requireActivity(), object : RequestPermissionCallback {
+                override fun onGranted() {
+                    showAlert("权限已授予")
+                }
 
-            @Override
-            public void onDenied() {
-                DialogExtensionsKt.showAlert("未授予权限");
-            }
-        });
+                override fun onDenied() {
+                    showAlert("未授予权限")
+                }
+            })
     }
 
-    public void OnProhibitedClick(View v) {
-        PermissionManager.createPermissionOperator()
+    fun OnProhibitedClick(v: View?) {
+        PermissionRequestHelper.create()
         .addRequestPermission(Manifest.permission.READ_PHONE_STATE)
         .showRationaleBeforeRequest("请两次以上请求申请权限然后勾选\"不再提醒\"查看功能")
-        .doOnProhibited(permission -> {
-            // default handle
-            PermissionManager.showPermissionProhibitedDialog(getActivity(), permission);
+        .doOnProhibited { permission: String ->
+            showPermissionProhibitedDialog(
+                requireActivity(),
+                PermissionUtil.getPermissionName(requireActivity(), permission)
+            )
+        }
+        .perform(requireActivity(), object : RequestPermissionCallback {
+            override fun onGranted() {
+                showAlert("权限已授予")
+            }
+
+            override fun onDenied() {
+                showAlert("未授予权限")
+            }
         })
-        .perform(getActivity(),new RequestPermissionCallback() {
-            @Override
-            public void onGranted() {
-                DialogExtensionsKt.showAlert("权限已授予");
-            }
-
-            @Override
-            public void onDenied() {
-                DialogExtensionsKt.showAlert("未授予权限");
-            }
-        });
     }
 
-    public void onReqSysAlertClick(View v) {
-        PermissionManager.createPermissionOperator()
-        .requestManageOverlayPermission()
-        .perform(getActivity(), new RequestPermissionCallback() {
-            @Override
-            public void onGranted() {
-                DialogExtensionsKt.showAlert("权限已授予");
-            }
+    fun onReqSysAlertClick(v: View?) {
+        PermissionRequestHelper.create()
+            .requestManageOverlayPermission()
+            .perform(requireActivity(), object : RequestPermissionCallback {
+                override fun onGranted() {
+                    showAlert("权限已授予")
+                }
 
-            @Override
-            public void onDenied() {
-                DialogExtensionsKt.showAlert("未授予权限");
-            }
-        });
+                override fun onDenied() {
+                    showAlert("未授予权限")
+                }
+            })
     }
 
-    public void onReqWriteSettingsClick(View v) {
-        PermissionManager.createPermissionOperator()
+    fun onReqWriteSettingsClick(v: View?) {
+        PermissionRequestHelper.create()
         .requestManageOverlayPermission()
-        .perform(getActivity(), new RequestPermissionCallback() {
-            @Override
-            public void onGranted() {
-                DialogExtensionsKt.showAlert("权限已授予");
+        .perform(requireActivity(), object : RequestPermissionCallback {
+            override fun onGranted() {
+                showAlert("权限已授予")
             }
 
-            @Override
-            public void onDenied() {
-                DialogExtensionsKt.showAlert("未授予权限");
+            override fun onDenied() {
+                showAlert("未授予权限")
             }
-        });
+        })
+    }
+
+    fun showPermissionProhibitedDialog(context: FragmentActivity, permission: String) {
+        val permissionGroupName = getPermissionGroupName(context, permission)
+        val message = permissionGroupName + context.getString(R.string.toast_permission_denied)
+        val dialogFragment = AlertDialogFragment()
+        dialogFragment.setMessage(message)
+        .setPositiveButton { dialog: DialogInterface, which: Int ->
+            // jump to application detail
+            openAppDetail(context)
+            dialog.dismiss()
+        }
+        .setNegativeButton { dialog: DialogInterface, which: Int ->
+            dialog.dismiss()
+        }
+        .show(context.supportFragmentManager)
     }
 }

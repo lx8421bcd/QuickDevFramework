@@ -14,7 +14,8 @@ import com.linxiao.framework.file.FileDeleteTask;
 import com.linxiao.framework.file.FileModifyListener;
 import com.linxiao.framework.file.FileSizeUtil;
 import com.linxiao.framework.file.FileUtil;
-import com.linxiao.framework.permission.PermissionManager;
+import com.linxiao.framework.permission.PermissionRequestHelper;
+import com.linxiao.framework.permission.PermissionUtil;
 import com.linxiao.framework.permission.RequestPermissionCallback;
 import com.linxiao.quickdevframework.R;
 import com.linxiao.quickdevframework.databinding.FragmentFileApiBinding;
@@ -31,7 +32,7 @@ public class FileApiFragment extends SimpleViewBindingFragment<FragmentFileApiBi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        PermissionManager.createPermissionOperator()
+        PermissionRequestHelper.create()
         .requestSDCard()
         .perform(getActivity(), new RequestPermissionCallback() {
             @Override
@@ -188,7 +189,7 @@ public class FileApiFragment extends SimpleViewBindingFragment<FragmentFileApiBi
         })
         .execute();
         getViewBinding().tvHasSDCard.setText(getString(R.string.is_exist_sd_card) + ": " + FileUtil.hasExt());
-        getViewBinding().tvHasPermission.setText(getString(R.string.has_file_permission) + ": " + PermissionManager.hasSDCardPermission());
+        getViewBinding().tvHasPermission.setText(getString(R.string.has_file_permission) + ": " + PermissionUtil.hasSDCardPermission());
     }
 
 }

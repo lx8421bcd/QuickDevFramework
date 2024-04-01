@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.text.TextUtils
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
@@ -22,26 +21,53 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 /**
  * 权限操作对象
  *
+ * 用于适配Android 6.0+ 的权限问题。<br></br>
+ * Google定义的Runtime权限使用 createPermissionOperator() 方法处理即可,
+ * 务必在申请权限操作所属 Activity的onRequestPermissionResult() 中调用
+ * [handleCallback], 否则不会执行回调
+ *
+ * SYSTEM_ALERT_WINDOW 权限请使用 requestManageOverlayPermission() 函数申请,
+ * **必须在申请操作所属Activity的onActivityResult()中调用
+ * [onActivityResult] (Activity, int)}，
+ * 否则无法通知权限是否授予
+ * <br>
+ *
+ * WRITE_SETTINGS 权限请使用 requestWriteSystemSettingsPermission() 函数申请,
+ * **必须在申请操作所属Activity的onActivityResult()中调用
+ * [onActivityResult] (Activity, int)}，
+ * 否则无法通知权限是否授予<br/>
+ *
  * @author lx8421bcd
  * @since 2016-11-24.
  */
-class PermissionOperator internal constructor() {
+class PermissionRequestHelper private constructor() {
 
     companion object {
-        private val TAG = PermissionOperator::class.java.getSimpleName()
+        private val TAG = PermissionRequestHelper::class.java.getSimpleName()
+
         const val PERMISSION_REQUEST_CODE = 1001
         const val MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 1002
         const val WRITE_SETTINGS_PERMISSION_REQUEST_CODE = 1003
         const val INSTALL_PACKAGE_REQUEST_CODE = 1004
 
-        //权限被禁止的默认处理
-        @JvmField
-        var defaultProhibitedListener: PermissionProhibitedListener? = null
+        var current: PermissionRequestHelper? = null
+            private set
+
+        @JvmStatic
+        fun create(): PermissionRequestHelper {
+            val created = PermissionRequestHelper()
+            current = created
+            return created
+        }
+        var defaultDoOnProhibited: (permission: String) -> Unit = {
+            Log.e(TAG, "permission request prohibited without callback handle")
+            Log.e(TAG, "if you haven't seen permission request dialog, check you have declared permission in the manifest")
+        }
     }
 
     private val requestPermissions: ArrayList<String> = ArrayList()
     private var currCallback: RequestPermissionCallback? = null
-    private var prohibitedListener: PermissionProhibitedListener? = null
+    private var doOnProhibited: (permission: String) -> Unit = defaultDoOnProhibited
     private var requestDesc: String = ""
     private var requestCode: Int
 
@@ -49,53 +75,53 @@ class PermissionOperator internal constructor() {
         requestCode = PERMISSION_REQUEST_CODE
     }
 
-    fun addRequestPermission(permission: String): PermissionOperator {
+    fun addRequestPermission(permission: String): PermissionRequestHelper {
         if (!requestPermissions.contains(permission)) {
             requestPermissions.add(permission)
         }
         return this
     }
 
-    fun requestCalendar(): PermissionOperator {
+    fun requestCalendar(): PermissionRequestHelper {
         addRequestPermission(Manifest.permission.READ_CALENDAR)
         addRequestPermission(Manifest.permission.WRITE_CALENDAR)
         return this
     }
 
-    fun requestReadPhoneState(): PermissionOperator {
+    fun requestReadPhoneState(): PermissionRequestHelper {
         return addRequestPermission(Manifest.permission.READ_PHONE_STATE)
     }
 
-    fun requestAudioRecord(): PermissionOperator {
+    fun requestAudioRecord(): PermissionRequestHelper {
         return addRequestPermission(Manifest.permission.RECORD_AUDIO)
     }
 
-    fun requestCamera(): PermissionOperator {
+    fun requestCamera(): PermissionRequestHelper {
         return addRequestPermission(Manifest.permission.CAMERA)
     }
 
-    fun requestSDCard(): PermissionOperator {
+    fun requestSDCard(): PermissionRequestHelper {
         addRequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
         addRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         return this
     }
 
-    fun requestLocation(): PermissionOperator {
+    fun requestLocation(): PermissionRequestHelper {
         addRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION)
         return this
     }
 
-    fun requestManageOverlayPermission(): PermissionOperator {
+    fun requestManageOverlayPermission(): PermissionRequestHelper {
         requestCode = MANAGE_OVERLAY_PERMISSION_REQUEST_CODE
         return this
     }
 
-    fun requestWriteSystemSettingsPermission(): PermissionOperator {
+    fun requestWriteSystemSettingsPermission(): PermissionRequestHelper {
         requestCode = WRITE_SETTINGS_PERMISSION_REQUEST_CODE
         return this
     }
 
-    fun requestInstallPackagePermission(): PermissionOperator {
+    fun requestInstallPackagePermission(): PermissionRequestHelper {
         requestCode = INSTALL_PACKAGE_REQUEST_CODE
         return this
     }
@@ -106,7 +132,7 @@ class PermissionOperator internal constructor() {
      * 将会在执行时弹出AlertDialog显示解释内容
      * @param rationale 解释文本
      */
-    fun showRationaleBeforeRequest(rationale: String): PermissionOperator {
+    fun showRationaleBeforeRequest(rationale: String): PermissionRequestHelper {
         requestDesc = rationale
         return this
     }
@@ -115,10 +141,10 @@ class PermissionOperator internal constructor() {
      * 设置权限被完全禁止时的操作
      *
      * 考虑到潜在的归一化处理与特殊处理的需求，没有将其定义在RequestPermissionListener中
-     * @param prohibitedListener 监听器
+     * @param invoked 监听器
      */
-    fun doOnProhibited(prohibitedListener: PermissionProhibitedListener?): PermissionOperator {
-        this.prohibitedListener = prohibitedListener
+    fun doOnProhibited(invoked: (permission: String) -> Unit): PermissionRequestHelper {
+        this.doOnProhibited = invoked
         return this
     }
 
@@ -134,25 +160,25 @@ class PermissionOperator internal constructor() {
                 return
             }
             val requestArr = requestPermissions.toArray(arrayOf<String>())
-            if (PermissionManager.isPermissionsGranted(activity, *requestArr)) {
+            if (PermissionUtil.isPermissionsGranted(activity, *requestArr)) {
                 callback.onGranted()
                 return
             }
         }
         if (requestCode == MANAGE_OVERLAY_PERMISSION_REQUEST_CODE &&
-            PermissionManager.hasManageOverlayPermission()
+            PermissionUtil.hasManageOverlayPermission()
         ) {
             callback.onGranted()
             return
         }
         if (requestCode == WRITE_SETTINGS_PERMISSION_REQUEST_CODE &&
-            PermissionManager.hasWriteSystemSettingsPermission()
+            PermissionUtil.hasWriteSystemSettingsPermission()
         ) {
             callback.onGranted()
             return
         }
         if (requestCode == INSTALL_PACKAGE_REQUEST_CODE &&
-            PermissionManager.hasInstallPackagePermission()
+            PermissionUtil.hasInstallPackagePermission()
         ) {
             callback.onGranted()
             return
@@ -223,7 +249,7 @@ class PermissionOperator internal constructor() {
         activity: Activity,
         callback: RequestPermissionCallback?
     ) {
-        if (PermissionManager.hasManageOverlayPermission()) {
+        if (PermissionUtil.hasManageOverlayPermission()) {
             callback?.onGranted()
             return
         }
@@ -246,7 +272,7 @@ class PermissionOperator internal constructor() {
         activity: Activity,
         callback: RequestPermissionCallback?
     ) {
-        if (PermissionManager.hasWriteSystemSettingsPermission()) {
+        if (PermissionUtil.hasWriteSystemSettingsPermission()) {
             callback?.onGranted()
             return
         }
@@ -261,7 +287,7 @@ class PermissionOperator internal constructor() {
         activity: Activity,
         callback: RequestPermissionCallback?
     ) {
-        if (PermissionManager.hasInstallPackagePermission()) {
+        if (PermissionUtil.hasInstallPackagePermission()) {
             callback?.onGranted()
             return
         }
@@ -293,26 +319,16 @@ class PermissionOperator internal constructor() {
 
             // 如果这个值返回true，代表权限申请被拒绝，可以弹理由了
             // 如果返回false，代表权限申请被用户完全禁止（第一次返回false表示可以不弹理由，在申请权限前调用）
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, permissions[i]!!)) {
-                currCallback!!.onDenied()
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[i])) {
+                currCallback?.onDenied()
                 currCallback = null
                 return
             }
-            if (prohibitedListener != null) {
-                prohibitedListener!!.onProhibited(permissions[i])
-            } else if (defaultProhibitedListener != null) {
-                defaultProhibitedListener!!.onProhibited(permissions[i])
-            } else {
-                Log.e(TAG, "permission request prohibited without callback handle")
-                Log.e(
-                    TAG, "if you haven't seen permission request dialog, " +
-                            "check you have declared permission in the manifest"
-                )
-            }
+            doOnProhibited(permissions[i])
             currCallback = null
             return
         }
-        currCallback!!.onGranted()
+        currCallback?.onGranted()
         currCallback = null
     }
 
@@ -320,38 +336,26 @@ class PermissionOperator internal constructor() {
         if (requestCode == MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
             if (Settings.canDrawOverlays(activity)) {
                 Log.d(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW granted")
-                if (currCallback != null) {
-                    currCallback!!.onGranted()
-                }
+                currCallback?.onGranted()
             } else {
                 Log.d(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW denied")
-                if (currCallback != null) {
-                    currCallback!!.onDenied()
-                }
+                currCallback?.onDenied()
             }
             currCallback = null
         } else if (requestCode == WRITE_SETTINGS_PERMISSION_REQUEST_CODE) {
             if (Settings.System.canWrite(activity)) {
                 Log.d(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW granted")
-                if (currCallback != null) {
-                    currCallback!!.onGranted()
-                }
+                currCallback?.onGranted()
             } else {
                 Log.d(TAG, "onSysAlertPermissionResult: SYSTEM_ALERT_WINDOW denied")
-                if (currCallback != null) {
-                    currCallback!!.onDenied()
-                }
+                currCallback?.onDenied()
             }
             currCallback = null
         } else if (requestCode == INSTALL_PACKAGE_REQUEST_CODE) {
-            if (PermissionManager.hasInstallPackagePermission()) {
-                if (currCallback != null) {
-                    currCallback!!.onGranted()
-                }
+            if (PermissionUtil.hasInstallPackagePermission()) {
+                currCallback?.onGranted()
             } else {
-                if (currCallback != null) {
-                    currCallback!!.onDenied()
-                }
+                currCallback?.onDenied()
             }
         }
     }

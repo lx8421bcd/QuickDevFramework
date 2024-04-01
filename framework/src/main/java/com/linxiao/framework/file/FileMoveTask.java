@@ -3,7 +3,7 @@ package com.linxiao.framework.file;
 import android.os.AsyncTask;
 
 import com.linxiao.framework.permission.PermissionException;
-import com.linxiao.framework.permission.PermissionManager;
+import com.linxiao.framework.permission.PermissionUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -99,7 +99,7 @@ public class FileMoveTask extends AsyncTask<Void, Double, String> {
             totalCount += FileSizeUtil.calculateSubFileCount(src);
             totalSize  += FileSizeUtil.calculateSize(src, FileSizeUtil.SIZE_UNIT_BYTE);
         }
-        if (needPermission && !PermissionManager.hasSDCardPermission()) {
+        if (needPermission && !PermissionUtil.hasSDCardPermission()) {
             error = new PermissionException();
             return "error";
         }
