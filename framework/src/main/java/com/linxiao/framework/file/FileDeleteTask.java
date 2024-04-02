@@ -83,8 +83,8 @@ public class FileDeleteTask extends AsyncTask<Void, Long, String> {
             if (!FileUtil.isAppDataPath(src.getPath())) {
                 needPermission = true;
             }
-            totalCount += FileSizeUtil.calculateSubFileCount(src);
-            totalSize  += FileSizeUtil.calculateSize(src, FileSizeUtil.SIZE_UNIT_BYTE);
+            totalCount += FileUtil.calculateSubFileCount(src);
+            totalSize  += (long) FileUtil.calculateSize(src, FileSizeUnit.B);
         }
         if (needPermission && !PermissionUtil.hasSDCardPermission()) {
             error = new PermissionException();

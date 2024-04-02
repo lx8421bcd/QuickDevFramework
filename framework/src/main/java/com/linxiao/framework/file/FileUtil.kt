@@ -320,7 +320,7 @@ object FileUtil {
         val fList = file.listFiles() ?: return 0
         for (value in fList) {
             if (value.isDirectory()) {
-                filesSum = filesSum + calculateSubFileCount(value)
+                filesSum += calculateSubFileCount(value)
             } else {
                 filesSum++
             }
@@ -335,8 +335,7 @@ object FileUtil {
         }
         var size: Long = 0
         if (file.exists()) {
-            val fis: FileInputStream
-            fis = FileInputStream(file)
+            val fis = FileInputStream(file)
             size = fis.available().toLong()
             fis.close()
         }
