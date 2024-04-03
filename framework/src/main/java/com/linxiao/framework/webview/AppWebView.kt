@@ -13,7 +13,7 @@ private val TAG = AppWebView::class.java.getSimpleName()
 /**
  * 应用框架内基础WebView
  *
- *  class description
+ * 配置有常见的WebView基础配置，以及一个简单的JSBridge
  *
  * @author linxiao
  * @since  2018-06-01.
