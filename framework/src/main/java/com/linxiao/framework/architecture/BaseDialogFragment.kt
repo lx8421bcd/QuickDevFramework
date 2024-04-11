@@ -12,6 +12,9 @@ import androidx.annotation.CallSuper
 import androidx.annotation.CheckResult
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.linxiao.framework.common.getRealScreenWidth
 import com.trello.rxlifecycle2.LifecycleProvider
 import com.trello.rxlifecycle2.LifecycleTransformer
@@ -20,6 +23,8 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
+import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * base DialogFragment class of entire project
@@ -36,6 +41,16 @@ import io.reactivex.subjects.BehaviorSubject
  */
 abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider<FragmentEvent> {
 
+    private inner class BaseBottomSheetDismissCallback() : BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                this@BaseDialogFragment.dismissAfterAnimation()
+            }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+    }
+
     companion object {
         /**
          * 应用内所有继承自BaseDialogFragment的Dialog组件的默认宽度
@@ -47,6 +62,9 @@ abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider
     @JvmField
     protected val TAG = this::class.java.simpleName
 
+    protected var bottomSheetStyle = false
+
+    private var waitingForDismissAllowingStateLoss = false
     private val lifecycleSubject = BehaviorSubject.create<FragmentEvent>()
 
     @CheckResult
@@ -64,6 +82,8 @@ abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider
         return RxLifecycleAndroid.bindFragment(lifecycleSubject)
     }
 
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
     @CallSuper
     override fun onAttach(activity: Activity) {
         super.onAttach(activity)
@@ -77,7 +97,11 @@ abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
+        val dialog = if (bottomSheetStyle) {
+            BottomSheetDialog(requireContext(), theme)
+        } else {
+            super.onCreateDialog(savedInstanceState)
+        }
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         return dialog
     }
@@ -163,4 +187,63 @@ abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider
     fun showNow(manager: FragmentManager) {
         this.showNow(manager, "${this.javaClass.simpleName}#${this.hashCode()}")
     }
+
+    override fun dismiss() {
+        if (bottomSheetStyle) {
+            if (!tryDismissWithAnimation(false)) {
+                super.dismiss()
+            }
+        }
+        super.dismiss()
+    }
+
+    override fun dismissAllowingStateLoss() {
+        if (bottomSheetStyle) {
+            if (!tryDismissWithAnimation(true)) {
+                super.dismissAllowingStateLoss()
+            }
+        }
+        super.dismissAllowingStateLoss()
+    }
+
+    /* functions copy from BottomSheetDialogFragment */
+
+    private fun tryDismissWithAnimation(allowingStateLoss: Boolean): Boolean {
+        val baseDialog = this.dialog
+        if (baseDialog is BottomSheetDialog) {
+            val behavior: BottomSheetBehavior<*> = baseDialog.behavior
+            if (behavior.isHideable && baseDialog.dismissWithAnimation) {
+                this.dismissWithAnimation(behavior, allowingStateLoss)
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun dismissWithAnimation(behavior: BottomSheetBehavior<*>, allowingStateLoss: Boolean) {
+        this.waitingForDismissAllowingStateLoss = allowingStateLoss
+        if (behavior.state == 5) {
+            this.dismissAfterAnimation()
+        } else {
+            if (this.dialog is BottomSheetDialog) {
+                val privateMethod = BottomSheetDialog::class.declaredMemberFunctions.first {
+                    it.name == "removeDefaultCallback"
+                }
+                privateMethod.isAccessible = true
+                privateMethod.call(this.dialog)
+            }
+            behavior.addBottomSheetCallback(BaseBottomSheetDismissCallback())
+            behavior.setState(BottomSheetBehavior.STATE_HIDDEN)
+        }
+    }
+
+    private fun dismissAfterAnimation() {
+        if (this.waitingForDismissAllowingStateLoss) {
+            super.dismissAllowingStateLoss()
+        } else {
+            super.dismiss()
+        }
+    }
+
+
 }
