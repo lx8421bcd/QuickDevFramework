@@ -19,7 +19,6 @@ import com.linxiao.quickdevframework.sample.adapter.AdapterTestFragment
 import com.linxiao.quickdevframework.sample.frameworkapi.ApplicationApiFragment
 import com.linxiao.quickdevframework.sample.frameworkapi.BiometricApiFragment
 import com.linxiao.quickdevframework.sample.frameworkapi.DialogApiFragment
-import com.linxiao.quickdevframework.sample.frameworkapi.FileApiFragment
 import com.linxiao.quickdevframework.sample.frameworkapi.NotificationApiFragment
 import com.linxiao.quickdevframework.sample.frameworkapi.PermissionApiFragment
 import com.linxiao.quickdevframework.sample.frameworkapi.ToastApiFragment
@@ -106,7 +105,6 @@ class MainActivity : SimpleViewBindingActivity<ActivityMainBinding>() {
         addFragment(NotificationApiFragment(), "NotificationApiFragment")
         addFragment(ToastApiFragment(), "ToastApiFragment")
         addFragment(PermissionApiFragment(), "PermissionApiFragment")
-        addFragment(FileApiFragment(), "FileApiFragment")
         addFragment(NetTestFragment(), "NetTestFragment")
         addFragment(DownloadTestFragment(), "DownloadTestFragment")
         addFragment(AdapterTestFragment(), "AdapterTestFragment")
