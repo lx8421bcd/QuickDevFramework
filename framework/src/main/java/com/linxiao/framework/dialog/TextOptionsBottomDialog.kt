@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.linxiao.framework.architecture.BaseBottomDialogFragment
+import com.linxiao.framework.architecture.SimpleViewBindingDialogFragment
 import com.linxiao.framework.databinding.PopupTextOptionsBinding
 
 /**
@@ -14,14 +14,14 @@ import com.linxiao.framework.databinding.PopupTextOptionsBinding
  * @author linxiao
  * @since 2022-12-22
  */
-class TextOptionsBottomDialog : BaseBottomDialogFragment() {
-
-    private val viewBinding by lazy {
-        return@lazy PopupTextOptionsBinding.inflate(layoutInflater)
-    }
+class TextOptionsBottomDialog : SimpleViewBindingDialogFragment<PopupTextOptionsBinding>() {
 
     val adapter: TextOptionsAdapter by lazy {
         return@lazy TextOptionsAdapter()
+    }
+
+    init {
+        bottomSheetStyle = true
     }
 
     override fun onCreateView(

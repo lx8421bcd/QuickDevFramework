@@ -1,28 +1,19 @@
 package com.linxiao.quickdevframework.sample.frameworkapi
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import com.linxiao.framework.architecture.BaseBottomDialogFragment
-import com.linxiao.quickdevframework.R
+import com.linxiao.framework.architecture.SimpleViewBindingDialogFragment
+import com.linxiao.quickdevframework.databinding.DialogBottomSampleBinding
 
 /**
  *
  * @author lx8421bcd
  * @since 2016-12-12
  */
-class SampleBottomDialogFragment : BaseBottomDialogFragment() {
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.dialog_bottom_sample, container)
-    }
+class SampleBottomDialogFragment : SimpleViewBindingDialogFragment<DialogBottomSampleBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dialog?.findViewById<View>(R.id.root_view)?.setOnClickListener { v: View? -> dismiss() }
+        viewBinding.rootView.setOnClickListener { v: View? -> dismiss() }
     }
 }

@@ -22,7 +22,7 @@ package com.linxiao.framework.widget.wheelview
  *  *  New Wheel position is set
  *  *  Wheel view is scrolled
  */
-interface OnWheelClickedListener {
+fun interface OnWheelClickedListener {
     /**
      * Callback method to be invoked when current item clicked
      * @param wheel the wheel view

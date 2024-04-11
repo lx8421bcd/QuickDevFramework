@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/root_view"
+    android:background="@color/white"
+    tools:layout_height="200dp"
+    tools:parentTag="android.widget.LinearLayout"
+    tools:orientation="horizontal">
+
+    <com.linxiao.framework.widget.wheelview.WheelView
+        android:id="@+id/wheel_year"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+    <com.linxiao.framework.widget.wheelview.WheelView
+        android:id="@+id/wheel_month"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+    <com.linxiao.framework.widget.wheelview.WheelView
+        android:id="@+id/wheel_day"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+    <com.linxiao.framework.widget.wheelview.WheelView
+        android:id="@+id/wheel_hour"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+    <com.linxiao.framework.widget.wheelview.WheelView
+        android:id="@+id/wheel_minute"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+    <com.linxiao.framework.widget.wheelview.WheelView
+        android:id="@+id/wheel_seconds"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+</merge>
