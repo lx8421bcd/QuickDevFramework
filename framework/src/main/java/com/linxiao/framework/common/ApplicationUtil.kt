@@ -57,6 +57,10 @@ object ApplicationUtil {
      *
      * https://android-developers.googleblog.com/2017/04/changes-to-device-identifiers-in.html
      * </p>
+     * base practice in device identifier:
+     * https://developer.android.com/training/articles/user-data-ids?hl=zh-cn#kotlin
+     *
+     * 需要注意的是，在某些国产手机上（如MIUI 13+）用户可以禁止应用获取ANDROID_ID，此方法会返回假数据
      */
     @SuppressLint("HardwareIds")
     fun getAndroidID(): String {
