@@ -45,6 +45,7 @@ object ApplicationUtil {
     /**
      * get AndroidID which is Google allowed
      *
+     * [doc from](https://android-developers.googleblog.com/2017/04/changes-to-device-identifiers-in.html)
      * <p>
      * Additionally in Android O:
      * 1. The ANDROID_ID value won't change on package uninstall/reinstall,as long as the package name and signing key are the same.
@@ -54,11 +55,10 @@ object ApplicationUtil {
      * 3. The Android ID value only changes if the device is factory reset or if the signing key rotates between uninstall and reinstall events.
      * 4. This change is only required for device manufacturers shipping with Google Play services and Advertising ID.
      * Other device manufacturers may provide an alternative resettable ID or continue to provide ANDROID ID.
-     *
-     * https://android-developers.googleblog.com/2017/04/changes-to-device-identifiers-in.html
      * </p>
-     * base practice in device identifier:
-     * https://developer.android.com/training/articles/user-data-ids?hl=zh-cn#kotlin
+     *
+     * see
+     * [base practice about device identifier](https://developer.android.com/training/articles/user-data-ids?hl=zh-cn#kotlin)
      *
      * 需要注意的是，在某些国产手机上（如MIUI 13+）用户可以禁止应用获取ANDROID_ID，此方法会返回假数据
      */
