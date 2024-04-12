@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import com.linxiao.framework.architecture.SimpleViewBindingFragment
+import com.linxiao.framework.common.DensityHelper
 import com.linxiao.framework.widget.TextDrawable
 import com.linxiao.quickdevframework.databinding.FragmentWidgetsGuideBinding
 import com.linxiao.quickdevframework.sample.mvvm.CaptchaActivity
@@ -21,6 +22,8 @@ class WidgetsGuideFragment : SimpleViewBindingFragment<FragmentWidgetsGuideBindi
         drawable.backgroundColor = Color.BLACK
         drawable.textColor = Color.WHITE
         drawable.text = "辣鸡"
+        drawable.textSize = DensityHelper.dp2px(12f).toFloat()
+        drawable.setPadding(4,4,4,4)
         viewBinding.ivTextDrawable.setImageDrawable(drawable)
         viewBinding.btnMVVMSample.setOnClickListener { v: View? -> onMVVMSampleClick(v) }
     }
