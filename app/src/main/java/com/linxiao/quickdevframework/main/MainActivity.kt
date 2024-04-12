@@ -77,7 +77,6 @@ class MainActivity : SimpleViewBindingActivity<ActivityMainBinding>() {
         apiSampleList.add(ApiSampleObject("Notification API", "NotificationApiFragment"))
         apiSampleList.add(ApiSampleObject("Toast API", "ToastApiFragment"))
         apiSampleList.add(ApiSampleObject("Permission API", "PermissionApiFragment"))
-        apiSampleList.add(ApiSampleObject("File API", "FileApiFragment"))
         apiSampleList.add(ApiSampleObject("Network API", "NetTestFragment"))
         apiSampleList.add(ApiSampleObject("Download Test", "DownloadTestFragment"))
         apiSampleList.add(ApiSampleObject("Adapter API", "AdapterTestFragment"))
