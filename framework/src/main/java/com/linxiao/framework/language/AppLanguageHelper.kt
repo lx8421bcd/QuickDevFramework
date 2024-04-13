@@ -97,7 +97,8 @@ object AppLanguageHelper {
 
     @Synchronized
     fun doOnContextGetResources(res: Resources) {
-        changeResourcesConfig(res)
+        val conf = res.configuration
+        conf.locale = getCurrentLanguageOption()!!.locale
     }
 
     @Synchronized

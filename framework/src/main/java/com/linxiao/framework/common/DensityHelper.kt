@@ -19,7 +19,7 @@ object DensityHelper {
      * 是否动态调整分辨率
      */
     @JvmStatic
-    var isScaleDensityEnabled = false
+    var scaleDensityEnabled = false
 
     private var designedDensity = 0f
     private var originDensity = 0f
@@ -50,7 +50,7 @@ object DensityHelper {
             originScaledDensity = dm.scaledDensity
             originDensityDpi = dm.densityDpi
         }
-        if (isScaleDensityEnabled) {
+        if (scaleDensityEnabled) {
             dm.density = designedDensity
             dm.scaledDensity = designedDensity
             dm.densityDpi = (designedDensity * 160).toInt()
@@ -66,7 +66,7 @@ object DensityHelper {
      */
     @JvmStatic
     fun dp2px(dpValue: Float): Int {
-        val scale = if (designedDensity > 0) designedDensity else originDensity
+        val scale = if (designedDensity > 0 && scaleDensityEnabled) designedDensity else originDensity
         return ceil(dpValue * scale).toInt()
     }
 
@@ -75,7 +75,7 @@ object DensityHelper {
      */
     @JvmStatic
     fun px2dp(pxValue: Float): Int {
-        val scale = if (designedDensity > 0) designedDensity else originDensity
+        val scale = if (designedDensity > 0 && scaleDensityEnabled) designedDensity else originDensity
         return ceil(pxValue / scale).toInt()
     }
 
