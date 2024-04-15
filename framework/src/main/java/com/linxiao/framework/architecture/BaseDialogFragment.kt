@@ -16,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.linxiao.framework.common.getRealScreenWidth
+import com.linxiao.framework.dialog.LoadingDialogFragment
 import com.trello.rxlifecycle2.LifecycleProvider
 import com.trello.rxlifecycle2.LifecycleTransformer
 import com.trello.rxlifecycle2.RxLifecycle
@@ -62,10 +63,13 @@ abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider
     @JvmField
     protected val TAG = this::class.java.simpleName
 
-    protected var bottomSheetStyle = false
-
     private var waitingForDismissAllowingStateLoss = false
     private val lifecycleSubject = BehaviorSubject.create<FragmentEvent>()
+
+    protected var bottomSheetStyle = false
+    protected val loadingDialog by lazy {
+        LoadingDialogFragment()
+    }
 
     @CheckResult
     override fun lifecycle(): Observable<FragmentEvent> {

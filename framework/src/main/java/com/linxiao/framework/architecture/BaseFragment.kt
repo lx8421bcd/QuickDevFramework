@@ -12,6 +12,7 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.linxiao.framework.architecture.ActivityResultHolderFragment.Companion.startActivityForCallback
+import com.linxiao.framework.dialog.LoadingDialogFragment
 import com.trello.rxlifecycle2.LifecycleProvider
 import com.trello.rxlifecycle2.LifecycleTransformer
 import com.trello.rxlifecycle2.RxLifecycle
@@ -53,6 +54,10 @@ abstract class BaseFragment : Fragment(), LifecycleProvider<FragmentEvent> {
     private val backStackChangeListener = {
         childBackPressedCallback.isEnabled =
             childBackPressedEnabled && getChildFragmentManager().backStackEntryCount > 0
+    }
+
+    protected val loadingDialog by lazy {
+        LoadingDialogFragment()
     }
 
     fun startActivityForCallback(
@@ -149,6 +154,12 @@ abstract class BaseFragment : Fragment(), LifecycleProvider<FragmentEvent> {
         for (i in 0 until childFragmentManager.backStackEntryCount) {
             getChildFragmentManager().popBackStack()
         }
+    }
+
+    fun popSelf() {
+        parentFragmentManager.beginTransaction()
+        .remove(this)
+        .commitAllowingStateLoss()
     }
 
     /**

@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import com.linxiao.framework.architecture.ActivityResultHolderFragment.Companion.startActivityForCallback
 import com.linxiao.framework.common.DensityHelper
 import com.linxiao.framework.common.hideKeyboard
+import com.linxiao.framework.dialog.LoadingDialogFragment
 import com.linxiao.framework.language.AppLanguageHelper
 import com.linxiao.framework.language.LanguageChangedEvent
 import com.linxiao.framework.permission.PermissionRequestHelper
@@ -58,6 +59,9 @@ abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEve
     private val finishSignal = Any()
     private var hideKeyboardOnTouchOutside = false
 
+    protected val loadingDialog by lazy {
+        LoadingDialogFragment()
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEvent(event: LanguageChangedEvent?) {
         recreate()
