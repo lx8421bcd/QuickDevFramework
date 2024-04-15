@@ -22,7 +22,7 @@ import java.lang.reflect.ParameterizedType
 abstract class RetrofitApiProvider<T> {
 
     private var baseUrl: String = ""
-    private var api: T = buildClientApi()
+    var api: T = buildClientApi()
         get() {
             if (TextUtils.equals(baseUrl, provideApiBaseUrl())) {
                 field = buildClientApi()
