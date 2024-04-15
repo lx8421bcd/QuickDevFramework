@@ -29,11 +29,11 @@ object AppPreferences {
      *
      * Private模式代表该文件是私有数据,只能被应用本身访问,在该模式下,写入的内容会覆盖原文件的内容
      */
-    fun getPrivate(context: Context, name: String): PreferenceOperator? {
+    fun getPrivate(context: Context, name: String): PreferenceOperator {
         return getPreferencesByMode(context, name, Context.MODE_PRIVATE)
     }
 
-    fun getPrivate(name: String): PreferenceOperator? {
+    fun getPrivate(name: String): PreferenceOperator {
         return getPreferencesByMode(globalContext, name, Context.MODE_PRIVATE)
     }
 
@@ -42,11 +42,11 @@ object AppPreferences {
      *
      * Append模式会检查文件是否存在,存在就往文件追加内容,否则就创建新文件.
      */
-    fun getAppend(context: Context, name: String): PreferenceOperator? {
+    fun getAppend(context: Context, name: String): PreferenceOperator {
         return getPreferencesByMode(context, name, Context.MODE_APPEND)
     }
 
-    fun getAppend(name: String): PreferenceOperator? {
+    fun getAppend(name: String): PreferenceOperator {
         return getPreferencesByMode(globalContext, name, Context.MODE_APPEND)
     }
 
@@ -54,8 +54,8 @@ object AppPreferences {
         context: Context,
         name: String,
         mode: Int
-    ): PreferenceOperator? {
+    ): PreferenceOperator {
         val sharedPreferences = context.getSharedPreferences(name, mode)
-        return sharedPreferences?.let { PreferenceOperator(it) }
+        return PreferenceOperator(sharedPreferences)
     }
 }
