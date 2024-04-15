@@ -3,8 +3,6 @@ package com.linxiao.framework.net
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.reflect.TypeToken
-import com.linxiao.framework.json.GsonParser.parser
-import com.linxiao.framework.net.ApiResponse.Companion.isApiResponseString
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -33,11 +31,11 @@ import java.nio.charset.StandardCharsets
  * and return its instance <br></br>
  *
  * 3. if conversion is failed or conversion result is null or
- * result of method [ApiResponse.isSuccess] ()} is false,
+ * result of method [SuccessChecker.isSuccess] ()} is false,
  * converter will return a [ApiException] <br></br>
  *
  * 4. other response type definitions will be treated as definitions of
- * response data, converter will call [ApiResponse.getResponseData] ()}
+ * response data, converter will call [ApiResponse.getParsedData] ()}
  * method to get converted response data and return,
  * empty converted value will cause [ApiException]
  *
@@ -46,12 +44,23 @@ import java.nio.charset.StandardCharsets
  * @since 2016-08-09
  */
 @Suppress("UNCHECKED_CAST")
-class ApiConverterFactory private constructor(gson: Gson?) : Converter.Factory() {
-    private val gson: Gson
+class ApiConverterFactory(
+    private val gson: Gson,
+    private val responseChecker: ApiResponseChecker,
+    private val responseParser: ApiResponseParser,
+    private val successChecker: SuccessChecker,
+) : Converter.Factory() {
 
-    init {
-        if (gson == null) throw NullPointerException("gson == null")
-        this.gson = gson
+    fun interface ApiResponseChecker {
+        fun checkIsApiResponse(responseString: String): Boolean
+    }
+
+    fun interface ApiResponseParser {
+        fun parse(responseString: String): ApiResponse
+    }
+
+    fun interface SuccessChecker {
+        fun isSuccess(apiResponse: ApiResponse): Boolean
     }
 
     override fun responseBodyConverter(
@@ -89,8 +98,11 @@ class ApiConverterFactory private constructor(gson: Gson?) : Converter.Factory()
         }
     }
 
-    internal class ApiResponseConverter<T>(private val gson: Gson, private val type: Type) :
-        Converter<ResponseBody, T> {
+    private inner class ApiResponseConverter<T>(
+        private val gson: Gson,
+        private val type: Type
+    ) : Converter<ResponseBody, T> {
+
         @Throws(IOException::class)
         override fun convert(value: ResponseBody): T {
             val response = value.string()
@@ -98,21 +110,20 @@ class ApiConverterFactory private constructor(gson: Gson?) : Converter.Factory()
                 return gson.fromJson(response, type)
             }
             // 非标准接口Response数据直接返回接口声明类型
-            if (!isApiResponseString(response)) {
+            if (!responseChecker.checkIsApiResponse(response)) {
                 return gson.fromJson(response, type)
             }
             // 标准接口Response数据：{"code": number, "message": string, "data":object}
             // 先解析成ApiResponse再向上层返回body
-            val apiResponse = gson.fromJson(response, ApiResponse::class.java)
-                ?: throw IOException("response parse failed, response: $response")
-            if (!apiResponse.isSuccess) {
+            val apiResponse = responseParser.parse(response)
+            if (!successChecker.isSuccess(apiResponse)) {
                 throw ApiException(apiResponse)
             }
             // 如果声明要求直接返回ApiResponse类型则直接向上层返回ApiResponse类型
             if (type == ApiResponse::class.java) {
                 return apiResponse as T
             }
-            val body = apiResponse.getResponseData<Any>(type)
+            val body = apiResponse.getParsedData<Any>(type)
             // 在body解析为空的时候的处理，处理不需要解析返回值的接口调用，
             // 以及应对文档给出body为“{}”却返回“[]”等情况
             if (body == null) {
@@ -123,18 +134,12 @@ class ApiConverterFactory private constructor(gson: Gson?) : Converter.Factory()
                     return JSONArray() as T
                 }
                 throw IOException(
-                    "expected [" + type.javaClass.getSimpleName() + "] " +
-                            "body but got null, response: " + apiResponse
+                    "expected [${type.javaClass.getSimpleName()}] body but got null, response: $apiResponse"
                 )
             }
             return body as T
         }
+
     }
 
-    companion object {
-        @JvmStatic
-        fun create(): ApiConverterFactory {
-            return ApiConverterFactory(parser)
-        }
-    }
 }

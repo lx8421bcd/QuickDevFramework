@@ -1,7 +1,10 @@
 package com.linxiao.framework.net
 
 import android.text.TextUtils
+import com.linxiao.framework.json.GsonParser
 import okhttp3.OkHttpClient
+import org.json.JSONException
+import org.json.JSONObject
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -40,7 +43,32 @@ abstract class RetrofitApiProvider<T> {
         return GlobalOkHttpClientHelper.defaultClient
     }
     protected open fun provideConverterFactory(): Converter.Factory {
-        return ApiConverterFactory.create()
+        return ApiConverterFactory(
+            gson = GsonParser.parser,
+            responseChecker = {
+                if (TextUtils.isEmpty(it)) {
+                    return@ApiConverterFactory false
+                }
+                if (!(it.startsWith("{") && it.endsWith("}"))) {
+                    return@ApiConverterFactory false
+                }
+                try {
+                    val respObj = JSONObject(it)
+                    return@ApiConverterFactory respObj.has("code") &&
+                            (respObj.has("desc") || respObj.has("message") || respObj.has("msg")) &&
+                            (respObj.has("body") || respObj.has("data"))
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                }
+                return@ApiConverterFactory false
+            },
+            responseParser = {
+                return@ApiConverterFactory GsonParser.parser.fromJson(it, ApiResponse::class.java)
+            },
+            successChecker = {
+                return@ApiConverterFactory it.code == 0
+            }
+        )
     }
 
     protected fun buildClientApi(): T {
