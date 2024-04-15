@@ -17,6 +17,7 @@ import androidx.annotation.CheckResult
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import com.linxiao.framework.architecture.ActivityResultHolderFragment.Companion.startActivityForCallback
 import com.linxiao.framework.common.DensityHelper
 import com.linxiao.framework.common.hideKeyboard
@@ -270,13 +271,27 @@ abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEve
         }
     }
 
-    fun addFragmentPageTo(@IdRes viewId: Int, fragment: Fragment, addToBackstack: Boolean) {
+    fun addFragmentPageTo(
+        fragment: Fragment,
+        addToBackstack: Boolean,
+        @IdRes containerId: Int = 0,
+    ) {
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+            return
+        }
+        val containerViewId = if (containerId != 0 && containerId != View.NO_ID) {
+            containerId
+        } else if (findViewById<View>(android.R.id.content) != null) {
+            android.R.id.content
+        } else {
+            return
+        }
         val tag = fragment.javaClass.getSimpleName() + fragment.hashCode()
         val transaction = supportFragmentManager.beginTransaction()
         if (fragment.isAdded) {
             transaction.remove(fragment)
         }
-        transaction.add(viewId, fragment, tag)
+        transaction.add(containerViewId, fragment, tag)
         if (addToBackstack) {
             transaction.addToBackStack(tag)
         }

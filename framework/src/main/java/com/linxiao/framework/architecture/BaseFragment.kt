@@ -137,13 +137,59 @@ abstract class BaseFragment : Fragment(), LifecycleProvider<FragmentEvent> {
         childBackPressedCallback.remove()
     }
 
-    fun addChildFragmentPageTo(@IdRes viewId: Int, fragment: Fragment, addToBackstack: Boolean) {
+    fun addFragmentPageToChildStack(
+        fragment: Fragment,
+        addToBackstack: Boolean,
+        @IdRes containerId: Int = 0,
+    ) {
+        if (!fragment.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+            return
+        }
+        val containerViewId = if (containerId != 0 && containerId != View.NO_ID) {
+            containerId
+        }
+        else if (view != null) {
+            if (requireView().id == View.NO_ID) {
+                requireView().id = View.generateViewId()
+            }
+            requireView().id
+        }
+        else {
+            return
+        }
         val tag = "${fragment.javaClass.getSimpleName()}#${fragment.hashCode()}"
         val transaction = getChildFragmentManager().beginTransaction()
         if (fragment.isAdded) {
             transaction.remove(fragment)
         }
-        transaction.add(viewId, fragment, tag)
+        transaction.add(containerViewId, fragment, tag)
+        if (addToBackstack) {
+            transaction.addToBackStack(tag)
+        }
+        transaction.commitAllowingStateLoss()
+    }
+
+    fun addFragmentPageToParentStack(
+        fragment: Fragment,
+        addToBackstack: Boolean,
+        @IdRes containerId: Int = 0,
+    ) {
+        if (activity == null || !requireActivity().lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+            return
+        }
+        val containerViewId = if (containerId != 0 && containerId != View.NO_ID) {
+            containerId
+        } else if (requireActivity().findViewById<View>(android.R.id.content) != null) {
+            android.R.id.content
+        } else {
+            return
+        }
+        val tag = fragment.javaClass.getSimpleName() + fragment.hashCode()
+        val transaction = parentFragmentManager.beginTransaction()
+        if (fragment.isAdded) {
+            transaction.remove(fragment)
+        }
+        transaction.add(containerViewId, fragment, tag)
         if (addToBackstack) {
             transaction.addToBackStack(tag)
         }
