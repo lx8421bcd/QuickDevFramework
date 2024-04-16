@@ -21,13 +21,13 @@ class HttpInfoEntity {
     var tookMills: Long = 0
 
     /*---------------request params----------------*/
-    var requestHeaders: Headers? = null
+    var requestHeaders: Headers = Headers.Builder().build()
     var requestContentType: String? = null
     var requestContentLength: Long = 0
     var requestBody: String? = null
 
     /*---------------response params----------------*/
-    var responseHeaders: Headers? = null
+    var responseHeaders: Headers = Headers.Builder().build()
     var responseCode = 0
     var responseMessage: String? = null
     var responseContentLength: Long = 0
@@ -35,20 +35,20 @@ class HttpInfoEntity {
     fun logOut() {
         logLine("----------------------------")
         logLine("url: $url")
-        logLine("protocol: %s,  method: %s", protocol!!, method!!)
-        logLine("request took time: %d ms", tookMills)
-        logLine("response code: %d,  message: %s", responseCode, responseMessage!!)
+        logLine("protocol: ${protocol},  method: $method")
+        logLine("request took time: $tookMills ms")
+        logLine("response code: ${responseCode},  message: $responseMessage")
         logLine("----------request-----------")
         logLine("Headers:")
-        for (headerName in requestHeaders!!.names()) {
-            logLine("%s : %s", headerName, requestHeaders!![headerName]!!)
+        for (headerName in requestHeaders.names()) {
+            logLine("$headerName : ${requestHeaders[headerName]}")
         }
         logLine("Body:")
         logLine(requestBody)
         logLine("----------response----------")
         logLine("Headers:")
-        for (headerName in responseHeaders!!.names()) {
-            logLine("%s : %s", headerName, responseHeaders!![headerName]!!)
+        for (headerName in responseHeaders.names()) {
+            logLine("$headerName : ${responseHeaders[headerName]}")
         }
         logLine("Body:")
         logLine(responseBody)
@@ -72,10 +72,6 @@ class HttpInfoEntity {
             subEnd += 4000
         }
         Log.i("|", message.substring(subStart))
-    }
-
-    private fun logLine(format: String, vararg args: Any) {
-        logLine(String.format(format, *args))
     }
 
     override fun toString(): String {
