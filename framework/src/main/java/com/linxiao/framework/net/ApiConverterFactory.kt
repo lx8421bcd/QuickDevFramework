@@ -63,6 +63,18 @@ class ApiConverterFactory(
         fun isSuccess(apiResponse: ApiResponse): Boolean
     }
 
+    private val apiResponseCallbackList: MutableList<(response: ApiResponse) -> Unit> = ArrayList()
+
+    fun addOnApiResponseInterceptCallback(callback: (response: ApiResponse) -> Unit) {
+        if (!apiResponseCallbackList.contains(callback)) {
+            apiResponseCallbackList.add(callback)
+        }
+    }
+
+    fun removeOnApiResponseInterceptCallback(callback: (response: ApiResponse) -> Unit) {
+        apiResponseCallbackList.remove(callback)
+    }
+
     override fun responseBodyConverter(
         type: Type,
         annotations: Array<Annotation>,
@@ -116,6 +128,9 @@ class ApiConverterFactory(
             // 标准接口Response数据：{"code": number, "message": string, "data":object}
             // 先解析成ApiResponse再向上层返回body
             val apiResponse = responseParser.parse(response)
+            for (callback in apiResponseCallbackList) {
+                callback.invoke(apiResponse)
+            }
             if (!successChecker.isSuccess(apiResponse)) {
                 throw ApiException(apiResponse)
             }

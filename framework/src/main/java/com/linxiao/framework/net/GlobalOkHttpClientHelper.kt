@@ -30,7 +30,6 @@ import javax.net.ssl.X509TrustManager
 object GlobalOkHttpClientHelper {
 
     val globalHeaderMap = HashMap<String, String>()
-    val globalOnApiResponseCallbackList = HashSet<(response: ApiResponse?) -> Unit>()
 
     private val logoutExecutor = Executors.newSingleThreadExecutor()
     var globalInfoCatchListener = { entity: HttpInfoEntity ->
@@ -44,16 +43,6 @@ object GlobalOkHttpClientHelper {
         interceptor.setCatchEnabled(true)
         interceptor.setHttpInfoCatchListener {
             globalInfoCatchListener.invoke(it)
-        }
-        return@lazy interceptor
-    }
-
-    private val apiResponseInterceptor: ApiResponseInterceptor by lazy {
-        val interceptor = ApiResponseInterceptor()
-        interceptor.addOnApiResponseInterceptCallback { apiResponse ->
-            globalOnApiResponseCallbackList.forEach {
-                it.invoke(apiResponse)
-            }
         }
         return@lazy interceptor
     }
@@ -95,7 +84,6 @@ object GlobalOkHttpClientHelper {
         // timeout
         builder.connectTimeout(5, TimeUnit.SECONDS)
         // config interceptors
-        builder.addInterceptor(apiResponseInterceptor)
         builder.addNetworkInterceptor(headerInterceptor)
         return builder
     }
