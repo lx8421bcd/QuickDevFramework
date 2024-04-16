@@ -26,6 +26,7 @@ import retrofit2.http.Url
  */
 object CommonApiProvider : RetrofitApiProvider<CommonApi>() {
 
+    @JvmSuppressWildcards
     interface CommonApi {
         /**
          * 直接返回OKHttp ResponseBody 的get请求，需要自己解析ResponseBody
