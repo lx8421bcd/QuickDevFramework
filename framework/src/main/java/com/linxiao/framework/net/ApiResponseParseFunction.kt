@@ -28,9 +28,6 @@ class ApiResponseParseFunction<T> : Function<ApiResponse, T> {
 
     @Throws(Exception::class)
     override fun apply(apiResponse: ApiResponse): T {
-        if (!apiResponse.isSuccess) {
-            throw ApiException(apiResponse)
-        }
         if (type === Any::class.java) {
             return (if (apiResponse.data == null) "" else apiResponse.data) as T
         }
