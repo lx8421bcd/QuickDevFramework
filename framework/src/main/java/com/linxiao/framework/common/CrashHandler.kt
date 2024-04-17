@@ -9,7 +9,7 @@ import androidx.collection.ArrayMap
 import com.google.gson.reflect.TypeToken
 import com.linxiao.framework.common.DateUtil.timeMillsToDateString
 import com.linxiao.framework.json.GsonParser.parser
-import com.linxiao.framework.json.GsonParser.toJSONObject
+import com.linxiao.framework.json.GsonParser.toJson
 import com.linxiao.framework.preferences.AppPreferences
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -120,8 +120,7 @@ object CrashHandler : Thread.UncaughtExceptionHandler {
     }
 
     private fun saveToLocal(info: Map<String, Any?>) {
-        val reportData = toJSONObject(info) ?: return
-        AppPreferences.getDefault().put(CACHE_KEY, reportData.toString())
+        AppPreferences.getDefault().put(CACHE_KEY, info.toJson())
     }
 
     private fun uploadCachedLog() {
