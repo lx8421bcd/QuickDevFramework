@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.linxiao.framework.architecture.BaseFragment
+import com.linxiao.framework.common.ToastAlert
 import com.linxiao.framework.json.GsonParser
+import com.linxiao.framework.json.GsonParser.parseAsJson
 import com.linxiao.quickdevframework.databinding.FragmentJsonTestBinding
 
 /**
@@ -50,5 +52,8 @@ class JsonTestFragment : BaseFragment() {
         Log.d(TAG, "testDeserialize: $objKt")
         val objJava = GsonParser.parser.fromJson("{\"name\":null, \"study\":\"university\"}", TestJavaObject::class.java)
         Log.d(TAG, "testDeserialize: $objJava")
+        val data = "[{\"name\":\"123\", \"study\":\"456\"}, {\"name\":\"234\", \"study\":\"567\"}]"
+            .parseAsJson<List<TestKtObject>>()
+        ToastAlert.show("data = $data")
     }
 }
