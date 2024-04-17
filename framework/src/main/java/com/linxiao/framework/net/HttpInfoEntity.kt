@@ -1,11 +1,16 @@
 package com.linxiao.framework.net
 
 import android.util.Log
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import okhttp3.Headers
+import java.util.concurrent.Executors
 
 /**
  * 承载Http信息实体
- * Created by linxiao on 2017/1/19.
+ *
+ * @author lx8421bcd
+ * @since 2017-01-19
  */
 class HttpInfoEntity {
     /**Http协议 */
@@ -32,7 +37,30 @@ class HttpInfoEntity {
     var responseMessage: String? = null
     var responseContentLength: Long = 0
     var responseBody: String? = null
-    fun logOut() {
+
+    override fun toString(): String {
+        return "HttpInfoEntity{" +
+                "protocol='" + protocol + '\'' +
+                ", method='" + method + '\'' +
+                ", url='" + url + '\'' +
+                ", tookMills=" + tookMills +
+                ", requestHeaders=" + requestHeaders +
+                ", requestContentType='" + requestContentType + '\'' +
+                ", requestContentLength=" + requestContentLength +
+                ", requestBody='" + requestBody + '\'' +
+                ", responseHeaders=" + responseHeaders +
+                ", responseCode=" + responseCode +
+                ", responseMessage='" + responseMessage + '\'' +
+                ", responseContentLength=" + responseContentLength +
+                ", responseBody='" + responseBody + '\'' +
+                '}'
+    }
+}
+
+private val logoutExecutor = Executors.newSingleThreadExecutor()
+
+fun HttpInfoEntity.logOut() {
+    Observable.fromCallable {
         logLine("----------------------------")
         logLine("url: $url")
         logLine("protocol: ${protocol},  method: $method")
@@ -54,41 +82,25 @@ class HttpInfoEntity {
         logLine(responseBody)
         logLine("----------------------------")
     }
+    .subscribeOn(Schedulers.from(logoutExecutor))
+    .subscribe()
+}
 
-    private fun logLine(message: String?) {
-        if (message == null) {
-            Log.i("|", "null")
-            return
-        }
-        if (message.length < 4000) {
-            Log.i("|", message)
-            return
-        }
-        var subStart = 0
-        var subEnd = 4000
-        while (subEnd < message.length) {
-            Log.i("|", message.substring(subStart, subEnd))
-            subStart = subEnd
-            subEnd += 4000
-        }
-        Log.i("|", message.substring(subStart))
+private fun logLine(message: String?) {
+    if (message == null) {
+        Log.i("|", "null")
+        return
     }
-
-    override fun toString(): String {
-        return "HttpInfoEntity{" +
-                "protocol='" + protocol + '\'' +
-                ", method='" + method + '\'' +
-                ", url='" + url + '\'' +
-                ", tookMills=" + tookMills +
-                ", requestHeaders=" + requestHeaders +
-                ", requestContentType='" + requestContentType + '\'' +
-                ", requestContentLength=" + requestContentLength +
-                ", requestBody='" + requestBody + '\'' +
-                ", responseHeaders=" + responseHeaders +
-                ", responseCode=" + responseCode +
-                ", responseMessage='" + responseMessage + '\'' +
-                ", responseContentLength=" + responseContentLength +
-                ", responseBody='" + responseBody + '\'' +
-                '}'
+    if (message.length < 3500) {
+        Log.i("|", message)
+        return
     }
+    var subStart = 0
+    var subEnd = 3500
+    while (subEnd < message.length) {
+        Log.i("|", message.substring(subStart, subEnd))
+        subStart = subEnd
+        subEnd += 3500
+    }
+    Log.i("|", message.substring(subStart))
 }

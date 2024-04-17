@@ -32,21 +32,11 @@ class HttpInfoCatchInterceptor : Interceptor {
 
     private val UTF8 = StandardCharsets.UTF_8
     var httpInfoCatchListener: ((info: HttpInfoEntity) -> Unit)? = null
-        private set
-    private var catchEnabled = false
-
-    /**
-     * set catch http info enabled
-     * @param enabled enabled
-     */
-    fun setCatchEnabled(enabled: Boolean) {
-        catchEnabled = enabled
-    }
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
-        if (!catchEnabled || httpInfoCatchListener == null) {
+        if (httpInfoCatchListener == null) {
             return chain.proceed(request)
         }
         val entity = HttpInfoEntity()
@@ -84,7 +74,7 @@ class HttpInfoCatchInterceptor : Interceptor {
             entity.responseContentLength = responseBody.contentLength()
             val source = responseBody.source()
             source.request(Long.MAX_VALUE) // Buffer the entire requestBody.
-            var buffer = source.buffer()
+            var buffer = source.buffer
 
             // handle gzip
             if ("gzip".equals(response.headers["Content-Encoding"], ignoreCase = true)) {
@@ -114,7 +104,7 @@ class HttpInfoCatchInterceptor : Interceptor {
                 entity.responseBody = "unreadable, not text"
             }
         }
-        httpInfoCatchListener!!.invoke(entity)
+        httpInfoCatchListener?.invoke(entity)
         return response
     }
 
@@ -136,9 +126,5 @@ class HttpInfoCatchInterceptor : Interceptor {
         } catch (e: Exception) {
             false // Truncated UTF-8 sequence.
         }
-    }
-
-    fun setHttpInfoCatchListener(httpInfoCatchListener: (info: HttpInfoEntity) -> Unit) {
-        this.httpInfoCatchListener = httpInfoCatchListener
     }
 }
