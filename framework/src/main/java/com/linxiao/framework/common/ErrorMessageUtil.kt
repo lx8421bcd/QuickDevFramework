@@ -1,42 +1,42 @@
 package com.linxiao.framework.common
 
+import com.linxiao.framework.common.ErrorMessageUtil.ErrorMessageParser
 import com.linxiao.framework.permission.PermissionException
 import retrofit2.HttpException
 import java.net.UnknownHostException
 
 object ErrorMessageUtil {
 
-    fun interface ErrorMessageParser {
-        fun parseMessage(e: Throwable?): String?
+    fun interface ErrorMessageParser<T> {
+        fun parseMessage(e: T): String?
     }
 
-    private val errorMessageMap = HashMap<Class<out Throwable>, ErrorMessageParser>()
+    private val errorMessageMap = HashMap<Class<out Throwable>, ErrorMessageParser<Throwable>>()
 
     init {
-        errorMessageMap[UnknownHostException::class.java] = ErrorMessageParser { e: Throwable? ->
-            return@ErrorMessageParser "unknown host"
+        setErrorMessageParser(UnknownHostException::class.java) {
+            return@setErrorMessageParser "unknown host"
         }
-        errorMessageMap[HttpException::class.java] = ErrorMessageParser { e: Throwable? ->
-            return@ErrorMessageParser "http error(" + (e as HttpException).code() + ")"
+        setErrorMessageParser(HttpException::class.java) {
+            return@setErrorMessageParser "http error(" + (it as HttpException).code() + ")"
         }
-        errorMessageMap[PermissionException::class.java] = ErrorMessageParser { e: Throwable? ->
-            return@ErrorMessageParser "permission denied"
+        setErrorMessageParser(PermissionException::class.java) {
+            return@setErrorMessageParser "permission denied"
+        }
+    }
+
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Throwable> setErrorMessageParser(clazz: Class<T>, parser: ErrorMessageParser<T>?) {
+        errorMessageMap[clazz] = ErrorMessageParser {
+            return@ErrorMessageParser parser?.parseMessage(it as T)
         }
     }
 
     @JvmStatic
-    fun getMessageString(e: Throwable): String {
-        val parser = errorMessageMap[e.javaClass]
-        return if (parser != null) {
-            parser.parseMessage(e) ?: ""
-        } else e.message ?: ""
-    }
-
-    @JvmStatic
-    fun setErrorMessageParser(clazz: Class<out Throwable>, parser: ErrorMessageParser?) {
-        if (parser == null) {
-            return
-        }
-        errorMessageMap[clazz] = parser
+    fun Throwable.parsedMessage(): String {
+        return errorMessageMap[this.javaClass]?.parseMessage(this)
+            ?: this.message
+            ?: this.javaClass.simpleName
     }
 }
