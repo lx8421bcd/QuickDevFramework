@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
+import com.linxiao.framework.FrameworkConfigs
 import com.linxiao.framework.common.DensityHelper.onActivityGetResources
 import com.linxiao.framework.language.AppLanguageHelper
 
@@ -37,6 +38,7 @@ abstract class BaseApplication : MultiDexApplication(), LifecycleEventObserver {
     override fun onCreate() {
         super.onCreate()
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+        FrameworkConfigs.init()
     }
 
     override fun getResources(): Resources {

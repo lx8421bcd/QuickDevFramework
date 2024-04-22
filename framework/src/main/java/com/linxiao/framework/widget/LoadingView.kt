@@ -11,7 +11,6 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import com.linxiao.framework.R
-import com.linxiao.framework.common.ErrorMessageUtil.getMessageString
 
 /**
  * 自定义加载布局
@@ -27,9 +26,17 @@ class LoadingView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
+    fun interface ExceptionParser {
+
+        fun parse(e: Throwable): String
+
+    }
+
     companion object {
-        private val TAG = LoadingView::class.java.getSimpleName()
         private const val DEFAULT_FADE_IN_DURATION: Long = 300
+        var defaultExceptionParser: ExceptionParser = ExceptionParser {
+            return@ExceptionParser it.message ?: ""
+        }
         @LayoutRes
         var defaultEmptyViewRes = 0
         @LayoutRes
@@ -60,6 +67,8 @@ class LoadingView @JvmOverloads constructor(
             field.visibility = GONE
         }
     private var fadeInDuration = DEFAULT_FADE_IN_DURATION
+
+    var exceptionParser: ExceptionParser = defaultExceptionParser
 
     init {
         LayoutInflater.from(context).inflate(R.layout.loading_view, this, true)
@@ -117,7 +126,7 @@ class LoadingView @JvmOverloads constructor(
     }
 
     fun showErrorView(e: Throwable) {
-        showErrorView(getMessageString(e))
+        showErrorView(exceptionParser.parse(e))
     }
 
     @JvmOverloads
