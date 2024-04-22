@@ -174,7 +174,7 @@ abstract class BaseFragment : Fragment(), LifecycleProvider<FragmentEvent> {
         addToBackstack: Boolean,
         @IdRes containerId: Int = 0,
     ) {
-        if (activity == null || !requireActivity().lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+        if (activity == null || !requireActivity().lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)) {
             return
         }
         val containerViewId = if (containerId != 0 && containerId != View.NO_ID) {

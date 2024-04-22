@@ -271,12 +271,12 @@ abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEve
         }
     }
 
-    fun addFragmentPageTo(
+    fun addFragmentPage(
         fragment: Fragment,
         addToBackstack: Boolean,
         @IdRes containerId: Int = 0,
     ) {
-        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)) {
             return
         }
         val containerViewId = if (containerId != 0 && containerId != View.NO_ID) {
