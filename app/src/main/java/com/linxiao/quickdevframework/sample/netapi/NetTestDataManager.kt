@@ -17,15 +17,8 @@ class NetTestDataManager : BaseDataManager() {
     private val clientApi: ClientApi
 
     init {
-        // 这些配置可以放在App工程的网络模块中，这里简要处理就不写了
-        val infoCatchInterceptor = HttpInfoCatchInterceptor()
-        infoCatchInterceptor.setCatchEnabled(true)
-        infoCatchInterceptor.setHttpInfoCatchListener {
-            it.logOut()
-        }
         val okBuilder = GlobalOkHttpClientHelper.getBuilder()
         //        okBuilder.cookieJar(RetrofitManager.());
-        okBuilder.addInterceptor(infoCatchInterceptor)
         okBuilder.configTrustAll()
         val builder = Retrofit.Builder()
         builder.baseUrl("http://www.weather.com.cn/")

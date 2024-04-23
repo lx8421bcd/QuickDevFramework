@@ -1,17 +1,21 @@
 package com.linxiao.framework.language
 
+import android.app.Activity
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.res.Resources
 import android.os.Process
+import androidx.core.content.ContextCompat
 import com.linxiao.framework.common.globalContext
 import com.linxiao.framework.language.LanguageOption.Companion.followingSystem
-import com.linxiao.framework.language.LanguageOption.Companion.newInstance
 import com.linxiao.framework.preferences.AppPreferences
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import org.greenrobot.eventbus.EventBus
 import java.util.Locale
+
 
 /**
  * app language select helper class
@@ -21,12 +25,46 @@ import java.util.Locale
  */
 object AppLanguageHelper {
 
+    private class LanguageChangeReceiver : BroadcastReceiver() {
+
+        companion object {
+            const val LANGUAGE_CHANGED_ACTION = "LANGUAGE_CHANGED_ACTION"
+        }
+
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == LANGUAGE_CHANGED_ACTION) {
+                if (context is Activity) {
+                    context.recreate()
+                }
+            }
+        }
+
+        fun bindActivity(activity: Activity) {
+            val filter = IntentFilter()
+            filter.addAction(LANGUAGE_CHANGED_ACTION)
+            ContextCompat.registerReceiver(activity,this, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+        }
+
+        fun unbindActivity(activity: Activity) {
+            activity.unregisterReceiver(this)
+        }
+    }
+
     private const val PREF_SELECTED_LOCALE = "SELECTED_LOCALE"
 
-    @JvmStatic
-    val SUPPORTED_LANGUAGES: MutableList<LanguageOption> = ArrayList()
-
+    private val subscribedBroadcastReceivers = HashMap<Int, LanguageChangeReceiver>()
+    private val supportedLanguages: MutableList<LanguageOption> = ArrayList()
     private var currentLanguageOption: LanguageOption? = null
+
+
+    fun subscribeLanguageChanges(activity: Activity) {
+        subscribedBroadcastReceivers.getOrPut(activity.hashCode()) { LanguageChangeReceiver() }
+            .bindActivity(activity)
+    }
+
+    fun unsubscribeLanguageChanges(activity: Activity) {
+        subscribedBroadcastReceivers[activity.hashCode()]?.unbindActivity(activity)
+    }
 
     fun getSystemCurrentLocale(): Locale {
         return Resources.getSystem().configuration.locale
@@ -41,7 +79,7 @@ object AppLanguageHelper {
         val cachedLocale = AppPreferences.getDefault()
             .getSerializable<LanguageOption>(PREF_SELECTED_LOCALE)
         if (cachedLocale != null) {
-            for (locale in SUPPORTED_LANGUAGES) {
+            for (locale in supportedLanguages) {
                 if (locale.id == cachedLocale.id) {
                     return locale
                 }
@@ -66,7 +104,9 @@ object AppLanguageHelper {
     @Synchronized
     fun setLanguageWithBroadcast(option: LanguageOption?) {
         setLanguage(option)
-        EventBus.getDefault().post(LanguageChangedEvent())
+        val broadcastIntent = Intent()
+        broadcastIntent.setAction(LanguageChangeReceiver.LANGUAGE_CHANGED_ACTION)
+        globalContext.sendBroadcast(broadcastIntent)
     }
 
     @Synchronized

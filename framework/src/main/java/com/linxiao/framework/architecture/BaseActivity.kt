@@ -23,7 +23,6 @@ import com.linxiao.framework.common.DensityHelper
 import com.linxiao.framework.common.hideKeyboard
 import com.linxiao.framework.dialog.LoadingDialogFragment
 import com.linxiao.framework.language.AppLanguageHelper
-import com.linxiao.framework.language.LanguageChangedEvent
 import com.linxiao.framework.permission.PermissionRequestHelper
 import com.trello.rxlifecycle2.LifecycleProvider
 import com.trello.rxlifecycle2.LifecycleTransformer
@@ -32,9 +31,6 @@ import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 /**
  * base activity class of entire project
@@ -62,10 +58,6 @@ abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEve
 
     protected val loadingDialog by lazy {
         LoadingDialogFragment()
-    }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEvent(event: LanguageChangedEvent?) {
-        recreate()
     }
 
     @CheckResult
@@ -102,7 +94,7 @@ abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEve
         if (printLifecycle) {
             Log.d(TAG, "onCreate")
         }
-        EventBus.getDefault().register(this)
+        AppLanguageHelper.subscribeLanguageChanges(this)
     }
 
     override fun onStart() {
@@ -150,7 +142,7 @@ abstract class BaseActivity : AppCompatActivity(), LifecycleProvider<ActivityEve
         if (printLifecycle) {
             Log.d(TAG, "onDestroy")
         }
-        EventBus.getDefault().unregister(this)
+        AppLanguageHelper.unsubscribeLanguageChanges(this)
     }
 
     override fun finish() {
