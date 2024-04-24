@@ -57,7 +57,7 @@ abstract class BaseDialogFragment : AppCompatDialogFragment(), LifecycleProvider
          * 应用内所有继承自BaseDialogFragment的Dialog组件的默认宽度
          */
         @JvmStatic
-        val baseDialogWidth: Int = (getRealScreenWidth() * 0.8).toInt()
+        var baseDialogWidth: Int = (getRealScreenWidth() * 0.8).toInt()
     }
 
     @JvmField
