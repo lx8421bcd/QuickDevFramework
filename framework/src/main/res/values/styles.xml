@@ -49,12 +49,17 @@
 
     <!-- Dialog容器Activity样式 (背景透明，没有切换动画)  -->
     <!-- 具体如果页面非透明（有ContentView）关闭动画需要手动设置setOverridePendingTransaction(false) -->
-    <style name="TopDialogActivityTheme" parent="AppTheme.Base">
+    <style name="TopDialogActivityTheme" parent="Theme.AppCompat.Light">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
-        <item name="alertDialogTheme">@style/AppDialogTheme</item>
+        <!--        <item name="android:windowAnimationStyle">@style/TopDialogActivityAnimation</item>-->
+        <!--        <item name="android:windowAnimationStyle">@null</item>-->
+        <!--        <item name="android:windowEnterAnimation">@null</item>-->
+        <!--        <item name="android:windowExitAnimation">@null</item>-->
     </style>
 
 </resources>
