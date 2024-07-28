@@ -43,7 +43,7 @@ class DialogApiFragment : SimpleViewBindingFragment<FragmentDialogApiBinding>() 
             )
         }
         if (viewBinding.rbTypeHtmlLink.isChecked) {
-            dialogFragment.setContentLink("https://www.google.com")
+            dialogFragment.setContentLink("https://www.baidu.com")
         }
         dialogFragment.setPositiveButton(getString(R.string.sample_positive)) { dialogInterface: DialogInterface, i: Int ->
             showToast(context, getString(R.string.positive_click))
