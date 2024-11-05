@@ -44,5 +44,8 @@ class ApplicationApiFragment : SimpleViewBindingFragment<FragmentApplicationApiB
             val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS", Locale.getDefault())
             viewBinding.tvSystemBootTime.text = format.format(Date(ApplicationUtil.systemBootTime))
         }
+        viewBinding.tvExtraInfo.text = """
+            AndroidId = ${ApplicationUtil.getAndroidID()}
+        """.trimIndent()
     }
 }
