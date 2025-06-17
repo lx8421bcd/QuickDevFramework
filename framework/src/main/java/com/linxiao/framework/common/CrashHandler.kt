@@ -52,8 +52,8 @@ object CrashHandler : Thread.UncaughtExceptionHandler {
         onSubmitLogs?.invoke(info)
     }
 
-    private fun collectAppVersionInfo(): Map<String, Any> {
-        val ret: MutableMap<String, Any> = ArrayMap()
+    private fun collectAppVersionInfo(): Map<String, Any?> {
+        val ret: MutableMap<String, Any?> = ArrayMap()
         try {
             val pm = globalContext.packageManager
             val pi = pm.getPackageInfo(globalContext.packageName, PackageManager.GET_ACTIVITIES)
@@ -67,8 +67,8 @@ object CrashHandler : Thread.UncaughtExceptionHandler {
         return ret
     }
 
-    private fun collectDeviceInfo(): Map<String, Any> {
-        val ret: MutableMap<String, Any> = ArrayMap()
+    private fun collectDeviceInfo(): Map<String, Any?> {
+        val ret: MutableMap<String, Any?> = ArrayMap()
         ret["MODEL"] = Build.MODEL
         ret["ID"] = Build.ID
         ret["HOST"] = Build.HOST

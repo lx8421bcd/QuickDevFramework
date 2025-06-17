@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 35
     namespace = "com.linxiao.framework"
     defaultConfig {
         minSdk = 24
@@ -31,7 +31,7 @@ android {
 }
 
 dependencies {
-    val lifecycleVersion = "2.7.0"
+    val lifecycleVersion = "2.9.1"
     val archVersion = "2.2.0"
     androidTestApi("androidx.test.espresso:espresso-core:3.1.0") {
         exclude(group = "com.android.support", module = "support-annotations")
@@ -42,14 +42,14 @@ dependencies {
 
     api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     // Kotlin base
-    api("org.jetbrains.kotlin:kotlin-reflect:1.9.20")
+    api("org.jetbrains.kotlin:kotlin-reflect:2.0.20")
     // Android基础库
-    api("com.google.android.material:material:1.11.0")
-    api("androidx.core:core-ktx:1.12.0")
-    api("androidx.appcompat:appcompat:1.6.1")
+    api("com.google.android.material:material:1.12.0")
+    api("androidx.core:core-ktx:1.16.0")
+    api("androidx.appcompat:appcompat:1.7.1")
     api("androidx.legacy:legacy-support-v4:1.0.0")
-    api("androidx.constraintlayout:constraintlayout:2.1.4")
-    api("androidx.recyclerview:recyclerview:1.3.2")
+    api("androidx.constraintlayout:constraintlayout:2.2.1")
+    api("androidx.recyclerview:recyclerview:1.4.0")
     api("androidx.preference:preference-ktx:1.2.1")
     api("androidx.biometric:biometric:1.1.0")
     api("androidx.multidex:multidex:2.0.1")
@@ -64,7 +64,7 @@ dependencies {
     api("androidx.lifecycle:lifecycle-process:$lifecycleVersion")
     api("androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycleVersion")
     // JSON解析
-    api("com.google.code.gson:gson:2.10.1")
+    api("com.google.code.gson:gson:2.11.0")
     // OKHttp
     api("com.squareup.okhttp3:okhttp:4.10.0")
     api("com.squareup.okio:okio:3.0.0")
