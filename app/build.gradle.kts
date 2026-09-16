@@ -10,7 +10,7 @@ plugins {
 android {
 
     namespace = "com.linxiao.quickdevframework"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.linxiao.quickdevframework"
@@ -23,13 +23,13 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
     }
     buildFeatures.viewBinding = true
     resourcePrefix = "com.linxiao.quickdevframework"
@@ -49,6 +49,6 @@ dependencies {
     implementation(project(":framework"))
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.9.1")
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
     releaseImplementation("com.squareup.leakcanary:leakcanary-android-no-op:2.9.1")
 }

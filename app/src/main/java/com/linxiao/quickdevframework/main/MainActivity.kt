@@ -82,7 +82,7 @@ class MainActivity : SimpleViewBindingActivity<ActivityMainBinding>() {
         apiSampleList.add(ApiSampleObject("Adapter API", "AdapterTestFragment"))
         apiSampleList.add(ApiSampleObject("Widgets", "WidgetsGuideFragment"))
         val listAdapter = ApiSampleListAdapter()
-        listAdapter.items = apiSampleList
+        listAdapter.submitList(apiSampleList)
         listAdapter.setOnItemClickListener { adapter, view, position ->
             val obj = adapter.getItem(position)
             switchFragment(obj!!.target)

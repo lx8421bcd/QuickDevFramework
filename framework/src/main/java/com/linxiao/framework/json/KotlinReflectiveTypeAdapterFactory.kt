@@ -11,9 +11,9 @@ import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
-import com.google.gson.internal.`$Gson$Types`
 import com.google.gson.internal.ConstructorConstructor
 import com.google.gson.internal.Excluder
+import com.google.gson.internal.GsonTypes
 import com.google.gson.internal.ObjectConstructor
 import com.google.gson.internal.Primitives
 import com.google.gson.internal.ReflectionAccessFilterHelper
@@ -279,7 +279,7 @@ class KotlinReflectiveTypeAdapterFactory(
                 if (!blockInaccessible && accessor == null) {
                     ReflectionHelper.makeAccessible(field)
                 }
-                val fieldType: Type = `$Gson$Types`.resolve(type.type, raw, field.genericType)
+                val fieldType: Type = GsonTypes.resolve(type.type, raw, field.genericType)
                 val fieldNames = getFieldNames(field)
                 var previous: BoundField? = null
                 for (i in fieldNames.indices) {
@@ -303,7 +303,7 @@ class KotlinReflectiveTypeAdapterFactory(
                     declaredType.toString() + " declares multiple JSON fields named " + previous.name
                 }
             }
-            type = TypeToken.get(`$Gson$Types`.resolve(type.type, raw, raw.genericSuperclass))
+            type = TypeToken.get(GsonTypes.resolve(type.type, raw, raw.genericSuperclass))
             raw = type.rawType
         }
         return result
